@@ -1,0 +1,459 @@
+{
+  "schema_version": 23,
+  "system": "github-agent-control-plane",
+  "canonical_repository": "xq22115/demo-repository",
+  "task_system_of_record": "github_issue",
+  "entrypoint": "ai-system/control-plane/README.md",
+  "runbook": "ai-system/control-plane/RUNBOOK.md",
+  "status_values": [
+    "PASS",
+    "VETO",
+    "FAIL",
+    "BLOCKED",
+    "NOT_RUN"
+  ],
+  "routing": {
+    "bootstrap_order": [
+      "AGENTS.md",
+      "ai-system/registry.yml",
+      "ai-system/control-plane/registry.json",
+      "task_issue",
+      "pinned_base_sha"
+    ],
+    "product_level_autoload_guaranteed": false,
+    "explicit_github_intent_fallback": true
+  },
+  "contracts": {
+    "task_schema": "ai-system/control-plane/task-contract.schema.json",
+    "run_schema": "ai-system/control-plane/run-contract.schema.json",
+    "receipt_schema": "ai-system/control-plane/receipt.schema.json",
+    "write_plan_schema": "ai-system/control-plane/write-plan.schema.json",
+    "state_machine": "ai-system/control-plane/state-machine.json",
+    "static_validator": "scripts/validate_agent_control_plane.py",
+    "write_plan_collector": "scripts/collect_write_plans_from_refs.py",
+    "write_conflict_checker": "scripts/check_write_plan_conflicts.py",
+    "write_scope_enforcer": "scripts/verify_write_plan_scope.py",
+    "receipt_adjudicator": "scripts/adjudicate_agent_receipts.py",
+    "claim_schema": "ai-system/control-plane/claim.schema.json",
+    "run_freshness_verifier": "scripts/verify_run_freshness.py",
+    "snapshot_execution_verifier": "scripts/verify_snapshot_bound_execution.py",
+    "local_agent_executor": "scripts/local_agent_executor.py",
+    "local_execution_finalizer": "scripts/finalize_local_agent_execution.py",
+    "local_run_preparer": "scripts/prepare_local_agent_run.py",
+    "local_workflow_orchestrator": "scripts/run_local_agent_workflow.py",
+    "run_lifecycle_manager": "scripts/manage_local_agent_run.py"
+  },
+  "namespace": {
+    "task_id": "github_issue_number",
+    "run_id_format": "YYYYMMDDTHHMMSSZ-<nonce>",
+    "integration_branch_template": "task/{issue_number}/{run_id}/integration",
+    "agent_branch_template": "agent/{issue_number}/{agent_id}/{run_id}",
+    "chat_branch_template": "chat/{issue_number}/{run_id}",
+    "write_plan_path_template": "ai-system/control-plane/runs/{issue_number}/{run_id}/plans/{actor_id}.json",
+    "receipt_path_template": "ai-system/control-plane/runs/{issue_number}/{run_id}/receipts/{agent_id}.json",
+    "claim_path_template": "ai-system/control-plane/runs/{issue_number}/{run_id}/claims/{actor_id}.json"
+  },
+  "planning": {
+    "mode": "two-phase-fanout",
+    "phase_1": "declare-write-set-on-actor-branch-before-mutation",
+    "phase_2": "execute-after-cross-ref-conflict-preflight",
+    "plan_source": "isolated_actor_branch",
+    "collector": "scripts/collect_write_plans_from_refs.py",
+    "collector_access": "read-only-git-ref-snapshots",
+    "collector_output": "ephemeral-not-committed",
+    "shared_mutable_plan_ledger": false,
+    "checker": "scripts/check_write_plan_conflicts.py",
+    "scope_enforcer": "scripts/verify_write_plan_scope.py",
+    "actual_diff_must_be_subset_of_write_set": true,
+    "unresolved_overlap": "VETO",
+    "undeclared_actual_path": "VETO",
+    "resolved_overlap": "SERIALIZE_WITH_DEPENDENCY",
+    "dependency_cycle": "VETO",
+    "base_sha_mismatch": "VETO",
+    "duplicate_branch": "VETO",
+    "duplicate_ref": "VETO",
+    "plan_actor_or_branch_mismatch": "VETO",
+    "path_traversal": "VETO",
+    "snapshot_resolution": "resolve-ref-once-then-read-by-sha",
+    "snapshot_hash_algorithm": "sha256",
+    "approved_plan_snapshot_immutable": true,
+    "approved_claim_snapshot_immutable": true,
+    "readonly_empty_write_set_allowed": true,
+    "readonly_task_writes": "VETO"
+  },
+  "concurrency": {
+    "same_branch_multiple_writers": false,
+    "shared_mutable_run_files": false,
+    "shared_mutable_plan_ledger": false,
+    "plan_collection_read_only_across_refs": true,
+    "update_requires_current_blob_sha": true,
+    "base_sha_pinned": true,
+    "write_plan_required_before_mutation": true,
+    "write_set_overlap_requires_dependency": true,
+    "actual_diff_scope_verification_required_before_fanin": true,
+    "integration_via_pull_request_only": true,
+    "one_merge_owner": "A10",
+    "stale_write_action": "FAIL_AND_REBASE_OR_REPLAN",
+    "integration_branch_isolated_per_run": true
+  },
+  "runtime_adjudication": {
+    "required_agent_count": 10,
+    "all_agents_must_pass": true,
+    "veto_tolerance": 0,
+    "missing_receipt_tolerance": 0,
+    "distinct_executor_ids_required": true,
+    "distinct_execution_ids_required": true,
+    "distinct_evidence_partitions_required": true,
+    "distinct_branches_required": true,
+    "direct_failure_overrides_votes": true,
+    "repository_receipts_do_not_prove_physical_independence": true,
+    "pass_veto_receipt_schema_version": 2,
+    "receipt_claim_binding_required": true,
+    "receipt_plan_head_binding_required": true,
+    "receipt_work_head_semantics": "pre-receipt-task-head",
+    "receipt_only_final_commit_required": true
+  },
+  "security": {
+    "secrets_in_repo": false,
+    "long_lived_pat_for_agents": false,
+    "default_tool_permission": "read-only",
+    "write_permission": "task-scoped and explicit",
+    "execution_boundary": "isolated environment when code execution exists"
+  },
+  "agents": [
+    {
+      "id": "A01",
+      "slug": "orchestrator",
+      "name_zh": "編排代理",
+      "role_file": "ai-system/control-plane/agents/A01-orchestrator.md",
+      "write_mode": "receipt-only",
+      "evidence_required": true,
+      "independent_receipt_required": true
+    },
+    {
+      "id": "A02",
+      "slug": "architect",
+      "name_zh": "主張代理",
+      "role_file": "ai-system/control-plane/agents/A02-architect.md",
+      "write_mode": "receipt-only",
+      "evidence_required": true,
+      "independent_receipt_required": true
+    },
+    {
+      "id": "A03",
+      "slug": "source-research",
+      "name_zh": "原始來源研究代理",
+      "role_file": "ai-system/control-plane/agents/A03-source-research.md",
+      "write_mode": "receipt-only",
+      "evidence_required": true,
+      "independent_receipt_required": true
+    },
+    {
+      "id": "A04",
+      "slug": "root-cause",
+      "name_zh": "根因分析代理",
+      "role_file": "ai-system/control-plane/agents/A04-root-cause.md",
+      "write_mode": "receipt-only",
+      "evidence_required": true,
+      "independent_receipt_required": true
+    },
+    {
+      "id": "A05",
+      "slug": "adversarial",
+      "name_zh": "反方代理",
+      "role_file": "ai-system/control-plane/agents/A05-adversarial.md",
+      "write_mode": "receipt-only",
+      "evidence_required": true,
+      "independent_receipt_required": true
+    },
+    {
+      "id": "A06",
+      "slug": "cross-exam",
+      "name_zh": "交叉詰問代理",
+      "role_file": "ai-system/control-plane/agents/A06-cross-exam.md",
+      "write_mode": "receipt-only",
+      "evidence_required": true,
+      "independent_receipt_required": true
+    },
+    {
+      "id": "A07",
+      "slug": "implementer",
+      "name_zh": "實作代理",
+      "role_file": "ai-system/control-plane/agents/A07-implementer.md",
+      "write_mode": "isolated-branch",
+      "evidence_required": true,
+      "independent_receipt_required": true
+    },
+    {
+      "id": "A08",
+      "slug": "verifier",
+      "name_zh": "驗證代理",
+      "role_file": "ai-system/control-plane/agents/A08-verifier.md",
+      "write_mode": "receipt-only",
+      "evidence_required": true,
+      "independent_receipt_required": true
+    },
+    {
+      "id": "A09",
+      "slug": "risk",
+      "name_zh": "風險代理",
+      "role_file": "ai-system/control-plane/agents/A09-risk.md",
+      "write_mode": "receipt-only",
+      "evidence_required": true,
+      "independent_receipt_required": true
+    },
+    {
+      "id": "A10",
+      "slug": "adjudicator",
+      "name_zh": "裁決代理",
+      "role_file": "ai-system/control-plane/agents/A10-adjudicator.md",
+      "write_mode": "receipt-only",
+      "evidence_required": true,
+      "independent_receipt_required": true
+    }
+  ],
+  "ownership": {
+    "claim_mode": "create-only",
+    "claim_path_template": "ai-system/control-plane/runs/{issue_number}/{run_id}/claims/{actor_id}.json",
+    "claim_must_precede_plan": true,
+    "claim_conflict": "VETO",
+    "automatic_takeover": false,
+    "force_push_allowed": false,
+    "recovery": "new-run-id"
+  },
+  "integration": {
+    "branch_scope": "per-run",
+    "current_base_must_match_pinned_base": true,
+    "stale_base": "VETO_AND_NEW_RUN",
+    "freshness_verifier": "scripts/verify_run_freshness.py"
+  },
+  "execution_binding": {
+    "verifier": "scripts/verify_snapshot_bound_execution.py",
+    "current_branch_head_must_equal_verified_head": true,
+    "plan_head_must_be_ancestor": true,
+    "plan_snapshot_hash_must_match": true,
+    "claim_snapshot_hash_must_match": true,
+    "own_receipt_is_only_control_plane_diff_exception": true,
+    "receipt_identity_must_match_claim_snapshot": true,
+    "receipt_work_head_from_head_sha": true,
+    "receipt_commit_must_be_receipt_only": true,
+    "receipt_commit_must_directly_follow_work_head": true
+  },
+  "local_executor": {
+    "backend": "claude-code",
+    "driver": "scripts/local_agent_executor.py",
+    "required_actor_count": 10,
+    "authentication_required_before_launch": true,
+    "unauthenticated_action": "BLOCKED_ZERO_PROCESSES",
+    "distinct_execution_ids_required": true,
+    "distinct_backend_session_ids_required": true,
+    "distinct_workspaces_required": true,
+    "wrapper_observed_independence_required": true,
+    "model_self_asserted_independence_accepted": false,
+    "readonly_roles": [
+      "A01",
+      "A02",
+      "A03",
+      "A04",
+      "A05",
+      "A06",
+      "A08",
+      "A09",
+      "A10"
+    ],
+    "write_role": "A07",
+    "aggregate_pass_requires_all_ten_pass": true,
+    "raw_outputs": "ephemeral-outside-git-until-receipt-materialization",
+    "bash_allowed_by_default": false,
+    "readonly_allowed_tools": [
+      "Read",
+      "Glob",
+      "Grep"
+    ],
+    "write_role_allowed_tools": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Edit",
+      "Write"
+    ],
+    "claim_bound_assignment_required": true,
+    "predeclared_execution_id_required": true,
+    "finalizer": "scripts/finalize_local_agent_execution.py",
+    "receipt_materialization": "claim-bound-v2",
+    "process_ids_recorded": true,
+    "distinct_process_instances_required": true,
+    "pid_reuse_does_not_invalidate_sequential_independence": true,
+    "dependency_aware_orchestrator_required": true,
+    "direct_full_run_completion_eligible": false
+  },
+  "local_finalizer": {
+    "driver": "scripts/finalize_local_agent_execution.py",
+    "write_role": "A07",
+    "readonly_workspace_mutation": "VETO",
+    "preexisting_staged_changes": "VETO",
+    "write_scope_required_before_task_commit": true,
+    "trusted_wrapper_commits_task_changes": true,
+    "pass_veto_receipt_schema_version": 2,
+    "receipt_commit_only": true,
+    "snapshot_verification_required": true,
+    "remote_push_performed": false
+  },
+  "local_run_preparer": {
+    "driver": "scripts/prepare_local_agent_run.py",
+    "required_actor_count": 10,
+    "claim_before_plan": true,
+    "readonly_empty_write_set_required": true,
+    "write_role": "A07",
+    "prospective_preflight_before_mutation": true,
+    "committed_snapshot_collection_required": true,
+    "committed_preflight_required": true,
+    "integration_branch_created_after_preflight": true,
+    "workspace_root_must_be_outside_source_repo": true,
+    "source_worktree_must_be_clean": true,
+    "base_ref_must_equal_pinned_base": true,
+    "remote_push_performed": false,
+    "dependencies": {
+      "A01": [],
+      "A02": [
+        "A01"
+      ],
+      "A03": [
+        "A01"
+      ],
+      "A04": [
+        "A01"
+      ],
+      "A05": [
+        "A01",
+        "A02",
+        "A04"
+      ],
+      "A06": [
+        "A01",
+        "A05"
+      ],
+      "A07": [
+        "A01",
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A06"
+      ],
+      "A08": [
+        "A01",
+        "A07"
+      ],
+      "A09": [
+        "A01",
+        "A07",
+        "A08"
+      ],
+      "A10": [
+        "A01",
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "A07",
+        "A08",
+        "A09"
+      ]
+    }
+  },
+  "local_workflow_orchestrator": {
+    "driver": "scripts/run_local_agent_workflow.py",
+    "required_actor_count": 10,
+    "dependency_aware": true,
+    "stop_downstream_on_nonpass": true,
+    "readonly_dependency_workspaces_via_add_dir": true,
+    "A07_external_dependency_dirs_forbidden": true,
+    "A07_dependency_context": "trusted-receipt-summary-in-prompt",
+    "trusted_finalizer_required_per_actor": true,
+    "distinct_process_instances_required": true,
+    "distinct_backend_sessions_required": true,
+    "deterministic_adjudication_required": true,
+    "base_freshness_required": true,
+    "remote_push_performed": false,
+    "full_local_runtime_pass_requires": [
+      "A01-A10_PASS",
+      "adjudication_PASS",
+      "base_freshness_PASS"
+    ],
+    "resume_existing_receipts_supported": true,
+    "resume_only_missing_actors": true,
+    "resume_revalidation_required": true,
+    "existing_veto_receipt_terminal": true
+  },
+  "runtime_attestation": {
+    "durable_receipt_attestation_required": true,
+    "raw_backend_session_persisted": false,
+    "backend_session_storage": "sha256-only",
+    "process_instance_id_persisted": true,
+    "process_id_persisted": true,
+    "spawn_monotonic_ns_persisted": true,
+    "stdout_stderr_hashes_persisted": true,
+    "distinct_process_instances_required": true,
+    "distinct_backend_session_hashes_required": true,
+    "observer": "scripts/local_agent_executor.py",
+    "materializer": "scripts/finalize_local_agent_execution.py",
+    "adjudicator": "scripts/adjudicate_agent_receipts.py"
+  },
+  "run_lifecycle_manager": {
+    "driver": "scripts/manage_local_agent_run.py",
+    "status_supported": true,
+    "actor_publish_fast_forward_only": true,
+    "actor_publish_force_allowed": false,
+    "actor_publish_idempotent": true,
+    "integration_requires_workflow_pass": true,
+    "integration_requires_adjudication_pass": true,
+    "integration_requires_fresh_base": true,
+    "integration_re_adjudication_required": true,
+    "integration_task_diff_must_equal_verified_A07_diff": true,
+    "integration_receipt_commit_only": true,
+    "integration_remote_push_performed": false,
+    "cleanup_dirty_worktree_veto_without_force": true,
+    "cleanup_preserves_local_branches": true,
+    "cleanup_deletes_remote_branches": false,
+    "remote_force_push_allowed": false,
+    "resume_supported": true,
+    "integration_publish_fast_forward_only": true,
+    "integration_publish_idempotent": true,
+    "rehydrate_supported": true,
+    "rehydrate_requires_existing_local_branches": true,
+    "rehydrate_remote_mutation_performed": false,
+    "resume_only_missing_actors": true,
+    "resume_revalidates_snapshot_and_attestation": true,
+    "resume_existing_veto_terminal": true,
+    "git_only_recovery_supported": true,
+    "recovery_requires_coordination_files": false,
+    "recovery_requires_ten_actor_branches": true,
+    "recovery_reconstructs_plan_head_from_git_history": true,
+    "recovery_recomputes_snapshot_hashes": true,
+    "recovery_rechecks_plan_preflight": true,
+    "recovery_requires_fresh_base": true,
+    "recovery_remote_mutation_performed": false,
+    "actor_publish_atomic_multi_ref": true,
+    "actor_publish_preflight_all_refs_before_push": true,
+    "commands": [
+      "status",
+      "publish",
+      "integrate",
+      "publish-integration",
+      "recover",
+      "rehydrate",
+      "resume",
+      "cleanup"
+    ],
+    "resume_provider_required_only_for_missing_actors": true,
+    "recovery_requires_single_claim_path_commit": true,
+    "recovery_requires_single_plan_path_commit": true,
+    "recovery_claim_commit_must_precede_plan_commit": true,
+    "status_receipts_read_from_git_head": true,
+    "status_revalidates_snapshots_without_workflow": true,
+    "status_runs_adjudication_without_workflow": true,
+    "status_requires_fresh_base_for_finalized_pass": true
+  }
+}

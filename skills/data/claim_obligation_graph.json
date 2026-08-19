@@ -1,0 +1,46 @@
+{
+  "snapshot": "2026-08-18",
+  "graph_type": "claim-obligation-evidence",
+  "purpose": "Machine-readable truth/completion layer for PR #45",
+  "claims": [
+    {"id":"C01","text":"Agent/skill count is not a quality metric; runtime fan-out should scale with unresolved information and consequence.","status":"supported","evidence":["01-30-role-deliberation.md","07-deliberation-router-spec.md","13-aug18-upstream-delta.md"]},
+    {"id":"C02","text":"Multi-agent debate should be selected dynamically and compared against a strong single-pass/deterministic baseline.","status":"supported","evidence":["03-2026-current-evidence.md","07-deliberation-router-spec.md"]},
+    {"id":"C03","text":"Skills should encode reusable capability/procedure while workflow runtime owns orchestration, execution, state and recovery.","status":"supported","evidence":["13-aug18-upstream-delta.md"]},
+    {"id":"C04","text":"OpenAI Codex current capability packaging is plugin-first; the former standalone openai/skills repository is deprecated for current deployment guidance.","status":"supported","evidence":["08-portability-matrix.md"]},
+    {"id":"C05","text":"Anthropic skills use self-contained SKILL.md packages, but target-environment behavior must be separately tested.","status":"supported","evidence":["08-portability-matrix.md"]},
+    {"id":"C06","text":"Google ADK 2.0 is a breaking-change boundary for agent API, event model and session schema.","status":"supported","evidence":["08-portability-matrix.md"]},
+    {"id":"C07","text":"Repository artifacts, deterministic tests, hosted CI, provider-live runtime execution and final deployment are distinct truth states.","status":"supported","evidence":["11-cross-chat-convergence.md","14-rc1-release-gates.md"]},
+    {"id":"C08","text":"The current three-layer convergence is archive/vault (PR #46), portable reasoning/skills (PR #45), and durable execution/control-plane (PR #29).","status":"supported","evidence":["11-cross-chat-convergence.md"]}
+  ],
+  "obligations": [
+    {"id":"O01","text":"Every final completion claim maps each user acceptance criterion to direct evidence.","state":"required"},
+    {"id":"O02","text":"Every cross-platform adapter records host/runtime family, version/date, OS, permissions, and target-runtime verification status.","state":"required"},
+    {"id":"O03","text":"Every multi-agent execution records chosen topology, active roles/actors, branch ownership, stop reason, and verifier outcome.","state":"required"},
+    {"id":"O04","text":"Unknown, unsupported, unavailable, blocked and impossible remain distinct states.","state":"required"},
+    {"id":"O05","text":"Failure classification precedes retry; a retry must change method, evidence, tool/model, representation, assumption or environment.","state":"required"},
+    {"id":"O06","text":"A skill/configuration is not called compatible until the target runtime/version is tested or explicitly marked unverified.","state":"required"},
+    {"id":"O07","text":"CI-blocked PR #45 remains Draft until hosted jobs actually start and pass or the blocker is explicitly accepted.","state":"required"}
+  ],
+  "edges": [
+    {"from":"C01","to":"O03","relation":"constrains"},
+    {"from":"C02","to":"O03","relation":"requires_baseline"},
+    {"from":"C03","to":"O06","relation":"separates_runtime_from_skill"},
+    {"from":"C04","to":"O02","relation":"platform_constraint"},
+    {"from":"C05","to":"O02","relation":"platform_constraint"},
+    {"from":"C06","to":"O02","relation":"version_constraint"},
+    {"from":"C07","to":"O01","relation":"truth_boundary"},
+    {"from":"C07","to":"O07","relation":"release_boundary"},
+    {"from":"C08","to":"O03","relation":"architecture_scope"}
+  ],
+  "hard_invariants": [
+    "UNKNOWN != IMPOSSIBLE",
+    "FAILED_PATH != FAILED_GOAL",
+    "DOCUMENTATION != RUNTIME_PROOF",
+    "CONFIGURED != VERIFIED_DIRECT",
+    "CONFIDENCE != EVIDENCE",
+    "CONSENSUS != CORRECTNESS",
+    "LOCAL_TEST_PASS != HOSTED_CI_PASS",
+    "REPOSITORY_ARTIFACT != PROVIDER_LIVE_EXECUTION",
+    "TOOL_SUCCESS != TASK_COMPLETE"
+  ]
+}

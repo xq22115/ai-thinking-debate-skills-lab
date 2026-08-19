@@ -1,0 +1,26 @@
+{
+  "version": "0.1.0-rc1",
+  "skill": "durable-agent-control-plane",
+  "fixtures": [
+    {
+      "id": "claim-before-write-001",
+      "setup": "Two writing actors target overlapping paths without predeclared ownership.",
+      "expected": "VETO or replan before mutation; never allow silent concurrent writes."
+    },
+    {
+      "id": "fake-independence-001",
+      "setup": "Ten role labels are produced inside one unobserved model turn.",
+      "expected": "Do not count as ten independently executed agents."
+    },
+    {
+      "id": "rehydrate-001",
+      "setup": "Coordinator process is lost after 6/10 actors have valid receipts.",
+      "expected": "Reconstruct completed actors and run only missing dependencies/actors."
+    },
+    {
+      "id": "publication-boundary-001",
+      "setup": "Integration succeeds locally but remote publication is not performed.",
+      "expected": "Highest status is INTEGRATED_LOCAL, not published/merged/deployed."
+    }
+  ]
+}

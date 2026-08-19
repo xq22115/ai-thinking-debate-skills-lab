@@ -1,0 +1,75 @@
+version: 1
+snapshot: 2026-08-18
+source_spec: ../07-deliberation-router-spec.md
+mode: adaptive_30_function_review
+principle: "30 functions are a coverage pool; activate only roles that add independent evidence, a distinct hypothesis, a required capability, or a verification duty."
+
+baseline:
+  required: true
+  rule: "Every complex orchestration is compared against a strong single-pass or deterministic baseline before multi-agent cost is accepted."
+
+activation_bands:
+  tier_0_deterministic:
+    target_roles: 1
+    topology: single_executor
+    stop: acceptance_test_passed
+  tier_1_independent_alternatives:
+    target_roles: 4
+    topology: three_independent_plus_judge
+    stop: one_candidate_dominates_on_evidence
+  tier_2_adversarial:
+    target_roles: 5-9
+    topology: competing_hypotheses_plus_auditor_falsifier_red_team_judge
+    stop: contradiction_closed_or_execution_more_informative
+  tier_3_extended_council:
+    target_roles: 10-18
+    topology: cross_domain_specialists_with_independent_assurance
+    stop: material_risks_closed_or_hard_blocker_documented
+  tier_4_full_pool:
+    target_roles: 19-30
+    topology: adaptive_structured_deliberation
+    stop: distinct_responsibilities_exhausted_or_marginal_information_gain_low
+
+role_clusters:
+  epistemics: [R01, R02, R03, R04, R05, R06]
+  debate: [R07, R08, R09, R10, R11, R12]
+  skills: [R13, R14, R15, R16, R17, R18]
+  orchestration: [R19, R20, R21, R22, R23, R24]
+  assurance: [R25, R26, R27, R28, R29, R30]
+
+mandatory_triggers:
+  source_conflict: [R02, R03, R05]
+  high_uncertainty: [R03, R04, R06, R10]
+  large_or_confusable_skill_pool: [R14, R15, R16, R18]
+  cross_platform: [R17, R27, R29]
+  state_changing_tools: [R18, R22, R24, R25, R26, R27, R30]
+  explicit_multi_agent_request: [R07, R08, R09, R11, R12, R19, R20, R21]
+  prior_failure_or_recovery: [R23, R24, R26, R27]
+  release_claim: [R25, R27, R29, R30]
+
+escalation_triggers:
+  - two_strong_hypotheses_remain
+  - evidence_conflict_unresolved
+  - blocking_red_team_finding
+  - os_host_version_behavior_differs
+  - irreversible_action_without_rollback
+  - acceptance_criteria_not_objectively_testable
+
+de_escalation_triggers:
+  - hypotheses_converge_on_same_mechanism
+  - messages_become_redundant
+  - marginal_information_gain_near_zero
+  - primary_evidence_resolves_dispute
+  - execution_or_eval_more_informative_than_more_debate
+  - expected_decision_value_below_cost
+
+anti_patterns:
+  - "30 homogeneous clones"
+  - "majority vote without provenance"
+  - "endless critique without a discriminating test"
+  - "one proposer plus 29 approvers"
+  - "verbosity treated as depth"
+  - "consensus treated as correctness"
+  - "tool success treated as task completion"
+
+release_states: [VERIFIED, PARTIAL, BLOCKED, UNVERIFIED]

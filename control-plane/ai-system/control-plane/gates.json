@@ -1,0 +1,42 @@
+{
+  "schema_version": 3,
+  "static_ci": {
+    "purpose": "validate repository contracts and tests on an exact revision",
+    "workflow": ".github/workflows/agent-control-plane-10-gate.yml",
+    "lane_count": 10,
+    "is_independent_agent_execution_evidence": false
+  },
+  "runtime_adjudication": {
+    "adjudicator": "scripts/adjudicate_agent_receipts.py",
+    "receipt_schema": "ai-system/control-plane/receipt.schema.json",
+    "mode": "ALL",
+    "required_pass_count": 10,
+    "veto_tolerance": 0,
+    "missing_receipt_tolerance": 0,
+    "distinct_executor_ids_required": true,
+    "distinct_execution_ids_required": true,
+    "distinct_evidence_partitions_required": true,
+    "distinct_branches_required": true,
+    "direct_test_failure_overrides_votes": true,
+    "physical_independence_requires_runtime_proof": true
+  },
+  "aggregate": {
+    "mode": "ALL",
+    "required_pass_count": 10,
+    "veto_tolerance": 0,
+    "missing_receipt_tolerance": 0,
+    "direct_test_failure_overrides_votes": true
+  },
+  "gates": [
+    {"id":"G01","agent_id":"A01","name":"task-contract","pass_requires":["independent_receipt","executor_id","execution_id","evidence_partition","exact_head_sha","evidence_paths","result_PASS"]},
+    {"id":"G02","agent_id":"A02","name":"architecture","pass_requires":["independent_receipt","executor_id","execution_id","evidence_partition","exact_head_sha","evidence_paths","result_PASS"]},
+    {"id":"G03","agent_id":"A03","name":"source-evidence","pass_requires":["independent_receipt","executor_id","execution_id","evidence_partition","exact_head_sha","evidence_paths","result_PASS"]},
+    {"id":"G04","agent_id":"A04","name":"root-cause","pass_requires":["independent_receipt","executor_id","execution_id","evidence_partition","exact_head_sha","evidence_paths","result_PASS"]},
+    {"id":"G05","agent_id":"A05","name":"adversarial","pass_requires":["independent_receipt","executor_id","execution_id","evidence_partition","exact_head_sha","evidence_paths","result_PASS"]},
+    {"id":"G06","agent_id":"A06","name":"cross-examination","pass_requires":["independent_receipt","executor_id","execution_id","evidence_partition","exact_head_sha","evidence_paths","result_PASS"]},
+    {"id":"G07","agent_id":"A07","name":"implementation","pass_requires":["independent_receipt","executor_id","execution_id","evidence_partition","exact_head_sha","evidence_paths","result_PASS"]},
+    {"id":"G08","agent_id":"A08","name":"verification","pass_requires":["independent_receipt","executor_id","execution_id","evidence_partition","exact_head_sha","evidence_paths","result_PASS"]},
+    {"id":"G09","agent_id":"A09","name":"risk","pass_requires":["independent_receipt","executor_id","execution_id","evidence_partition","exact_head_sha","evidence_paths","result_PASS"]},
+    {"id":"G10","agent_id":"A10","name":"adjudication","pass_requires":["independent_receipt","executor_id","execution_id","evidence_partition","exact_head_sha","evidence_paths","result_PASS"]}
+  ]
+}

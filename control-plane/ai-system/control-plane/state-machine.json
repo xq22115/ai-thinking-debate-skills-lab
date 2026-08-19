@@ -1,0 +1,240 @@
+{
+  "schema_version": 8,
+  "initial_state": "TASK_DEFINED",
+  "terminal_states": [
+    "MERGED",
+    "VETOED",
+    "FAILED"
+  ],
+  "states": {
+    "TASK_DEFINED": {
+      "requires": [
+        "github_issue",
+        "acceptance_criteria"
+      ]
+    },
+    "BASE_PINNED": {
+      "requires": [
+        "base_sha"
+      ]
+    },
+    "CLAIMS_ESTABLISHED": {
+      "requires": [
+        "ten_create_only_actor_claims"
+      ]
+    },
+    "PLANS_SNAPSHOTTED": {
+      "requires": [
+        "ten_sha_bound_plan_snapshots"
+      ]
+    },
+    "PREFLIGHT_PASS": {
+      "requires": [
+        "write_conflict_preflight_PASS"
+      ]
+    },
+    "FAN_OUT": {
+      "requires": [
+        "unique_run_id",
+        "ten_agent_branch_refs"
+      ]
+    },
+    "RECEIPTS_PENDING": {
+      "requires": [
+        "namespaced_receipt_paths"
+      ]
+    },
+    "EXECUTION_VERIFIED": {
+      "requires": [
+        "ten_snapshot_bound_execution_PASS",
+        "ten_receipt_identities_bound_to_claim_snapshots",
+        "receipt_only_evidence_commits_verified",
+        "ten_durable_runtime_attestations_present",
+        "distinct_process_instances_and_backend_session_hashes_verified"
+      ]
+    },
+    "ADJUDICATION_READY": {
+      "requires": [
+        "A01-A10_receipts_present"
+      ]
+    },
+    "BASE_FRESH": {
+      "requires": [
+        "current_base_equals_pinned_base"
+      ]
+    },
+    "INTEGRATION_READY": {
+      "requires": [
+        "aggregate_PASS",
+        "zero_VETO",
+        "zero_missing_receipts",
+        "exact_head_verified"
+      ]
+    },
+    "BLOCKED": {
+      "requires": [
+        "blocker_recorded"
+      ]
+    },
+    "VETOED": {
+      "requires": [
+        "at_least_one_VETO_with_evidence"
+      ]
+    },
+    "FAILED": {
+      "requires": [
+        "direct_test_or_contract_failure"
+      ]
+    },
+    "MERGED": {
+      "requires": [
+        "integration_PR_merged",
+        "merge_sha"
+      ]
+    },
+    "INTEGRATED_LOCAL": {
+      "requires": [
+        "integration_re_adjudication_PASS",
+        "integration_task_diff_equals_verified_A07_diff",
+        "integration_receipt_only_commit"
+      ]
+    },
+    "INTEGRATION_PUBLISHED": {
+      "requires": [
+        "integration_remote_fast_forward_readback_PASS",
+        "no_force_push"
+      ]
+    }
+  },
+  "transitions": [
+    {
+      "from": "TASK_DEFINED",
+      "to": "BASE_PINNED",
+      "when": "base_sha recorded"
+    },
+    {
+      "from": "BASE_PINNED",
+      "to": "CLAIMS_ESTABLISHED",
+      "when": "ten create-only actor claims exist"
+    },
+    {
+      "from": "CLAIMS_ESTABLISHED",
+      "to": "PLANS_SNAPSHOTTED",
+      "when": "A01 collects ten immutable ref snapshots"
+    },
+    {
+      "from": "PLANS_SNAPSHOTTED",
+      "to": "PREFLIGHT_PASS",
+      "when": "write-set conflict preflight is PASS"
+    },
+    {
+      "from": "PREFLIGHT_PASS",
+      "to": "FAN_OUT",
+      "when": "ten unique agent refs allocated for execution"
+    },
+    {
+      "from": "FAN_OUT",
+      "to": "RECEIPTS_PENDING",
+      "when": "work dispatched to independent executors"
+    },
+    {
+      "from": "RECEIPTS_PENDING",
+      "to": "EXECUTION_VERIFIED",
+      "when": "ten snapshot-bound execution checks PASS"
+    },
+    {
+      "from": "EXECUTION_VERIFIED",
+      "to": "ADJUDICATION_READY",
+      "when": "all ten receipts exist"
+    },
+    {
+      "from": "ADJUDICATION_READY",
+      "to": "BASE_FRESH",
+      "when": "adjudicator PASS and current base equals pinned base"
+    },
+    {
+      "from": "ADJUDICATION_READY",
+      "to": "VETOED",
+      "when": "current base differs from pinned base"
+    },
+    {
+      "from": "BASE_FRESH",
+      "to": "INTEGRATION_READY",
+      "when": "local integration prerequisites verified on fresh base"
+    },
+    {
+      "from": "ADJUDICATION_READY",
+      "to": "VETOED",
+      "when": "any receipt result is VETO"
+    },
+    {
+      "from": "ADJUDICATION_READY",
+      "to": "FAILED",
+      "when": "receipt contract or direct evidence fails"
+    },
+    {
+      "from": "INTEGRATION_READY",
+      "to": "INTEGRATED_LOCAL",
+      "when": "ten finalized branches fan in; re-adjudication and task-diff gate PASS"
+    },
+    {
+      "from": "RECEIPTS_PENDING",
+      "to": "BLOCKED",
+      "when": "any required receipt is NOT_RUN or missing"
+    },
+    {
+      "from": "BLOCKED",
+      "to": "BASE_PINNED",
+      "when": "blocker removed; start a new run_id and re-pin base_sha"
+    },
+    {
+      "from": "INTEGRATED_LOCAL",
+      "to": "INTEGRATION_PUBLISHED",
+      "when": "integration branch create-or-fast-forward remote publish readback PASS"
+    },
+    {
+      "from": "INTEGRATION_PUBLISHED",
+      "to": "MERGED",
+      "when": "integration PR exact head is merged"
+    },
+    {
+      "from": "BLOCKED",
+      "to": "RECEIPTS_PENDING",
+      "when": "same run remains base-fresh; existing PASS receipts pass snapshot plus runtime-attestation revalidation; blocker removed"
+    }
+  ],
+  "forbidden_shortcuts": [
+    "role_file_exists -> PASS",
+    "branch_exists -> PASS",
+    "agent_message_says_success -> PASS",
+    "unrelated_workflow_green -> PASS",
+    "NOT_RUN -> PASS_without_new_independent_execution",
+    "VETO -> majority_vote_override",
+    "stale_head_success -> current_head_PASS",
+    "branch_name_resolves -> approved_snapshot_without_sha",
+    "claim_exists -> takeover_allowed",
+    "plan_hash_mismatch -> continue_execution",
+    "claim_hash_mismatch -> continue_execution",
+    "stale_base -> merge",
+    "force_push -> ownership_transfer",
+    "old_snapshot -> current_run_PASS",
+    "own_receipt_path -> trusted_receipt_content",
+    "v1_PASS_receipt -> runtime_PASS",
+    "receipt_executor_mismatch -> continue_adjudication",
+    "existing_VETO_receipt -> overwrite_same_run",
+    "resume_existing_PASS_receipt -> trust_without_snapshot_and_attestation_revalidation",
+    "remote_divergence -> force_push",
+    "integration_task_diff_mismatch -> publish",
+    "cleanup_dirty_worktree -> remove_without_explicit_force",
+    "remote_actor_branches -> recovered_PASS_without_plan_claim_hash_and_preflight_revalidation",
+    "missing_coordination_json -> unrecoverable_when_remote_actor_branches_exist",
+    "actor_publish_partial_success -> accepted",
+    "actor_publish_remote_divergence -> push_other_refs",
+    "multiple_plan_commits -> recovered_plan_snapshot",
+    "multiple_claim_commits -> recovered_claim_snapshot",
+    "claim_commit_not_ancestor -> recovered_plan_snapshot",
+    "removed_worktree -> receipt_missing_despite_git_head",
+    "missing_workflow_json -> PREPARED_despite_verified_git_receipts",
+    "multiple_receipt_commits -> trusted_final_receipt"
+  ]
+}

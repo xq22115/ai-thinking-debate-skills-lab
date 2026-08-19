@@ -1,0 +1,72 @@
+{
+  "snapshot_at": "2026-08-18T19:29:00+08:00",
+  "purpose": "Reproducible upstream snapshot for AI deliberation, skills, durable agents, interoperability, and evaluation research.",
+  "policy": {
+    "prefer": "exact commit SHA over moving branch names",
+    "current_claims": "re-check before applying configuration or compatibility guidance",
+    "historical_claims": "retain older sources only when still confirmed or explicitly marked historical"
+  },
+  "locks": [
+    {
+      "repo": "openai/openai-agents-python",
+      "sha": "82e3571fc55a8583239c74a0cec8c5497f0d7a2c",
+      "observed_at": "2026-08-18T10:47:43Z",
+      "signal": "workflow execution moved out of repository skills; workflow/skill boundary is actively evolving"
+    },
+    {
+      "repo": "anthropics/skills",
+      "sha": "f379e5ad66e2febc1616cf8d6284666fecbe514e",
+      "observed_at": "2026-08-17T17:23:10Z",
+      "signal": "discernment-nudge skill; skills remain actively maintained"
+    },
+    {
+      "repo": "microsoft/agent-framework",
+      "sha": "1b45c15749dbef06b9b97b5d09b7f0b3b1e7ceb3",
+      "observed_at": "2026-08-18T10:01:07Z",
+      "release_signal": ".NET 1.18.0",
+      "signal": "active successor line for Microsoft agent workflows"
+    },
+    {
+      "repo": "google/adk-python",
+      "sha": "029c17b3384f4ad584c4b4f6f83335be98a04f02",
+      "observed_at": "2026-08-18T09:36:45Z",
+      "related_sha": "6e0facf9370261c788149a5330bb5632985e3531",
+      "signal": "long-running function fixes and skill-resource telemetry are active areas"
+    },
+    {
+      "repo": "langchain-ai/langgraph",
+      "sha": "644815f9e5bc52ad8f7a5227a456227e9c3e639b",
+      "observed_at": "2026-08-11T13:55:59Z",
+      "release_signal": "langgraph 1.2.11",
+      "signal": "explicit graph/state orchestration remains actively released"
+    },
+    {
+      "repo": "obra/superpowers",
+      "sha": "b36e0829c6d0140e93cfef2ca599b1b07d4a7797",
+      "observed_at": "2026-08-12T16:53:21Z",
+      "release_signal": "v6.3.0",
+      "signal": "three-path routing, SDD continuity, harness compatibility, and falsifiable testing discipline"
+    },
+    {
+      "repo": "openclaw/openclaw",
+      "sha": "43c31ea0567983e06dfcf2f54a5dab46f1fa647f",
+      "observed_at": "2026-08-18T11:27:23Z",
+      "research_relevant_sha": "7c65bbcee31bd31fa5b46c84f3a3f54c2cc522fb",
+      "signal": "session context-window provenance and context ownership are actively changing"
+    },
+    {
+      "repo": "modelcontextprotocol/modelcontextprotocol",
+      "sha": "4df2d6b6e3588efb46e7542d98498e5c630a0a86",
+      "observed_at": "2026-08-14T18:39:21Z",
+      "spec_baseline": "2026-07-28",
+      "signal": "MCP documentation/spec ecosystem continues to evolve after the 2026-07-28 baseline"
+    },
+    {
+      "repo": "microsoft/autogen",
+      "sha": "027ecf0a379bcc1d09956d46d12d44a3ad9cee14",
+      "observed_at": "2026-04-06T22:35:32Z",
+      "status": "maintenance",
+      "signal": "new Microsoft projects should evaluate Agent Framework rather than assume AutoGen is the primary forward path"
+    }
+  ]
+}

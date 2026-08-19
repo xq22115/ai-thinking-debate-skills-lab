@@ -1,0 +1,23 @@
+{
+  "snapshot_date": "2026-08-18",
+  "scope": "static-content-only",
+  "excluded_dynamic_files": [
+    "GITHUB_IMPORT_STATUS.md",
+    "MANIFEST.json",
+    "data/research_registry.json"
+  ],
+  "files": {
+    "INDEX.md": {"sha256":"0c9ce4c22e5583be843f6b7b51ea4bf4d4c255a626252959073ee49909908f8c","bytes":1745},
+    "README.md": {"sha256":"d999d8c23520417b9dd0fd03b339684366738226db8c837f883344c8312d6054","bytes":2938},
+    "data/SOURCE_SCOPE.md": {"sha256":"4a6c4d3e25330ae5c7ee9f2d73910f490d6b24ba6069724d61be8e9fbf7bc31b","bytes":716},
+    "governance/30_PERSPECTIVE_DELIBERATION.md": {"sha256":"3f5f2227bc950d9b63b3ed44620d4cad54fbb60ca2538314f8b3dc20c5da0638","bytes":4651},
+    "governance/STATUS_MATRIX.md": {"sha256":"4578927023526d8ba9e773f220e09788f44f6dc3cc8bb2692ac349aff48103cd","bytes":2299},
+    "research/00_master_timeline.md": {"sha256":"7b54ff99feeed0a3f3a103186bd60ae6dc9c1e45618b25775509d09cd6bfb02d","bytes":5338},
+    "research/01_agent_systems.md": {"sha256":"2e06aac45e6eb4f8e9dfe598dd7b1f3b0004aedb4763dc6e54e2419fa4907293","bytes":2284},
+    "research/02_continuous_thinking_antigravity.md": {"sha256":"0a189eb8f5bfb8a8f3093729ed1b47ea4c97c3ed0a44d14641eb2632c24318cd","bytes":1976},
+    "research/03_openclaw_automation.md": {"sha256":"1cc2200aa2fba6caad9a619459e6e1c7a48e64cb9a98c7e5e1c7791e85b91a5f","bytes":1824},
+    "research/04_prompt_memory_skillpacks.md": {"sha256":"4ffdfb21a0e83ea13eec4e8130216546152c8c0cbb9a12494a620e0e21d96a75","bytes":1675},
+    "research/05_mcp_github_governance.md": {"sha256":"1da24fe5993a5493968b9c080deb43f990cd542a8aeeacdfdcf7ac7f23cb051a","bytes":2092},
+    "research/06_domain_skillpacks.md": {"sha256":"879bdfb6e29fc311ae6112328091c728539305608e567f0a86320f0f9319dc61","bytes":2133}
+  }
+}

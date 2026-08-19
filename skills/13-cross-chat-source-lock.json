@@ -1,0 +1,44 @@
+{
+  "snapshot_date": "2026-08-18",
+  "purpose": "Pin exact internal GitHub artifacts used for cross-chat convergence and explicitly record branch-head drift so test/runtime claims are not silently carried onto newer revisions.",
+  "sources": [
+    {
+      "role": "portable-reasoning-skills-layer",
+      "pr": 45,
+      "branch": "research/ai-thinking-debate-skills-20260818",
+      "pre_refresh_observed_head_sha": "dfd2c91e82f12fae110e5eadac7529cc06605308",
+      "previous_lock_head_sha": "9b88f664a65c1b0808ab310fce8156069d8a2e54",
+      "status": "open-draft",
+      "scope": "research/ai-thinking-debate-skills-2026-08-18/",
+      "note": "This lock file lives on PR #45 itself, so writing the refresh necessarily advances the PR head. Treat pre_refresh_observed_head_sha as the input snapshot, not as a self-referential final head pin."
+    },
+    {
+      "role": "execution-control-plane-layer",
+      "pr": 29,
+      "branch": "system/issue-27-agent-control-plane-v2",
+      "observed_head_sha": "823e22a50a1c245cc0789ab8cba999e412503ca9",
+      "previous_lock_head_sha": "823e22a50a1c245cc0789ab8cba999e412503ca9",
+      "status": "open",
+      "head_drift_since_previous_lock": false,
+      "truth_boundary": "PR body reports deterministic/local test results for an earlier exact revision. Repository/control-plane artifacts are not authentic 10-agent Claude runtime evidence; hosted CI remains blocked. Do not transfer earlier exact-revision PASS claims to a later head without re-verification."
+    },
+    {
+      "role": "archive-vault-layer",
+      "pr": 46,
+      "branch": "ai-research-vault-2026-import",
+      "observed_head_sha": "f691f8463e2b2f4cea02c99cc26c68aebf84cf71",
+      "previous_lock_head_sha": "7b98ca4bf28ca50a60680a28c69f0bd6b34a0b22",
+      "status": "open",
+      "head_drift_since_previous_lock": true,
+      "scope": "ai-research-vault-2026/",
+      "truth_boundary": "Archive content has advanced since the previous pin. Newer material may be harvested, but prior validation labels must not be promoted automatically."
+    }
+  ],
+  "policy": {
+    "migration": "migrate from pinned/observed SHAs or explicitly record a newer re-verified snapshot",
+    "head_drift": "branch movement invalidates automatic inheritance of exact-revision test/CI/runtime claims",
+    "status": "never upgrade live/runtime/deployment claims solely because repository artifacts exist",
+    "deduplication": "PR46=archive, PR45=portable skills/reasoning, PR29=execution control plane",
+    "self_locking": "a branch cannot perfectly pin its own final head in a file committed on that same head; use GitHub PR metadata for the post-write head"
+  }
+}

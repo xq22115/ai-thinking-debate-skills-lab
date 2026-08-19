@@ -1,0 +1,262 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Independent Agent Execution Receipt v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "issue_number",
+    "run_id",
+    "agent_id",
+    "role",
+    "branch",
+    "result",
+    "independent_agent_execution"
+  ],
+  "properties": {
+    "schema_version": {
+      "enum": [
+        1,
+        2
+      ]
+    },
+    "issue_number": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 8
+    },
+    "agent_id": {
+      "enum": [
+        "A01",
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "A07",
+        "A08",
+        "A09",
+        "A10"
+      ]
+    },
+    "role": {
+      "type": "string",
+      "minLength": 1
+    },
+    "branch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "head_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$",
+      "description": "Exact actor work head before the final receipt-only evidence commit."
+    },
+    "result": {
+      "enum": [
+        "PASS",
+        "VETO",
+        "FAIL",
+        "BLOCKED",
+        "NOT_RUN"
+      ]
+    },
+    "independent_agent_execution": {
+      "type": "boolean"
+    },
+    "executor_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "execution_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_partition": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "reference"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "test",
+              "tool",
+              "workflow",
+              "readback",
+              "source",
+              "counterexample"
+            ]
+          },
+          "reference": {
+            "type": "string",
+            "minLength": 1
+          },
+          "result": {
+            "enum": [
+              "PASS",
+              "FAIL",
+              "BLOCKED"
+            ]
+          },
+          "sha": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{40}$"
+          },
+          "summary": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "veto_reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "blocker": {
+      "type": "string",
+      "minLength": 1
+    },
+    "claim_id": {
+      "type": "string",
+      "minLength": 8
+    },
+    "plan_head_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "runtime_attestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "observer",
+        "process_instance_id",
+        "process_id",
+        "spawn_monotonic_ns",
+        "backend_session_sha256",
+        "stdout_sha256",
+        "stderr_sha256"
+      ],
+      "properties": {
+        "provider": {
+          "type": "string",
+          "minLength": 1
+        },
+        "observer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "process_instance_id": {
+          "type": "string",
+          "minLength": 8
+        },
+        "process_id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "spawn_monotonic_ns": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "backend_session_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "stdout_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "stderr_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "result": {
+            "enum": [
+              "PASS",
+              "VETO"
+            ]
+          }
+        },
+        "required": [
+          "result"
+        ]
+      },
+      "then": {
+        "required": [
+          "claim_id",
+          "plan_head_sha",
+          "executor_id",
+          "execution_id",
+          "evidence_partition",
+          "head_sha",
+          "evidence",
+          "runtime_attestation"
+        ],
+        "properties": {
+          "schema_version": {
+            "const": 2
+          },
+          "independent_agent_execution": {
+            "const": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "result": {
+            "const": "VETO"
+          }
+        },
+        "required": [
+          "result"
+        ]
+      },
+      "then": {
+        "required": [
+          "veto_reason"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "result": {
+            "const": "NOT_RUN"
+          }
+        },
+        "required": [
+          "result"
+        ]
+      },
+      "then": {
+        "properties": {
+          "independent_agent_execution": {
+            "const": false
+          }
+        }
+      }
+    }
+  ]
+}

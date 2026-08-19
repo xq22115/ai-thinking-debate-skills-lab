@@ -1,0 +1,47 @@
+version: 1
+system: ai-master-system
+status: active
+
+assets:
+  agents:
+    path: ai-system/agents
+    entrypoint: ai-system/agents/router.md
+    status: active
+  control_plane:
+    path: ai-system/control-plane
+    entrypoint: ai-system/control-plane/README.md
+    status: active
+  skills:
+    path: ai-system/skills
+    status: active
+  prompts:
+    path: ai-system/prompts
+    status: active
+  configs:
+    path: ai-system/configs
+    status: active
+  mcp:
+    path: ai-system/mcp
+    status: experimental
+
+routing:
+  order:
+    - inspect_existing_context
+    - select_existing_control_plane
+    - select_existing_skill
+    - select_existing_prompt
+    - use_connected_tool
+    - add_new_capability_only_if_needed
+
+verification:
+  required: true
+  accepted_results:
+    - PASS
+    - VETO
+    - FAIL
+    - BLOCKED
+    - NOT_RUN
+
+security:
+  secrets_in_repo: forbidden
+  credential_placeholders_only: true

@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "issue_number": 27,
+  "run_id": "20260817T064358Z-cp-v2",
+  "architecture_base_sha": "ae4569951cfe71a1d3e89310945287d6d7e7c44c",
+  "aggregate_independent_agent_result": "BLOCKED",
+  "blocker": "The current ChatGPT runtime does not expose ten independently orchestratable foreground agent executors. Ten Git branches and ten NOT_RUN receipts were created as truthful capability evidence, not simulated agent votes.",
+  "branches": {
+    "A01": {"branch":"agent/27/A01/20260817T064358Z-cp-v2","receipt_commit":"04f420cb96735bf4bd55518a70177c9f1705748c","result":"NOT_RUN"},
+    "A02": {"branch":"agent/27/A02/20260817T064358Z-cp-v2","receipt_commit":"5b66fd6c4381ea12bfc148e9b05f43c6b0641bb0","result":"NOT_RUN"},
+    "A03": {"branch":"agent/27/A03/20260817T064358Z-cp-v2","receipt_commit":"7ed5619d025c31a246a6cb01b69197c03dc85ea7","result":"NOT_RUN"},
+    "A04": {"branch":"agent/27/A04/20260817T064358Z-cp-v2","receipt_commit":"a73aaf367be8b6d274fc24790b7a3cbf5d6380cc","result":"NOT_RUN"},
+    "A05": {"branch":"agent/27/A05/20260817T064358Z-cp-v2","receipt_commit":"a944817dedeeef0cb3b8d9094cac8d450dc6096b","result":"NOT_RUN"},
+    "A06": {"branch":"agent/27/A06/20260817T064358Z-cp-v2","receipt_commit":"809df501303ad7cb2819bdb33569ac5e0607e9b0","result":"NOT_RUN"},
+    "A07": {"branch":"agent/27/A07/20260817T064358Z-cp-v2","receipt_commit":"4f214626f26ed29b97e3acafc7ed7dbf8aebf647","result":"NOT_RUN"},
+    "A08": {"branch":"agent/27/A08/20260817T064358Z-cp-v2","receipt_commit":"8648f5e70aeb4b4dd4b70807a1bd5f8d5315777e","result":"NOT_RUN"},
+    "A09": {"branch":"agent/27/A09/20260817T064358Z-cp-v2","receipt_commit":"f42266e5fa04fab497a3fc8283560239ee53d4e0","result":"NOT_RUN"},
+    "A10": {"branch":"agent/27/A10/20260817T064358Z-cp-v2","receipt_commit":"6783096f47c167a268d5daaf1a5067574b41f67e","result":"NOT_RUN"}
+  }
+}

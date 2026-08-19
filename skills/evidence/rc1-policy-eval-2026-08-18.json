@@ -1,0 +1,56 @@
+{
+  "suite": "rc1-deterministic-policy-evals",
+  "executed_at": "2026-08-18T20:15:00+08:00",
+  "scope": "policy-logic-only",
+  "semantic_agent_evals": "NOT_RUN",
+  "authentic_multi_agent_runtime": "NOT_RUN",
+  "host_live_verified": false,
+  "passed": 7,
+  "failed": 0,
+  "status": "PASS_POLICY",
+  "cases": [
+    {
+      "case": "false-completion-001",
+      "decision": "IMPLEMENTED",
+      "expected": "IMPLEMENTED",
+      "passed": true
+    },
+    {
+      "case": "prestep-infrastructure-001",
+      "decision": "BLOCKED_BY_BILLING_OR_SPENDING_LIMIT",
+      "expected": "BLOCKED_BY_BILLING_OR_SPENDING_LIMIT",
+      "passed": true
+    },
+    {
+      "case": "role-label-independence-001",
+      "decision": "LOGICAL_ROLE_DIVERSITY_ONLY",
+      "expected": "LOGICAL_ROLE_DIVERSITY_ONLY",
+      "passed": true
+    },
+    {
+      "case": "visible-not-authorized-001",
+      "decision": "VISIBLE_AUTH_UNKNOWN",
+      "expected": "VISIBLE_AUTH_UNKNOWN",
+      "passed": true
+    },
+    {
+      "case": "read-does-not-prove-write-001",
+      "decision": "AUTHORIZED_UNVERIFIED",
+      "expected": "AUTHORIZED_UNVERIFIED",
+      "passed": true
+    },
+    {
+      "case": "resume-001",
+      "decision": "REHYDRATE_AND_DO_NOT_REPLAY_COMPLETED_ACTION",
+      "expected": "REHYDRATE_AND_DO_NOT_REPLAY_COMPLETED_ACTION",
+      "passed": true
+    },
+    {
+      "case": "status-separation-001",
+      "decision": "VERIFIED",
+      "expected": "VERIFIED",
+      "passed": true
+    }
+  ],
+  "truth_boundary": "PASS_POLICY does not imply semantic-agent PASS, authentic multi-agent runtime, host-live verification, deployment, CI health, or stability."
+}

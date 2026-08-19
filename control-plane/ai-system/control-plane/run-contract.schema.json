@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GitHub Agent Run Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "issue_number",
+    "run_id",
+    "base_sha",
+    "integration_branch",
+    "agent_branches",
+    "receipts",
+    "claims",
+    "plan_snapshots",
+    "status"
+  ],
+  "properties": {
+    "issue_number": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 8
+    },
+    "base_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "integration_branch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "agent_branches": {
+      "type": "object",
+      "minProperties": 10,
+      "maxProperties": 10
+    },
+    "receipts": {
+      "type": "object",
+      "minProperties": 10,
+      "maxProperties": 10
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "VETO",
+        "FAIL",
+        "BLOCKED",
+        "NOT_RUN"
+      ]
+    },
+    "claims": {
+      "type": "object",
+      "minProperties": 10,
+      "maxProperties": 10
+    },
+    "plan_snapshots": {
+      "type": "object",
+      "minProperties": 10,
+      "maxProperties": 10
+    }
+  }
+}

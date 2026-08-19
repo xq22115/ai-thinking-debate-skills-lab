@@ -1,0 +1,36 @@
+{
+  "generated_at": "2026-08-18",
+  "sources": [
+    {"id":"S1","type":"vendor-primary","title":"The next evolution of the Agents SDK","date":"2026-04-15","url":"https://openai.com/index/the-next-evolution-of-the-agents-sdk/"},
+    {"id":"S2","type":"vendor-primary","title":"Trustworthy agents in practice","date":"2026-04-09","url":"https://www.anthropic.com/research/trustworthy-agents"},
+    {"id":"S3","type":"vendor-research","title":"Agentic coding and persistent returns to expertise","date":"2026-06-16","url":"https://www.anthropic.com/research/claude-code-expertise"},
+    {"id":"S4","type":"vendor-primary","title":"Equipping agents for the real world with Agent Skills","url":"https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills"},
+    {"id":"S5","type":"official-github","title":"anthropics/skills","url":"https://github.com/anthropics/skills","locked_sha":"f379e5ad66e2febc1616cf8d6284666fecbe514e"},
+    {"id":"S6","type":"protocol-primary","title":"MCP 2026-07-28 release","date":"2026-07-28","url":"https://blog.modelcontextprotocol.io/posts/2026-07-28/"},
+    {"id":"S7","type":"official-github","title":"MCP specification repository","url":"https://github.com/modelcontextprotocol/modelcontextprotocol","locked_sha":"4df2d6b6e3588efb46e7542d98498e5c630a0a86","spec_baseline":"2026-07-28"},
+    {"id":"S8","type":"official-github","title":"OpenAI Agents Python","url":"https://github.com/openai/openai-agents-python","locked_sha":"82e3571fc55a8583239c74a0cec8c5497f0d7a2c"},
+    {"id":"S9","type":"official-github","title":"OpenClaw","url":"https://github.com/openclaw/openclaw","locked_sha":"43c31ea0567983e06dfcf2f54a5dab46f1fa647f","research_relevant_sha":"7c65bbcee31bd31fa5b46c84f3a3f54c2cc522fb"},
+    {"id":"S10","type":"paper","title":"Self-Debate Reinforcement Learning","url":"https://arxiv.org/abs/2601.22297"},
+    {"id":"S11","type":"paper","title":"Diversity-Aware Message Retention","url":"https://arxiv.org/abs/2603.20640"},
+    {"id":"S12","type":"paper","title":"Pareto-Optimal Test-Time Scaling","url":"https://arxiv.org/abs/2605.01566"},
+    {"id":"S13","type":"paper","title":"Social Reasoning in Machines","url":"https://arxiv.org/abs/2605.30391"},
+    {"id":"S14","type":"official-github","title":"Microsoft Agent Framework","url":"https://github.com/microsoft/agent-framework","locked_sha":"1b45c15749dbef06b9b97b5d09b7f0b3b1e7ceb3","release_signal":".NET 1.18.0"},
+    {"id":"S15","type":"official-github","title":"Google Agent Development Kit (Python)","url":"https://github.com/google/adk-python","locked_sha":"029c17b3384f4ad584c4b4f6f83335be98a04f02","readme_blob_sha":"b49331ea4af764a9f56b5a73f7e2db9b1253edfb","skill_telemetry_sha":"6e0facf9370261c788149a5330bb5632985e3531","compatibility_observed":"ADK 2.0; 2.0 sessions readable by 1.28+ with extra fields ignored; older 1.x incompatible"},
+    {"id":"S16","type":"official-github","title":"LangGraph","url":"https://github.com/langchain-ai/langgraph","locked_sha":"644815f9e5bc52ad8f7a5227a456227e9c3e639b","release_signal":"1.2.11"},
+    {"id":"S17","type":"official-github","title":"Superpowers","url":"https://github.com/obra/superpowers","locked_sha":"b36e0829c6d0140e93cfef2ca599b1b07d4a7797","release_signal":"v6.3.0"},
+    {"id":"S18","type":"official-github","title":"Microsoft AutoGen","url":"https://github.com/microsoft/autogen","locked_sha":"027ecf0a379bcc1d09956d46d12d44a3ad9cee14","status":"maintenance","migration_note":"new Microsoft projects should evaluate Microsoft Agent Framework"},
+    {"id":"S19","type":"vendor-product-guidance","title":"Plugins in ChatGPT and Codex","checked":"2026-08-18","url":"https://help.openai.com/en/articles/20001256-plugins-in-chatgpt-and-codex","claim_scope":"current product discovery/permission model; plugin can package skills, apps and app templates"},
+    {"id":"S20","type":"vendor-product-announcement","title":"Codex for every role, tool, and workflow","date":"2026-06-02","url":"https://openai.com/index/codex-for-every-role-tool-workflow/","claim_scope":"role-specific plugins bundle apps, skills, instructions and workflows"},
+    {"id":"S21","type":"official-github","title":"openai/skills README","url":"https://github.com/openai/skills/blob/main/README.md","readme_blob_sha":"c205d307226b98189c28cbcce6ff792cbb7b2d05","status_from_readme":"deprecated","claim_scope":"repository README explicitly redirects current Codex skill/plugin examples to plugin guidance"},
+    {"id":"S22","type":"official-github-example-snapshot","title":"openai/plugins README","url":"https://github.com/openai/plugins/blob/main/README.md","readme_blob_sha":"e901b40b9d643a5f878157158759fa0a6d3e2909","repository_metadata_observed":"archived=true","claim_scope":"example format documents required .codex-plugin/plugin.json and optional companion surfaces; archived repo metadata is not used as product-status evidence"}
+  ],
+  "policy": {
+    "cross_chat_versions": "archive evidence only unless independently verified",
+    "current_technical_claims": "prefer current primary/vendor/spec sources and exact locked SHAs",
+    "moving_main_branches": "do not treat as reproducible evidence; pin a commit, release, or content blob when possible",
+    "source_class_separation": "distinguish product guidance, repository content, repository metadata, and runtime observation; disagreements are recorded rather than collapsed",
+    "product_status_priority": "for current product behavior, current official product/developer documentation outranks example-repository archived metadata",
+    "completion": "distinguish packaged/tested/host-live/deployed/healthy"
+  },
+  "lock_file": "12-upstream-source-lock.json"
+}
