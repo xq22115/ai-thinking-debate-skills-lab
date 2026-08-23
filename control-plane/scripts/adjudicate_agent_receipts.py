@@ -4,7 +4,8 @@
 This does not prove that an executor ID corresponds to a physically independent
 model/process. It enforces the repository contract: exactly A01-A10, zero VETO,
 zero missing/non-PASS receipts, distinct executor/execution/evidence partitions,
-and no direct failing evidence inside a PASS receipt.
+no direct failing evidence inside a PASS receipt, and machine-checkable reasoning
+quality with no unresolved high-impact unknowns on PASS.
 """
 from __future__ import annotations
 
@@ -29,6 +30,8 @@ EXPECTED = {
 }
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
 VALID_RESULTS = {"PASS", "VETO", "FAIL", "BLOCKED", "NOT_RUN"}
+VALID_VERIFICATION_LEVELS = {"source", "inspection", "static", "readback", "integration", "runtime"}
+STRONG_VERIFICATION_ACTORS = {"A08", "A10"}
 
 
 def _duplicates(values: list[str]) -> list[str]:
@@ -58,6 +61,35 @@ def _load_receipts(receipt_dir: pathlib.Path) -> tuple[dict[str, dict], list[str
     return records, errors
 
 
+def _validate_reasoning_quality(agent_id: str, result: object, quality: object) -> list[str]:
+    errors: list[str] = []
+    if not isinstance(quality, dict):
+        return [f"missing_reasoning_quality:{agent_id}"]
+    required = [
+        "task_class", "objective_model", "causal_model", "high_impact_unknowns",
+        "evidence_delta", "stagnation_state", "verification_level",
+        "adversarial_check", "research_stop_reason",
+    ]
+    for field in required:
+        if quality.get(field) in (None, ""):
+            errors.append(f"reasoning_quality_missing_{field}:{agent_id}")
+    unknowns = quality.get("high_impact_unknowns")
+    if not isinstance(unknowns, list):
+        errors.append(f"reasoning_quality_unknowns_invalid:{agent_id}")
+        unknowns = []
+    verification_level = quality.get("verification_level")
+    if verification_level not in VALID_VERIFICATION_LEVELS:
+        errors.append(f"reasoning_quality_verification_level_invalid:{agent_id}")
+    if result == "PASS":
+        if unknowns:
+            errors.append(f"pass_has_high_impact_unknowns:{agent_id}")
+        if quality.get("research_stop_reason") == "blocked":
+            errors.append(f"pass_research_blocked:{agent_id}")
+        if agent_id in STRONG_VERIFICATION_ACTORS and verification_level not in {"readback", "integration", "runtime"}:
+            errors.append(f"pass_weak_verification_level:{agent_id}")
+    return errors
+
+
 def adjudicate(receipt_dir: pathlib.Path, issue_number: int | None = None, run_id: str | None = None) -> dict[str, object]:
     records, errors = _load_receipts(receipt_dir)
     expected_ids = list(EXPECTED)
@@ -70,7 +102,7 @@ def adjudicate(receipt_dir: pathlib.Path, issue_number: int | None = None, run_i
         result = record.get("result")
         statuses[agent_id] = str(result)
         schema_version = record.get("schema_version")
-        if schema_version not in {1, 2}:
+        if schema_version not in {1, 2, 3}:
             errors.append(f"schema_version:{agent_id}:{schema_version}")
         if record.get("role") != EXPECTED[agent_id]:
             errors.append(f"role_mismatch:{agent_id}")
@@ -86,13 +118,14 @@ def adjudicate(receipt_dir: pathlib.Path, issue_number: int | None = None, run_i
         if result == "VETO":
             vetoes.append({"agent_id": agent_id, "reason": str(record.get("veto_reason", "missing veto reason"))})
         if result in {"PASS", "VETO"}:
-            if schema_version != 2:
-                errors.append(f"pass_veto_requires_schema_v2:{agent_id}")
+            if schema_version != 3:
+                errors.append(f"pass_veto_requires_schema_v3:{agent_id}")
             if record.get("independent_agent_execution") is not True:
                 errors.append(f"independence_not_asserted:{agent_id}")
             for field in ["claim_id", "executor_id", "execution_id", "evidence_partition"]:
                 if not str(record.get(field, "")).strip():
                     errors.append(f"missing_{field}:{agent_id}")
+            errors.extend(_validate_reasoning_quality(agent_id, result, record.get("reasoning_quality")))
             attestation = record.get("runtime_attestation")
             if not isinstance(attestation, dict):
                 errors.append(f"missing_runtime_attestation:{agent_id}")
@@ -174,7 +207,7 @@ def adjudicate(receipt_dir: pathlib.Path, issue_number: int | None = None, run_i
         aggregate = "PASS"
 
     return {
-        "schemaVersion": 2,
+        "schemaVersion": 3,
         "receipt_directory": str(receipt_dir),
         "expected_agents": expected_ids,
         "found_agents": sorted(records),
@@ -190,7 +223,7 @@ def adjudicate(receipt_dir: pathlib.Path, issue_number: int | None = None, run_i
         "duplicate_backend_sessions": duplicate_backend_sessions,
         "errors": errors,
         "result": aggregate,
-        "independence_note": "PASS/VETO receipts carry wrapper-observed runtime attestations. Distinct process-instance and backend-session hashes make the runtime evidence durable across chats; this remains evidence from the trusted wrapper rather than a cryptographic proof of model internals."
+        "independence_note": "PASS/VETO receipts carry wrapper-observed runtime attestations plus machine-checkable reasoning-quality evidence. Distinct process-instance and backend-session hashes make runtime evidence durable across chats; this remains evidence from the trusted wrapper rather than cryptographic proof of model internals."
     }
 
 
