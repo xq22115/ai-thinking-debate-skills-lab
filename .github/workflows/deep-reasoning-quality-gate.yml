@@ -27,11 +27,13 @@ jobs:
             control-plane/scripts/finalize_local_agent_execution.py \
             control-plane/scripts/adjudicate_agent_receipts.py \
             control-plane/scripts/verify_snapshot_bound_execution.py \
-            control-plane/scripts/validate_continuous_thinking_global.py
+            control-plane/scripts/validate_continuous_thinking_global.py \
+            control-plane/scripts/validate_acceptance_contract.py
       - name: Validate machine-readable quality contracts
         run: |
           python -m json.tool control-plane/ai-system/control-plane/receipt.schema.json >/dev/null
           python -m json.tool control-plane/ai-system/control-plane/gates.json >/dev/null
+          python -m json.tool control-plane/ai-system/control-plane/acceptance-contract.schema.json >/dev/null
           python -m json.tool control-plane/ai-system/configs/continuous-thinking-global.json >/dev/null
           python control-plane/scripts/validate_continuous_thinking_global.py
       - name: Run deep-reasoning and lifecycle regression tests
@@ -39,6 +41,7 @@ jobs:
         run: |
           python -m unittest \
             tests/test_continuous_thinking_global.py \
+            tests/test_acceptance_contract.py \
             tests/test_local_agent_executor.py \
             tests/test_finalize_local_agent_execution.py \
             tests/test_adjudicate_agent_receipts.py \
