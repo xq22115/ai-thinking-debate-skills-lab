@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "profile_id": "continuous-thinking-quality-v3",
+  "scope": "repository-wide",
+  "default_enabled": true,
+  "purpose": "Reduce user correction loops by making deep work evidence-bound, stateful, adversarial, and self-correcting instead of merely longer.",
+  "optimization_target": "maximum useful first-pass quality per unit of human rework",
+  "depth_router": {
+    "simple": {
+      "conditions": ["low uncertainty", "low impact", "reversible", "familiar"],
+      "required_stages": ["understand", "execute", "verify"],
+      "artificial_delay_forbidden": true
+    },
+    "material": {
+      "conditions": ["multi-file or integration-sensitive", "current or version-sensitive", "non-trivial failure risk", "externally visible", "ambiguous causal mechanism"],
+      "required_stages": ["reconstruct_state", "define_acceptance_contract", "model_causality", "resolve_critical_unknowns", "research_when_needed", "compare_distinct_routes", "execute", "verify", "adversarial_check", "release"]
+    },
+    "critical": {
+      "conditions": ["repeated failure", "high impact", "expensive rollback", "cross-system orchestration", "long-horizon autonomy", "security or reliability relevance"],
+      "required_stages": ["reconstruct_state", "define_acceptance_contract", "model_causality", "externalize_state", "independent_evaluation", "strong_runtime_verification", "recovery_design", "stagnation_detection", "adversarial_check", "release"]
+    }
+  },
+  "anti_instant_response": {
+    "simple_may_answer_immediately_after_verification": true,
+    "material_or_critical_must_not_release_first_plausible_answer": true,
+    "release_requires_completed_quality_gates": true,
+    "elapsed_time_is_not_evidence": true
+  },
+  "state_reconstruction": {
+    "required_fields": ["real_outcome", "current_state", "scope", "dependencies", "protected_capabilities", "known_failure_evidence", "acceptance_contract", "causal_model", "decision_critical_unknowns"],
+    "repository_runtime_evidence_over_conversation_memory": true,
+    "symptom_only_patch_forbidden_when_surrounding_state_can_change_result": true
+  },
+  "acceptance_contract": {
+    "criterion_default_state": "UNSATISFIED",
+    "allowed_states": ["UNSATISFIED", "SATISFIED", "BLOCKED", "NOT_APPLICABLE"],
+    "criterion_required_fields": ["criterion_id", "statement", "hard", "observable_test", "state", "evidence_ids"],
+    "pass_requires_all_hard_criteria_satisfied": true,
+    "self_report_only_evidence_forbidden": true,
+    "missing_evidence_fails_closed": true,
+    "direct_contradiction_overrides_pass": true
+  },
+  "research_and_experience": {
+    "trigger_conditions": ["knowledge may be stale", "unfamiliar domain", "recent platform change", "repeated failure", "expert operational experience may change the plan"],
+    "evidence_layers": ["current primary documentation", "source repositories and maintainer discussions", "high-signal practitioner experience", "target runtime evidence"],
+    "experience_internalization_fields": ["mechanism", "preconditions", "failure_modes", "verification", "portable_lesson", "invalidation_condition"],
+    "popularity_is_not_proof": true,
+    "fixed_source_quota_forbidden": true,
+    "stop_when_decision_saturated": true
+  },
+  "multi_path_reasoning": {
+    "distinct_route_dimensions": ["root_cause_hypothesis", "mechanism_or_architecture", "diagnostic_instrument", "evidence_family", "execution_environment", "verification_method"],
+    "route_aliases_do_not_count_as_diversity": true,
+    "first_plausible_route_lock_in_forbidden": true,
+    "choose_by_acceptance_fit_and_evidence": true
+  },
+  "stagnation_control": {
+    "materially_similar_failure_limit": 2,
+    "next_attempt_must_change_major_dimension": true,
+    "retry_without_information_gain_forbidden": true,
+    "required_failure_record": ["attempt", "observed_failure", "evidence_delta", "what_was_disproved", "next_changed_dimension"]
+  },
+  "continuity": {
+    "externalize_state_for_long_tasks": true,
+    "handoff_required_fields": ["goal", "acceptance_contract", "current_state", "completed_work", "open_unknowns", "failed_routes", "evidence_index", "next_high_value_action", "protected_capabilities"],
+    "fresh_context_reset_when_context_quality_degrades": true,
+    "conversation_memory_alone_is_not_authoritative": true
+  },
+  "evaluation": {
+    "builder_may_not_be_sole_final_evaluator_for_material_or_critical_work": true,
+    "fresh_context_evaluator_preferred": true,
+    "evaluator_should_not_receive_builder_confidence_as_evidence": true,
+    "evaluator_write_access_preferred_false": true,
+    "evaluate_against_predeclared_contract": true
+  },
+  "verification": {
+    "ladder": ["runtime_or_user_path", "integration_or_functional", "readback", "unit_or_static", "diff_or_config_inspection", "documentation_or_self_report"],
+    "use_highest_practical_level": true,
+    "material_work_requires_negative_or_adversarial_check_when_practical": true,
+    "configuration_presence_does_not_prove_runtime_effect": true,
+    "layer_model": ["configured", "registered", "loaded", "executed", "observable_effect"]
+  },
+  "release": {
+    "statuses": ["PASS", "FAIL", "BLOCKED", "NOT_RUN"],
+    "pass_requires": ["all hard acceptance criteria satisfied", "no unresolved high-impact unknowns", "no direct contradictory evidence", "required verification executed", "protected capabilities not degraded", "fresh state confirmed"],
+    "not_run_must_never_be_relabelled_pass": true,
+    "blocked_requires_specific_external_dependency": true,
+    "continue_same_task_until_pass_or_concrete_blocker": true
+  },
+  "learning": {
+    "store_only_durable_lessons": true,
+    "lesson_fields": ["root_cause", "misleading_symptom_or_assumption", "diagnostic_that_revealed_truth", "solution_mechanism", "verification_that_proved_it", "reuse_conditions", "invalidation_condition"],
+    "transient_chain_of_thought_should_not_be_persisted": true
+  },
+  "efficiency": {
+    "fixed_wait_time_forbidden": true,
+    "fixed_source_count_forbidden": true,
+    "fixed_agent_count_is_not_a_quality_metric": true,
+    "prefer_high_information_gain_actions": true,
+    "stop_scaffolding_when_it_no_longer_changes_decisions": true,
+    "optimize_for_fewer_future_user_corrections": true
+  }
+}
