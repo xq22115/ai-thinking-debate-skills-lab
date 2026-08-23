@@ -33,7 +33,7 @@
   },
   "acceptance_contract": {
     "schema": "../control-plane/acceptance-contract.schema.json",
-    "semantic_validator": "../../../scripts/validate_acceptance_contract.py",
+    "semantic_validator": "../../scripts/validate_acceptance_contract.py",
     "criterion_default_state": "UNSATISFIED",
     "allowed_states": ["UNSATISFIED", "SATISFIED", "BLOCKED", "NOT_APPLICABLE"],
     "criterion_required_fields": ["criterion_id", "statement", "hard", "observable_test", "state", "evidence_ids"],
