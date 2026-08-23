@@ -1,0 +1,31 @@
+name: Context First Capability Gate
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  capability-routing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact revision
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate configuration syntax
+        run: |
+          python -m json.tool control-plane/ai-system/configs/context-first-capability-routing.json >/dev/null
+          python -m py_compile control-plane/scripts/validate_context_first_capability_router.py
+      - name: Validate context-first routing invariants
+        run: |
+          python control-plane/scripts/validate_context_first_capability_router.py \
+            control-plane/ai-system/configs/context-first-capability-routing.json
+      - name: Run capability-routing regression tests
+        working-directory: control-plane
+        run: python -m unittest tests/test_context_first_capability_router.py
