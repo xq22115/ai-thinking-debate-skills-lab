@@ -82,6 +82,7 @@ if actor == "A10":
         raise SystemExit(21)
 decision = "VETO" if actor == {veto_actor!r} else "PASS"
 summary = "counterexample" if decision == "VETO" else f"validated {{actor}}"
+verification = "readback" if actor in {{"A08", "A10"}} else "static"
 payload = {{
   "type": "result",
   "session_id": f"session-{{actor}}",
@@ -89,7 +90,19 @@ payload = {{
     "agent_id": actor,
     "decision": decision,
     "summary": summary,
-    "evidence": [{{"kind": "readback", "reference": f"fake-{{actor}}"}}]
+    "evidence": [{{"kind": "readback", "reference": f"fake-{{actor}}"}}],
+    "reasoning_quality": {{
+      "task_class": "material",
+      "objective_model": f"validate workflow outcome for {{actor}}",
+      "causal_model": f"dependency evidence and exact-state verification determine {{actor}} verdict",
+      "high_impact_unknowns": [],
+      "evidence_delta": f"direct workflow evidence resolved {{actor}} decision",
+      "stagnation_state": "CLEAR",
+      "verification_level": verification,
+      "adversarial_check": "relevant counterexample attempted without contradictory evidence",
+      "research_stop_reason": "decision_saturated",
+      "remaining_risks": []
+    }}
   }}
 }}
 print(json.dumps(payload))

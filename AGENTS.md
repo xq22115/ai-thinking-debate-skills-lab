@@ -6,9 +6,9 @@ Canonical operating model: `docs/CONTINUOUS_THINKING_QUALITY_OS.md`.
 
 ## Primary objective
 
-Optimize for first-pass correctness, complete task closure, and fewer user correction cycles — not for response speed, response length, token count, or artificial wall-clock delay.
+Optimize for first-pass correctness, complete task closure, and fewer user correction cycles — not for response speed, response length, token count, source count, or artificial wall-clock delay.
 
-Continuous thinking means **adaptive convergence**: understand → investigate → choose → execute → verify → challenge → release. Never simulate depth by waiting, promising a fixed number of minutes, or producing extra prose.
+Continuous thinking means **adaptive convergence**: understand → investigate → choose → execute → verify → challenge → release. Never simulate depth by waiting, promising a fixed number of minutes, collecting an arbitrary number of sources, or producing extra prose.
 
 ## Before changing anything
 
@@ -18,8 +18,22 @@ For every non-trivial task, reconstruct the real state before editing:
 2. Inspect the current repository/runtime state, relevant files, diffs, workflows, dependencies, and prior decisions.
 3. Separate verified facts from assumptions and unknowns.
 4. Define a falsifiable `done` contract: what observable evidence would prove success and what evidence would disprove it.
+5. Build the smallest useful causal/system model that explains how the requested outcome is produced end-to-end.
+6. List decision-critical unknowns. A high-impact unknown must be resolved, bounded by evidence, or reported as a concrete blocker before `PASS`.
 
 Do not patch a local symptom before understanding enough of the surrounding system to avoid regressions.
+
+## Deep reasoning gate
+
+For material or critical work, reasoning quality is judged by evidence and information gain, not by duration.
+
+- Choose the next investigation or test by **decision value**: prefer the action most likely to resolve a high-impact uncertainty, falsify the leading hypothesis, or distinguish competing mechanisms.
+- Track what new evidence each failed attempt produced. A retry with no new information is stagnation, not progress.
+- After two materially similar failures, pivot the hypothesis, mechanism, diagnostic instrument, environment, or verification method before another attempt.
+- Research stops when additional evidence is unlikely to change the decision, the important failure modes are covered, and the acceptance test is clear. Do not use fixed source quotas.
+- Before release, perform a contradiction/adversarial check and verify the requested effect at the highest practical layer: runtime/user path > integration > read-back > static/inspection.
+
+The control plane records these requirements in execution receipts; missing reasoning-quality evidence is fail-closed for material runs.
 
 ## Research and experience integration
 
@@ -67,6 +81,7 @@ Record what the failed attempts disproved so the task does not loop.
 - Use read-back after writes when the task depends on persisted state.
 - Add a negative/adversarial check for material fixes: try to falsify the result, exercise a relevant edge case, or reproduce the original failure.
 - When practical for complex work, separate builder and evaluator roles. The evaluator must judge against the predeclared acceptance contract and evidence, not the builder's confidence.
+- For layered systems, distinguish `configured → registered → loaded → executed → observable effect`; do not claim the highest layer from evidence of a lower layer.
 
 A file write, successful command exit, passing unrelated workflow, PR creation, or agent self-report is never sufficient proof by itself.
 
@@ -82,12 +97,12 @@ For long or multi-agent GitHub work, use the repository control plane rather tha
 
 Final status must be one of:
 
-- `PASS` — acceptance criteria verified with evidence on the exact reported state.
+- `PASS` — acceptance criteria verified with evidence on the exact reported state, with no unresolved high-impact unknown on the claimed outcome.
 - `FAIL` — verification disproved the intended result; continue repairing when possible.
 - `BLOCKED` — a specific external dependency prevents further progress; name the blocker and preserve evidence/state.
 - `NOT RUN` — a required verification was not executed; never relabel this as success.
 
-Before `PASS`, explicitly check for: scope drift, hidden regressions, unverified assumptions, stale state, and a simpler or more robust route that evidence now favors.
+Before `PASS`, explicitly check for: scope drift, hidden regressions, unverified assumptions, stale state, contradiction with observed evidence, and a simpler or more robust route that evidence now favors.
 
 ## Adaptive effort
 

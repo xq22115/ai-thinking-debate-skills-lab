@@ -16,10 +16,25 @@ RUN_ID = "20260817T064358Z-test"
 ISSUE = 27
 
 
+def reasoning_quality(agent_id: str) -> dict:
+    return {
+        "task_class": "material",
+        "objective_model": f"Validate the declared outcome for {agent_id}",
+        "causal_model": f"Observed repository evidence determines whether {agent_id} may pass",
+        "high_impact_unknowns": [],
+        "evidence_delta": f"Direct evidence for {agent_id} changes the verdict from unknown to supported",
+        "stagnation_state": "CLEAR",
+        "verification_level": "readback" if agent_id in {"A08", "A10"} else "static",
+        "adversarial_check": "Tried a relevant counterexample and found no contradiction in the recorded evidence",
+        "research_stop_reason": "decision_saturated",
+        "remaining_risks": [],
+    }
+
+
 def make_receipt(agent_id: str, result: str = "PASS") -> dict:
     index = int(agent_id[1:])
     receipt = {
-        "schema_version": 2,
+        "schema_version": 3,
         "issue_number": ISSUE,
         "run_id": RUN_ID,
         "agent_id": agent_id,
@@ -33,6 +48,7 @@ def make_receipt(agent_id: str, result: str = "PASS") -> dict:
         "executor_id": f"executor-{agent_id}",
         "execution_id": f"execution-{agent_id}",
         "evidence_partition": f"partition-{agent_id}",
+        "reasoning_quality": reasoning_quality(agent_id),
         "runtime_attestation": {
             "provider": "claude-code",
             "observer": "scripts/local_agent_executor.py",
@@ -56,7 +72,11 @@ def make_receipt(agent_id: str, result: str = "PASS") -> dict:
         receipt["veto_reason"] = "reproducible counterexample"
     if result == "NOT_RUN":
         receipt["schema_version"] = 1
-        for key in ["claim_id", "plan_head_sha", "executor_id", "execution_id", "evidence_partition", "head_sha", "evidence"]:
+        for key in [
+            "claim_id", "plan_head_sha", "executor_id", "execution_id",
+            "evidence_partition", "head_sha", "evidence", "reasoning_quality",
+            "runtime_attestation",
+        ]:
             receipt.pop(key, None)
     return receipt
 
@@ -94,27 +114,48 @@ class ReceiptAdjudicatorTests(unittest.TestCase):
             self.assertEqual(result["result"], "FAIL", result)
             self.assertTrue(any(item.startswith("missing_runtime_attestation:") for item in result["errors"]))
 
-    def test_legacy_v1_pass_receipts_cannot_adjudicate_pass(self):
+    def test_legacy_v2_pass_receipts_cannot_adjudicate_pass(self):
         with tempfile.TemporaryDirectory() as td:
             path = pathlib.Path(td)
-            overrides = {agent_id: {"schema_version": 1} for agent_id in ROLES}
+            overrides = {agent_id: {"schema_version": 2} for agent_id in ROLES}
             write_receipts(path, overrides=overrides)
             result = adjudicator.adjudicate(path, ISSUE, RUN_ID)
             self.assertEqual(result["result"], "FAIL", result)
-            self.assertTrue(any(item.startswith("pass_veto_requires_schema_v2:") for item in result["errors"]))
+            self.assertTrue(any(item.startswith("pass_veto_requires_schema_v3:") for item in result["errors"]))
 
-    def test_receipt_schema_declares_claim_and_plan_binding(self):
+    def test_receipt_schema_declares_reasoning_quality_binding(self):
         schema = json.loads(
             (ROOT / "ai-system/control-plane/receipt.schema.json").read_text()
         )
         properties = schema["properties"]
         self.assertIn("claim_id", properties)
         self.assertIn("plan_head_sha", properties)
+        self.assertIn("reasoning_quality", properties)
         serialized = json.dumps(schema, sort_keys=True)
-        self.assertIn('"claim_id"', serialized)
-        self.assertIn('"plan_head_sha"', serialized)
-        self.assertIn('"schema_version": {"const": 2}', serialized)
+        self.assertIn('"reasoning_quality"', serialized)
+        self.assertIn('"schema_version": {"const": 3}', serialized)
 
+    def test_pass_with_unresolved_high_impact_unknown_fails_closed(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = pathlib.Path(td)
+            write_receipts(path)
+            a04 = json.loads((path / "A04.json").read_text(encoding="utf-8"))
+            a04["reasoning_quality"]["high_impact_unknowns"] = ["root cause still ambiguous"]
+            (path / "A04.json").write_text(json.dumps(a04), encoding="utf-8")
+            result = adjudicator.adjudicate(path, ISSUE, RUN_ID)
+            self.assertEqual(result["result"], "FAIL", result)
+            self.assertIn("pass_has_high_impact_unknowns:A04", result["errors"])
+
+    def test_verifier_pass_requires_strong_verification_level(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = pathlib.Path(td)
+            write_receipts(path)
+            a08 = json.loads((path / "A08.json").read_text(encoding="utf-8"))
+            a08["reasoning_quality"]["verification_level"] = "inspection"
+            (path / "A08.json").write_text(json.dumps(a08), encoding="utf-8")
+            result = adjudicator.adjudicate(path, ISSUE, RUN_ID)
+            self.assertEqual(result["result"], "FAIL", result)
+            self.assertIn("pass_weak_verification_level:A08", result["errors"])
 
     def test_missing_receipt_blocks(self):
         with tempfile.TemporaryDirectory() as td:

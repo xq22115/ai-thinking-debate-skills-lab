@@ -2,7 +2,7 @@
 
 ## Mission
 
-Identify concurrency, authentication, stale-state, routing, and false-green failure modes before proposing fixes.
+Identify the causal mechanism behind the observed failure before proposing fixes. Distinguish symptom, trigger, propagation path, and observable effect; test competing hypotheses instead of locking onto the first plausible explanation.
 
 ## Write mode
 
@@ -10,15 +10,23 @@ Identify concurrency, authentication, stale-state, routing, and false-green fail
 
 ## Required output
 
-root-cause tree with falsifiable tests.
+root-cause/system model, competing hypotheses with predicted observations, high-impact unknowns, discriminating tests, evidence delta from each relevant attempt, and a falsifiable root-cause conclusion.
+
+## Deep reasoning contract
+
+- Build the smallest causal model that explains how the failure is produced end-to-end.
+- Prefer tests that distinguish competing hypotheses rather than merely confirming the favorite one.
+- Label decision-critical unknowns. `PASS` requires the high-impact unknown list to be empty.
+- A failed test must record what it ruled out or strengthened. Two materially similar failures require a pivot in hypothesis, mechanism, diagnostic instrument, environment, evidence family, or verification method.
+- Do not equate correlation, configuration presence, or elapsed time with causation.
 
 ## Evidence contract
 
-Return exactly one decision: `PASS`, `VETO`, `FAIL`, `BLOCKED`, or `NOT_RUN`. `PASS` requires direct evidence paths/SHAs/logs. A role prompt, file existence, or another agent's statement is not evidence of execution.
+Return exactly one decision: `PASS`, `VETO`, `FAIL`, `BLOCKED`, or `NOT_RUN`. `PASS` requires direct evidence paths/SHAs/logs and structured `reasoning_quality`. A role prompt, file existence, popular workaround, source count, or another agent's statement is not evidence of root cause.
 
 ## VETO conditions
 
-symptom-only fix; no reproducible failure condition.
+symptom-only fix; no reproducible or falsifiable failure condition; causal conclusion unsupported by discriminating evidence; unresolved high-impact causal unknown; repeated retry with no evidence delta.
 
 ## Independence
 

@@ -39,6 +39,21 @@ def commit_all(repo, message):
     return git(repo, "rev-parse", "HEAD", capture=True)
 
 
+def reasoning_quality(actor):
+    return {
+        "task_class": "material",
+        "objective_model": f"verify outcome for {actor}",
+        "causal_model": f"exact-state evidence determines whether {actor} may pass",
+        "high_impact_unknowns": [],
+        "evidence_delta": f"direct evidence resolved the decision for {actor}",
+        "stagnation_state": "CLEAR",
+        "verification_level": "readback" if actor in {"A08", "A10"} else "static",
+        "adversarial_check": "relevant counterexample attempted without contradiction",
+        "research_stop_reason": "decision_saturated",
+        "remaining_risks": [],
+    }
+
+
 class FinalizeLocalExecutionTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
@@ -56,12 +71,8 @@ class FinalizeLocalExecutionTests(unittest.TestCase):
     def prepare_actor(self, actor, write_set):
         branch = f"agent/{ISSUE}/{actor}/{RUN_ID}"
         git(self.repo, "switch", "-c", branch)
-        claim_path = (
-            f"ai-system/control-plane/runs/{ISSUE}/{RUN_ID}/claims/{actor}.json"
-        )
-        plan_path = (
-            f"ai-system/control-plane/runs/{ISSUE}/{RUN_ID}/plans/{actor}.json"
-        )
+        claim_path = f"ai-system/control-plane/runs/{ISSUE}/{RUN_ID}/claims/{actor}.json"
+        plan_path = f"ai-system/control-plane/runs/{ISSUE}/{RUN_ID}/plans/{actor}.json"
         claim = {
             "schema_version": 1,
             "issue_number": ISSUE,
@@ -122,6 +133,7 @@ class FinalizeLocalExecutionTests(unittest.TestCase):
                 "decision": "PASS",
                 "summary": "verified",
                 "evidence": [{"kind": "readback", "reference": f"session-{actor}"}],
+                "reasoning_quality": reasoning_quality(actor),
             },
             "stdout_sha256": "b" * 64,
             "stderr_sha256": "c" * 64,
@@ -136,15 +148,15 @@ class FinalizeLocalExecutionTests(unittest.TestCase):
         self.assertEqual(result["work_head_sha"], plan_head)
         self.assertNotEqual(result["final_head_sha"], plan_head)
         self.assertEqual(result["snapshot_verification"]["result"], "PASS")
-        receipt_path = self.repo / (
-            f"ai-system/control-plane/runs/{ISSUE}/{RUN_ID}/receipts/A08.json"
-        )
+        receipt_path = self.repo / f"ai-system/control-plane/runs/{ISSUE}/{RUN_ID}/receipts/A08.json"
         receipt = json.loads(receipt_path.read_text())
-        self.assertEqual(receipt["schema_version"], 2)
+        self.assertEqual(receipt["schema_version"], 3)
         self.assertEqual(receipt["claim_id"], "claim-A08")
         self.assertEqual(receipt["plan_head_sha"], plan_head)
         self.assertEqual(receipt["head_sha"], plan_head)
         self.assertEqual(receipt["execution_id"], "execution-A08")
+        self.assertEqual(receipt["reasoning_quality"]["high_impact_unknowns"], [])
+        self.assertEqual(receipt["reasoning_quality"]["verification_level"], "readback")
         attestation = receipt["runtime_attestation"]
         self.assertEqual(attestation["provider"], "claude-code")
         self.assertEqual(attestation["process_instance_id"], "process-A08")
@@ -152,6 +164,22 @@ class FinalizeLocalExecutionTests(unittest.TestCase):
         self.assertGreater(attestation["spawn_monotonic_ns"], 0)
         self.assertEqual(len(attestation["backend_session_sha256"]), 64)
         self.assertNotIn("session-A08", json.dumps(receipt, sort_keys=True))
+
+    def test_pass_with_unresolved_high_impact_unknown_is_veto(self):
+        _, plan_head, snapshot, execution = self.prepare_actor("A04", ["docs/**"])
+        execution["decision"]["reasoning_quality"]["high_impact_unknowns"] = ["causal ambiguity"]
+        result = finalizer.finalize_execution(self.repo, "A04", snapshot, execution)
+        self.assertEqual(result["result"], "VETO", result)
+        self.assertIn("decision_pass_has_high_impact_unknowns", result["failures"])
+        self.assertEqual(git(self.repo, "rev-parse", "HEAD", capture=True), plan_head)
+
+    def test_verifier_pass_with_inspection_only_is_veto(self):
+        _, plan_head, snapshot, execution = self.prepare_actor("A08", ["docs/**"])
+        execution["decision"]["reasoning_quality"]["verification_level"] = "inspection"
+        result = finalizer.finalize_execution(self.repo, "A08", snapshot, execution)
+        self.assertEqual(result["result"], "VETO", result)
+        self.assertIn("decision_pass_weak_verification_level", result["failures"])
+        self.assertEqual(git(self.repo, "rev-parse", "HEAD", capture=True), plan_head)
 
     def test_readonly_mutation_is_veto_without_receipt_commit(self):
         _, plan_head, snapshot, execution = self.prepare_actor("A08", ["docs/**"])
@@ -174,17 +202,10 @@ class FinalizeLocalExecutionTests(unittest.TestCase):
         final_head = result["final_head_sha"]
         self.assertNotEqual(work_head, plan_head)
         self.assertNotEqual(final_head, work_head)
-        changed_work = git(
-            self.repo, "diff", "--name-only", plan_head, work_head, capture=True
-        ).splitlines()
+        changed_work = git(self.repo, "diff", "--name-only", plan_head, work_head, capture=True).splitlines()
         self.assertEqual(changed_work, ["work/A07/result.txt"])
-        changed_receipt = git(
-            self.repo, "diff", "--name-only", work_head, final_head, capture=True
-        ).splitlines()
-        self.assertEqual(
-            changed_receipt,
-            [f"ai-system/control-plane/runs/{ISSUE}/{RUN_ID}/receipts/A07.json"],
-        )
+        changed_receipt = git(self.repo, "diff", "--name-only", work_head, final_head, capture=True).splitlines()
+        self.assertEqual(changed_receipt, [f"ai-system/control-plane/runs/{ISSUE}/{RUN_ID}/receipts/A07.json"])
         self.assertEqual(result["snapshot_verification"]["result"], "PASS")
 
     def test_a07_out_of_scope_change_is_veto(self):

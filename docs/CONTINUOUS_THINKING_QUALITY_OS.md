@@ -1,18 +1,18 @@
 # Continuous Thinking Quality OS
 
-Version: 2.0.0  
+Version: 2.1.0  
 Status: Canonical repository quality policy  
 Historical snapshot preserved: `../CONTINUOUS_THINKING_QUALITY_OS_v1.0.0.md`
 
 ## Purpose
 
-The goal is not to make an agent appear to think longer. The goal is to reduce correction loops, false completion, context drift, shallow fixes, and repeated use of a failing method.
+The goal is not to make an agent appear to think longer. The goal is to reduce correction loops, false completion, context drift, shallow fixes, confirmation bias, and repeated use of a failing method.
 
-Continuous thinking is implemented as an **adaptive convergence system**:
+Continuous thinking is an **adaptive convergence system**:
 
-> reconstruct state → define evidence → research if needed → compare distinct paths → execute → verify → adversarially challenge → learn → release
+> reconstruct state → define evidence → model causality → resolve decision-critical unknowns → research if needed → compare distinct paths → execute → verify → adversarially challenge → learn → release
 
-Quality is measured by observable task closure, not elapsed time, hidden-reasoning claims, token usage, or the number of agents involved.
+Quality is measured by observable task closure and reduced rework, not elapsed time, hidden-reasoning claims, token usage, source count, or the number of agents involved.
 
 ## 1. First-pass quality target
 
@@ -39,6 +39,8 @@ Before a material change, create a working model of the system. At minimum deter
 5. **Protected capabilities** — working behavior that must not be degraded.
 6. **Known failure evidence** — errors, logs, reproduction steps, failing tests, stale state, or previous attempts.
 7. **Acceptance contract** — observable conditions that constitute `PASS` and observations that would falsify success.
+8. **System/causal model** — the smallest useful explanation of how the requested effect is produced from trigger to observable outcome.
+9. **Decision-critical unknowns** — facts that could materially change the chosen fix, architecture, or verdict.
 
 Do not start by editing the first file that mentions the symptom. For bugs, configuration, automation, and agent orchestration, inspect enough surrounding state to understand the failure chain.
 
@@ -59,7 +61,53 @@ A good contract is behavioral and falsifiable. Examples:
 
 When builder/evaluator separation is available, they should agree on the contract before implementation. This prevents a builder from redefining `done` after seeing its own output.
 
-## 4. Research and expert-experience integration
+## 4. Deep reasoning router
+
+Reasoning depth is adaptive. It is never represented by a fixed waiting time or fixed source quota.
+
+### Simple
+
+Low uncertainty, low impact, reversible, familiar. Use: understand → execute → verify.
+
+### Material
+
+Multi-file, current, integration-sensitive, externally visible, or non-trivial failure risk. Add:
+
+- explicit system/causal model;
+- decision-critical unknown ledger;
+- at least one meaningful competing route or falsification path;
+- targeted research where current knowledge matters;
+- read-back or stronger verification;
+- contradiction/adversarial check.
+
+### Critical
+
+Repeated failure, high impact, expensive rollback, security/reliability relevance, cross-system orchestration, or long-horizon autonomy. Add:
+
+- independent evaluator or structural builder/evaluator separation;
+- stronger runtime/end-to-end testing;
+- persistent evidence artifacts/checkpoints;
+- explicit recovery/rollback design;
+- stagnation detection and forced pivoting;
+- final review of remaining risk and invalidation conditions.
+
+Escalate effort when evidence demands it. Remove scaffolding that no longer adds measurable information.
+
+## 5. Information-gain rule
+
+At each material decision point, prefer the next action that has the highest **decision value**:
+
+- resolves a high-impact unknown;
+- falsifies or supports the leading causal hypothesis;
+- distinguishes two plausible mechanisms;
+- tests the exact user-visible path;
+- removes a blocker that gates all later work.
+
+Do not optimize for visible activity, number of tool calls, number of agents, or amount of prose.
+
+A failed action is useful only if it produces new information. Record the evidence delta: what the failure ruled out, strengthened, or changed.
+
+## 6. Research and expert-experience integration
 
 Research is mandatory when knowledge is likely stale, the domain is unfamiliar, the platform changed recently, the problem is repeatedly failing, or expert operational experience could materially alter the solution.
 
@@ -80,11 +128,21 @@ For every technique that changes the plan, extract:
 - **preconditions** — when it applies;
 - **failure modes** — when it breaks;
 - **verification** — how to know it worked;
-- **portable lesson** — what should be reused on future tasks.
+- **portable lesson** — what should be reused on future tasks;
+- **invalidation condition** — what future version/environment change would make the lesson unsafe to reuse.
 
-The reusable lesson matters more than the exact prompt or command that produced it.
+### Research stop rule
 
-## 5. Multi-path reasoning without ritual overhead
+Stop research when:
+
+- additional sources are unlikely to change the chosen route;
+- the important failure modes are represented;
+- the decision-critical unknowns are resolved or explicitly bounded;
+- the acceptance test is clear enough to execute.
+
+Never use a fixed source count as evidence of depth.
+
+## 7. Multi-path reasoning without ritual overhead
 
 Material problems should not be locked to the first plausible route. Consider only the distinct paths that can reveal different information, for example:
 
@@ -98,9 +156,11 @@ Material problems should not be locked to the first plausible route. Consider on
 
 Choose using evidence and the acceptance contract. Do not force a fixed number of paths, agents, debates, or rounds when they do not increase information.
 
-## 6. Two-strike pivot rule
+## 8. Stagnation detection and two-strike pivot
 
 Repeated failure must create information.
+
+A run is **stagnating** when a new attempt repeats essentially the same hypothesis, mechanism, evidence source, environment, and verification method without producing a meaningful evidence delta.
 
 If the same failure class remains after **two materially similar attempts**, a third similar retry is prohibited until at least one major dimension changes:
 
@@ -113,27 +173,7 @@ If the same failure class remains after **two materially similar attempts**, a t
 
 Record what each failed attempt disproved. A retry that only changes wording, waits longer, or repeats the same tool call is not a new method.
 
-This rule exists to stop the common cycle of “修 → 還是不行 → 再修同一層 → 還是不行”.
-
-## 7. Adaptive effort router
-
-Do not confuse maximal ceremony with maximal quality.
-
-### Low uncertainty / low impact
-
-Use a short path: understand → execute → verify.
-
-### Medium uncertainty, multi-file, current, or integration work
-
-Add state reconstruction, targeted research, explicit acceptance criteria, regression checks, and read-back.
-
-### High uncertainty, high impact, repeated failure, or long-horizon work
-
-Add independent evaluation, broader failure analysis, stronger runtime testing, persistent state/evidence artifacts, alternative hypotheses, and explicit recovery/rollback planning.
-
-Escalate effort when evidence demands it. Remove scaffolding that no longer adds measurable value.
-
-## 8. Builder–evaluator separation
+## 9. Builder–evaluator separation
 
 Agents are often lenient toward their own work. For material tasks, separate generation from judgment when practical.
 
@@ -144,11 +184,12 @@ The evaluator should:
 - try the user path and relevant edge cases;
 - search for missing depth, stubs, regressions, and “looks complete” behavior;
 - fail the result if any hard criterion is below threshold;
+- identify unresolved high-impact unknowns;
 - provide concrete evidence that the builder can act on.
 
 When a separate evaluator is unavailable, emulate this structurally: finish the implementation, then re-open the task from the acceptance contract and attempt to falsify it before reporting success.
 
-## 9. Execution discipline
+## 10. Execution discipline
 
 For software, configuration, automation, and agent tasks:
 
@@ -163,7 +204,13 @@ For software, configuration, automation, and agent tasks:
 
 Configuration presence is not runtime behavior. Registration is not activation. A script existing is not proof it executed. A PR existing is not proof it works.
 
-## 10. Verification ladder
+For layered systems, reason explicitly across:
+
+> configured → registered → loaded → executed → observable effect
+
+A lower layer cannot prove a higher layer.
+
+## 11. Verification ladder
 
 Prefer stronger evidence when available:
 
@@ -178,7 +225,33 @@ Lower levels cannot replace an available higher level when the user asked for ac
 
 For material fixes, include at least one relevant negative/adversarial check when practical: reproduce the old failure, probe an edge case, break an assumption, or test a nearby regression surface.
 
-## 11. Anti-false-completion barrier
+## 12. Deep reasoning receipt gate
+
+For material control-plane runs, a `PASS` receipt must include machine-checkable reasoning-quality evidence in addition to ordinary execution evidence.
+
+The receipt must record:
+
+- task class;
+- objective/system model;
+- causal hypothesis or explanatory model;
+- unresolved high-impact unknowns;
+- evidence delta from investigation/failure;
+- stagnation/pivot state;
+- verification level;
+- adversarial/falsification check;
+- research stop reason.
+
+A `PASS` is fail-closed when:
+
+- any high-impact unknown remains unresolved;
+- the research state is blocked;
+- reasoning-quality evidence is missing;
+- the verifier/adjudicator has only weak inspection-level evidence where read-back/integration/runtime evidence is available;
+- direct evidence contradicts the claimed result.
+
+This gate is implemented in the control-plane decision schema, finalizer, receipt schema, and adjudicator rather than relying on prose alone.
+
+## 13. Anti-false-completion barrier
 
 Never declare success from any single weak signal, including:
 
@@ -189,18 +262,19 @@ Never declare success from any single weak signal, including:
 - an agent said it succeeded;
 - a branch/PR exists;
 - enough time elapsed;
+- a large source count was collected;
 - the answer sounds complete.
 
 Final status must be explicit:
 
-- `PASS` — acceptance criteria verified on the exact reported state.
+- `PASS` — acceptance criteria verified on the exact reported state, with no unresolved high-impact unknown on the claimed outcome.
 - `FAIL` — verification disproved the result; continue repair when possible.
 - `BLOCKED` — a concrete external dependency prevents further progress.
 - `NOT RUN` — required verification was not executed.
 
 Do not convert `NOT RUN` or uncertainty into `PASS`.
 
-## 12. Same-task autonomy and continuity
+## 14. Same-task autonomy and continuity
 
 The user should not have to repeatedly press “continue” for predictable next steps.
 
@@ -210,7 +284,7 @@ Ask the user only when a genuinely non-resolvable decision, credential, permissi
 
 For long-running/multi-agent GitHub work, externalize state and evidence through the repository control plane rather than depending on chat memory.
 
-## 13. Learning loop
+## 15. Learning loop
 
 After a failure or successful repair, capture only durable lessons that should change future behavior:
 
@@ -219,11 +293,12 @@ After a failure or successful repair, capture only durable lessons that should c
 - diagnostic that revealed the truth;
 - solution mechanism;
 - verification that proved it;
-- conditions where the lesson should or should not be reused.
+- conditions where the lesson should or should not be reused;
+- invalidation condition or freshness trigger.
 
 Do not preserve every transient thought. Durable memory should contain invariants, decisions, failure patterns, and proven runbooks — not stale dead ends.
 
-## 14. Output discipline
+## 16. Output discipline
 
 Keep the final answer compact enough to use, but complete enough to verify.
 
@@ -235,26 +310,28 @@ Separate when relevant:
 
 Report what actually changed, what was verified, what failed during the run if it affected the final design, and the remaining risk. Do not expose private chain-of-thought as a substitute for evidence.
 
-## 15. Evidence basis for v2.0.0
+## 17. Evidence basis for v2.1.0
 
-This version incorporates lessons from 2026 agent-engineering practice, including:
+This version incorporates 2026 agent-engineering practice:
 
-- OpenAI, *Harness engineering: leveraging Codex in an agent-first world* — short stable agent entry points, progressive disclosure, repository knowledge as system of record, first-class plans, and mechanical verification.
-- OpenAI, *Codex-maxxing for long-running work* (2026-06-22) — durable workspaces, continuity, verifiable decomposition, and long-running delegation.
-- OpenAI, *How OpenAI uses Codex* — persistent `AGENTS.md`, strong environment setup, issue-like task definition, and Best-of-N where useful.
-- Anthropic, *Harness design for long-running application development* (2026-03-24) — planner/generator/evaluator separation, pre-agreed sprint contracts, runtime evaluator testing, strategic pivoting, and removal of scaffolding that stops adding value.
-- GitHub, 2026 agent validation guidance — test/lint/security/quality validation and rerunning the original analysis before considering an agent-generated fix ready.
-- OpenAI Developer Community, July 2026 practitioner discussions — keep root `AGENTS.md` short and stable, reconstruct repository state when task history is incomplete, and avoid oversized instruction blobs that consume context without improving decisions.
+- OpenAI, *Harness engineering: leveraging Codex in an agent-first world* — repository knowledge as system of record, mechanical feedback loops, and concise stable agent instructions.
+- OpenAI, *The next evolution of the Agents SDK* (2026-04-15) — durable execution, snapshots/rehydration, sandboxed tool use, and harnesses aligned to model-native operation.
+- OpenAI, *A shared playbook for trustworthy third party evaluations* (2026) — harness choice, tools, state preservation, retries, and evidence materially affect observed capability.
+- Anthropic, *Harness design for long-running application development* (2026-03-24) — planner/generator/evaluator separation, pre-agreed sprint contracts, runtime evaluator testing, and strategic pivoting.
+- Anthropic, *Scaling Managed Agents: Decoupling the brain from the hands* (2026-04-08) — harness assumptions must be revisited as model capability changes; durable interfaces should outlive temporary scaffolding.
+- Anthropic, *Demystifying evals for AI agents* (2026-01-09) — rigorous end-to-end evals reduce reactive repair loops.
+- GitHub, *Evaluating performance and efficiency of the GitHub Copilot agentic harness across models and tasks* (2026-06-25) — harness design materially changes model effectiveness and efficiency across agentic tasks.
 
-These references are evidence for design principles, not authority to bypass local verification.
+These references justify design principles; they never replace local/runtime verification.
 
 ## Success metric
 
 The system succeeds when the user needs fewer repair rounds because the agent:
 
 - understands more before acting;
+- chooses investigations by information gain rather than visible activity;
 - changes method when evidence disproves a route;
 - incorporates current expert experience without cargo-culting it;
 - verifies real behavior instead of configuration appearance;
-- finishes foreseeable work without repeated prompting;
-- reports `PASS` only when the evidence supports it.
+- refuses `PASS` while high-impact unknowns remain;
+- finishes foreseeable work without repeated prompting.

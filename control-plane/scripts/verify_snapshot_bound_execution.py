@@ -16,6 +16,8 @@ except ModuleNotFoundError:  # direct script execution
     from verify_write_plan_scope import verify_scope
 
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
+STRONG_VERIFICATION_ACTORS = {"A08", "A10"}
+VALID_VERIFICATION_LEVELS = {"source", "inspection", "static", "readback", "integration", "runtime"}
 
 
 def _run_git(repo: pathlib.Path, *args: str) -> subprocess.CompletedProcess[str]:
@@ -80,6 +82,36 @@ def _receipt_path(issue_number: int, run_id: str, actor_id: str) -> str:
         f"ai-system/control-plane/runs/{issue_number}/{run_id}/receipts/"
         f"{actor_id}.json"
     )
+
+
+def _reasoning_quality_failures(actor_id: str, receipt: dict) -> list[str]:
+    failures: list[str] = []
+    quality = receipt.get("reasoning_quality")
+    if not isinstance(quality, dict):
+        return ["receipt_reasoning_quality_missing"]
+    required = [
+        "task_class", "objective_model", "causal_model", "high_impact_unknowns",
+        "evidence_delta", "stagnation_state", "verification_level",
+        "adversarial_check", "research_stop_reason",
+    ]
+    for field in required:
+        if quality.get(field) in (None, ""):
+            failures.append(f"receipt_reasoning_quality_missing_{field}")
+    unknowns = quality.get("high_impact_unknowns")
+    if not isinstance(unknowns, list):
+        failures.append("receipt_reasoning_quality_unknowns_invalid")
+        unknowns = []
+    level = quality.get("verification_level")
+    if level not in VALID_VERIFICATION_LEVELS:
+        failures.append("receipt_reasoning_quality_verification_level_invalid")
+    if receipt.get("result") == "PASS":
+        if unknowns:
+            failures.append("receipt_pass_has_high_impact_unknowns")
+        if quality.get("research_stop_reason") == "blocked":
+            failures.append("receipt_pass_research_blocked")
+        if actor_id in STRONG_VERIFICATION_ACTORS and level not in {"readback", "integration", "runtime"}:
+            failures.append("receipt_pass_weak_verification_level")
+    return failures
 
 
 def verify_execution(
@@ -189,7 +221,7 @@ def verify_execution(
 
     if receipt:
         receipt_checks = {
-            "receipt_schema_version_not_v2": receipt.get("schema_version") == 2,
+            "receipt_schema_version_not_v3": receipt.get("schema_version") == 3,
             "receipt_issue_mismatch": receipt.get("issue_number") == issue_number,
             "receipt_run_id_mismatch": receipt.get("run_id") == run_id,
             "receipt_agent_id_mismatch": receipt.get("agent_id") == actor_id,
@@ -204,6 +236,7 @@ def verify_execution(
         for failure, valid in receipt_checks.items():
             if not valid:
                 receipt_failures.append(failure)
+        receipt_failures.extend(_reasoning_quality_failures(actor_id, receipt))
         candidate_work_head = str(receipt.get("head_sha", ""))
         if not SHA40.fullmatch(candidate_work_head):
             receipt_failures.append("receipt_invalid_work_head_sha")
@@ -257,7 +290,7 @@ def verify_execution(
         [own_receipt] if receipt and post_work_paths == [own_receipt] else []
     )
     return {
-        "schemaVersion": 2,
+        "schemaVersion": 3,
         "issue_number": issue_number,
         "run_id": run_id,
         "actor_id": actor_id,
@@ -276,6 +309,7 @@ def verify_execution(
         "failures": sorted(set(failures)),
         "result": "PASS" if not failures else "VETO",
     }
+
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser()

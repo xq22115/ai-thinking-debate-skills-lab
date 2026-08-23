@@ -1,0 +1,88 @@
+name: Deep Reasoning Quality Gate
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  control-plane-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact revision with baseline history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile trusted control-plane scripts
+        run: |
+          python -m py_compile \
+            control-plane/scripts/local_agent_executor.py \
+            control-plane/scripts/finalize_local_agent_execution.py \
+            control-plane/scripts/adjudicate_agent_receipts.py \
+            control-plane/scripts/verify_snapshot_bound_execution.py
+      - name: Validate receipt and gate JSON
+        run: |
+          python -m json.tool control-plane/ai-system/control-plane/receipt.schema.json >/dev/null
+          python -m json.tool control-plane/ai-system/control-plane/gates.json >/dev/null
+      - name: Run deep-reasoning and lifecycle regression tests
+        working-directory: control-plane
+        run: |
+          python -m unittest \
+            tests/test_local_agent_executor.py \
+            tests/test_finalize_local_agent_execution.py \
+            tests/test_adjudicate_agent_receipts.py \
+            tests/test_snapshot_bound_execution.py \
+            tests/test_run_local_agent_workflow.py \
+            tests/test_manage_local_agent_run.py
+      - name: Compare full control-plane suite against main baseline
+        run: |
+          set -u
+          HEAD_LOG=/tmp/head-control-plane-tests.log
+          BASE_LOG=/tmp/main-control-plane-tests.log
+          (
+            cd control-plane
+            python -m unittest discover -s tests -p 'test_*.py'
+          ) >"$HEAD_LOG" 2>&1 || true
+
+          git worktree add --detach /tmp/main-baseline origin/main
+          (
+            cd /tmp/main-baseline/control-plane
+            python -m unittest discover -s tests -p 'test_*.py'
+          ) >"$BASE_LOG" 2>&1 || true
+
+          python - <<'PY'
+          import pathlib
+          import re
+          import sys
+
+          pattern = re.compile(r"^(?:FAIL|ERROR): (.+)$", re.MULTILINE)
+          head_text = pathlib.Path("/tmp/head-control-plane-tests.log").read_text(errors="replace")
+          base_text = pathlib.Path("/tmp/main-control-plane-tests.log").read_text(errors="replace")
+          head_failures = set(pattern.findall(head_text))
+          base_failures = set(pattern.findall(base_text))
+          new_failures = sorted(head_failures - base_failures)
+          fixed_failures = sorted(base_failures - head_failures)
+
+          print(f"main baseline failing/error tests: {len(base_failures)}")
+          print(f"PR head failing/error tests: {len(head_failures)}")
+          print(f"new failures introduced by PR: {len(new_failures)}")
+          print(f"baseline failures removed by PR: {len(fixed_failures)}")
+          if fixed_failures:
+              print("Removed baseline failures:")
+              for item in fixed_failures:
+                  print(f"  - {item}")
+          if new_failures:
+              print("New PR failures:")
+              for item in new_failures:
+                  print(f"  - {item}")
+              print("\n--- PR head full-suite log ---")
+              print(head_text)
+              sys.exit(1)
+          PY

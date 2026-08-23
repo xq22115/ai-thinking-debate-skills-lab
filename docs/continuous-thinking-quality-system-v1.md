@@ -1,100 +1,24 @@
-# Continuous Thinking Quality System v1.3
+# Continuous Thinking Quality System — Legacy Compatibility Guide
 
-## Purpose
-建立深度思考、持續推理、研究驗證與經驗內化系統。目標不是延長文字輸出，而是提升一次解決率、方案品質與長期可重用能力。
+Status: superseded by `docs/CONTINUOUS_THINKING_QUALITY_OS.md` v2.1.0.
 
-## Deep Thinking Engine
+This file remains in place so older links and tooling do not break. The canonical policy is the v2.1 Quality OS.
 
-複雜任務啟動深度推理循環：
+## Compatibility rules
 
-1. Goal Analysis
-- 找出真正目標
-- 分析限制與隱藏需求
-- 建立成功驗收標準
+- Deep thinking is measured by correctness, evidence, information gain, falsification, and task closure — not by elapsed minutes.
+- Do not require arbitrary source quotas such as `100+ sources`. Research should continue only while new evidence can materially change the decision or expose an important failure mode.
+- Do not require arbitrary waiting periods such as `10+ minutes`. Increase reasoning effort when uncertainty, impact, novelty, repeated failure, or verification difficulty justify it.
+- Before modifying a system, reconstruct current state, dependencies, protected behavior, acceptance criteria, and the smallest useful causal/system model.
+- Track decision-critical unknowns. A high-impact unknown must be resolved, bounded by evidence, or reported as a blocker before `PASS`.
+- Prefer the next action with the highest decision value: falsify the leading hypothesis, distinguish competing mechanisms, resolve a blocker, or verify the real user path.
+- Repeated failure must create new information. After two materially similar failures, pivot the hypothesis, mechanism, diagnostic instrument, environment, evidence source, or verification method.
+- Configuration presence is not runtime success. Verify `configured → registered → loaded → executed → observable effect` at the highest practical layer.
+- Preserve durable expert experience as mechanism + preconditions + failure modes + verification + invalidation condition, rather than copying commands or prompts.
+- Do not announce completion from a write, a green unrelated check, an agent self-report, source-count volume, or elapsed time.
 
-2. System Understanding
-- 先理解現有架構、狀態、依賴
-- 不允許未理解系統就修改
+## Canonical flow
 
-3. Multi-Path Reasoning
-必須探索：
-- 正向方案
-- 逆向分析
-- 替代路線
-- 業界最佳實踐
-- 高手經驗
-- 失敗案例
+Observe → Reconstruct → Model → Resolve unknowns → Research if needed → Compare → Execute → Verify → Falsify → Learn → Release
 
-4. Red Team Review
-主動質疑方案：
-- 哪裡可能錯
-- 哪些假設未驗證
-- 是否有更優解
-- 是否只是暫時修補
-
-## Research Intelligence Gate
-
-需要外部知識時建立研究基礎：
-
-來源優先：
-- 官方文件
-- 最新版本資訊
-- GitHub Repository
-- Issue / Discussion
-- 維護者實戰經驗
-- 高品質社群案例
-- 技術研究與測試報告
-
-大型研究任務目標：
-- 收集 100+ 高相關參考來源
-- 優先最新資料
-- 分類整理
-- 去除重複與低品質資訊
-- 萃取背後原理
-
-禁止只堆資料數量，必須轉化為可執行知識。
-
-## Continuous Reasoning Loop
-
-任務流程：
-
-Observe → Understand → Research → Compare → Design → Test → Review → Improve → Learn
-
-未通過品質檢查，不提前結束。
-
-## Long Analysis Mode
-
-大型任務採用深度分析週期：
-- 研究
-- 整理
-- 比較
-- 驗證
-- 再輸出
-
-可採用 10 分鐘以上深度分析流程，但核心目標是品質提升，不是單純等待。
-
-## Knowledge Internalization
-
-每次解決問題後建立：
-- 使用條件
-- 背後原理
-- 成功因素
-- 失敗原因
-- 未來可重用方法
-
-避免每次重新摸索。
-
-## Completion Gate
-
-完成前確認：
-- 目標是否真正達成
-- 是否存在更好的方法
-- 是否完成驗證
-- 是否留下風險
-- 是否能長期維護
-
-禁止：
-- 假完成
-- 表面修復
-- 沒驗證就宣布成功
-- 為速度犧牲品質
+For material control-plane work, the machine-checkable deep reasoning receipt gate is authoritative.
