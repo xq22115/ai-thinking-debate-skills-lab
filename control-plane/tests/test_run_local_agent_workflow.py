@@ -18,7 +18,6 @@ PREP_SPEC = importlib.util.spec_from_file_location(
     "preparer", ROOT / "scripts/prepare_local_agent_run.py"
 )
 preparer = importlib.util.module_from_spec(PREP_SPEC)
-SPEC.loader.exec_module(workflow)
 PREP_SPEC.loader.exec_module(preparer)
 
 ISSUE = 27
