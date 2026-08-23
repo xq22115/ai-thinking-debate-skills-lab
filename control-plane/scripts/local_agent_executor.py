@@ -15,10 +15,12 @@ import uuid
 
 EXPECTED_ACTORS = [f"A{i:02d}" for i in range(1, 11)]
 VALID_DECISIONS = {"PASS", "VETO", "FAIL", "BLOCKED"}
+REASONING_LEVELS = {"source", "inspection", "static", "readback", "integration", "runtime"}
+STRONG_VERIFICATION_ACTORS = {"A08", "A10"}
 DECISION_SCHEMA = {
     "type": "object",
     "additionalProperties": False,
-    "required": ["agent_id", "decision", "summary", "evidence"],
+    "required": ["agent_id", "decision", "summary", "evidence", "reasoning_quality"],
     "properties": {
         "agent_id": {"enum": EXPECTED_ACTORS},
         "decision": {"enum": sorted(VALID_DECISIONS)},
@@ -31,6 +33,39 @@ DECISION_SCHEMA = {
                 "properties": {
                     "kind": {"type": "string"},
                     "reference": {"type": "string"},
+                },
+            },
+        },
+        "reasoning_quality": {
+            "type": "object",
+            "additionalProperties": False,
+            "required": [
+                "task_class",
+                "objective_model",
+                "causal_model",
+                "high_impact_unknowns",
+                "evidence_delta",
+                "stagnation_state",
+                "verification_level",
+                "adversarial_check",
+                "research_stop_reason",
+            ],
+            "properties": {
+                "task_class": {"enum": ["simple", "material", "critical"]},
+                "objective_model": {"type": "string", "minLength": 1},
+                "causal_model": {"type": "string", "minLength": 1},
+                "high_impact_unknowns": {
+                    "type": "array",
+                    "items": {"type": "string", "minLength": 1},
+                },
+                "evidence_delta": {"type": "string", "minLength": 1},
+                "stagnation_state": {"enum": ["NOT_APPLICABLE", "CLEAR", "PIVOTED"]},
+                "verification_level": {"enum": sorted(REASONING_LEVELS)},
+                "adversarial_check": {"type": "string", "minLength": 1},
+                "research_stop_reason": {"enum": ["not_needed", "decision_saturated", "blocked"]},
+                "remaining_risks": {
+                    "type": "array",
+                    "items": {"type": "string", "minLength": 1},
                 },
             },
         },
@@ -201,6 +236,34 @@ def _load_backend_json(stdout: str) -> dict:
         raise ValueError("backend_output_not_json")
 
 
+def _reasoning_quality_failures(decision: dict, actor_id: str) -> list[str]:
+    failures: list[str] = []
+    quality = decision.get("reasoning_quality")
+    if not isinstance(quality, dict):
+        return [f"reasoning_quality_missing:{actor_id}"]
+    required = [
+        "task_class", "objective_model", "causal_model", "high_impact_unknowns",
+        "evidence_delta", "stagnation_state", "verification_level",
+        "adversarial_check", "research_stop_reason",
+    ]
+    for field in required:
+        if quality.get(field) in (None, ""):
+            failures.append(f"reasoning_quality_missing_{field}:{actor_id}")
+    unknowns = quality.get("high_impact_unknowns")
+    if not isinstance(unknowns, list):
+        failures.append(f"reasoning_quality_unknowns_invalid:{actor_id}")
+    if quality.get("verification_level") not in REASONING_LEVELS:
+        failures.append(f"reasoning_quality_verification_level_invalid:{actor_id}")
+    if decision.get("decision") == "PASS":
+        if unknowns:
+            failures.append(f"pass_has_high_impact_unknowns:{actor_id}")
+        if quality.get("research_stop_reason") == "blocked":
+            failures.append(f"pass_research_blocked:{actor_id}")
+        if actor_id in STRONG_VERIFICATION_ACTORS and quality.get("verification_level") not in {"readback", "integration", "runtime"}:
+            failures.append(f"pass_weak_verification_level:{actor_id}")
+    return failures
+
+
 def _normalize_decision(payload: dict, actor_id: str) -> tuple[dict | None, list[str]]:
     failures: list[str] = []
     decision = payload.get("structured_output")
@@ -226,6 +289,7 @@ def _normalize_decision(payload: dict, actor_id: str) -> tuple[dict | None, list
         failures.append(f"evidence_missing:{actor_id}")
     elif decision.get("decision") == "PASS" and not evidence:
         failures.append(f"pass_evidence_empty:{actor_id}")
+    failures.extend(_reasoning_quality_failures(decision, actor_id))
     return decision, failures
 
 
@@ -249,7 +313,8 @@ def _run_actor(
     run_id = str(assignment["run_id"])
     prompt = str(assignment.get("prompt") or (
         f"You are {actor}. Inspect the repository in the current workspace. "
-        "Follow AGENTS.md and the role contract. Return only the required structured decision."
+        "Follow AGENTS.md and the role contract. Return only the required structured decision, "
+        "including reasoning_quality evidence; do not substitute elapsed time or source count for depth."
     ))
     command = build_claude_command(
         claude_path,
