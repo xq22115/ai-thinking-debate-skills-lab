@@ -20,7 +20,8 @@ PLAN_SHA = "a" * 40
 
 
 def make_fake_claude(path: pathlib.Path, *, logged_in=True, fail_actor=None,
-                     missing_session_actor=None, duplicate_session=False):
+                     missing_session_actor=None, duplicate_session=False,
+                     unresolved_unknown_actor=None, weak_verification_actor=None):
     script = f'''#!/usr/bin/env python3
 import json, os, sys, time
 args = sys.argv[1:]
@@ -36,6 +37,10 @@ if actor == {fail_actor!r}:
     raise SystemExit(7)
 time.sleep(0.15)
 session = "shared-session" if {duplicate_session!r} else f"session-{{actor}}"
+verification = "readback" if actor in {{"A08", "A10"}} else "static"
+if actor == {weak_verification_actor!r}:
+    verification = "inspection"
+unknowns = ["root cause unresolved"] if actor == {unresolved_unknown_actor!r} else []
 payload = {{
   "type": "result",
   "session_id": None if actor == {missing_session_actor!r} else session,
@@ -43,7 +48,19 @@ payload = {{
     "agent_id": actor,
     "decision": "PASS",
     "summary": f"validated {{actor}}",
-    "evidence": [{{"kind": "readback", "reference": f"fake-{{actor}}"}}]
+    "evidence": [{{"kind": "readback", "reference": f"fake-{{actor}}"}}],
+    "reasoning_quality": {{
+      "task_class": "material",
+      "objective_model": f"validate outcome for {{actor}}",
+      "causal_model": f"direct evidence determines {{actor}} verdict",
+      "high_impact_unknowns": unknowns,
+      "evidence_delta": f"new direct evidence for {{actor}}",
+      "stagnation_state": "CLEAR",
+      "verification_level": verification,
+      "adversarial_check": "counterexample attempted without contradiction",
+      "research_stop_reason": "decision_saturated",
+      "remaining_risks": []
+    }}
   }}
 }}
 print(json.dumps(payload))
@@ -158,6 +175,23 @@ class LocalAgentExecutorTests(unittest.TestCase):
             self.assertEqual(row["executor_id"], assignment["executor_id"])
             self.assertEqual(row["claim_id"], assignment["claim_id"])
             self.assertEqual(row["plan_head_sha"], assignment["plan_head_sha"])
+            self.assertIn("reasoning_quality", row["decision"])
+
+    def test_pass_with_unresolved_high_impact_unknown_fails_closed(self):
+        make_fake_claude(self.fake, unresolved_unknown_actor="A04")
+        result = executor.execute_agents(
+            assignments(self.root / "ws"), self.fake, self.output
+        )
+        self.assertEqual(result["result"], "FAIL", result)
+        self.assertIn("pass_has_high_impact_unknowns:A04", result["failures"])
+
+    def test_verifier_pass_with_weak_verification_fails_closed(self):
+        make_fake_claude(self.fake, weak_verification_actor="A08")
+        result = executor.execute_agents(
+            assignments(self.root / "ws"), self.fake, self.output
+        )
+        self.assertEqual(result["result"], "FAIL", result)
+        self.assertIn("pass_weak_verification_level:A08", result["failures"])
 
     def test_nonzero_child_exit_fails_closed(self):
         make_fake_claude(self.fake, fail_actor="A05")
@@ -183,7 +217,7 @@ class LocalAgentExecutorTests(unittest.TestCase):
         self.assertEqual(result["result"], "FAIL", result)
         self.assertIn("duplicate_session_id", result["failures"])
 
-    def test_ten_successful_runs_are_process_and_session_distinct(self):
+    def test_ten_successful_runs_are_process_session_and_reasoning_distinct(self):
         make_fake_claude(self.fake)
         result = executor.execute_agents(
             assignments(self.root / "ws"), self.fake, self.output, max_parallel=10
@@ -199,6 +233,7 @@ class LocalAgentExecutorTests(unittest.TestCase):
         self.assertEqual(len({row["workspace"] for row in runs.values()}), 10)
         for actor, row in runs.items():
             self.assertEqual(row["decision"]["agent_id"], actor)
+            self.assertEqual(row["decision"]["reasoning_quality"]["high_impact_unknowns"], [])
             self.assertTrue((self.output / f"{actor}.json").is_file())
 
     def test_readonly_role_can_mount_existing_dependency_dirs(self):
