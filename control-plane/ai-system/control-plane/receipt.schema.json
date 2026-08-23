@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Independent Agent Execution Receipt v2",
+  "title": "Independent Agent Execution Receipt v3",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -14,129 +14,75 @@
     "independent_agent_execution"
   ],
   "properties": {
-    "schema_version": {
-      "enum": [
-        1,
-        2
-      ]
-    },
-    "issue_number": {
-      "type": "integer",
-      "minimum": 1
-    },
-    "run_id": {
-      "type": "string",
-      "minLength": 8
-    },
-    "agent_id": {
-      "enum": [
-        "A01",
-        "A02",
-        "A03",
-        "A04",
-        "A05",
-        "A06",
-        "A07",
-        "A08",
-        "A09",
-        "A10"
-      ]
-    },
-    "role": {
-      "type": "string",
-      "minLength": 1
-    },
-    "branch": {
-      "type": "string",
-      "minLength": 1
-    },
+    "schema_version": {"enum": [1, 2, 3]},
+    "issue_number": {"type": "integer", "minimum": 1},
+    "run_id": {"type": "string", "minLength": 8},
+    "agent_id": {"enum": ["A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "A10"]},
+    "role": {"type": "string", "minLength": 1},
+    "branch": {"type": "string", "minLength": 1},
     "head_sha": {
       "type": "string",
       "pattern": "^[0-9a-f]{40}$",
       "description": "Exact actor work head before the final receipt-only evidence commit."
     },
-    "result": {
-      "enum": [
-        "PASS",
-        "VETO",
-        "FAIL",
-        "BLOCKED",
-        "NOT_RUN"
-      ]
-    },
-    "independent_agent_execution": {
-      "type": "boolean"
-    },
-    "executor_id": {
-      "type": "string",
-      "minLength": 1
-    },
-    "execution_id": {
-      "type": "string",
-      "minLength": 1
-    },
-    "evidence_partition": {
-      "type": "string",
-      "minLength": 1
-    },
+    "result": {"enum": ["PASS", "VETO", "FAIL", "BLOCKED", "NOT_RUN"]},
+    "independent_agent_execution": {"type": "boolean"},
+    "executor_id": {"type": "string", "minLength": 1},
+    "execution_id": {"type": "string", "minLength": 1},
+    "evidence_partition": {"type": "string", "minLength": 1},
     "evidence": {
       "type": "array",
       "minItems": 1,
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": [
-          "kind",
-          "reference"
-        ],
+        "required": ["kind", "reference"],
         "properties": {
-          "kind": {
-            "enum": [
-              "test",
-              "tool",
-              "workflow",
-              "readback",
-              "source",
-              "counterexample"
-            ]
-          },
-          "reference": {
-            "type": "string",
-            "minLength": 1
-          },
-          "result": {
-            "enum": [
-              "PASS",
-              "FAIL",
-              "BLOCKED"
-            ]
-          },
-          "sha": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{40}$"
-          },
-          "summary": {
-            "type": "string"
-          }
+          "kind": {"enum": ["test", "tool", "workflow", "readback", "source", "counterexample"]},
+          "reference": {"type": "string", "minLength": 1},
+          "result": {"enum": ["PASS", "FAIL", "BLOCKED"]},
+          "sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "summary": {"type": "string"}
         }
       }
     },
-    "veto_reason": {
-      "type": "string",
-      "minLength": 1
+    "reasoning_quality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "task_class",
+        "objective_model",
+        "causal_model",
+        "high_impact_unknowns",
+        "evidence_delta",
+        "stagnation_state",
+        "verification_level",
+        "adversarial_check",
+        "research_stop_reason"
+      ],
+      "properties": {
+        "task_class": {"enum": ["simple", "material", "critical"]},
+        "objective_model": {"type": "string", "minLength": 1},
+        "causal_model": {"type": "string", "minLength": 1},
+        "high_impact_unknowns": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "evidence_delta": {"type": "string", "minLength": 1},
+        "stagnation_state": {"enum": ["NOT_APPLICABLE", "CLEAR", "PIVOTED"]},
+        "verification_level": {"enum": ["source", "inspection", "static", "readback", "integration", "runtime"]},
+        "adversarial_check": {"type": "string", "minLength": 1},
+        "research_stop_reason": {"enum": ["not_needed", "decision_saturated", "blocked"]},
+        "remaining_risks": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
     },
-    "blocker": {
-      "type": "string",
-      "minLength": 1
-    },
-    "claim_id": {
-      "type": "string",
-      "minLength": 8
-    },
-    "plan_head_sha": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{40}$"
-    },
+    "veto_reason": {"type": "string", "minLength": 1},
+    "blocker": {"type": "string", "minLength": 1},
+    "claim_id": {"type": "string", "minLength": 8},
+    "plan_head_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
     "runtime_attestation": {
       "type": "object",
       "additionalProperties": false,
@@ -151,55 +97,22 @@
         "stderr_sha256"
       ],
       "properties": {
-        "provider": {
-          "type": "string",
-          "minLength": 1
-        },
-        "observer": {
-          "type": "string",
-          "minLength": 1
-        },
-        "process_instance_id": {
-          "type": "string",
-          "minLength": 8
-        },
-        "process_id": {
-          "type": "integer",
-          "minimum": 1
-        },
-        "spawn_monotonic_ns": {
-          "type": "integer",
-          "minimum": 1
-        },
-        "backend_session_sha256": {
-          "type": "string",
-          "pattern": "^[0-9a-f]{64}$"
-        },
-        "stdout_sha256": {
-          "type": "string",
-          "pattern": "^[0-9a-f]{64}$"
-        },
-        "stderr_sha256": {
-          "type": "string",
-          "pattern": "^[0-9a-f]{64}$"
-        }
+        "provider": {"type": "string", "minLength": 1},
+        "observer": {"type": "string", "minLength": 1},
+        "process_instance_id": {"type": "string", "minLength": 8},
+        "process_id": {"type": "integer", "minimum": 1},
+        "spawn_monotonic_ns": {"type": "integer", "minimum": 1},
+        "backend_session_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "stdout_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "stderr_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
       }
     }
   },
   "allOf": [
     {
       "if": {
-        "properties": {
-          "result": {
-            "enum": [
-              "PASS",
-              "VETO"
-            ]
-          }
-        },
-        "required": [
-          "result"
-        ]
+        "properties": {"result": {"enum": ["PASS", "VETO"]}},
+        "required": ["result"]
       },
       "then": {
         "required": [
@@ -210,14 +123,27 @@
           "evidence_partition",
           "head_sha",
           "evidence",
-          "runtime_attestation"
+          "runtime_attestation",
+          "reasoning_quality"
         ],
         "properties": {
-          "schema_version": {
-            "const": 2
-          },
-          "independent_agent_execution": {
-            "const": true
+          "schema_version": {"const": 3},
+          "independent_agent_execution": {"const": true}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"result": {"const": "PASS"}},
+        "required": ["result"]
+      },
+      "then": {
+        "properties": {
+          "reasoning_quality": {
+            "properties": {
+              "high_impact_unknowns": {"maxItems": 0},
+              "research_stop_reason": {"enum": ["not_needed", "decision_saturated"]}
+            }
           }
         }
       }
@@ -225,37 +151,35 @@
     {
       "if": {
         "properties": {
-          "result": {
-            "const": "VETO"
-          }
+          "agent_id": {"enum": ["A08", "A10"]},
+          "result": {"const": "PASS"}
         },
-        "required": [
-          "result"
-        ]
+        "required": ["agent_id", "result"]
       },
       "then": {
-        "required": [
-          "veto_reason"
-        ]
+        "properties": {
+          "reasoning_quality": {
+            "properties": {
+              "verification_level": {"enum": ["readback", "integration", "runtime"]}
+            }
+          }
+        }
       }
     },
     {
       "if": {
-        "properties": {
-          "result": {
-            "const": "NOT_RUN"
-          }
-        },
-        "required": [
-          "result"
-        ]
+        "properties": {"result": {"const": "VETO"}},
+        "required": ["result"]
+      },
+      "then": {"required": ["veto_reason"]}
+    },
+    {
+      "if": {
+        "properties": {"result": {"const": "NOT_RUN"}},
+        "required": ["result"]
       },
       "then": {
-        "properties": {
-          "independent_agent_execution": {
-            "const": false
-          }
-        }
+        "properties": {"independent_agent_execution": {"const": false}}
       }
     }
   ]
