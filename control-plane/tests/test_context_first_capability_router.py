@@ -4,6 +4,7 @@ import pathlib
 import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+REPO_ROOT = ROOT.parent
 SPEC = importlib.util.spec_from_file_location(
     "capability_router_validator",
     ROOT / "scripts/validate_context_first_capability_router.py",
@@ -21,6 +22,13 @@ class ContextFirstCapabilityRouterTests(unittest.TestCase):
     def test_repository_config_passes(self):
         result = validator.validate(self.load_config())
         self.assertEqual(result["result"], "PASS", result)
+
+    def test_global_agents_contract_loads_context_first_router(self):
+        text = (REPO_ROOT / "AGENTS.md").read_text(encoding="utf-8")
+        self.assertIn("## Context-first capability routing", text)
+        self.assertIn("Never use a keyword list as the sole refusal trigger.", text)
+        self.assertIn("continue every allowed subtask", text)
+        self.assertIn("context-first-capability-routing.json", text)
 
     def test_keyword_only_blocking_is_fail_closed(self):
         payload = self.load_config()
