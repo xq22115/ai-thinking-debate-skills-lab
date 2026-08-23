@@ -28,6 +28,7 @@ def git(repo, *args, capture=False):
     )
     return result.stdout.strip() if capture else None
 
+
 def write_json(repo, relative, payload):
     path = repo / relative
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -38,6 +39,21 @@ def commit_all(repo, message):
     git(repo, "add", ".")
     git(repo, "commit", "-m", message)
     return git(repo, "rev-parse", "HEAD", capture=True)
+
+
+def reasoning_quality():
+    return {
+        "task_class": "material",
+        "objective_model": "Verify A07 work remains bound to the approved snapshot and declared scope",
+        "causal_model": "Plan/claim identity plus work-head ancestry, receipt-only final commit, and scope evidence determine whether the execution is authentic",
+        "high_impact_unknowns": [],
+        "evidence_delta": "Snapshot, ancestry, identity, and changed-path evidence resolve the execution verdict",
+        "stagnation_state": "CLEAR",
+        "verification_level": "readback",
+        "adversarial_check": "Receipt rewriting, foreign paths, stale snapshots, and smuggled post-work changes are exercised by negative tests",
+        "research_stop_reason": "decision_saturated",
+        "remaining_risks": [],
+    }
 
 
 class SnapshotBoundExecutionTests(unittest.TestCase):
@@ -110,7 +126,7 @@ class SnapshotBoundExecutionTests(unittest.TestCase):
 
     def _receipt(self, work_head, **overrides):
         payload = {
-            "schema_version": 2,
+            "schema_version": 3,
             "issue_number": ISSUE,
             "run_id": RUN_ID,
             "agent_id": ACTOR,
@@ -124,6 +140,17 @@ class SnapshotBoundExecutionTests(unittest.TestCase):
             "executor_id": self.claim["executor_id"],
             "execution_id": self.claim["execution_id"],
             "evidence_partition": "partition-A07",
+            "reasoning_quality": reasoning_quality(),
+            "runtime_attestation": {
+                "provider": "claude-code",
+                "observer": "scripts/local_agent_executor.py",
+                "process_instance_id": "process-instance-A07",
+                "process_id": 7007,
+                "spawn_monotonic_ns": 123456789,
+                "backend_session_sha256": "a" * 64,
+                "stdout_sha256": "b" * 64,
+                "stderr_sha256": "c" * 64,
+            },
             "evidence": [{
                 "kind": "test", "reference": "snapshot-bound-test",
                 "result": "PASS", "sha": work_head,
@@ -188,7 +215,6 @@ class SnapshotBoundExecutionTests(unittest.TestCase):
         result = self._verify(final_head)
         self.assertEqual(result["result"], "VETO", result)
         self.assertIn("post_work_diff_not_receipt_only", result["failures"])
-
 
     def test_branch_advanced_after_evidence_is_veto(self):
         final_head = self._work_commit()
