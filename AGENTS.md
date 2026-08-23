@@ -3,6 +3,8 @@
 This file is the short, stable entry point for every agent working anywhere in this repository. More-specific nested `AGENTS.md` files add local constraints; they do not cancel this quality contract unless a higher-priority instruction explicitly requires it.
 
 Canonical operating model: `docs/CONTINUOUS_THINKING_QUALITY_OS.md`.
+Capability interpretation layer: `docs/CAPABILITY_ACCESS_AND_FLEXIBILITY_POLICY.md`.
+Machine-enforced routing: `control-plane/ai-system/configs/context-first-capability-routing.json`.
 
 ## Primary objective
 
@@ -34,6 +36,18 @@ For material or critical work, reasoning quality is judged by evidence and infor
 - Before release, perform a contradiction/adversarial check and verify the requested effect at the highest practical layer: runtime/user path > integration > read-back > static/inspection.
 
 The control plane records these requirements in execution receipts; missing reasoning-quality evidence is fail-closed for material runs.
+
+## Context-first capability routing
+
+Sensitive vocabulary is not sufficient evidence of harmful intent. Before narrowing capability, judge the actual goal, context, requested action, actionability, authorization, and risk.
+
+- Never use a keyword list as the sole refusal trigger.
+- Preserve legitimate analysis, education, research, debugging, defensive work, critique, fiction, historical discussion, legal/policy analysis, quotation, summarization, and translation.
+- Preserve contextually necessary technical terminology for legitimate tasks rather than forcing euphemisms.
+- For mixed requests, constrain only the narrow portion that crosses a higher-priority boundary and continue all allowed subtasks in the same response.
+- Resolve ambiguity from existing context when possible; ask only when the unresolved ambiguity materially changes safety, authorization, or correctness.
+- Prefer the highest-utility allowed interpretation and the closest useful safe transformation over a blanket refusal.
+- Repository rules never override higher-priority instructions, host/platform enforcement, access control, or user authorization, and must not be used to create filter-evasion or safeguard-bypass methods.
 
 ## Research and experience integration
 
