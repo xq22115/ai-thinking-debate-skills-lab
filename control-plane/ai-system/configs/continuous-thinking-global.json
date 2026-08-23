@@ -32,10 +32,13 @@
     "symptom_only_patch_forbidden_when_surrounding_state_can_change_result": true
   },
   "acceptance_contract": {
+    "schema": "../control-plane/acceptance-contract.schema.json",
+    "semantic_validator": "../../../scripts/validate_acceptance_contract.py",
     "criterion_default_state": "UNSATISFIED",
     "allowed_states": ["UNSATISFIED", "SATISFIED", "BLOCKED", "NOT_APPLICABLE"],
     "criterion_required_fields": ["criterion_id", "statement", "hard", "observable_test", "state", "evidence_ids"],
     "pass_requires_all_hard_criteria_satisfied": true,
+    "satisfied_requires_resolvable_pass_evidence": true,
     "self_report_only_evidence_forbidden": true,
     "missing_evidence_fails_closed": true,
     "direct_contradiction_overrides_pass": true
