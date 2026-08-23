@@ -10,6 +10,7 @@ assets:
   control_plane:
     path: ai-system/control-plane
     entrypoint: ai-system/control-plane/README.md
+    acceptance_contract_schema: ai-system/control-plane/acceptance-contract.schema.json
     status: active
   skills:
     path: ai-system/skills
@@ -19,6 +20,7 @@ assets:
     status: active
   configs:
     path: ai-system/configs
+    entrypoint: ai-system/configs/continuous-thinking-global.json
     status: active
   mcp:
     path: ai-system/mcp
