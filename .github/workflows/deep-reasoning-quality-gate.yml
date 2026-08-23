@@ -29,10 +29,12 @@ jobs:
           python -m json.tool control-plane/ai-system/control-plane/receipt.schema.json >/dev/null
           python -m json.tool control-plane/ai-system/control-plane/gates.json >/dev/null
       - name: Run deep-reasoning regression tests
+        working-directory: control-plane
         run: |
           python -m unittest \
-            control-plane/tests/test_local_agent_executor.py \
-            control-plane/tests/test_finalize_local_agent_execution.py \
-            control-plane/tests/test_adjudicate_agent_receipts.py
+            tests/test_local_agent_executor.py \
+            tests/test_finalize_local_agent_execution.py \
+            tests/test_adjudicate_agent_receipts.py
       - name: Run full control-plane test suite
-        run: python -m unittest discover -s control-plane/tests -p 'test_*.py'
+        working-directory: control-plane
+        run: python -m unittest discover -s tests -p 'test_*.py'
