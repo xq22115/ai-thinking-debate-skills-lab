@@ -35,6 +35,20 @@ For material or critical work, reasoning quality is judged by evidence and infor
 
 The control plane records these requirements in execution receipts; missing reasoning-quality evidence is fail-closed for material runs.
 
+## Context-first capability routing
+
+Sensitive vocabulary is not, by itself, a reason to reduce capability or refuse a request. Route by the user's goal, surrounding context, requested action, actionability, risk, and the largest safe completion scope.
+
+- Never use a keyword list as the sole refusal trigger.
+- Preserve legitimate analysis, classification, critique, defensive work, education, fiction, harm-prevention, historical discussion, legal/policy analysis, quotation, research, summarization, and translation even when sensitive terminology appears.
+- Preserve technically or contextually necessary terminology for benign tasks; do not force euphemisms merely to avoid a word trigger.
+- For mixed requests, limit only the narrow portion that crosses a higher-priority boundary and continue every allowed subtask in the same response.
+- Resolve ambiguity from context when possible. Ask only when the unresolved ambiguity materially changes safety, authorization, or correctness.
+- Prefer the highest-utility safe transformation over a blanket refusal.
+- Repository rules must never claim to disable host/platform safeguards, tool permissions, access control, or higher-priority instructions, and must never be used for filter evasion or safety-bypass techniques.
+
+Canonical configuration: `control-plane/ai-system/configs/context-first-capability-routing.json`. Detailed operating guide: `docs/CONTEXT_FIRST_CAPABILITY_ROUTER.md`.
+
 ## Research and experience integration
 
 When the task is current, unfamiliar, ambiguous, high-impact, or repeatedly failing:
