@@ -19,6 +19,7 @@ except ModuleNotFoundError:
     from verify_write_plan_scope import verify_scope
 
 VALID_MODEL_DECISIONS = {"PASS", "VETO", "FAIL", "BLOCKED"}
+STRONG_VERIFICATION_ACTORS = {"A08", "A10"}
 
 
 def _git(repo: pathlib.Path, *args: str) -> subprocess.CompletedProcess[str]:
@@ -91,6 +92,32 @@ def _commit_paths(repo: pathlib.Path, paths: list[str], message: str) -> str | N
     return _git_text(repo, "rev-parse", "HEAD") if commit.returncode == 0 else None
 
 
+def _reasoning_quality_failures(actor: str, decision: dict) -> list[str]:
+    failures: list[str] = []
+    quality = decision.get("reasoning_quality")
+    if not isinstance(quality, dict):
+        return ["decision_reasoning_quality_missing"]
+    required = [
+        "task_class", "objective_model", "causal_model", "high_impact_unknowns",
+        "evidence_delta", "stagnation_state", "verification_level",
+        "adversarial_check", "research_stop_reason",
+    ]
+    for field in required:
+        if quality.get(field) in (None, ""):
+            failures.append(f"decision_reasoning_quality_missing_{field}")
+    unknowns = quality.get("high_impact_unknowns")
+    if not isinstance(unknowns, list):
+        failures.append("decision_reasoning_quality_unknowns_invalid")
+    if decision.get("decision") == "PASS":
+        if unknowns:
+            failures.append("decision_pass_has_high_impact_unknowns")
+        if quality.get("research_stop_reason") == "blocked":
+            failures.append("decision_pass_research_blocked")
+        if actor in STRONG_VERIFICATION_ACTORS and quality.get("verification_level") not in {"readback", "integration", "runtime"}:
+            failures.append("decision_pass_weak_verification_level")
+    return failures
+
+
 def _identity_failures(actor: str, snapshot: dict, execution: dict) -> list[str]:
     failures: list[str] = []
     expected = {
@@ -124,6 +151,7 @@ def _identity_failures(actor: str, snapshot: dict, execution: dict) -> list[str]
             failures.append("decision_agent_mismatch")
         if decision.get("decision") not in VALID_MODEL_DECISIONS:
             failures.append("decision_invalid")
+        failures.extend(_reasoning_quality_failures(actor, decision))
     return failures
 
 
@@ -234,7 +262,7 @@ def finalize_execution(
     session_sha256 = hashlib.sha256(session_id.encode("utf-8")).hexdigest()
     evidence_partition = f"local-executor/{run_id}/{actor}/{session_sha256}"
     receipt = {
-        "schema_version": 2,
+        "schema_version": 3,
         "issue_number": issue,
         "run_id": run_id,
         "agent_id": actor,
@@ -248,6 +276,7 @@ def finalize_execution(
         "executor_id": str(execution["executor_id"]),
         "execution_id": str(execution["execution_id"]),
         "evidence_partition": evidence_partition,
+        "reasoning_quality": decision["reasoning_quality"],
         "runtime_attestation": {
             "provider": "claude-code",
             "observer": "scripts/local_agent_executor.py",
