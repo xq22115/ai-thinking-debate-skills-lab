@@ -28,6 +28,12 @@ def _require(condition: bool, code: str, failures: list[str]) -> None:
         failures.append(code)
 
 
+def _resolve_from_config(relative: object) -> pathlib.Path | None:
+    if not isinstance(relative, str) or not relative.strip():
+        return None
+    return (CONFIG_PATH.parent / relative).resolve()
+
+
 def validate() -> list[str]:
     failures: list[str] = []
     for path, code in [
@@ -73,6 +79,11 @@ def validate() -> list[str]:
         failures,
     )
     _require(
+        acceptance.get("satisfied_requires_resolvable_pass_evidence") is True,
+        "satisfied_evidence_binding_missing",
+        failures,
+    )
+    _require(
         acceptance.get("self_report_only_evidence_forbidden") is True,
         "self_report_only_evidence_allowed",
         failures,
@@ -80,6 +91,18 @@ def validate() -> list[str]:
     _require(
         acceptance.get("direct_contradiction_overrides_pass") is True,
         "contradiction_does_not_override_pass",
+        failures,
+    )
+    acceptance_schema = _resolve_from_config(acceptance.get("schema"))
+    acceptance_validator = _resolve_from_config(acceptance.get("semantic_validator"))
+    _require(
+        acceptance_schema is not None and acceptance_schema.is_file(),
+        "acceptance_schema_missing_or_detached",
+        failures,
+    )
+    _require(
+        acceptance_validator is not None and acceptance_validator.is_file(),
+        "acceptance_validator_missing_or_detached",
         failures,
     )
 
