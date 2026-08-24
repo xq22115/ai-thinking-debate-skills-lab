@@ -46,6 +46,7 @@ jobs:
           python -m unittest \
             tests/test_continuous_thinking_global.py \
             tests/test_continuous_thinking_runtime_binding.py \
+            tests/test_quality_bound_workflow.py \
             tests/test_acceptance_contract.py \
             tests/test_local_agent_executor.py \
             tests/test_finalize_local_agent_execution.py \
