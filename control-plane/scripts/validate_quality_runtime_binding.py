@@ -64,6 +64,8 @@ def validate() -> list[str]:
         ("run_workflow", "workflow_does_not_delegate_to_existing_orchestrator"),
         ("quality-bound-preparation.json", "bound_preparation_evidence_missing"),
         ("quality-bound-workflow.json", "bound_workflow_evidence_missing"),
+        ("resume_quality_binding_evidence_missing", "resume_can_reuse_unbound_evidence"),
+        ("resume_quality_binding_mismatch", "resume_can_cross_quality_profile_versions"),
     ]:
         if token not in workflow:
             failures.append(code)
