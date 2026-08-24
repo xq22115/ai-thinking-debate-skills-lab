@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Evidence-Bound Acceptance Contract v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "task_id", "task_class", "criteria", "status"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "task_id": {"type": "string", "minLength": 1},
+    "task_class": {"enum": ["simple", "material", "critical"]},
+    "criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "criterion_id",
+          "statement",
+          "hard",
+          "observable_test",
+          "state",
+          "evidence_ids"
+        ],
+        "properties": {
+          "criterion_id": {"type": "string", "minLength": 1},
+          "statement": {"type": "string", "minLength": 1},
+          "hard": {"type": "boolean"},
+          "observable_test": {"type": "string", "minLength": 1},
+          "state": {
+            "enum": ["UNSATISFIED", "SATISFIED", "BLOCKED", "NOT_APPLICABLE"]
+          },
+          "evidence_ids": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1}
+          },
+          "blocker": {"type": "string", "minLength": 1},
+          "notes": {"type": "string"}
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {"state": {"const": "SATISFIED"}},
+              "required": ["state"]
+            },
+            "then": {
+              "properties": {"evidence_ids": {"minItems": 1}}
+            }
+          },
+          {
+            "if": {
+              "properties": {"state": {"const": "BLOCKED"}},
+              "required": ["state"]
+            },
+            "then": {"required": ["blocker"]}
+          }
+        ]
+      }
+    },
+    "status": {"enum": ["PASS", "FAIL", "BLOCKED", "NOT_RUN"]},
+    "blocker": {"type": "string", "minLength": 1},
+    "evidence_index": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "reference"],
+        "properties": {
+          "kind": {"enum": ["runtime", "integration", "readback", "test", "inspection", "source", "counterexample"]},
+          "reference": {"type": "string", "minLength": 1},
+          "result": {"enum": ["PASS", "FAIL", "BLOCKED"]},
+          "summary": {"type": "string"}
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"status": {"const": "PASS"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "criteria": {
+            "not": {
+              "contains": {
+                "allOf": [
+                  {"properties": {"hard": {"const": true}}, "required": ["hard"]},
+                  {
+                    "properties": {
+                      "state": {
+                        "enum": ["UNSATISFIED", "BLOCKED", "NOT_APPLICABLE"]
+                      }
+                    },
+                    "required": ["state"]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"status": {"const": "BLOCKED"}},
+        "required": ["status"]
+      },
+      "then": {"required": ["blocker"]}
+    }
+  ]
+}

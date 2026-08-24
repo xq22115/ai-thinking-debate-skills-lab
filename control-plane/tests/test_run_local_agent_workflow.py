@@ -1,3 +1,4 @@
+import errno
 import importlib.util
 import json
 import pathlib
@@ -5,6 +6,7 @@ import shutil
 import stat
 import subprocess
 import tempfile
+import time
 import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -142,7 +144,19 @@ class RunLocalAgentWorkflowTests(unittest.TestCase):
         self.output = self.root / "workflow-output"
 
     def tearDown(self):
-        self.temp.cleanup()
+        # Git worktree metadata can be touched briefly after a heavily parallel
+        # workflow test completes. Prune first and retry only transient ENOTEMPTY
+        # cleanup races; persistent cleanup failures still fail the test.
+        if self.repo.is_dir():
+            git(self.repo, "worktree", "prune", "--expire", "now", check=False)
+        for attempt in range(4):
+            try:
+                self.temp.cleanup()
+                return
+            except OSError as exc:
+                if exc.errno != errno.ENOTEMPTY or attempt == 3:
+                    raise
+                time.sleep(0.05 * (attempt + 1))
 
     def test_successful_dependency_aware_run_reaches_adjudication_pass(self):
         make_fake_claude(self.fake)
