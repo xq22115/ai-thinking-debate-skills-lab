@@ -15,6 +15,35 @@ except ModuleNotFoundError:
     from run_local_agent_workflow import run_workflow
 
 
+_BINDING_IDENTITY_FIELDS = (
+    "bound",
+    "profile_id",
+    "profile_sha256",
+    "task_class",
+    "profile_path",
+)
+
+
+def _binding_identity(payload: dict) -> dict[str, object]:
+    binding = payload.get("quality_profile_binding")
+    if not isinstance(binding, dict):
+        raise ValueError("quality_binding_evidence_invalid")
+    return {field: binding.get(field) for field in _BINDING_IDENTITY_FIELDS}
+
+
+def _verify_resume_binding(evidence_path: pathlib.Path, bound: dict) -> None:
+    if not evidence_path.is_file():
+        raise ValueError("resume_quality_binding_evidence_missing")
+    try:
+        prior = json.loads(evidence_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ValueError("resume_quality_binding_evidence_invalid") from exc
+    if not isinstance(prior, dict):
+        raise ValueError("resume_quality_binding_evidence_invalid")
+    if _binding_identity(prior) != _binding_identity(bound):
+        raise ValueError("resume_quality_binding_mismatch")
+
+
 def run_quality_bound_workflow(
     preparation: dict,
     repo_root: pathlib.Path | str,
@@ -31,7 +60,10 @@ def run_quality_bound_workflow(
     bound = bind_preparation(preparation, repo_root, task_class=task_class)
     output = pathlib.Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
-    (output / "quality-bound-preparation.json").write_text(
+    evidence_path = output / "quality-bound-preparation.json"
+    if resume_existing:
+        _verify_resume_binding(evidence_path, bound)
+    evidence_path.write_text(
         json.dumps(bound, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
