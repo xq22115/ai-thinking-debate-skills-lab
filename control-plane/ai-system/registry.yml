@@ -22,6 +22,13 @@ assets:
     path: ai-system/configs
     entrypoint: ai-system/configs/continuous-thinking-global.json
     status: active
+  runtime_quality:
+    path: scripts
+    profile: ai-system/configs/continuous-thinking-global.json
+    binder: scripts/continuous_thinking_runtime_binding.py
+    workflow_entrypoint: scripts/run_quality_bound_workflow.py
+    validator: scripts/validate_quality_runtime_binding.py
+    status: active
   mcp:
     path: ai-system/mcp
     status: experimental
@@ -43,6 +50,13 @@ verification:
     - FAIL
     - BLOCKED
     - NOT_RUN
+
+runtime_quality:
+  required: true
+  fail_closed: true
+  profile_hash_attestation_required: true
+  prompt_binding_required: true
+  bound_preparation_evidence_required: true
 
 security:
   secrets_in_repo: forbidden
