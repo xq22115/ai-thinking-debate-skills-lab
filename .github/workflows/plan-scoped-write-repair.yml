@@ -1,0 +1,374 @@
+name: Plan Scoped Write Repair
+
+on:
+  push:
+    branches:
+      - fix/plan-scoped-write-response-flow
+
+permissions:
+  contents: write
+
+jobs:
+  repair-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repair branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply plan-scoped write and response-flow migration
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+
+          def replace(path, old, new, count=1):
+              p = Path(path)
+              text = p.read_text(encoding="utf-8")
+              actual = text.count(old)
+              if actual != count:
+                  raise SystemExit(f"replacement mismatch {path}: expected {count}, found {actual}: {old[:80]!r}")
+              p.write_text(text.replace(old, new, count), encoding="utf-8")
+
+          # 1) Preparation: write capability comes from the approved write_set, not actor identity.
+          replace(
+              "control-plane/scripts/prepare_local_agent_run.py",
+              '''        if actor != "A07" and write_set:\n            failures.append(f"readonly_write_set_nonempty:{actor}")\n''',
+              '''''',
+          )
+          replace(
+              "control-plane/scripts/prepare_local_agent_run.py",
+              '''        if prospective.get("result") != "PASS":\n            failures.append("prospective_preflight_veto")\n            failures.extend(str(x) for x in prospective.get("failures", []))\n            if prospective.get("unresolved_conflicts"):\n                failures.append("prospective_write_conflict")\n''',
+              '''        if prospective.get("result") != "PASS":\n            failures.append("prospective_preflight_veto")\n            failures.extend(str(x) for x in prospective.get("failures", []))\n            if prospective.get("unresolved_conflicts"):\n                failures.append("prospective_write_conflict")\n        if prospective.get("serialized_conflicts"):\n            failures.append("local_serialized_write_conflict_requires_disjoint_scopes")\n''',
+          )
+          replace(
+              "control-plane/scripts/prepare_local_agent_run.py",
+              '''            f"Your declared dependencies are {dependencies}. "\n            "Stay within your role and return only the required structured decision."\n''',
+              '''            f"Your declared dependencies are {dependencies}. "\n            f"Your approved task write_set is {cfg['write_set']}; an empty write_set is read-only. "\n            "Stay within your role and return only the required structured decision."\n''',
+          )
+          replace(
+              "control-plane/scripts/prepare_local_agent_run.py",
+              '''            "depends_on": dependencies,\n            "prompt": prompt,\n''',
+              '''            "depends_on": dependencies,\n            "read_set": list(cfg["read_set"]),\n            "write_set": list(cfg["write_set"]),\n            "prompt": prompt,\n''',
+          )
+
+          # 2) Executor: tool grants are derived from write_set.
+          replace(
+              "control-plane/scripts/local_agent_executor.py",
+              '''    model: str | None = None,\n    read_dirs: list[str] | None = None,\n) -> list[str]:\n''',
+              '''    model: str | None = None,\n    read_dirs: list[str] | None = None,\n    write_set: list[str] | None = None,\n) -> list[str]:\n''',
+          )
+          replace(
+              "control-plane/scripts/local_agent_executor.py",
+              '''    read_dirs = list(read_dirs or [])\n    if actor_id == "A07" and read_dirs:\n        raise ValueError("write_role_external_read_dir_forbidden")\n    if read_dirs:\n        command += ["--add-dir", *read_dirs]\n    allowed_tools = "Read,Glob,Grep,Edit,Write" if actor_id == "A07" else "Read,Glob,Grep"\n''',
+              '''    read_dirs = list(read_dirs or [])\n    write_set = list(write_set or [])\n    can_write = bool(write_set)\n    if can_write and read_dirs:\n        raise ValueError("write_role_external_read_dir_forbidden")\n    if read_dirs:\n        command += ["--add-dir", *read_dirs]\n    allowed_tools = "Read,Glob,Grep,Edit,Write" if can_write else "Read,Glob,Grep"\n''',
+          )
+          replace(
+              "control-plane/scripts/local_agent_executor.py",
+              '''        read_dirs = row.get("read_dirs") or []\n        if not isinstance(read_dirs, list) or not all(isinstance(item, str) and item for item in read_dirs):\n            failures.append(f"invalid_dependency_read_dirs:{actor}")\n            read_dirs = []\n        if actor == "A07" and read_dirs:\n            failures.append(f"write_role_external_read_dir_forbidden:{actor}")\n        if len(set(read_dirs)) != len(read_dirs):\n            failures.append(f"duplicate_dependency_read_dir:{actor}")\n        if actor != "A07":\n            for item in read_dirs:\n                if not pathlib.Path(item).is_dir():\n                    failures.append(f"dependency_read_dir_missing:{actor}")\n''',
+              '''        read_dirs = row.get("read_dirs") or []\n        if not isinstance(read_dirs, list) or not all(isinstance(item, str) and item for item in read_dirs):\n            failures.append(f"invalid_dependency_read_dirs:{actor}")\n            read_dirs = []\n        write_set = row.get("write_set") or []\n        if not isinstance(write_set, list) or not all(isinstance(item, str) and item for item in write_set):\n            failures.append(f"invalid_write_set:{actor}")\n            write_set = []\n        can_write = bool(write_set)\n        if can_write and read_dirs:\n            failures.append(f"write_role_external_read_dir_forbidden:{actor}")\n        if len(set(read_dirs)) != len(read_dirs):\n            failures.append(f"duplicate_dependency_read_dir:{actor}")\n        if not can_write:\n            for item in read_dirs:\n                if not pathlib.Path(item).is_dir():\n                    failures.append(f"dependency_read_dir_missing:{actor}")\n''',
+          )
+          replace(
+              "control-plane/scripts/local_agent_executor.py",
+              '''        model=model,\n        read_dirs=list(assignment.get("read_dirs") or []),\n    )\n''',
+              '''        model=model,\n        read_dirs=list(assignment.get("read_dirs") or []),\n        write_set=list(assignment.get("write_set") or []),\n    )\n''',
+          )
+          replace(
+              "control-plane/scripts/local_agent_executor.py",
+              '''        "dependency_read_dirs": list(assignment.get("read_dirs") or []),\n        "claim_id": claim_id,\n''',
+              '''        "dependency_read_dirs": list(assignment.get("read_dirs") or []),\n        "write_set": list(assignment.get("write_set") or []),\n        "claim_id": claim_id,\n''',
+          )
+
+          # 3) Workflow: writers consume trusted dependency receipts, not mounted mutable workspaces.
+          replace(
+              "control-plane/scripts/run_local_agent_workflow.py",
+              '''    if actor == "A07":\n        row["read_dirs"] = []\n    else:\n        row["read_dirs"] = [\n''',
+              '''    if row.get("write_set"):\n        row["read_dirs"] = []\n    else:\n        row["read_dirs"] = [\n''',
+          )
+          replace(
+              "control-plane/scripts/run_local_agent_workflow.py",
+              '''            if actor == "A07" and row.get("read_dirs"):\n                global_failures.append("A07_external_dependency_dirs")\n''',
+              '''            if row.get("write_set") and row.get("read_dirs"):\n                global_failures.append(f"write_role_external_dependency_dirs:{actor}")\n''',
+          )
+
+          # 4) Finalizer: any actor with an approved write_set may write, but only inside that scope.
+          replace(
+              "control-plane/scripts/finalize_local_agent_execution.py",
+              '''    receipt_path = _receipt_path(issue, run_id, actor) if isinstance(issue, int) else ""\n''',
+              '''    can_write = bool(plan.get("write_set") or []) if plan else False\n\n    receipt_path = _receipt_path(issue, run_id, actor) if isinstance(issue, int) else ""\n''',
+          )
+          replace(
+              "control-plane/scripts/finalize_local_agent_execution.py",
+              '''    if actor != "A07" and changed_paths:\n        failures.append("readonly_workspace_modified")\n\n    if actor == "A07" and decision_value == "PASS" and changed_paths and plan:\n''',
+              '''    if not can_write and changed_paths:\n        failures.append("readonly_workspace_modified")\n\n    if can_write and decision_value == "PASS" and changed_paths and plan:\n''',
+          )
+          replace(
+              "control-plane/scripts/finalize_local_agent_execution.py",
+              '''    if actor == "A07" and changed_paths:\n        work_head = _commit_paths(repo, changed_paths, f"feat(run): materialize {actor} work")\n''',
+              '''    if can_write and changed_paths:\n        work_head = _commit_paths(repo, changed_paths, f"feat(run): materialize {actor} work")\n''',
+          )
+
+          # 5) Lifecycle: integration verifies the union of all approved writers, and recovery preserves write_set.
+          replace(
+              "control-plane/scripts/manage_local_agent_run.py",
+              '''    expected_task_paths = sorted(\n        (finalizations.get("A07") or {}).get("snapshot_verification", {}).get("task_changed_paths", []) or []\n    )\n''',
+              '''    expected_task_paths = sorted({\n        path\n        for actor, assignment in assignments.items()\n        if assignment.get("write_set")\n        for path in (\n            (finalizations.get(actor) or {}).get("snapshot_verification", {}).get("task_changed_paths", []) or []\n        )\n    })\n''',
+          )
+          replace(
+              "control-plane/scripts/manage_local_agent_run.py",
+              '''            "depends_on": list(plan.get("depends_on") or []),\n            "role_file": role_files.get(actor, ""),\n''',
+              '''            "depends_on": list(plan.get("depends_on") or []),\n            "read_set": list(plan.get("read_set") or []),\n            "write_set": list(plan.get("write_set") or []),\n            "role_file": role_files.get(actor, ""),\n''',
+          )
+          replace(
+              "control-plane/scripts/manage_local_agent_run.py",
+              '''    if preflight.get("result") != "PASS":\n        failures.append("recovered_plan_preflight_not_pass")\n''',
+              '''    if preflight.get("result") != "PASS":\n        failures.append("recovered_plan_preflight_not_pass")\n    if preflight.get("serialized_conflicts"):\n        failures.append("recovered_local_serialized_write_conflict")\n''',
+          )
+
+          # 6) Machine-readable contract migration.
+          registry_path = Path("control-plane/ai-system/control-plane/registry.json")
+          reg = json.loads(registry_path.read_text(encoding="utf-8"))
+          reg["schema_version"] = 24
+          local = reg["local_executor"]
+          for key in ["readonly_roles", "write_role", "readonly_allowed_tools", "write_role_allowed_tools"]:
+              local.pop(key, None)
+          local.update({
+              "capability_source": "approved-write-set",
+              "writer_external_dependency_dirs_forbidden": True,
+              "empty_write_set_allowed_tools": ["Read", "Glob", "Grep"],
+              "nonempty_write_set_allowed_tools": ["Read", "Glob", "Grep", "Edit", "Write"],
+          })
+          finalizer = reg["local_finalizer"]
+          finalizer.pop("write_role", None)
+          finalizer["write_capability_source"] = "approved-plan-write-set"
+          preparer = reg["local_run_preparer"]
+          preparer.pop("readonly_empty_write_set_required", None)
+          preparer.pop("write_role", None)
+          preparer.update({
+              "write_capability_source": "plan-config-write-set",
+              "multiple_disjoint_writers_allowed": True,
+              "serialized_writer_overlap": "VETO_LOCAL_RUNTIME",
+          })
+          orchestrator = reg["local_workflow_orchestrator"]
+          orchestrator.pop("A07_external_dependency_dirs_forbidden", None)
+          orchestrator.pop("A07_dependency_context", None)
+          orchestrator.update({
+              "writer_external_dependency_dirs_forbidden": True,
+              "writer_dependency_context": "trusted-receipt-summary-in-prompt",
+          })
+          lifecycle = reg["run_lifecycle_manager"]
+          lifecycle.pop("integration_task_diff_must_equal_verified_A07_diff", None)
+          lifecycle["integration_task_diff_must_equal_verified_writer_union"] = True
+          registry_path.write_text(json.dumps(reg, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+          state_path = Path("control-plane/ai-system/control-plane/state-machine.json")
+          state = json.loads(state_path.read_text(encoding="utf-8"))
+          state["schema_version"] = 9
+          reqs = state["states"]["INTEGRATED_LOCAL"]["requires"]
+          state["states"]["INTEGRATED_LOCAL"]["requires"] = [
+              "integration_task_diff_equals_verified_writer_union" if x == "integration_task_diff_equals_verified_A07_diff" else x
+              for x in reqs
+          ]
+          state_path.write_text(json.dumps(state, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+          # 7) Static validator follows the new machine-readable contract.
+          replace(
+              "control-plane/scripts/validate_agent_control_plane.py",
+              '''    if reg.get("schema_version", 0) < 23:\n        failures.append("registry_schema_version_lt_23")\n''',
+              '''    if reg.get("schema_version", 0) < 24:\n        failures.append("registry_schema_version_lt_24")\n''',
+          )
+          replace(
+              "control-plane/scripts/validate_agent_control_plane.py",
+              '''    readonly_roles = local_executor.get("readonly_roles") or []\n    if readonly_roles != ["A01","A02","A03","A04","A05","A06","A08","A09","A10"]:\n        failures.append("local_executor:readonly_roles")\n    if local_executor.get("write_role") != "A07":\n        failures.append("local_executor:write_role")\n    if local_executor.get("readonly_allowed_tools") != ["Read", "Glob", "Grep"]:\n        failures.append("local_executor:readonly_allowed_tools")\n    if local_executor.get("write_role_allowed_tools") != ["Read", "Glob", "Grep", "Edit", "Write"]:\n        failures.append("local_executor:write_role_allowed_tools")\n''',
+              '''    if local_executor.get("capability_source") != "approved-write-set":\n        failures.append("local_executor:capability_source")\n    if local_executor.get("writer_external_dependency_dirs_forbidden") is not True:\n        failures.append("local_executor:writer_external_dependency_dirs_forbidden")\n    if local_executor.get("empty_write_set_allowed_tools") != ["Read", "Glob", "Grep"]:\n        failures.append("local_executor:empty_write_set_allowed_tools")\n    if local_executor.get("nonempty_write_set_allowed_tools") != ["Read", "Glob", "Grep", "Edit", "Write"]:\n        failures.append("local_executor:nonempty_write_set_allowed_tools")\n''',
+          )
+          replace(
+              "control-plane/scripts/validate_agent_control_plane.py",
+              '''        "driver": "scripts/finalize_local_agent_execution.py",\n        "write_role": "A07",\n        "readonly_workspace_mutation": "VETO",\n''',
+              '''        "driver": "scripts/finalize_local_agent_execution.py",\n        "write_capability_source": "approved-plan-write-set",\n        "readonly_workspace_mutation": "VETO",\n''',
+          )
+          replace(
+              "control-plane/scripts/validate_agent_control_plane.py",
+              '''        "claim_before_plan": True,\n        "readonly_empty_write_set_required": True,\n        "write_role": "A07",\n        "prospective_preflight_before_mutation": True,\n''',
+              '''        "claim_before_plan": True,\n        "write_capability_source": "plan-config-write-set",\n        "multiple_disjoint_writers_allowed": True,\n        "serialized_writer_overlap": "VETO_LOCAL_RUNTIME",\n        "prospective_preflight_before_mutation": True,\n''',
+          )
+          replace(
+              "control-plane/scripts/validate_agent_control_plane.py",
+              '''    if not any(item.startswith("local_preparer:") for item in failures):\n        checks.append("local_run_preparer_contract")\n''',
+              '''    if not any(item.startswith("local_preparer:") for item in failures):\n        checks.append("local_run_preparer_contract")\n        checks.append("plan_scoped_write_capability_contract")\n''',
+          )
+          replace(
+              "control-plane/scripts/validate_agent_control_plane.py",
+              '''        "readonly_dependency_workspaces_via_add_dir": True,\n        "A07_external_dependency_dirs_forbidden": True,\n        "A07_dependency_context": "trusted-receipt-summary-in-prompt",\n        "trusted_finalizer_required_per_actor": True,\n''',
+              '''        "readonly_dependency_workspaces_via_add_dir": True,\n        "writer_external_dependency_dirs_forbidden": True,\n        "writer_dependency_context": "trusted-receipt-summary-in-prompt",\n        "trusted_finalizer_required_per_actor": True,\n''',
+          )
+          replace(
+              "control-plane/scripts/validate_agent_control_plane.py",
+              '''        "integration_re_adjudication_required": True,\n        "integration_task_diff_must_equal_verified_A07_diff": True,\n        "integration_receipt_commit_only": True,\n''',
+              '''        "integration_re_adjudication_required": True,\n        "integration_task_diff_must_equal_verified_writer_union": True,\n        "integration_receipt_commit_only": True,\n''',
+          )
+
+          # 8) Regression tests prove non-A07 plan-scoped writing and read-only preservation.
+          replace(
+              "control-plane/tests/test_prepare_local_agent_run.py",
+              '''            self.assertEqual(plan["write_set"], ["work/A07/**"] if actor == "A07" else [])\n''',
+              '''            expected_write_set = ["work/A07/**"] if actor == "A07" else []\n            self.assertEqual(plan["write_set"], expected_write_set)\n            self.assertEqual(row["write_set"], expected_write_set)\n''',
+          )
+          replace(
+              "control-plane/tests/test_prepare_local_agent_run.py",
+              '''    def test_readonly_actor_cannot_request_task_write_scope(self):\n        result = preparer.prepare_run(\n            self.repo,\n            ISSUE,\n            RUN_ID,\n            self.base_sha,\n            "main",\n            self.workspaces,\n            plan_config={"A08": {"write_set": ["docs/**"]}},\n            id_factory=deterministic_id,\n        )\n        self.assertEqual(result["result"], "VETO", result)\n        self.assertIn("readonly_write_set_nonempty:A08", result["failures"])\n        self.assertFalse(self.workspaces.exists())\n''',
+              '''    def test_non_implementer_can_receive_disjoint_write_scope(self):\n        result = preparer.prepare_run(\n            self.repo,\n            ISSUE,\n            RUN_ID,\n            self.base_sha,\n            "main",\n            self.workspaces,\n            plan_config={"A08": {"write_set": ["docs/**"]}},\n            id_factory=deterministic_id,\n        )\n        self.assertEqual(result["result"], "PASS", result)\n        row = next(item for item in result["assignments"] if item["actor_id"] == "A08")\n        self.assertEqual(row["write_set"], ["docs/**"])\n\n    def test_local_serialized_writer_overlap_is_veto(self):\n        result = preparer.prepare_run(\n            self.repo, ISSUE, RUN_ID, self.base_sha, "main", self.workspaces,\n            plan_config={\n                "A07": {"write_set": ["docs/**"]},\n                "A08": {"write_set": ["docs/**"]},\n            },\n            id_factory=deterministic_id,\n        )\n        self.assertEqual(result["result"], "VETO", result)\n        self.assertIn("local_serialized_write_conflict_requires_disjoint_scopes", result["failures"])\n        self.assertFalse(self.workspaces.exists())\n''',
+          )
+          replace(
+              "control-plane/tests/test_local_agent_executor.py",
+              '''            "plan_head_sha": PLAN_SHA,\n        })\n''',
+              '''            "plan_head_sha": PLAN_SHA,\n            "write_set": [],\n        })\n''',
+          )
+          replace(
+              "control-plane/tests/test_local_agent_executor.py",
+              '''    def test_a07_cannot_mount_external_dependency_workspace(self):\n        make_fake_claude(self.fake)\n        rows = assignments(self.root / "ws")\n        external = self.root / "dependency"\n        external.mkdir()\n        rows[6]["read_dirs"] = [str(external)]\n        failures = executor._assignment_failures(rows)\n        self.assertIn("write_role_external_read_dir_forbidden:A07", failures)\n''',
+              '''    def test_any_writer_cannot_mount_external_dependency_workspace(self):\n        make_fake_claude(self.fake)\n        rows = assignments(self.root / "ws")\n        external = self.root / "dependency"\n        external.mkdir()\n        rows[4]["write_set"] = ["work/A05/**"]\n        rows[4]["read_dirs"] = [str(external)]\n        failures = executor._assignment_failures(rows)\n        self.assertIn("write_role_external_read_dir_forbidden:A05", failures)\n''',
+          )
+          replace(
+              "control-plane/tests/test_local_agent_executor.py",
+              '''    def test_tool_policy_is_positive_allowlist_and_never_grants_bash(self):\n        read_cmd = executor.build_claude_command(\n            self.fake, "A08", "prompt", max_budget_usd=0.01\n        )\n        write_cmd = executor.build_claude_command(\n            self.fake, "A07", "prompt", max_budget_usd=0.01\n        )\n        read_tools = read_cmd[read_cmd.index("--allowedTools") + 1]\n        write_tools = write_cmd[write_cmd.index("--allowedTools") + 1]\n        self.assertEqual(read_tools, "Read,Glob,Grep")\n        self.assertEqual(write_tools, "Read,Glob,Grep,Edit,Write")\n        self.assertNotIn("Bash", read_tools)\n        self.assertNotIn("Bash", write_tools)\n        self.assertNotIn("--disallowedTools", read_cmd)\n        self.assertNotIn("--disallowedTools", write_cmd)\n        self.assertIn("--max-budget-usd", write_cmd)\n''',
+              '''    def test_tool_policy_is_plan_scoped_positive_allowlist_and_never_grants_bash(self):\n        read_cmd = executor.build_claude_command(\n            self.fake, "A07", "prompt", max_budget_usd=0.01, write_set=[]\n        )\n        write_cmd = executor.build_claude_command(\n            self.fake, "A05", "prompt", max_budget_usd=0.01, write_set=["work/A05/**"]\n        )\n        read_tools = read_cmd[read_cmd.index("--allowedTools") + 1]\n        write_tools = write_cmd[write_cmd.index("--allowedTools") + 1]\n        self.assertEqual(read_tools, "Read,Glob,Grep")\n        self.assertEqual(write_tools, "Read,Glob,Grep,Edit,Write")\n        self.assertNotIn("Bash", read_tools)\n        self.assertNotIn("Bash", write_tools)\n        self.assertNotIn("--disallowedTools", read_cmd)\n        self.assertNotIn("--disallowedTools", write_cmd)\n        self.assertIn("--max-budget-usd", write_cmd)\n''',
+          )
+          replace(
+              "control-plane/tests/test_finalize_local_agent_execution.py",
+              '''    def test_readonly_clean_pass_creates_bound_receipt_commit(self):\n        _, plan_head, snapshot, execution = self.prepare_actor("A08", ["docs/**"])\n''',
+              '''    def test_readonly_clean_pass_creates_bound_receipt_commit(self):\n        _, plan_head, snapshot, execution = self.prepare_actor("A08", [])\n''',
+          )
+          replace(
+              "control-plane/tests/test_finalize_local_agent_execution.py",
+              '''    def test_readonly_mutation_is_veto_without_receipt_commit(self):\n        _, plan_head, snapshot, execution = self.prepare_actor("A08", ["docs/**"])\n''',
+              '''    def test_readonly_mutation_is_veto_without_receipt_commit(self):\n        _, plan_head, snapshot, execution = self.prepare_actor("A08", [])\n''',
+          )
+          replace(
+              "control-plane/tests/test_finalize_local_agent_execution.py",
+              '''    def test_a07_in_scope_change_commits_work_then_receipt(self):\n''',
+              '''    def test_non_implementer_with_approved_scope_can_commit(self):\n        _, plan_head, snapshot, execution = self.prepare_actor("A04", ["work/A04/**"])\n        path = self.repo / "work/A04/result.txt"\n        path.parent.mkdir(parents=True, exist_ok=True)\n        path.write_text("done\\n", encoding="utf-8")\n        result = finalizer.finalize_execution(self.repo, "A04", snapshot, execution)\n        self.assertEqual(result["result"], "PASS", result)\n        self.assertNotEqual(result["work_head_sha"], plan_head)\n        changed_work = git(self.repo, "diff", "--name-only", plan_head, result["work_head_sha"], capture=True).splitlines()\n        self.assertEqual(changed_work, ["work/A04/result.txt"])\n\n    def test_a07_in_scope_change_commits_work_then_receipt(self):\n''',
+          )
+
+          # Registration tests follow the new contract names.
+          replace(
+              "control-plane/tests/test_local_executor_registration.py",
+              '''        self.assertIn("readonly_empty_write_set_contract", result["checks"])\n''',
+              '''        self.assertIn("plan_scoped_write_capability_contract", result["checks"])\n''',
+          )
+          replace(
+              "control-plane/tests/test_local_executor_registration.py",
+              '''            "bash_allowed_by_default": False,\n            "readonly_allowed_tools": ["Read", "Glob", "Grep"],\n            "write_role_allowed_tools": ["Read", "Glob", "Grep", "Edit", "Write"],\n            "claim_bound_assignment_required": True,\n''',
+              '''            "bash_allowed_by_default": False,\n            "capability_source": "approved-write-set",\n            "writer_external_dependency_dirs_forbidden": True,\n            "empty_write_set_allowed_tools": ["Read", "Glob", "Grep"],\n            "nonempty_write_set_allowed_tools": ["Read", "Glob", "Grep", "Edit", "Write"],\n            "claim_bound_assignment_required": True,\n''',
+          )
+          replace(
+              "control-plane/tests/test_local_executor_registration.py",
+              '''        self.assertTrue(preparer["claim_before_plan"])\n        self.assertTrue(preparer["readonly_empty_write_set_required"])\n        self.assertFalse(preparer["remote_push_performed"])\n        self.assertEqual(preparer["write_role"], "A07")\n''',
+              '''        self.assertTrue(preparer["claim_before_plan"])\n        self.assertEqual(preparer["write_capability_source"], "plan-config-write-set")\n        self.assertTrue(preparer["multiple_disjoint_writers_allowed"])\n        self.assertEqual(preparer["serialized_writer_overlap"], "VETO_LOCAL_RUNTIME")\n        self.assertFalse(preparer["remote_push_performed"])\n''',
+          )
+          replace(
+              "control-plane/tests/test_local_executor_registration.py",
+              '''        self.assertTrue(lifecycle["integration_re_adjudication_required"])\n        self.assertTrue(lifecycle["integration_task_diff_must_equal_verified_A07_diff"])\n''',
+              '''        self.assertTrue(lifecycle["integration_re_adjudication_required"])\n        self.assertTrue(lifecycle["integration_task_diff_must_equal_verified_writer_union"])\n''',
+          )
+          replace(
+              "control-plane/tests/test_local_executor_registration.py",
+              '''        self.assertTrue(orchestrator["readonly_dependency_workspaces_via_add_dir"])\n        self.assertTrue(orchestrator["A07_external_dependency_dirs_forbidden"])\n        self.assertTrue(orchestrator["trusted_finalizer_required_per_actor"])\n''',
+              '''        self.assertTrue(orchestrator["readonly_dependency_workspaces_via_add_dir"])\n        self.assertTrue(orchestrator["writer_external_dependency_dirs_forbidden"])\n        self.assertEqual(orchestrator["writer_dependency_context"], "trusted-receipt-summary-in-prompt")\n        self.assertTrue(orchestrator["trusted_finalizer_required_per_actor"])\n''',
+          )
+
+          # 9) Response continuity for allowed content: no repetitive boundary loops or stop-start prose.
+          config_path = Path("control-plane/ai-system/configs/context-first-capability-routing.json")
+          cfg = json.loads(config_path.read_text(encoding="utf-8"))
+          cfg["response_quality"] = {
+              "cohesive_prose": True,
+              "single_boundary_notice_when_needed": True,
+              "avoid_repetitive_boundary_loops": True,
+              "continue_allowed_content_without_stop_start_disclaimers": True,
+              "direct_when_allowed": True,
+          }
+          config_path.write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          replace(
+              "control-plane/scripts/validate_context_first_capability_router.py",
+              '''    if "do_not_force_euphemisms" not in str(response_policy.get("terminology", "")):\n        failures.append("terminology_preservation_missing")\n\n    return {"schemaVersion": 1, "failures": sorted(set(failures)), "result": "PASS" if not failures else "FAIL"}\n''',
+              '''    if "do_not_force_euphemisms" not in str(response_policy.get("terminology", "")):\n        failures.append("terminology_preservation_missing")\n\n    response_quality = payload.get("response_quality") if isinstance(payload.get("response_quality"), dict) else {}\n    for name in [\n        "cohesive_prose",\n        "single_boundary_notice_when_needed",\n        "avoid_repetitive_boundary_loops",\n        "continue_allowed_content_without_stop_start_disclaimers",\n        "direct_when_allowed",\n    ]:\n        if response_quality.get(name) is not True:\n            failures.append(f"response_quality_{name}_must_be_true")\n\n    return {"schemaVersion": 1, "failures": sorted(set(failures)), "result": "PASS" if not failures else "FAIL"}\n''',
+          )
+          replace(
+              "control-plane/tests/test_context_first_capability_router.py",
+              '''    def test_evasion_mode_is_not_enabled(self):\n''',
+              '''    def test_allowed_content_response_quality_is_cohesive(self):\n        quality = self.load_config()["response_quality"]\n        self.assertTrue(quality["cohesive_prose"])\n        self.assertTrue(quality["single_boundary_notice_when_needed"])\n        self.assertTrue(quality["avoid_repetitive_boundary_loops"])\n        self.assertTrue(quality["continue_allowed_content_without_stop_start_disclaimers"])\n        self.assertTrue(quality["direct_when_allowed"])\n\n    def test_response_quality_contract_fails_closed(self):\n        payload = self.load_config()\n        payload["response_quality"]["cohesive_prose"] = False\n        result = validator.validate(payload)\n        self.assertEqual(result["result"], "FAIL")\n        self.assertIn("response_quality_cohesive_prose_must_be_true", result["failures"])\n\n    def test_evasion_mode_is_not_enabled(self):\n''',
+          )
+
+          policy_path = Path("docs/CAPABILITY_ACCESS_AND_FLEXIBILITY_POLICY.md")
+          policy = policy_path.read_text(encoding="utf-8")
+          marker = "## Response continuity"
+          if marker not in policy:
+              policy += '''\n\n## Response continuity\n\nFor content that is allowed in the current context, answer directly in cohesive prose. Do not create stop-start output by repeatedly restating the same boundary, self-correcting every few sentences, or forcing unnecessary euphemisms. If one narrow part of a mixed request is constrained, state that boundary once and immediately continue with the closest allowed material. This continuity rule never overrides host or platform safety enforcement.\n'''
+              policy_path.write_text(policy, encoding="utf-8")
+
+          # 10) Human-readable control-plane contract follows the same capability model.
+          replace(
+              "control-plane/AGENTS.md",
+              '''- After a local workflow, use `scripts/manage_local_agent_run.py` for `status / publish / integrate / publish-integration / recover / rehydrate / resume / cleanup`; actor publication is create-or-fast-forward only, integration re-adjudicates and re-checks the A07 task diff, and cleanup never silently discards dirty worktrees.\n''',
+              '''- After a local workflow, use `scripts/manage_local_agent_run.py` for `status / publish / integrate / publish-integration / recover / rehydrate / resume / cleanup`; actor publication is create-or-fast-forward only, integration re-adjudicates and re-checks the union of all approved writer task diffs, and cleanup never silently discards dirty worktrees.\n''',
+          )
+          replace(
+              "control-plane/AGENTS.md",
+              '''- Local executor tool access is a positive allowlist: read-only roles get `Read,Glob,Grep`, A07 gets `Read,Glob,Grep,Edit,Write`, and `Bash` is not granted by default.\n- Convert local executor output to Git evidence only through `scripts/finalize_local_agent_execution.py`; model JSON is not itself a receipt. The finalizer requires claim identity, scope-checks A07 changes, rejects read-only mutations/staged changes, creates receipt v2, and does not push.\n- Prepare local A01–A10 runs with `scripts/prepare_local_agent_run.py` before backend launch. Read-only roles must use `write_set: []`; only A07 may receive task write scope. Preparation is local-only, claim-before-plan, exact-base-bound, and does not push.\n- Use `scripts/run_local_agent_workflow.py` for a complete local A01–A10 runtime. Direct `local_agent_executor.py` output is not completion evidence. Downstream agents run only after dependencies finalize PASS; A07 may not mount external dependency workspaces; full local PASS also requires deterministic receipt adjudication and fresh-base verification.\n''',
+              '''- Local executor tool access is a positive allowlist derived from the approved plan: actors with `write_set: []` get `Read,Glob,Grep`; actors with a non-empty approved `write_set` get `Read,Glob,Grep,Edit,Write`; `Bash` is not granted by default. Actor identity alone never grants write access.\n- Convert local executor output to Git evidence only through `scripts/finalize_local_agent_execution.py`; model JSON is not itself a receipt. The finalizer requires claim identity, scope-checks every writer against its approved `write_set`, rejects undeclared/read-only mutations and staged changes, creates receipt v2, and does not push.\n- Prepare local A01–A10 runs with `scripts/prepare_local_agent_run.py` before backend launch. Any actor may receive an explicit task `write_set`; empty means read-only. Multiple local writers are allowed only when their scopes are disjoint; serialized overlaps are VETO for the local runtime. Preparation is local-only, claim-before-plan, exact-base-bound, and does not push.\n- Use `scripts/run_local_agent_workflow.py` for a complete local A01–A10 runtime. Direct `local_agent_executor.py` output is not completion evidence. Downstream agents run only after dependencies finalize PASS; any writer may not mount external dependency workspaces and instead receives trusted dependency receipts in the prompt; full local PASS also requires deterministic receipt adjudication and fresh-base verification.\n''',
+          )
+
+          print("plan-scoped write and response-flow migration applied")
+          PY
+      - name: Compile changed Python contracts
+        run: |
+          python -m py_compile \
+            control-plane/scripts/prepare_local_agent_run.py \
+            control-plane/scripts/local_agent_executor.py \
+            control-plane/scripts/run_local_agent_workflow.py \
+            control-plane/scripts/finalize_local_agent_execution.py \
+            control-plane/scripts/manage_local_agent_run.py \
+            control-plane/scripts/validate_agent_control_plane.py \
+            control-plane/scripts/validate_context_first_capability_router.py
+      - name: Validate machine-readable contracts
+        run: |
+          python -m json.tool control-plane/ai-system/control-plane/registry.json >/dev/null
+          python -m json.tool control-plane/ai-system/control-plane/state-machine.json >/dev/null
+          python -m json.tool control-plane/ai-system/configs/context-first-capability-routing.json >/dev/null
+          python control-plane/scripts/validate_context_first_capability_router.py control-plane/ai-system/configs/context-first-capability-routing.json
+          python control-plane/scripts/validate_agent_control_plane.py --root control-plane
+      - name: Run targeted regression tests
+        working-directory: control-plane
+        run: |
+          python -m unittest \
+            tests/test_context_first_capability_router.py \
+            tests/test_prepare_local_agent_run.py \
+            tests/test_local_agent_executor.py \
+            tests/test_finalize_local_agent_execution.py \
+            tests/test_run_local_agent_workflow.py \
+            tests/test_manage_local_agent_run.py \
+            tests/test_local_executor_registration.py \
+            tests/test_agent_control_plane.py
+      - name: Run full control-plane suite
+        working-directory: control-plane
+        run: python -m unittest discover -s tests -p 'test_*.py'
+      - name: Verify diff hygiene
+        run: |
+          git diff --check
+          ! git grep -n 'readonly_write_set_nonempty' -- control-plane/scripts control-plane/tests
+          ! git grep -n 'integration_task_diff_must_equal_verified_A07_diff' -- control-plane/scripts control-plane/tests control-plane/ai-system/control-plane/registry.json control-plane/ai-system/control-plane/state-machine.json
+      - name: Commit verified repair and remove bootstrap workflow
+        if: success()
+        run: |
+          rm .github/workflows/plan-scoped-write-repair.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Fix plan-scoped write permissions and response flow'
+          git push origin HEAD:${GITHUB_REF_NAME}
