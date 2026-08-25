@@ -6,6 +6,7 @@ import { createGatewayHandler } from "../src/mcp.js";
 
 test("gateway lists read-only tools and calls capability/preflight tools", async () => {
   process.env.ORDINARY_CHAT_MCP_ALLOW_SUBMIT = "false";
+  process.env.ORDINARY_CHAT_MEMORY_ALLOW_WRITE = "false";
   delete process.env.ORDINARY_CHAT_ALLOWED_ROOTS;
 
   const handler = createGatewayHandler();
@@ -26,6 +27,7 @@ test("gateway lists read-only tools and calls capability/preflight tools", async
       "agent_run_status",
       "bridge_preflight",
       "capabilities",
+      "project_memory_search",
     ]);
 
     const capabilities = await client.callTool({ name: "capabilities", arguments: {} });
