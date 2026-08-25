@@ -27,8 +27,18 @@
       "route": "playwright-mcp"
     },
     {
+      "name": "project-memory-read",
+      "when": "the task needs explicit project recall or provenance search for a workspace",
+      "route": "project-memory"
+    },
+    {
+      "name": "local-observability",
+      "when": "the user needs visual preflight, run status, or receipt inspection without mutation",
+      "route": "ordinary-chat-dashboard"
+    },
+    {
       "name": "mcp-gateway",
-      "when": "the host exposes custom MCP and the request is capability discovery, status, receipt retrieval, or a guarded mutation supported by the bridge",
+      "when": "the host exposes custom MCP and the request is capability discovery, preflight, run status, receipt retrieval, project-memory search, or a guarded mutation supported by the bridge",
       "route": "ordinary-chat-mcp"
     }
   ],
@@ -36,6 +46,8 @@
     "requirePreflightBeforeLocalMutation": true,
     "requirePreflightBeforeAgentRun": true,
     "requireCapabilityAvailable": true,
+    "requireCleanRepoForA01A10": true,
+    "bindA01A10ToQueuedBaseSha": true,
     "fallbackMustBeExplicit": true
   },
   "antiPatterns": [
@@ -43,6 +55,8 @@
     "duplicate_provider_credentials_without_need",
     "silent_fallback_to_browser",
     "raw_shell_as_universal_tool",
-    "claim_host_feature_unlock"
+    "claim_host_feature_unlock",
+    "treat_process_start_as_completion",
+    "allow_generated_browser_artifacts_to_dirty_agent_repo"
   ]
 }
