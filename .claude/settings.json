@@ -1,0 +1,23 @@
+{
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "xhigh",
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "WebSearch|WebFetch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/record-web-research.py\""
+          }
+        ]
+      }
+    ]
+  }
+}
