@@ -80,6 +80,17 @@
     "slow_streaming_is_not_depth_evidence": true,
     "normal_continuous_delivery_after_release_gate": true
   },
+  "reasoning_runtime": {
+    "effort_by_task_class": {
+      "simple": "medium",
+      "material": "xhigh",
+      "critical": "max"
+    },
+    "effort_must_be_runtime_bound": true,
+    "material_or_critical_must_not_inherit_disable_thinking": true,
+    "prompt_language_alone_is_not_effort_enforcement": true,
+    "project_default_effort": "xhigh"
+  },
   "state_reconstruction": {
     "required_fields": [
       "real_outcome",
@@ -152,6 +163,16 @@
       "decision_impact",
       "stop_reason"
     ],
+    "runtime_attestation": {
+      "required_actor": "A03",
+      "required_successful_tools_for_material_or_critical": [
+        "WebSearch",
+        "WebFetch"
+      ],
+      "hook_event": "PostToolUse",
+      "fresh_audit_directory_per_run": true,
+      "self_report_only_cannot_pass": true
+    },
     "popularity_is_not_proof": true,
     "fixed_source_quota_forbidden": true,
     "stop_when_decision_saturated": true
