@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Validate repository-wide Continuous Thinking Quality v3 invariants.
+"""Validate repository-wide Continuous Thinking Quality invariants.
 
 This is intentionally small and dependency-free so CI can fail closed when the
-machine-readable quality profile or its repository entry points drift.
+machine-readable quality profile, runtime research capability, or delivery
+contract drifts.
 """
 from __future__ import annotations
 
@@ -14,6 +15,7 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 CONFIG_PATH = REPO_ROOT / "control-plane/ai-system/configs/continuous-thinking-global.json"
 AGENTS_PATH = REPO_ROOT / "AGENTS.md"
 CANONICAL_DOC_PATH = REPO_ROOT / "docs/CONTINUOUS_THINKING_QUALITY_OS.md"
+PROJECT_CLAUDE_SETTINGS = REPO_ROOT / ".claude/settings.json"
 
 
 def _load_json(path: pathlib.Path) -> dict:
@@ -40,6 +42,7 @@ def validate() -> list[str]:
         (CONFIG_PATH, "config_missing"),
         (AGENTS_PATH, "root_agents_missing"),
         (CANONICAL_DOC_PATH, "canonical_doc_missing"),
+        (PROJECT_CLAUDE_SETTINGS, "project_claude_settings_missing"),
     ]:
         if not path.is_file():
             failures.append(code)
@@ -48,6 +51,7 @@ def validate() -> list[str]:
 
     try:
         config = _load_json(CONFIG_PATH)
+        claude_settings = _load_json(PROJECT_CLAUDE_SETTINGS)
     except Exception as exc:
         return [f"config_invalid:{type(exc).__name__}:{exc}"]
 
@@ -66,6 +70,58 @@ def validate() -> list[str]:
         "elapsed_time_misused_as_evidence",
         failures,
     )
+    _require(
+        anti_instant.get("quality_work_must_precede_final_text_release") is True,
+        "quality_work_not_required_before_release",
+        failures,
+    )
+    _require(
+        anti_instant.get("visible_token_drip_is_not_reasoning") is True,
+        "token_drip_can_masquerade_as_reasoning",
+        failures,
+    )
+    _require(
+        anti_instant.get("progress_updates_require_information_gain") is True,
+        "empty_progress_updates_allowed",
+        failures,
+    )
+
+    runtime = config.get("reasoning_runtime") or {}
+    _require(runtime.get("project_thinking_enabled") is True, "project_thinking_not_enabled", failures)
+    _require(
+        runtime.get("effort_by_task_class") == {
+            "simple": "medium", "material": "high", "critical": "xhigh"
+        },
+        "reasoning_effort_mapping_drift",
+        failures,
+    )
+    _require(
+        runtime.get("material_and_critical_must_clear_inherited_thinking_disable") is True,
+        "inherited_thinking_disable_can_bypass_deep_work",
+        failures,
+    )
+    _require(
+        runtime.get("prompt_only_think_harder_is_not_runtime_enforcement") is True,
+        "prompt_only_depth_can_count_as_runtime_enforcement",
+        failures,
+    )
+
+    delivery = config.get("delivery") or {}
+    for key, code in [
+        ("separate_deliberation_from_delivery", "deliberation_delivery_not_separated"),
+        ("artificial_token_pacing_forbidden", "artificial_token_pacing_allowed"),
+        ("fixed_wait_before_answer_forbidden", "fixed_wait_before_answer_allowed"),
+        ("final_answer_should_be_cohesive", "cohesive_final_delivery_not_required"),
+        ("progress_updates_only_on_meaningful_state_change", "progress_update_spam_allowed"),
+        ("stream_transport_must_not_be_used_as_depth_signal", "stream_transport_can_fake_depth"),
+    ]:
+        _require(delivery.get(key) is True, code, failures)
+
+    settings_permissions = claude_settings.get("permissions") or {}
+    allow = set(settings_permissions.get("allow") or [])
+    _require(claude_settings.get("alwaysThinkingEnabled") is True, "claude_project_thinking_disabled", failures)
+    _require(claude_settings.get("effortLevel") == "high", "claude_project_effort_not_high", failures)
+    _require({"WebSearch", "WebFetch"}.issubset(allow), "claude_web_research_not_preapproved", failures)
 
     acceptance = config.get("acceptance_contract") or {}
     _require(
@@ -119,6 +175,26 @@ def validate() -> list[str]:
     )
     _require(research.get("fixed_source_quota_forbidden") is True, "fixed_source_quota_allowed", failures)
     _require(research.get("stop_when_decision_saturated") is True, "research_stop_rule_missing", failures)
+    _require(
+        research.get("research_capability_must_be_runtime_available_when_triggered") is True,
+        "research_runtime_capability_not_required",
+        failures,
+    )
+    _require(
+        research.get("material_or_critical_research_actor_requires_search_receipt") is True,
+        "deep_research_search_receipt_not_required",
+        failures,
+    )
+    _require(
+        research.get("material_or_critical_research_actor_requires_fetched_source_url") is True,
+        "deep_research_fetched_source_not_required",
+        failures,
+    )
+    _require(
+        research.get("research_self_report_without_source_receipt_cannot_pass") is True,
+        "research_self_report_can_pass",
+        failures,
+    )
 
     routes = config.get("multi_path_reasoning") or {}
     _require(routes.get("route_aliases_do_not_count_as_diversity") is True, "alias_diversity_allowed", failures)
@@ -189,7 +265,7 @@ def main() -> int:
         for failure in failures:
             print(f"FAIL {failure}")
         return 1
-    print("PASS continuous-thinking-quality-v3 global invariants")
+    print("PASS continuous-thinking-quality-v4 global invariants")
     return 0
 
 
