@@ -264,7 +264,12 @@ def _queue(kind: str, spec: dict[str, Any]) -> dict[str, Any]:
         except OSError:
             pass
         return _update_record(run_id, status="FAIL", failures=[f"worker_spawn_failed:{type(exc).__name__}"], finished_at_unix=int(time.time()))
-    return _update_record(run_id, worker_pid=proc.pid, spawned_at_unix=int(time.time()))
+    # Do not write the shared record after Popen: the worker may already have
+    # advanced it to RUNNING. Return spawn metadata only in this immediate response.
+    response = dict(record)
+    response["worker_pid"] = proc.pid
+    response["spawned_at_unix"] = int(time.time())
+    return response
 
 
 def submit_chat(workspace: str, goal: str) -> dict[str, Any]:
@@ -514,6 +519,9 @@ def worker(spec_path: str) -> None:
     if expected_goal_hash != actual_goal_hash:
         _update_record(run_id, status="FAIL", failures=["worker_goal_hash_mismatch"], finished_at_unix=int(time.time()))
         return
+    # The worker is the sole normal writer after spawn. Persist PID here so the
+    # parent cannot race with RUNNING/terminal state transitions.
+    _update_record(run_id, worker_pid=os.getpid(), worker_started_at_unix=int(time.time()))
     run_dir = path.parent
     try:
         if kind == "chat-work-agent":
