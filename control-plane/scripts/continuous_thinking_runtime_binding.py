@@ -40,10 +40,16 @@ def build_runtime_directive(profile: dict, profile_sha256: str, task_class: str)
     route = (profile.get("depth_router") or {}).get(task_class) or {}
     stages = route.get("required_stages") or []
     pass_requires = (profile.get("release") or {}).get("pass_requires") or []
+    research_policy = profile.get("research_and_experience") or {}
+    output_delivery = profile.get("output_delivery") or {}
     if not isinstance(stages, list) or not stages:
         raise ValueError(f"quality_route_missing:{task_class}")
     if not isinstance(pass_requires, list) or not pass_requires:
         raise ValueError("quality_release_requirements_missing")
+    if research_policy.get("triggered_research_requires_tool_backed_evidence") is not True:
+        raise ValueError("quality_research_evidence_gate_missing")
+    if output_delivery.get("artificial_output_throttling_forbidden") is not True:
+        raise ValueError("quality_output_throttling_guard_missing")
     return "\n".join([
         BINDING_START,
         f"profile_id={profile['profile_id']}",
@@ -52,7 +58,9 @@ def build_runtime_directive(profile: dict, profile_sha256: str, task_class: str)
         "required_stages=" + " -> ".join(str(x) for x in stages),
         "objective=Optimize for first-pass correctness and fewer user correction loops, not artificial delay, output length, source count, or agent count.",
         "preflight=Before material changes reconstruct outcome, current state, scope, dependencies, protected capabilities, failure evidence, acceptance criteria, causal model, and decision-critical unknowns.",
-        "research=When fresh knowledge or expert operational experience can change the decision, use current primary sources plus high-signal practitioner evidence and extract mechanism, preconditions, failure modes, verification, portable lesson, and invalidation condition.",
+        "research=When fresh knowledge or expert operational experience can change the decision, or the user explicitly asks to search/browse/research/look up/verify current information/deep research, perform actual tool-backed research before release. Use current primary sources plus high-signal practitioner evidence and extract mechanism, preconditions, failure modes, verification, portable lesson, and invalidation condition.",
+        "research_gate=A triggered research requirement is satisfied only by observable tool/source evidence. Record the trigger, sources or queries, evidence summary, decision impact, and stop reason. Internal memory, hidden reasoning, elapsed time, or delayed output cannot satisfy a research request.",
+        "delivery=Reasoning/research and answer delivery are separate phases. Once the release gate is satisfied, output normally and continuously. Never use sleep, artificial first-token delay, token-by-token throttling, or deliberate chunk pauses as a proxy for depth; slow streaming is not evidence of deep reasoning.",
         "stagnation=After two materially similar failures, change a major dimension before retrying: hypothesis, mechanism, diagnostic instrument, evidence family, environment, or verification method.",
         "verification=Prefer runtime or user-path evidence, then integration, read-back, unit/static, and diff/config inspection. Do not treat a file write, command exit, or unrelated green CI as proof of behavior.",
         "continuity=Do not stop at a foreseeable half-step or require repeated user continuation for predictable work; continue until PASS or a concrete external BLOCKED condition.",
