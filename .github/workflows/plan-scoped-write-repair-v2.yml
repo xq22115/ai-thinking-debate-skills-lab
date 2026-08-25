@@ -1,0 +1,87 @@
+name: Plan Scoped Write Repair V2
+
+on:
+  push:
+    branches:
+      - fix/plan-scoped-write-response-flow
+
+permissions:
+  contents: write
+
+jobs:
+  repair-verify-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repair branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply staged migration from audited bootstrap
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import textwrap
+          workflow = Path('.github/workflows/plan-scoped-write-repair.yml').read_text(encoding='utf-8')
+          marker = "          python - <<'PY'\n"
+          start = workflow.index(marker) + len(marker)
+          end = workflow.index("\n          PY", start)
+          code = textwrap.dedent(workflow[start:end])
+          exec(compile(code, 'plan-scoped-write-repair:embedded-migration', 'exec'), {})
+          PY
+          cat > control-plane/.gitignore <<'EOF'
+          __pycache__/
+          *.py[cod]
+          .pytest_cache/
+          EOF
+      - name: Compile changed Python contracts
+        run: |
+          python -m py_compile \
+            control-plane/scripts/prepare_local_agent_run.py \
+            control-plane/scripts/local_agent_executor.py \
+            control-plane/scripts/run_local_agent_workflow.py \
+            control-plane/scripts/finalize_local_agent_execution.py \
+            control-plane/scripts/manage_local_agent_run.py \
+            control-plane/scripts/validate_agent_control_plane.py \
+            control-plane/scripts/validate_context_first_capability_router.py
+      - name: Validate machine-readable contracts
+        run: |
+          python -m json.tool control-plane/ai-system/control-plane/registry.json >/dev/null
+          python -m json.tool control-plane/ai-system/control-plane/state-machine.json >/dev/null
+          python -m json.tool control-plane/ai-system/configs/context-first-capability-routing.json >/dev/null
+          python control-plane/scripts/validate_context_first_capability_router.py control-plane/ai-system/configs/context-first-capability-routing.json
+          (cd control-plane && python scripts/validate_agent_control_plane.py --root .)
+      - name: Run targeted regression tests
+        working-directory: control-plane
+        run: |
+          python -m unittest \
+            tests/test_context_first_capability_router.py \
+            tests/test_prepare_local_agent_run.py \
+            tests/test_local_agent_executor.py \
+            tests/test_finalize_local_agent_execution.py \
+            tests/test_run_local_agent_workflow.py \
+            tests/test_manage_local_agent_run.py \
+            tests/test_local_executor_registration.py \
+            tests/test_agent_control_plane.py
+      - name: Run full control-plane suite
+        working-directory: control-plane
+        run: python -m unittest discover -s tests -p 'test_*.py'
+      - name: Verify diff hygiene
+        run: |
+          git diff --check
+          ! git grep -n 'readonly_write_set_nonempty' -- control-plane/scripts control-plane/tests
+          ! git grep -n 'integration_task_diff_must_equal_verified_A07_diff' -- control-plane/scripts control-plane/tests control-plane/ai-system/control-plane/registry.json control-plane/ai-system/control-plane/state-machine.json
+      - name: Commit verified non-workflow repair
+        if: success()
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add control-plane docs
+          git diff --cached --check
+          git commit -m 'Fix plan-scoped write permissions and response flow'
+          git push origin HEAD:${GITHUB_REF_NAME}
