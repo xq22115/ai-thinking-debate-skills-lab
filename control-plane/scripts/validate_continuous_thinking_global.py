@@ -66,6 +66,48 @@ def validate() -> list[str]:
         "elapsed_time_misused_as_evidence",
         failures,
     )
+    _require(
+        anti_instant.get("explicit_search_or_deep_research_request_is_a_research_trigger") is True,
+        "explicit_search_request_not_a_research_trigger",
+        failures,
+    )
+    _require(
+        anti_instant.get("search_request_cannot_be_satisfied_by_delay_only") is True,
+        "delay_can_fake_search_request",
+        failures,
+    )
+
+    output_delivery = config.get("output_delivery") or {}
+    _require(
+        output_delivery.get("reasoning_and_delivery_are_separate_phases") is True,
+        "reasoning_delivery_phases_not_separated",
+        failures,
+    )
+    _require(
+        output_delivery.get("artificial_output_throttling_forbidden") is True,
+        "artificial_output_throttling_allowed",
+        failures,
+    )
+    _require(
+        output_delivery.get("artificial_first_token_delay_forbidden") is True,
+        "artificial_first_token_delay_allowed",
+        failures,
+    )
+    _require(
+        output_delivery.get("deliberate_chunk_pause_forbidden") is True,
+        "deliberate_chunk_pause_allowed",
+        failures,
+    )
+    _require(
+        output_delivery.get("slow_streaming_is_not_depth_evidence") is True,
+        "slow_streaming_can_fake_depth",
+        failures,
+    )
+    _require(
+        output_delivery.get("normal_continuous_delivery_after_release_gate") is True,
+        "normal_delivery_after_release_not_required",
+        failures,
+    )
 
     acceptance = config.get("acceptance_contract") or {}
     _require(
@@ -115,6 +157,18 @@ def validate() -> list[str]:
     _require(
         required_internalization.issubset(internalization),
         "experience_internalization_incomplete",
+        failures,
+    )
+    _require(research.get("triggered_research_requires_tool_backed_evidence") is True, "triggered_research_can_be_claimed_without_tool_evidence", failures)
+    _require(research.get("research_claim_requires_source_or_tool_evidence") is True, "research_claim_can_be_unsupported", failures)
+    _require(research.get("delay_or_hidden_reasoning_cannot_satisfy_research_trigger") is True, "delay_or_hidden_reasoning_can_fake_research", failures)
+    receipt_fields = set(research.get("research_receipt_fields") or [])
+    required_receipt_fields = {"trigger", "sources_or_queries", "evidence_summary", "decision_impact", "stop_reason"}
+    _require(required_receipt_fields.issubset(receipt_fields), "research_receipt_fields_incomplete", failures)
+    triggers = set(research.get("trigger_conditions") or [])
+    _require(
+        any("explicit user request" in str(item).lower() and "research" in str(item).lower() for item in triggers),
+        "explicit_user_research_trigger_missing",
         failures,
     )
     _require(research.get("fixed_source_quota_forbidden") is True, "fixed_source_quota_allowed", failures)
