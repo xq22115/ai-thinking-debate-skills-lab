@@ -2,7 +2,8 @@
 """Validate repository-wide Continuous Thinking Quality v3 invariants.
 
 This is intentionally small and dependency-free so CI can fail closed when the
-machine-readable quality profile or its repository entry points drift.
+machine-readable quality profile, runtime reasoning settings, research audit
+hooks, or repository entry points drift.
 """
 from __future__ import annotations
 
@@ -14,6 +15,8 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 CONFIG_PATH = REPO_ROOT / "control-plane/ai-system/configs/continuous-thinking-global.json"
 AGENTS_PATH = REPO_ROOT / "AGENTS.md"
 CANONICAL_DOC_PATH = REPO_ROOT / "docs/CONTINUOUS_THINKING_QUALITY_OS.md"
+PROJECT_SETTINGS_PATH = REPO_ROOT / ".claude/settings.json"
+RESEARCH_HOOK_PATH = REPO_ROOT / ".claude/hooks/record-web-research.py"
 
 
 def _load_json(path: pathlib.Path) -> dict:
@@ -34,12 +37,35 @@ def _resolve_from_config(relative: object) -> pathlib.Path | None:
     return (CONFIG_PATH.parent / relative).resolve()
 
 
+def _post_tool_hook_matches(settings: dict, matcher: str, command_token: str) -> bool:
+    hooks = settings.get("hooks") or {}
+    rows = hooks.get("PostToolUse") or []
+    if not isinstance(rows, list):
+        return False
+    for row in rows:
+        if not isinstance(row, dict) or row.get("matcher") != matcher:
+            continue
+        handlers = row.get("hooks") or []
+        if not isinstance(handlers, list):
+            continue
+        for handler in handlers:
+            if (
+                isinstance(handler, dict)
+                and handler.get("type") == "command"
+                and command_token in str(handler.get("command") or "")
+            ):
+                return True
+    return False
+
+
 def validate() -> list[str]:
     failures: list[str] = []
     for path, code in [
         (CONFIG_PATH, "config_missing"),
         (AGENTS_PATH, "root_agents_missing"),
         (CANONICAL_DOC_PATH, "canonical_doc_missing"),
+        (PROJECT_SETTINGS_PATH, "project_claude_settings_missing"),
+        (RESEARCH_HOOK_PATH, "research_attestation_hook_missing"),
     ]:
         if not path.is_file():
             failures.append(code)
@@ -48,6 +74,7 @@ def validate() -> list[str]:
 
     try:
         config = _load_json(CONFIG_PATH)
+        settings = _load_json(PROJECT_SETTINGS_PATH)
     except Exception as exc:
         return [f"config_invalid:{type(exc).__name__}:{exc}"]
 
@@ -108,6 +135,64 @@ def validate() -> list[str]:
         "normal_delivery_after_release_not_required",
         failures,
     )
+
+    reasoning_runtime = config.get("reasoning_runtime") or {}
+    _require(
+        reasoning_runtime.get("effort_by_task_class") == {
+            "simple": "medium",
+            "material": "xhigh",
+            "critical": "max",
+        },
+        "reasoning_effort_mapping_drift",
+        failures,
+    )
+    _require(
+        reasoning_runtime.get("effort_must_be_runtime_bound") is True,
+        "reasoning_effort_not_runtime_bound",
+        failures,
+    )
+    _require(
+        reasoning_runtime.get("material_or_critical_must_not_inherit_disable_thinking") is True,
+        "deep_tasks_can_inherit_thinking_disable",
+        failures,
+    )
+    _require(
+        reasoning_runtime.get("prompt_language_alone_is_not_effort_enforcement") is True,
+        "prompt_language_can_fake_effort_enforcement",
+        failures,
+    )
+    _require(
+        reasoning_runtime.get("project_default_effort") == "xhigh",
+        "project_default_effort_not_xhigh",
+        failures,
+    )
+
+    _require(settings.get("alwaysThinkingEnabled") is True, "project_thinking_not_enabled", failures)
+    _require(settings.get("effortLevel") == "xhigh", "project_effort_not_xhigh", failures)
+    permission_allow = set((settings.get("permissions") or {}).get("allow") or [])
+    _require(
+        {"WebSearch", "WebFetch"}.issubset(permission_allow),
+        "web_research_tools_not_preapproved",
+        failures,
+    )
+    _require(
+        _post_tool_hook_matches(
+            settings,
+            "WebSearch|WebFetch",
+            "record-web-research.py",
+        ),
+        "web_research_post_tool_hook_not_registered",
+        failures,
+    )
+    hook_text = RESEARCH_HOOK_PATH.read_text(encoding="utf-8")
+    for token, code in [
+        ("QUALITY_RESEARCH_AUDIT_DIR", "research_hook_audit_dir_binding_missing"),
+        ("CONTROL_PLANE_ACTOR_ID", "research_hook_actor_binding_missing"),
+        ("WebSearch", "research_hook_websearch_missing"),
+        ("WebFetch", "research_hook_webfetch_missing"),
+        ("post_tool_success", "research_hook_success_attestation_missing"),
+    ]:
+        _require(token in hook_text, code, failures)
 
     acceptance = config.get("acceptance_contract") or {}
     _require(
@@ -171,6 +256,16 @@ def validate() -> list[str]:
         "explicit_user_research_trigger_missing",
         failures,
     )
+    runtime_attestation = research.get("runtime_attestation") or {}
+    _require(runtime_attestation.get("required_actor") == "A03", "research_runtime_actor_not_A03", failures)
+    _require(
+        set(runtime_attestation.get("required_successful_tools_for_material_or_critical") or []) == {"WebSearch", "WebFetch"},
+        "research_runtime_tools_incomplete",
+        failures,
+    )
+    _require(runtime_attestation.get("hook_event") == "PostToolUse", "research_runtime_hook_not_posttooluse", failures)
+    _require(runtime_attestation.get("fresh_audit_directory_per_run") is True, "research_runtime_audit_can_be_stale", failures)
+    _require(runtime_attestation.get("self_report_only_cannot_pass") is True, "research_runtime_self_report_can_pass", failures)
     _require(research.get("fixed_source_quota_forbidden") is True, "fixed_source_quota_allowed", failures)
     _require(research.get("stop_when_decision_saturated") is True, "research_stop_rule_missing", failures)
 
