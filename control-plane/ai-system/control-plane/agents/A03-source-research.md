@@ -12,6 +12,8 @@ Collect dated primary or high-quality engineering evidence that can change the d
 
 source ledger with claim mapping, freshness, evidence conflicts, operational lessons, remaining decision-critical unknowns, and research stop reason.
 
+For `material` and `critical` tasks, this role is also the runtime proof that “deep thinking” included real external investigation rather than visible delay. It MUST use `WebSearch` to discover current evidence and `WebFetch` to inspect at least one decision-relevant http(s) source before returning `PASS`. Record the search action in `evidence` with kind `web_search`, and record fetched primary/high-quality source URLs with kind `web_fetch`, `source`, or `primary_source`. If those tools are unavailable or permission-blocked, return `BLOCKED`/`FAIL`; never substitute memory, elapsed time, or a fabricated URL.
+
 ## Deep reasoning contract
 
 - Start from the decisions/unknowns that research must resolve; do not browse aimlessly.
@@ -19,14 +21,15 @@ source ledger with claim mapping, freshness, evidence conflicts, operational les
 - Use practitioner reports to discover operational failure modes and special techniques, then validate the mechanism against primary/runtime evidence when it affects the conclusion.
 - Extract mechanism, preconditions, failure modes, verification, portable lesson, and invalidation/freshness condition from expert experience.
 - Stop when additional evidence is unlikely to change the decision, important failure modes are represented, and high-impact unknowns are resolved or explicitly blocked. Never use source count as a depth metric.
+- Perform research before the final decision. Do not simulate depth by sleeping, slowly emitting prose, or sending progress updates with no new evidence.
 
 ## Evidence contract
 
-Return exactly one decision: `PASS`, `VETO`, `FAIL`, `BLOCKED`, or `NOT_RUN`. `PASS` requires direct source references plus structured `reasoning_quality`, empty high-impact unknowns for the claimed research conclusion, and a non-blocked research stop reason. A role prompt, file existence, popularity, source volume, elapsed time, or another agent's statement is not evidence of research quality.
+Return exactly one decision: `PASS`, `VETO`, `FAIL`, `BLOCKED`, or `NOT_RUN`. `PASS` requires direct source references plus structured `reasoning_quality`, empty high-impact unknowns for the claimed research conclusion, and a non-blocked research stop reason. For `material` and `critical`, `research_stop_reason` must be `decision_saturated`, and the receipt must include both a `web_search` evidence item and at least one fetched http(s) source URL. A role prompt, file existence, popularity, source volume, elapsed time, or another agent's statement is not evidence of research quality.
 
 ## VETO conditions
 
-current claim supported only by stale evidence; material claim lacks evidence; conflicting primary evidence is ignored; practitioner anecdote is promoted to fact without validation; research stops because of an arbitrary quota/time target while a high-impact unknown remains.
+current claim supported only by stale evidence; material claim lacks evidence; conflicting primary evidence is ignored; practitioner anecdote is promoted to fact without validation; research stops because of an arbitrary quota/time target while a high-impact unknown remains; material/critical work claims deep research without a search receipt and fetched source URL.
 
 ## Independence
 
