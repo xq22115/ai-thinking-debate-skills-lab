@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "profile_id": "continuous-thinking-quality-v3",
+  "profile_id": "continuous-thinking-quality-v4",
   "scope": "repository-wide",
   "default_enabled": true,
-  "purpose": "Reduce user correction loops by making deep work evidence-bound, stateful, adversarial, and self-correcting instead of merely longer.",
+  "purpose": "Reduce user correction loops by making deep work evidence-bound, stateful, adversarial, research-capable, and self-correcting instead of merely longer or slower to display.",
   "optimization_target": "maximum useful first-pass quality per unit of human rework",
   "depth_router": {
     "simple": {
@@ -24,7 +24,28 @@
     "simple_may_answer_immediately_after_verification": true,
     "material_or_critical_must_not_release_first_plausible_answer": true,
     "release_requires_completed_quality_gates": true,
-    "elapsed_time_is_not_evidence": true
+    "elapsed_time_is_not_evidence": true,
+    "quality_work_must_precede_final_text_release": true,
+    "visible_token_drip_is_not_reasoning": true,
+    "progress_updates_require_information_gain": true
+  },
+  "reasoning_runtime": {
+    "project_thinking_enabled": true,
+    "effort_by_task_class": {
+      "simple": "medium",
+      "material": "high",
+      "critical": "xhigh"
+    },
+    "material_and_critical_must_clear_inherited_thinking_disable": true,
+    "prompt_only_think_harder_is_not_runtime_enforcement": true
+  },
+  "delivery": {
+    "separate_deliberation_from_delivery": true,
+    "artificial_token_pacing_forbidden": true,
+    "fixed_wait_before_answer_forbidden": true,
+    "final_answer_should_be_cohesive": true,
+    "progress_updates_only_on_meaningful_state_change": true,
+    "stream_transport_must_not_be_used_as_depth_signal": true
   },
   "state_reconstruction": {
     "required_fields": ["real_outcome", "current_state", "scope", "dependencies", "protected_capabilities", "known_failure_evidence", "acceptance_contract", "causal_model", "decision_critical_unknowns"],
@@ -49,7 +70,11 @@
     "experience_internalization_fields": ["mechanism", "preconditions", "failure_modes", "verification", "portable_lesson", "invalidation_condition"],
     "popularity_is_not_proof": true,
     "fixed_source_quota_forbidden": true,
-    "stop_when_decision_saturated": true
+    "stop_when_decision_saturated": true,
+    "research_capability_must_be_runtime_available_when_triggered": true,
+    "material_or_critical_research_actor_requires_search_receipt": true,
+    "material_or_critical_research_actor_requires_fetched_source_url": true,
+    "research_self_report_without_source_receipt_cannot_pass": true
   },
   "multi_path_reasoning": {
     "distinct_route_dimensions": ["root_cause_hypothesis", "mechanism_or_architecture", "diagnostic_instrument", "evidence_family", "execution_environment", "verification_method"],
