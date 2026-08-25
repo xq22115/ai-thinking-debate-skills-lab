@@ -34,25 +34,42 @@ def load_profile(repo_root: pathlib.Path | str) -> tuple[dict, str]:
     return profile, hashlib.sha256(raw).hexdigest()
 
 
+def _reasoning_effort(profile: dict, task_class: str) -> str:
+    effort = ((profile.get("reasoning_runtime") or {}).get("effort_by_task_class") or {}).get(task_class)
+    if effort not in {"low", "medium", "high", "xhigh", "max"}:
+        raise ValueError(f"quality_reasoning_effort_missing:{task_class}")
+    return str(effort)
+
+
 def build_runtime_directive(profile: dict, profile_sha256: str, task_class: str) -> str:
     if task_class not in TASK_CLASSES:
         raise ValueError(f"quality_task_class_invalid:{task_class}")
     route = (profile.get("depth_router") or {}).get(task_class) or {}
     stages = route.get("required_stages") or []
     pass_requires = (profile.get("release") or {}).get("pass_requires") or []
+    effort = _reasoning_effort(profile, task_class)
     if not isinstance(stages, list) or not stages:
         raise ValueError(f"quality_route_missing:{task_class}")
     if not isinstance(pass_requires, list) or not pass_requires:
         raise ValueError("quality_release_requirements_missing")
+    research_proof = (
+        "For material/critical work, A03 must actually use WebSearch and WebFetch, record a search receipt and at least one fetched http(s) source URL, and may not PASS on self-report alone."
+        if task_class in {"material", "critical"}
+        else "Use external research only when it can change the decision; do not browse ceremonially."
+    )
     return "\n".join([
         BINDING_START,
         f"profile_id={profile['profile_id']}",
         f"profile_sha256={profile_sha256}",
         f"task_class={task_class}",
+        f"reasoning_effort={effort}",
         "required_stages=" + " -> ".join(str(x) for x in stages),
         "objective=Optimize for first-pass correctness and fewer user correction loops, not artificial delay, output length, source count, or agent count.",
         "preflight=Before material changes reconstruct outcome, current state, scope, dependencies, protected capabilities, failure evidence, acceptance criteria, causal model, and decision-critical unknowns.",
         "research=When fresh knowledge or expert operational experience can change the decision, use current primary sources plus high-signal practitioner evidence and extract mechanism, preconditions, failure modes, verification, portable lesson, and invalidation condition.",
+        "research_proof=" + research_proof,
+        "deliberation=Do reasoning, search, comparison, and verification before releasing the final answer; a longer wall-clock pause is not evidence of deeper work.",
+        "delivery=Keep the final answer cohesive. Never simulate depth with artificial sleeps, token-by-token pacing, sentence-by-sentence drip, or progress messages that contain no new information.",
         "stagnation=After two materially similar failures, change a major dimension before retrying: hypothesis, mechanism, diagnostic instrument, evidence family, environment, or verification method.",
         "verification=Prefer runtime or user-path evidence, then integration, read-back, unit/static, and diff/config inspection. Do not treat a file write, command exit, or unrelated green CI as proof of behavior.",
         "continuity=Do not stop at a foreseeable half-step or require repeated user continuation for predictable work; continue until PASS or a concrete external BLOCKED condition.",
@@ -79,6 +96,7 @@ def bind_preparation(
     profile, profile_sha256 = load_profile(repo_root)
     directive = build_runtime_directive(profile, profile_sha256, task_class)
     profile_id = str(profile["profile_id"])
+    effort = _reasoning_effort(profile, task_class)
     bound = copy.deepcopy(preparation)
 
     for row in bound["assignments"]:
@@ -93,6 +111,7 @@ def bind_preparation(
                 existing.get("profile_id") == profile_id
                 and existing.get("profile_sha256") == profile_sha256
                 and existing.get("task_class") == task_class
+                and existing.get("reasoning_effort") == effort
                 and existing.get("bound") is True
             )
             if not same:
@@ -108,6 +127,7 @@ def bind_preparation(
             "profile_id": profile_id,
             "profile_sha256": profile_sha256,
             "task_class": task_class,
+            "reasoning_effort": effort,
             "profile_path": PROFILE_RELATIVE_PATH.as_posix(),
         }
 
@@ -116,6 +136,7 @@ def bind_preparation(
         "profile_id": profile_id,
         "profile_sha256": profile_sha256,
         "task_class": task_class,
+        "reasoning_effort": effort,
         "profile_path": PROFILE_RELATIVE_PATH.as_posix(),
         "assignment_count": len(bound["assignments"]),
     }
