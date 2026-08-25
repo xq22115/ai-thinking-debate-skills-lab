@@ -38,6 +38,10 @@ def validate() -> list[str]:
         failures.append("same_task_continuity_not_enabled")
     if not ((profile.get("anti_instant_response") or {}).get("material_or_critical_must_not_release_first_plausible_answer") is True):
         failures.append("first_plausible_answer_not_blocked")
+    if not ((profile.get("research_and_experience") or {}).get("triggered_research_requires_tool_backed_evidence") is True):
+        failures.append("triggered_research_not_tool_evidence_bound")
+    if not ((profile.get("output_delivery") or {}).get("artificial_output_throttling_forbidden") is True):
+        failures.append("artificial_output_throttling_not_forbidden")
 
     registry = REGISTRY.read_text(encoding="utf-8")
     for token, code in [
@@ -54,6 +58,12 @@ def validate() -> list[str]:
         ("quality_profile_binding", "assignment_binding_metadata_missing"),
         ("BINDING_START", "runtime_directive_marker_missing"),
         ("preparation_not_pass", "binding_not_fail_closed_on_preparation"),
+        ("perform actual tool-backed research before release", "runtime_research_trigger_not_enforced"),
+        ("observable tool/source evidence", "runtime_research_evidence_gate_missing"),
+        ("delayed output cannot satisfy a research request", "runtime_delay_can_fake_research"),
+        ("token-by-token throttling", "runtime_output_throttling_guard_missing"),
+        ("deliberate chunk pauses", "runtime_chunk_pause_guard_missing"),
+        ("slow streaming is not evidence of deep reasoning", "runtime_slow_streaming_can_fake_depth"),
     ]:
         if token not in binder:
             failures.append(code)
