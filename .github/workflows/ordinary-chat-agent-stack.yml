@@ -8,6 +8,7 @@ on:
       - 'control-plane/scripts/bootstrap_ordinary_chat_stack.sh'
       - 'control-plane/tests/test_ordinary_chat_bridge.py'
       - 'control-plane/tests/test_project_memory.py'
+      - 'control-plane/tests/test_ordinary_chat_dashboard.py'
       - 'control-plane/ordinary-chat-dashboard/**'
       - 'control-plane/ai-system/mcp/**'
       - 'control-plane/ai-system/browser/**'
@@ -38,6 +39,8 @@ jobs:
         run: python control-plane/tests/test_ordinary_chat_bridge.py
       - name: Run memory tests
         run: python control-plane/tests/test_project_memory.py
+      - name: Run dashboard tests
+        run: python control-plane/tests/test_ordinary_chat_dashboard.py
       - name: Validate JSON policies
         run: |
           python - <<'PY'
