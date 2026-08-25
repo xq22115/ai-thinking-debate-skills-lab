@@ -1,0 +1,81 @@
+name: Ordinary Chat Agent Stack
+
+on:
+  pull_request:
+    paths:
+      - 'control-plane/scripts/ordinary_chat_bridge.py'
+      - 'control-plane/scripts/project_memory.py'
+      - 'control-plane/scripts/bootstrap_ordinary_chat_stack.sh'
+      - 'control-plane/tests/test_ordinary_chat_bridge.py'
+      - 'control-plane/tests/test_project_memory.py'
+      - 'control-plane/ordinary-chat-dashboard/**'
+      - 'control-plane/ai-system/mcp/**'
+      - 'control-plane/ai-system/browser/**'
+      - 'control-plane/ai-system/configs/ordinary-chat-*.json'
+      - 'skills/ordinary-chat-agent-router/**'
+      - 'debates/2026-08-26/**'
+      - '.github/workflows/ordinary-chat-agent-stack.yml'
+  push:
+    branches: [ordinary-chat-agent-stack-v2]
+
+permissions:
+  contents: read
+
+jobs:
+  python-and-policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile bridge scripts
+        run: |
+          python -m py_compile control-plane/scripts/ordinary_chat_bridge.py
+          python -m py_compile control-plane/scripts/project_memory.py
+          python -m py_compile control-plane/ordinary-chat-dashboard/server.py
+      - name: Run bridge tests
+        run: python control-plane/tests/test_ordinary_chat_bridge.py
+      - name: Run memory tests
+        run: python control-plane/tests/test_project_memory.py
+      - name: Validate JSON policies
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          paths = [
+              pathlib.Path('control-plane/ai-system/configs/ordinary-chat-capabilities.json'),
+              pathlib.Path('control-plane/ai-system/configs/ordinary-chat-routing.json'),
+              pathlib.Path('control-plane/ai-system/configs/ordinary-chat-security.json'),
+              pathlib.Path('control-plane/ai-system/browser/playwright.mcp.example.json'),
+          ]
+          for path in paths:
+              json.loads(path.read_text(encoding='utf-8'))
+              print('PASS', path)
+          PY
+      - name: Check bootstrap syntax
+        run: bash -n control-plane/scripts/bootstrap_ordinary_chat_stack.sh
+      - name: Scan new stack for common committed secret prefixes
+        run: |
+          if grep -RInE '(sk-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,}|xox[baprs]-[A-Za-z0-9-]{20,})' \
+            control-plane/ai-system/mcp \
+            control-plane/ai-system/browser \
+            control-plane/scripts/ordinary_chat_bridge.py \
+            control-plane/scripts/project_memory.py \
+            control-plane/ordinary-chat-dashboard \
+            skills/ordinary-chat-agent-router; then
+            echo 'Potential committed secret detected' >&2
+            exit 1
+          fi
+
+  mcp-v2:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: control-plane/ai-system/mcp
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install
+      - run: npm run check
