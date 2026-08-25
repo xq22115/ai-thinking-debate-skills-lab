@@ -4,6 +4,7 @@ import os
 import pathlib
 import tempfile
 import unittest
+from unittest import mock
 
 MODULE_PATH = pathlib.Path(__file__).resolve().parents[1] / "scripts" / "ordinary_chat_bridge.py"
 spec = importlib.util.spec_from_file_location("ordinary_chat_bridge", MODULE_PATH)
@@ -61,6 +62,17 @@ class OrdinaryChatBridgeTests(unittest.TestCase):
         result = bridge.submit_chat(str(self.workspace), "inspect this project")
         self.assertEqual(result["result"], "BLOCKED")
         self.assertIn("chat_work_agent_unavailable", result["failures"])
+
+    def test_queue_parent_does_not_rewrite_record_after_spawn(self):
+        fake_process = mock.Mock(pid=4321)
+        with mock.patch.object(bridge.subprocess, "Popen", return_value=fake_process):
+            response = bridge._queue("chat-work-agent", {"workspace": str(self.workspace), "goal": "goal"})
+        persisted = bridge.status(response["run_id"])
+        self.assertEqual(response["status"], "QUEUED")
+        self.assertEqual(response["worker_pid"], 4321)
+        self.assertEqual(persisted["status"], "QUEUED")
+        self.assertNotIn("worker_pid", persisted)
+        self.assertNotIn("spawned_at_unix", persisted)
 
     def test_a01_rejects_parent_traversal_write_set(self):
         os.environ["ORDINARY_CHAT_ALLOWED_ROOTS"] = str(self.root)
