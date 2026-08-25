@@ -3,6 +3,7 @@ name: Ordinary Chat Agent Stack
 on:
   pull_request:
     paths:
+      - '.gitignore'
       - 'control-plane/scripts/ordinary_chat_bridge.py'
       - 'control-plane/scripts/project_memory.py'
       - 'control-plane/scripts/bootstrap_ordinary_chat_stack.sh'
@@ -57,6 +58,19 @@ jobs:
           PY
       - name: Check bootstrap syntax
         run: bash -n control-plane/scripts/bootstrap_ordinary_chat_stack.sh
+      - name: Verify runtime artifacts are ignored
+        run: |
+          for path in \
+            .playwright-cli/probe \
+            .claude/skills/playwright-cli/SKILL.md \
+            control-plane/ai-system/mcp/node_modules/probe \
+            control-plane/ai-system/mcp/dist/probe \
+            control-plane/ai-system/mcp/.env; do
+            git check-ignore -q --no-index "$path" || {
+              echo "Expected generated path to be ignored: $path" >&2
+              exit 1
+            }
+          done
       - name: Scan new stack for common committed secret prefixes
         run: |
           if grep -RInE '(sk-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,}|xox[baprs]-[A-Za-z0-9-]{20,})' \
