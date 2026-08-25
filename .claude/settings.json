@@ -1,0 +1,10 @@
+{
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "xhigh",
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch"
+    ]
+  }
+}
