@@ -7,13 +7,15 @@ export type BridgeResult = Record<string, unknown>;
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_BRIDGE = path.resolve(HERE, "../../../scripts/ordinary_chat_bridge.py");
-const CAPABILITY_FILE = path.resolve(
-  HERE,
-  "../../configs/ordinary-chat-capabilities.json",
-);
+const CAPABILITY_FILE = path.resolve(HERE, "../../configs/ordinary-chat-capabilities.json");
 
 function pythonBin(): string {
   return process.env.PYTHON_BIN?.trim() || "python3";
+}
+
+function boundedTimeout(raw: string | undefined, fallback: number): number {
+  const parsed = Number(raw ?? fallback);
+  return Number.isFinite(parsed) && parsed >= 100 && parsed <= 120_000 ? parsed : fallback;
 }
 
 export function bridgePath(): string {
@@ -21,12 +23,20 @@ export function bridgePath(): string {
 }
 
 export function bridgePresent(): boolean {
-  return fs.existsSync(bridgePath());
+  try {
+    return fs.statSync(bridgePath()).isFile();
+  } catch {
+    return false;
+  }
 }
 
 export function readCapabilities(): BridgeResult {
   try {
-    return JSON.parse(fs.readFileSync(CAPABILITY_FILE, "utf8")) as BridgeResult;
+    const parsed = JSON.parse(fs.readFileSync(CAPABILITY_FILE, "utf8")) as BridgeResult;
+    if (!Array.isArray(parsed.capabilities)) {
+      throw new Error("capabilities_not_array");
+    }
+    return parsed;
   } catch (error) {
     return {
       schemaVersion: 1,
@@ -41,11 +51,10 @@ export function runBridge(args: string[], stdin?: string): BridgeResult {
   if (!bridgePresent()) {
     return { schemaVersion: 1, result: "BLOCKED", reason: "bridge_script_missing" };
   }
-  const timeout = Number(process.env.ORDINARY_CHAT_BRIDGE_TIMEOUT_MS ?? 15000);
   const cp = spawnSync(pythonBin(), [bridgePath(), ...args], {
     input: stdin,
     encoding: "utf8",
-    timeout: Number.isFinite(timeout) ? timeout : 15000,
+    timeout: boundedTimeout(process.env.ORDINARY_CHAT_BRIDGE_TIMEOUT_MS, 15_000),
     maxBuffer: 2 * 1024 * 1024,
     env: process.env,
   });
@@ -54,13 +63,40 @@ export function runBridge(args: string[], stdin?: string): BridgeResult {
       schemaVersion: 1,
       result: "BLOCKED",
       reason: `bridge_spawn_error:${cp.error.name}`,
+      signal: cp.signal,
+    };
+  }
+  if (!cp.stdout?.trim()) {
+    return {
+      schemaVersion: 1,
+      result: "FAIL",
+      reason: "bridge_empty_output",
+      exit_code: cp.status,
+      signal: cp.signal,
     };
   }
   try {
-    const parsed = JSON.parse(cp.stdout || "{}") as BridgeResult;
-    if (cp.status !== 0 && !parsed.result) {
-      parsed.result = "BLOCKED";
+    const parsed = JSON.parse(cp.stdout) as BridgeResult;
+    if (typeof parsed.result !== "string" && typeof parsed.status !== "string") {
+      return {
+        schemaVersion: 1,
+        result: "FAIL",
+        reason: "bridge_result_missing_status",
+        exit_code: cp.status,
+      };
     }
+    const successLike = new Set(["PASS", "QUEUED", "RUNNING"]);
+    const reported = String(parsed.result ?? parsed.status ?? "");
+    if (cp.status !== 0 && successLike.has(reported)) {
+      return {
+        schemaVersion: 1,
+        result: "FAIL",
+        reason: "bridge_exit_status_mismatch",
+        reported_result: reported,
+        exit_code: cp.status,
+      };
+    }
+    if (cp.status !== null) parsed.exit_code = cp.status;
     return parsed;
   } catch {
     return {
@@ -68,6 +104,7 @@ export function runBridge(args: string[], stdin?: string): BridgeResult {
       result: "FAIL",
       reason: "bridge_non_json_output",
       exit_code: cp.status,
+      signal: cp.signal,
     };
   }
 }
