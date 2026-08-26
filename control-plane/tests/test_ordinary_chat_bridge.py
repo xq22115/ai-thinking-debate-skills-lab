@@ -98,6 +98,16 @@ class OrdinaryChatBridgeTests(unittest.TestCase):
         result = bridge.status("not-a-run-id")
         self.assertEqual(result["result"], "NOT_FOUND")
 
+    def test_record_identity_mismatch_is_rejected(self):
+        run_id = "9" * 32
+        bridge._json_write(
+            bridge._record_path(run_id),
+            {"schemaVersion": 1, "run_id": "8" * 32, "kind": "chat-work-agent", "status": "PASS"},
+        )
+        result = bridge.status(run_id)
+        self.assertEqual(result["result"], "FAIL")
+        self.assertIn("record_integrity_invalid", result["failures"])
+
     def test_receipt_identity_mismatch_is_rejected(self):
         run_id = "a" * 32
         run_dir = bridge._record_path(run_id).parent
@@ -105,7 +115,7 @@ class OrdinaryChatBridgeTests(unittest.TestCase):
         receipt_dir.mkdir(parents=True)
         bridge._json_write(
             bridge._record_path(run_id),
-            {"schemaVersion": 1, "run_id": run_id, "kind": "a01-a10", "receipt_dir": str(receipt_dir)},
+            {"schemaVersion": 1, "run_id": run_id, "kind": "a01-a10", "status": "PASS", "receipt_dir": str(receipt_dir)},
         )
         (receipt_dir / "A01.json").write_text(
             json.dumps({"run_id": "b" * 32, "actor_id": "A01", "result": "PASS"}),
@@ -121,7 +131,7 @@ class OrdinaryChatBridgeTests(unittest.TestCase):
         outside.mkdir()
         bridge._json_write(
             bridge._record_path(run_id),
-            {"schemaVersion": 1, "run_id": run_id, "kind": "a01-a10", "receipt_dir": str(outside)},
+            {"schemaVersion": 1, "run_id": run_id, "kind": "a01-a10", "status": "PASS", "receipt_dir": str(outside)},
         )
         result = bridge.receipt_summary(run_id, "A01")
         self.assertEqual(result["result"], "FAIL")
