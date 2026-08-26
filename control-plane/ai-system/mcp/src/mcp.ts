@@ -1,11 +1,11 @@
 import { createMcpHandler, McpServer } from "@modelcontextprotocol/server";
 import * as z from "zod/v4";
 
-import { runCapabilityHealth, runCapabilityRoute } from "./adaptive.js";
+import { runCapabilityHealth, runCapabilityRoute, runLiveness } from "./adaptive.js";
 import { readCapabilities, runBridge, submitEnabled } from "./bridge.js";
 import { memoryWriteEnabled, runMemory } from "./memory.js";
 
-export const GATEWAY_VERSION = "0.2.0";
+export const GATEWAY_VERSION = "0.3.0";
 
 function toolResult(payload: Record<string, unknown>) {
   return {
@@ -95,11 +95,23 @@ export function createGatewayServer(): McpServer {
     {
       title: "Agent Run Status",
       description:
-        "Use this to inspect a previously queued ordinary-chat or A01-A10 local agent run by run id.",
+        "Inspect the persisted status of a previously queued ordinary-chat or A01-A10 local agent run by run id.",
       inputSchema: z.object({ runId: z.string().regex(/^[0-9a-f]{32}$/) }),
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     async ({ runId }) => toolResult(runBridge(["status", "--run-id", runId])),
+  );
+
+  server.registerTool(
+    "agent_run_liveness",
+    {
+      title: "Agent Run Liveness",
+      description:
+        "Reconcile persisted QUEUED/RUNNING state with worker PID liveness and report LIVE, STARTING, STALE, or TERMINAL. This never retries or mutates the run.",
+      inputSchema: z.object({ runId: z.string().regex(/^[0-9a-f]{32}$/) }),
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    },
+    async ({ runId }) => toolResult(runLiveness(runId)),
   );
 
   server.registerTool(
