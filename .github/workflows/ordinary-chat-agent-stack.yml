@@ -5,6 +5,7 @@ on:
     paths:
       - '.gitignore'
       - 'control-plane/scripts/ordinary_chat_bridge.py'
+      - 'control-plane/scripts/ordinary_chat_completion_gate.py'
       - 'control-plane/scripts/project_memory.py'
       - 'control-plane/scripts/capability_health.py'
       - 'control-plane/scripts/capability_router.py'
@@ -12,12 +13,14 @@ on:
       - 'control-plane/scripts/bootstrap_ordinary_chat_stack.sh'
       - 'control-plane/scripts/bootstrap_browser_use.sh'
       - 'control-plane/tests/test_ordinary_chat_bridge.py'
+      - 'control-plane/tests/test_ordinary_chat_completion_gate.py'
       - 'control-plane/tests/test_ordinary_chat_chaos.py'
       - 'control-plane/tests/test_project_memory.py'
       - 'control-plane/tests/test_capability_router.py'
       - 'control-plane/tests/test_run_reconciler.py'
       - 'control-plane/tests/test_ordinary_chat_dashboard.py'
       - 'control-plane/ordinary-chat-dashboard/**'
+      - 'control-plane/ordinary-chat-requests/**'
       - 'control-plane/ai-system/mcp/**'
       - 'control-plane/ai-system/browser/**'
       - 'control-plane/ai-system/configs/ordinary-chat-*.json'
@@ -25,23 +28,32 @@ on:
       - 'debates/2026-08-26/**'
       - 'research/ordinary-chat-upstreams/**'
       - '.github/workflows/ordinary-chat-agent-stack.yml'
+      - '.github/workflows/ordinary-chat-immediate-use.yml'
   push:
-    branches: [ordinary-chat-agent-stack-v2, ordinary-chat-agent-stack-v3-adaptive-runtime]
+    branches:
+      - ordinary-chat-agent-stack-v2
+      - ordinary-chat-agent-stack-v3-adaptive-runtime
+      - ordinary-chat-agent-stack-v3.1-adversarial-verification
+      - ordinary-chat-agent-stack-v3.2-chaos-recovery
+      - ordinary-chat-agent-stack-v4-immediate-use
 
 permissions:
   contents: read
 
 jobs:
   python-and-policy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.12'
       - name: Compile ordinary-chat Python
         run: |
           python -m py_compile control-plane/scripts/ordinary_chat_bridge.py
+          python -m py_compile control-plane/scripts/ordinary_chat_completion_gate.py
           python -m py_compile control-plane/scripts/project_memory.py
           python -m py_compile control-plane/scripts/capability_health.py
           python -m py_compile control-plane/scripts/capability_router.py
@@ -50,6 +62,8 @@ jobs:
           python -m py_compile control-plane/tests/test_ordinary_chat_chaos.py
       - name: Run bridge tests
         run: python control-plane/tests/test_ordinary_chat_bridge.py
+      - name: Run completion-gate contract tests
+        run: python control-plane/tests/test_ordinary_chat_completion_gate.py
       - name: Run memory tests
         run: python control-plane/tests/test_project_memory.py
       - name: Run adaptive routing tests
@@ -68,6 +82,7 @@ jobs:
               pathlib.Path('control-plane/ai-system/configs/ordinary-chat-capabilities.json'),
               pathlib.Path('control-plane/ai-system/configs/ordinary-chat-routing.json'),
               pathlib.Path('control-plane/ai-system/configs/ordinary-chat-security.json'),
+              pathlib.Path('control-plane/ai-system/configs/ordinary-chat-immediate-use.json'),
               pathlib.Path('control-plane/ai-system/browser/playwright.mcp.example.json'),
           ]
           for path in paths:
@@ -99,6 +114,7 @@ jobs:
             control-plane/ai-system/mcp \
             control-plane/ai-system/browser \
             control-plane/scripts/ordinary_chat_bridge.py \
+            control-plane/scripts/ordinary_chat_completion_gate.py \
             control-plane/scripts/project_memory.py \
             control-plane/scripts/capability_health.py \
             control-plane/scripts/capability_router.py \
@@ -110,14 +126,16 @@ jobs:
           fi
 
   mcp-v2:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: control-plane/ai-system/mcp
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '22'
-      - run: npm install
+      - run: npm install --no-audit --no-fund
       - run: npm run check
