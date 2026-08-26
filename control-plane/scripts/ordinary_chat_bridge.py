@@ -3,6 +3,8 @@
 
 This bridge deliberately does not expose a generic shell. It provides preflight,
 queued launch, status, and receipt-summary operations for allowlisted workspaces.
+Run identity is path-bound: persisted spec content is never allowed to redirect a
+worker into another run's record.
 """
 from __future__ import annotations
 
@@ -92,13 +94,46 @@ def _record_path(run_id: str) -> pathlib.Path:
     return _state_dir() / "runs" / run_id / "record.json"
 
 
+def _spec_run_id_from_path(path: pathlib.Path) -> str | None:
+    """Return the run id only when `path` is the canonical spec path for it."""
+    candidate = path.parent.name
+    if not RUN_ID_RE.fullmatch(candidate):
+        return None
+    expected = (_record_path(candidate).parent / "spec.json").resolve()
+    return candidate if path == expected else None
+
+
+def _valid_record(run_id: str, value: dict[str, Any]) -> bool:
+    return (
+        value.get("schemaVersion") == 1
+        and value.get("run_id") == run_id
+        and isinstance(value.get("status"), str)
+        and bool(value.get("status"))
+    )
+
+
 def _update_record(run_id: str, **updates: Any) -> dict[str, Any]:
     path = _record_path(run_id)
+    recovery_failure: str | None = None
     try:
-        current: dict[str, Any] = _json_read(path) if path.is_file() else {"run_id": run_id}
+        current: dict[str, Any] = _json_read(path) if path.is_file() else {"schemaVersion": 1, "run_id": run_id}
+        if path.is_file() and (current.get("schemaVersion") != 1 or current.get("run_id") != run_id):
+            current = {"schemaVersion": 1, "run_id": run_id}
+            recovery_failure = "record_recovered_from_identity_mismatch"
     except (OSError, ValueError, json.JSONDecodeError):
-        current = {"run_id": run_id, "failures": ["record_recovered_from_corruption"]}
+        current = {"schemaVersion": 1, "run_id": run_id}
+        recovery_failure = "record_recovered_from_corruption"
+    prior_failures = list(current.get("failures") or [])
+    incoming_failures = list(updates.get("failures") or []) if "failures" in updates else None
+    if recovery_failure:
+        prior_failures.append(recovery_failure)
+    if incoming_failures is not None:
+        updates["failures"] = sorted(set(prior_failures + incoming_failures))
+    elif prior_failures:
+        current["failures"] = sorted(set(prior_failures))
     current.update(updates)
+    current["schemaVersion"] = 1
+    current["run_id"] = run_id
     current["updated_at_unix"] = int(time.time())
     _json_write(path, current)
     return current
@@ -355,9 +390,12 @@ def status(run_id: str) -> dict[str, Any]:
     if not path.is_file():
         return {"schemaVersion": 1, "result": "NOT_FOUND", "run_id": run_id}
     try:
-        return _json_read(path)
+        value = _json_read(path)
     except (OSError, ValueError, json.JSONDecodeError):
         return {"schemaVersion": 1, "result": "FAIL", "run_id": run_id, "failures": ["record_unreadable"]}
+    if not _valid_record(run_id, value):
+        return {"schemaVersion": 1, "result": "FAIL", "run_id": run_id, "failures": ["record_integrity_invalid"]}
+    return value
 
 
 def receipt_summary(run_id: str, actor: str) -> dict[str, Any]:
@@ -366,7 +404,7 @@ def receipt_summary(run_id: str, actor: str) -> dict[str, Any]:
     if actor not in {f"A{i:02d}" for i in range(1, 11)}:
         return {"schemaVersion": 1, "result": "NOT_FOUND", "reason": "invalid_actor"}
     record = status(run_id)
-    if record.get("result") == "NOT_FOUND":
+    if record.get("result") in {"NOT_FOUND", "FAIL"}:
         return record
     receipt_dir_raw = record.get("receipt_dir")
     if not receipt_dir_raw:
@@ -498,30 +536,47 @@ def _worker_a01(spec: dict[str, Any], run_dir: pathlib.Path) -> None:
 
 def worker(spec_path: str) -> None:
     path = pathlib.Path(spec_path).expanduser().resolve()
+    path_run_id = _spec_run_id_from_path(path)
+    if path_run_id is None:
+        # Never use untrusted spec content to decide which run record to mutate.
+        return
     try:
         spec = _json_read(path)
     except (OSError, ValueError, json.JSONDecodeError):
+        _update_record(path_run_id, status="FAIL", failures=["worker_spec_unreadable"], finished_at_unix=int(time.time()))
+        try:
+            path.unlink()
+        except OSError:
+            pass
         return
-    run_id = str(spec.get("run_id") or "")
-    if not RUN_ID_RE.fullmatch(run_id):
+    spec_run_id = str(spec.get("run_id") or "")
+    if spec_run_id != path_run_id:
+        _update_record(path_run_id, status="FAIL", failures=["worker_spec_run_id_mismatch"], finished_at_unix=int(time.time()))
+        try:
+            path.unlink()
+        except OSError:
+            pass
         return
-    expected_spec = (_record_path(run_id).parent / "spec.json").resolve()
-    if path != expected_spec:
-        _update_record(run_id, status="FAIL", failures=["worker_spec_path_mismatch"], finished_at_unix=int(time.time()))
+    record = status(path_run_id)
+    if record.get("result") == "FAIL":
+        _update_record(path_run_id, status="FAIL", failures=["worker_record_invalid"], finished_at_unix=int(time.time()))
+        try:
+            path.unlink()
+        except OSError:
+            pass
         return
-    record = status(run_id)
     kind = record.get("kind")
     if spec.get("kind") != kind:
-        _update_record(run_id, status="FAIL", failures=["worker_kind_mismatch"], finished_at_unix=int(time.time()))
+        _update_record(path_run_id, status="FAIL", failures=["worker_kind_mismatch"], finished_at_unix=int(time.time()))
         return
     expected_goal_hash = str(record.get("goal_sha256") or "")
     actual_goal_hash = hashlib.sha256(str(spec.get("goal", "")).encode("utf-8")).hexdigest()
     if expected_goal_hash != actual_goal_hash:
-        _update_record(run_id, status="FAIL", failures=["worker_goal_hash_mismatch"], finished_at_unix=int(time.time()))
+        _update_record(path_run_id, status="FAIL", failures=["worker_goal_hash_mismatch"], finished_at_unix=int(time.time()))
         return
     # The worker is the sole normal writer after spawn. Persist PID here so the
     # parent cannot race with RUNNING/terminal state transitions.
-    _update_record(run_id, worker_pid=os.getpid(), worker_started_at_unix=int(time.time()))
+    _update_record(path_run_id, worker_pid=os.getpid(), worker_started_at_unix=int(time.time()))
     run_dir = path.parent
     try:
         if kind == "chat-work-agent":
@@ -529,9 +584,9 @@ def worker(spec_path: str) -> None:
         elif kind == "a01-a10":
             _worker_a01(spec, run_dir)
         else:
-            _update_record(run_id, status="FAIL", failures=["unknown_kind"], finished_at_unix=int(time.time()))
+            _update_record(path_run_id, status="FAIL", failures=["unknown_kind"], finished_at_unix=int(time.time()))
     except Exception as exc:
-        _update_record(run_id, status="FAIL", failures=[f"worker_exception:{type(exc).__name__}"], finished_at_unix=int(time.time()))
+        _update_record(path_run_id, status="FAIL", failures=[f"worker_exception:{type(exc).__name__}"], finished_at_unix=int(time.time()))
     finally:
         try:
             path.unlink()

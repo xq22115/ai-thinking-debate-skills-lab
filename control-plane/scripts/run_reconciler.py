@@ -4,7 +4,9 @@
 The reconciler never retries or mutates a run. It compares persisted state with
 worker PID liveness, process-start identity when observable, and record freshness
 so ordinary chat does not confuse a reused PID or a long-silent worker with a
-verified-live agent.
+verified-live agent. Persisted record identity is validated before liveness data
+is trusted so a record copied from another run cannot yield a false terminal or
+LIVE result.
 """
 from __future__ import annotations
 
@@ -14,6 +16,7 @@ import json
 import os
 import pathlib
 import re
+import shutil
 import subprocess
 import time
 from typing import Any
@@ -56,6 +59,14 @@ def _read_record(run_id: str) -> dict[str, Any]:
     value = json.loads(_record_path(run_id).read_text(encoding="utf-8"))
     if not isinstance(value, dict):
         raise ValueError("record_root_not_object")
+    # Older fixtures may omit these fields, but any present identity/version must
+    # agree with the path-selected run. Production bridge records always include both.
+    if value.get("run_id") not in {None, run_id}:
+        raise ValueError("record_run_id_mismatch")
+    if value.get("schemaVersion") not in {None, 1}:
+        raise ValueError("record_schema_invalid")
+    if not isinstance(value.get("status"), str) or not value.get("status"):
+        raise ValueError("record_status_invalid")
     return value
 
 
@@ -73,17 +84,34 @@ def _pid_alive(pid: int) -> bool | None:
     return True
 
 
+def _trusted_ps() -> str | None:
+    """Resolve only the fixed system `ps` utility, including daemon-style PATHs."""
+    found = shutil.which("ps")
+    if found:
+        return found
+    for raw in ("/bin/ps", "/usr/bin/ps"):
+        path = pathlib.Path(raw)
+        if path.is_file() and os.access(path, os.X_OK):
+            return str(path)
+    return None
+
+
 def _process_start_unix(pid: int) -> int | None:
     """Best-effort process birth time without requiring third-party packages.
 
-    `ps -o lstart=` is available on macOS and common Linux distributions. A
-    failure is treated as unknown rather than as proof that the worker is dead.
+    `ps -o lstart=` is available on macOS and common Linux distributions. The
+    resolver tolerates a deliberately restricted service PATH by falling back to
+    fixed system paths; it never accepts a caller-provided arbitrary command.
+    A failure is treated as unknown rather than as proof that the worker is dead.
     """
     if pid <= 0:
         return None
+    ps = _trusted_ps()
+    if ps is None:
+        return None
     try:
         cp = subprocess.run(
-            ["ps", "-o", "lstart=", "-p", str(pid)],
+            [ps, "-o", "lstart=", "-p", str(pid)],
             text=True,
             capture_output=True,
             check=False,
@@ -122,8 +150,13 @@ def inspect(run_id: str) -> dict[str, Any]:
         return {"schemaVersion": 2, "result": "NOT_FOUND", "run_id": run_id}
     try:
         record = _read_record(run_id)
-    except (OSError, ValueError, json.JSONDecodeError):
-        return {"schemaVersion": 2, "result": "FAIL", "run_id": run_id, "reason": "record_unreadable"}
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        return {
+            "schemaVersion": 2,
+            "result": "FAIL",
+            "run_id": run_id,
+            "reason": "record_unreadable" if isinstance(exc, (OSError, json.JSONDecodeError)) else "record_integrity_invalid",
+        }
 
     status = str(record.get("status") or "UNKNOWN")
     now = int(time.time())

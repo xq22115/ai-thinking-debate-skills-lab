@@ -4,6 +4,9 @@
 The router ranks known capability IDs from the repository registry. It does not
 execute tasks itself and never invents a capability that is absent from the
 registry. Host-side apps remain conditional until their own preflight succeeds.
+When a caller requires a genuinely READY route, local health is re-probed instead
+of trusting a still-valid TTL cache; this closes a route-time TOCTOU window where
+a binary can disappear after the cache was populated.
 """
 from __future__ import annotations
 
@@ -45,12 +48,15 @@ def _registry() -> dict[str, dict[str, Any]]:
     return result
 
 
-def _health_map() -> dict[str, dict[str, Any]]:
-    payload = capability_health.cached_or_snapshot()
+def _health_map(*, fresh: bool = False) -> tuple[dict[str, dict[str, Any]], str]:
+    payload = capability_health.snapshot(persist=True) if fresh else capability_health.cached_or_snapshot()
     items = payload.get("capabilities")
     if not isinstance(items, dict):
-        return {}
-    return {str(key): value for key, value in items.items() if isinstance(value, dict)}
+        return {}, "FRESH" if fresh else str(payload.get("cache") or "UNKNOWN")
+    return (
+        {str(key): value for key, value in items.items() if isinstance(value, dict)},
+        "FRESH" if fresh else str(payload.get("cache") or "UNKNOWN"),
+    )
 
 
 def _candidate_state(capability_id: str, health: dict[str, dict[str, Any]]) -> tuple[str, bool | None]:
@@ -79,7 +85,9 @@ def route(
         }
 
     registry = _registry()
-    health = _health_map()
+    # `require_ready` is a decision-time guarantee, not a cache hint. Always
+    # re-probe local execution surfaces before returning PASS in that mode.
+    health, health_probe = _health_map(fresh=require_ready)
     ordered = INTENT_ORDER[intent]
     ranked: list[dict[str, Any]] = []
 
@@ -123,27 +131,26 @@ def route(
         selectable = [item for item in selectable if item["ready"] is True]
 
     selected = selectable[0] if selectable else None
+    common = {
+        "schemaVersion": 1,
+        "intent": intent,
+        "needs_write": needs_write,
+        "prefer_local": prefer_local,
+        "require_ready": require_ready,
+        "health_probe": health_probe,
+        "candidates": ranked,
+    }
     if selected is None:
         return {
-            "schemaVersion": 1,
-            "intent": intent,
-            "needs_write": needs_write,
-            "prefer_local": prefer_local,
-            "require_ready": require_ready,
-            "candidates": ranked,
+            **common,
             "result": "BLOCKED",
             "reason": "no_compatible_ready_route" if require_ready else "no_compatible_route",
         }
 
     result = "PASS" if selected["ready"] is True else "CONDITIONAL"
     return {
-        "schemaVersion": 1,
-        "intent": intent,
-        "needs_write": needs_write,
-        "prefer_local": prefer_local,
-        "require_ready": require_ready,
+        **common,
         "selected": selected,
-        "candidates": ranked,
         "result": result,
         "reason": None if result == "PASS" else "selected_route_requires_external_or_runtime_preflight",
     }
