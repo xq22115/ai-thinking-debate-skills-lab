@@ -1,10 +1,11 @@
 import { createMcpHandler, McpServer } from "@modelcontextprotocol/server";
 import * as z from "zod/v4";
 
+import { runCapabilityHealth, runCapabilityRoute } from "./adaptive.js";
 import { readCapabilities, runBridge, submitEnabled } from "./bridge.js";
 import { memoryWriteEnabled, runMemory } from "./memory.js";
 
-export const GATEWAY_VERSION = "0.1.0";
+export const GATEWAY_VERSION = "0.2.0";
 
 function toolResult(payload: Record<string, unknown>) {
   return {
@@ -12,6 +13,19 @@ function toolResult(payload: Record<string, unknown>) {
     structuredContent: payload,
   };
 }
+
+const routeIntentSchema = z.enum([
+  "repository_action",
+  "local_bounded",
+  "local_long",
+  "multi_step_repair",
+  "browser_deterministic",
+  "browser_adaptive",
+  "browser_stateful",
+  "project_recall",
+  "observability",
+  "capability_discovery",
+]);
 
 export function createGatewayServer(): McpServer {
   const server = new McpServer({
@@ -24,10 +38,39 @@ export function createGatewayServer(): McpServer {
     {
       title: "Ordinary Chat Capabilities",
       description:
-        "Use this to inspect the configured ordinary-chat execution layers and their declared availability before choosing a route.",
+        "Inspect the declared ordinary-chat execution layers. This is registry metadata, not a claim that each runtime is currently online.",
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     async () => toolResult(readCapabilities()),
+  );
+
+  server.registerTool(
+    "capability_health",
+    {
+      title: "Capability Health",
+      description:
+        "Inspect a TTL-cached health snapshot for fixed local runtimes and mark host-side apps as requiring their own preflight. This tool never executes user-supplied commands.",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    },
+    async () => toolResult(runCapabilityHealth()),
+  );
+
+  server.registerTool(
+    "capability_route",
+    {
+      title: "Adaptive Capability Route",
+      description:
+        "Rank known ordinary-chat routes for a task intent using registry metadata plus current health. The result recommends a route but never executes it.",
+      inputSchema: z.object({
+        intent: routeIntentSchema,
+        needsWrite: z.boolean().default(false),
+        preferLocal: z.boolean().default(false),
+        requireReady: z.boolean().default(false),
+      }),
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    },
+    async ({ intent, needsWrite, preferLocal, requireReady }) =>
+      toolResult(runCapabilityRoute({ intent, needsWrite, preferLocal, requireReady })),
   );
 
   server.registerTool(
