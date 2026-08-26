@@ -9,6 +9,7 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const SCRIPTS_DIR = path.resolve(HERE, "../../../scripts");
 const HEALTH_SCRIPT = path.join(SCRIPTS_DIR, "capability_health.py");
 const ROUTER_SCRIPT = path.join(SCRIPTS_DIR, "capability_router.py");
+const RECONCILER_SCRIPT = path.join(SCRIPTS_DIR, "run_reconciler.py");
 
 function pythonBin(): string {
   return process.env.PYTHON_BIN?.trim() || "python3";
@@ -92,4 +93,8 @@ export function runCapabilityRoute(input: {
   if (input.preferLocal) args.push("--prefer-local");
   if (input.requireReady) args.push("--require-ready");
   return runFixedScript(ROUTER_SCRIPT, args);
+}
+
+export function runLiveness(runId: string): AdaptiveResult {
+  return runFixedScript(RECONCILER_SCRIPT, ["--run-id", runId]);
 }
