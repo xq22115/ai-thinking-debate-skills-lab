@@ -1,0 +1,347 @@
+{
+  "lanes": {
+    "A01": {
+      "checks": [
+        {
+          "failures": [],
+          "name": "request_schema",
+          "result": "PASS"
+        },
+        {
+          "name": "goal_binding",
+          "result": "PASS"
+        },
+        {
+          "configured": [
+            "M1",
+            "M2",
+            "M3",
+            "M4",
+            "M5"
+          ],
+          "name": "method_set",
+          "result": "PASS"
+        },
+        {
+          "name": "request_path_scoped",
+          "result": "PASS"
+        }
+      ],
+      "generated_at_unix": 1787786151,
+      "github_run_id": "33022644358",
+      "github_sha": "e066c88aca8bb3193641181c61132f69a69b320b",
+      "goal_sha256": "66d1e189e3fb8471b3b90befaed7fbeccac32a3ae0bf8fccef01ef745d2bc35e",
+      "lane": "A01",
+      "repository": "xq22115/ai-thinking-debate-skills-lab",
+      "request_id": "prove-ready-v4-20260827t0716",
+      "result": "PASS",
+      "schemaVersion": 1
+    },
+    "A02": {
+      "checks": [
+        {
+          "failures": [],
+          "name": "request_valid",
+          "result": "PASS"
+        },
+        {
+          "name": "github_actions_runtime",
+          "result": "PASS"
+        },
+        {
+          "name": "github_run_identity",
+          "result": "PASS"
+        },
+        {
+          "name": "relay_registry",
+          "result": "PASS"
+        },
+        {
+          "name": "relay_routing",
+          "result": "PASS"
+        }
+      ],
+      "generated_at_unix": 1787786151,
+      "github_run_id": "33022644358",
+      "github_sha": "e066c88aca8bb3193641181c61132f69a69b320b",
+      "goal_sha256": "66d1e189e3fb8471b3b90befaed7fbeccac32a3ae0bf8fccef01ef745d2bc35e",
+      "lane": "A02",
+      "repository": "xq22115/ai-thinking-debate-skills-lab",
+      "request_id": "prove-ready-v4-20260827t0716",
+      "result": "PASS",
+      "schemaVersion": 1
+    },
+    "A03": {
+      "checks": [
+        {
+          "failures": [],
+          "name": "request_valid",
+          "result": "PASS"
+        },
+        {
+          "exception": "TypeError",
+          "message": "_append() got multiple values for argument 'ok'",
+          "name": "lane_exception",
+          "result": "FAIL"
+        }
+      ],
+      "generated_at_unix": 1787786152,
+      "github_run_id": "33022644358",
+      "github_sha": "e066c88aca8bb3193641181c61132f69a69b320b",
+      "goal_sha256": "66d1e189e3fb8471b3b90befaed7fbeccac32a3ae0bf8fccef01ef745d2bc35e",
+      "lane": "A03",
+      "repository": "xq22115/ai-thinking-debate-skills-lab",
+      "request_id": "prove-ready-v4-20260827t0716",
+      "result": "FAIL",
+      "schemaVersion": 1
+    },
+    "A04": {
+      "checks": [
+        {
+          "failures": [],
+          "name": "request_valid",
+          "result": "PASS"
+        },
+        {
+          "exception": "TypeError",
+          "message": "_append() got multiple values for argument 'ok'",
+          "name": "lane_exception",
+          "result": "FAIL"
+        }
+      ],
+      "generated_at_unix": 1787786151,
+      "github_run_id": "33022644358",
+      "github_sha": "e066c88aca8bb3193641181c61132f69a69b320b",
+      "goal_sha256": "66d1e189e3fb8471b3b90befaed7fbeccac32a3ae0bf8fccef01ef745d2bc35e",
+      "lane": "A04",
+      "repository": "xq22115/ai-thinking-debate-skills-lab",
+      "request_id": "prove-ready-v4-20260827t0716",
+      "result": "FAIL",
+      "schemaVersion": 1
+    },
+    "A05": {
+      "checks": [
+        {
+          "failures": [],
+          "name": "request_valid",
+          "result": "PASS"
+        },
+        {
+          "missing": [],
+          "name": "required_files",
+          "result": "PASS"
+        },
+        {
+          "name": "zip_created",
+          "result": "PASS",
+          "size": 34672
+        },
+        {
+          "bad_member": null,
+          "name": "zip_roundtrip",
+          "result": "PASS"
+        },
+        {
+          "entries": 12,
+          "name": "sha256_manifest",
+          "result": "PASS"
+        }
+      ],
+      "generated_at_unix": 1787786150,
+      "github_run_id": "33022644358",
+      "github_sha": "e066c88aca8bb3193641181c61132f69a69b320b",
+      "goal_sha256": "66d1e189e3fb8471b3b90befaed7fbeccac32a3ae0bf8fccef01ef745d2bc35e",
+      "lane": "A05",
+      "repository": "xq22115/ai-thinking-debate-skills-lab",
+      "request_id": "prove-ready-v4-20260827t0716",
+      "result": "PASS",
+      "schemaVersion": 1
+    },
+    "A06": {
+      "checks": [
+        {
+          "failures": [],
+          "name": "request_valid",
+          "result": "PASS"
+        },
+        {
+          "exception": "TypeError",
+          "message": "_append() got multiple values for argument 'ok'",
+          "name": "lane_exception",
+          "result": "FAIL"
+        }
+      ],
+      "generated_at_unix": 1787786151,
+      "github_run_id": "33022644358",
+      "github_sha": "e066c88aca8bb3193641181c61132f69a69b320b",
+      "goal_sha256": "66d1e189e3fb8471b3b90befaed7fbeccac32a3ae0bf8fccef01ef745d2bc35e",
+      "lane": "A06",
+      "repository": "xq22115/ai-thinking-debate-skills-lab",
+      "request_id": "prove-ready-v4-20260827t0716",
+      "result": "FAIL",
+      "schemaVersion": 1
+    },
+    "A07": {
+      "checks": [
+        {
+          "failures": [],
+          "name": "request_valid",
+          "result": "PASS"
+        },
+        {
+          "name": "pinned_actions",
+          "result": "PASS",
+          "uses": [
+            "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+            "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+            "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+            "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+            "actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+            "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+          ]
+        },
+        {
+          "name": "no_latest_in_relay_workflow",
+          "result": "PASS"
+        },
+        {
+          "name": "no_request_command_field",
+          "result": "PASS"
+        },
+        {
+          "name": "request_has_no_env_override",
+          "result": "PASS"
+        }
+      ],
+      "generated_at_unix": 1787786157,
+      "github_run_id": "33022644358",
+      "github_sha": "e066c88aca8bb3193641181c61132f69a69b320b",
+      "goal_sha256": "66d1e189e3fb8471b3b90befaed7fbeccac32a3ae0bf8fccef01ef745d2bc35e",
+      "lane": "A07",
+      "repository": "xq22115/ai-thinking-debate-skills-lab",
+      "request_id": "prove-ready-v4-20260827t0716",
+      "result": "PASS",
+      "schemaVersion": 1
+    },
+    "A08": {
+      "checks": [
+        {
+          "failures": [],
+          "name": "request_valid",
+          "result": "PASS"
+        },
+        {
+          "name": "local_device_not_required",
+          "result": "PASS"
+        },
+        {
+          "name": "work_or_codex_not_required",
+          "result": "PASS"
+        },
+        {
+          "name": "workflow_independent_of_chat_work_agent",
+          "result": "PASS"
+        },
+        {
+          "name": "workflow_independent_of_claude",
+          "result": "PASS"
+        }
+      ],
+      "generated_at_unix": 1787786151,
+      "github_run_id": "33022644358",
+      "github_sha": "e066c88aca8bb3193641181c61132f69a69b320b",
+      "goal_sha256": "66d1e189e3fb8471b3b90befaed7fbeccac32a3ae0bf8fccef01ef745d2bc35e",
+      "lane": "A08",
+      "repository": "xq22115/ai-thinking-debate-skills-lab",
+      "request_id": "prove-ready-v4-20260827t0716",
+      "result": "PASS",
+      "schemaVersion": 1
+    },
+    "A09": {
+      "checks": [
+        {
+          "failures": [],
+          "name": "request_valid",
+          "result": "PASS"
+        },
+        {
+          "name": "repository_identity",
+          "observed": "xq22115/ai-thinking-debate-skills-lab",
+          "result": "PASS"
+        },
+        {
+          "name": "github_sha",
+          "observed": "e066c88aca8bb3193641181c61132f69a69b320b",
+          "result": "PASS"
+        },
+        {
+          "name": "github_run_id",
+          "observed": "33022644358",
+          "result": "PASS"
+        },
+        {
+          "name": "proof_metadata",
+          "result": "PASS"
+        }
+      ],
+      "generated_at_unix": 1787786150,
+      "github_run_id": "33022644358",
+      "github_sha": "e066c88aca8bb3193641181c61132f69a69b320b",
+      "goal_sha256": "66d1e189e3fb8471b3b90befaed7fbeccac32a3ae0bf8fccef01ef745d2bc35e",
+      "lane": "A09",
+      "repository": "xq22115/ai-thinking-debate-skills-lab",
+      "request_id": "prove-ready-v4-20260827t0716",
+      "result": "PASS",
+      "schemaVersion": 1
+    },
+    "A10": {
+      "checks": [
+        {
+          "failures": [],
+          "name": "request_valid",
+          "result": "PASS"
+        },
+        {
+          "failures": [
+            "request_unknown_fields:command"
+          ],
+          "name": "negative_request_command_rejected",
+          "result": "PASS"
+        },
+        {
+          "name": "no_shell_true",
+          "result": "FAIL"
+        },
+        {
+          "name": "no_os_system",
+          "result": "FAIL"
+        },
+        {
+          "name": "no_eval_exec",
+          "result": "FAIL"
+        },
+        {
+          "name": "workflow_no_user_shell_expression",
+          "result": "PASS"
+        },
+        {
+          "findings": [],
+          "name": "secret_prefix_scan",
+          "result": "PASS"
+        }
+      ],
+      "generated_at_unix": 1787786152,
+      "github_run_id": "33022644358",
+      "github_sha": "e066c88aca8bb3193641181c61132f69a69b320b",
+      "goal_sha256": "66d1e189e3fb8471b3b90befaed7fbeccac32a3ae0bf8fccef01ef745d2bc35e",
+      "lane": "A10",
+      "repository": "xq22115/ai-thinking-debate-skills-lab",
+      "request_id": "prove-ready-v4-20260827t0716",
+      "result": "FAIL",
+      "schemaVersion": 1
+    }
+  },
+  "schemaVersion": 1
+}
