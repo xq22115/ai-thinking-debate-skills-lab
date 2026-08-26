@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "updated": "2026-08-27",
   "decisionOrder": [
     "classify_intent",
@@ -8,9 +8,17 @@
     "rank_compatible_routes",
     "run_route_specific_preflight",
     "execute_smallest_sufficient_route",
-    "verify_terminal_evidence"
+    "verify_terminal_evidence",
+    "require_five_proof_completion_when_claiming_immediate_use"
   ],
   "rules": [
+    {
+      "name": "ordinary-chat-github-relay",
+      "when": "ordinary chat needs a real cloud execution path that must not depend on Work, Codex, or an online local device",
+      "route": "github-actions-relay",
+      "intent": "ordinary_chat_immediate_use",
+      "completionGate": "five_methods_ten_lanes"
+    },
     {
       "name": "provider-native-first",
       "when": "a connected native app directly supports the provider and requested action",
@@ -79,7 +87,21 @@
     "preferSmallestSufficientInterface": true,
     "doNotExecuteDuringRouteSelection": true,
     "doNotAutoRetryStaleMutationRuns": true,
-    "staleRunDetectionUsesWorkerPid": true
+    "staleRunDetectionUsesWorkerPidAndIdentity": true,
+    "immediateUseRelayBypassesLocalDeviceDependency": true,
+    "immediateUseClaimsRequireFiveIndependentProofs": true
+  },
+  "completion": {
+    "immediateUseMethods": [
+      "goal_contract_proof",
+      "route_reachability_proof",
+      "dynamic_execution_proof",
+      "recovery_adversarial_proof",
+      "artifact_delivery_proof"
+    ],
+    "requiredMethodPassCount": 5,
+    "requiredVerificationLanePassCount": 10,
+    "allowPartialPassToClaimCompletion": false
   },
   "escalation": {
     "requirePreflightBeforeLocalMutation": true,
@@ -95,8 +117,10 @@
     "duplicate_provider_credentials_without_need",
     "silent_fallback_to_browser",
     "raw_shell_as_universal_tool",
+    "request_supplied_shell_command",
     "claim_host_feature_unlock",
     "treat_process_start_as_completion",
+    "treat_ci_green_as_the_only_completion_proof",
     "treat_persisted_running_as_proof_worker_is_alive",
     "auto_retry_unknown_partial_mutation",
     "allow_generated_browser_artifacts_to_dirty_agent_repo"
