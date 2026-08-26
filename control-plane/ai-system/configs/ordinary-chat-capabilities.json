@@ -11,6 +11,19 @@
       "useFor": ["repository", "issue", "pull_request", "workflow", "file"]
     },
     {
+      "id": "github-actions-relay",
+      "kind": "cloud_execution_relay",
+      "status": "implemented",
+      "priority": 15,
+      "risk": "bounded_ci_execution",
+      "entrypoint": ".github/workflows/ordinary-chat-immediate-use.yml",
+      "requestContract": "control-plane/ai-system/configs/ordinary-chat-immediate-use.json",
+      "localDeviceRequired": false,
+      "workOrCodexRequired": false,
+      "arbitraryShell": false,
+      "useFor": ["ordinary_chat_immediate_use", "five_proof_verification", "ten_lane_verification", "artifact_delivery", "cloud_self_test"]
+    },
+    {
       "id": "remote-desktop-commander",
       "kind": "native_plugin",
       "status": "device_dependent",

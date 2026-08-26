@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "request_id": "prove-ready-v4-20260827t0716",
+  "goal": "Execute the ordinary-chat GitHub relay end to end on this exact revision, require five independent completion proofs and ten verification lanes, persist the proof back into GitHub, and produce an integrity-checked downloadable artifact bundle without depending on Work, Codex, or an online local device.",
+  "intent": "ordinary_chat_immediate_use",
+  "mode": "prove-ready",
+  "requested_completion_methods": ["M1", "M2", "M3", "M4", "M5"]
+}

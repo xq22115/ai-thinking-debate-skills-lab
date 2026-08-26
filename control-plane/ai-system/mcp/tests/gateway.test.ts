@@ -15,7 +15,7 @@ const DEFAULT_READ_ONLY_TOOLS = [
   "project_memory_search",
 ].sort();
 
-test("gateway exposes only the expected read-only default surface", async () => {
+test("gateway exposes only the expected read-only default surface in the modern MCP era", async () => {
   process.env.ORDINARY_CHAT_MCP_ALLOW_SUBMIT = "false";
   process.env.ORDINARY_CHAT_MEMORY_ALLOW_WRITE = "false";
   delete process.env.ORDINARY_CHAT_ALLOWED_ROOTS;
@@ -31,6 +31,8 @@ test("gateway exposes only the expected read-only default surface", async () => 
 
   try {
     await client.connect(transport);
+    assert.equal(client.getProtocolEra(), "modern", "gateway must negotiate the 2026-era MCP wire protocol");
+
     const listed = await client.listTools();
     const names = listed.tools.map((tool) => tool.name).sort();
     assert.deepEqual(names, DEFAULT_READ_ONLY_TOOLS);
@@ -90,7 +92,7 @@ test("gateway exposes only the expected read-only default surface", async () => 
   }
 });
 
-test("transport interruption fails closed and a fresh client reconnects", async () => {
+test("transport interruption fails closed and a fresh modern-era client reconnects", async () => {
   process.env.ORDINARY_CHAT_MCP_ALLOW_SUBMIT = "false";
   process.env.ORDINARY_CHAT_MEMORY_ALLOW_WRITE = "false";
   delete process.env.ORDINARY_CHAT_ALLOWED_ROOTS;
@@ -115,6 +117,7 @@ test("transport interruption fails closed and a fresh client reconnects", async 
 
   try {
     await first.connect(makeTransport());
+    assert.equal(first.getProtocolEra(), "modern", "initial client must negotiate the modern MCP era");
     const before = await first.listTools();
     assert.deepEqual(before.tools.map((tool) => tool.name).sort(), DEFAULT_READ_ONLY_TOOLS);
 
@@ -134,6 +137,7 @@ test("transport interruption fails closed and a fresh client reconnects", async 
       { versionNegotiation: { mode: "auto" } },
     );
     await second.connect(makeTransport());
+    assert.equal(second.getProtocolEra(), "modern", "reconnected client must negotiate the modern MCP era");
     const after = await second.listTools();
     assert.deepEqual(after.tools.map((tool) => tool.name).sort(), DEFAULT_READ_ONLY_TOOLS);
   } finally {

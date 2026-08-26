@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "request_id": "prove-ready-v4-r3-20260827t0734",
+  "goal": "Execute the corrected ordinary-chat GitHub relay again after upgrading MCP verification to require explicit 2026-07-28 targeting and live modern-era negotiation. Claim readiness only if all five completion methods and all ten lanes pass on the same Git revision, proof is persisted to GitHub, and the downloadable bundle passes integrity checks.",
+  "intent": "ordinary_chat_immediate_use",
+  "mode": "prove-ready",
+  "requested_completion_methods": ["M1", "M2", "M3", "M4", "M5"]
+}

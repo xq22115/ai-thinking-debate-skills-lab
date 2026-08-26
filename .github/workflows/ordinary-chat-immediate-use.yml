@@ -1,0 +1,212 @@
+name: Ordinary Chat Immediate Use Proof
+
+on:
+  push:
+    branches:
+      - ordinary-chat-agent-stack-v4-immediate-use
+    paths:
+      - 'control-plane/ordinary-chat-requests/*.json'
+  pull_request:
+    paths:
+      - 'control-plane/ordinary-chat-requests/*.json'
+      - 'control-plane/scripts/ordinary_chat_completion_gate.py'
+      - 'control-plane/tests/test_ordinary_chat_completion_gate.py'
+      - 'control-plane/ai-system/configs/ordinary-chat-immediate-use.json'
+      - 'control-plane/ai-system/configs/ordinary-chat-capabilities.json'
+      - 'control-plane/ai-system/configs/ordinary-chat-routing.json'
+      - '.github/workflows/ordinary-chat-immediate-use.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ordinary-chat-v4-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  verify-lanes:
+    name: ${{ matrix.lane }}-${{ matrix.role }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - lane: A01
+            role: goal-proof
+          - lane: A02
+            role: route-proof
+          - lane: A03
+            role: execution-proof
+          - lane: A04
+            role: recovery-proof
+          - lane: A05
+            role: artifact-proof
+          - lane: A06
+            role: protocol-latest
+          - lane: A07
+            role: plugin-supply-chain
+          - lane: A08
+            role: local-bridge-independence
+          - lane: A09
+            role: observability
+          - lane: A10
+            role: red-team
+    steps:
+      - name: Checkout exact relay revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Set up Python 3.12
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Set up Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Resolve declarative request
+        shell: bash
+        run: |
+          set -euo pipefail
+          request=""
+          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+            request="$(git diff --name-only HEAD^ HEAD -- 'control-plane/ordinary-chat-requests/*.json' | sort | tail -n 1 || true)"
+          fi
+          if [ -z "$request" ]; then
+            request="$(find control-plane/ordinary-chat-requests -maxdepth 1 -type f -name '*.json' | sort | tail -n 1)"
+          fi
+          test -n "$request"
+          test -f "$request"
+          echo "REQUEST_FILE=$request" >> "$GITHUB_ENV"
+      - name: Run fixed verification lane
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p proof
+          python control-plane/scripts/ordinary_chat_completion_gate.py lane \
+            --lane '${{ matrix.lane }}' \
+            --request "$REQUEST_FILE" \
+            --output 'proof/${{ matrix.lane }}.json'
+      - name: Upload lane evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ordinary-chat-v4-lane-${{ matrix.lane }}
+          path: proof/${{ matrix.lane }}.json
+          if-no-files-found: warn
+          retention-days: 14
+
+  aggregate-proof:
+    name: aggregate-five-proof-gate
+    if: always()
+    needs: verify-lanes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout exact relay revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: true
+          fetch-depth: 2
+      - name: Set up Python 3.12
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Download all lane evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: ordinary-chat-v4-lane-*
+          path: lane-evidence
+          merge-multiple: true
+      - name: Resolve declarative request
+        shell: bash
+        run: |
+          set -euo pipefail
+          request=""
+          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+            request="$(git diff --name-only HEAD^ HEAD -- 'control-plane/ordinary-chat-requests/*.json' | sort | tail -n 1 || true)"
+          fi
+          if [ -z "$request" ]; then
+            request="$(find control-plane/ordinary-chat-requests -maxdepth 1 -type f -name '*.json' | sort | tail -n 1)"
+          fi
+          test -n "$request"
+          test -f "$request"
+          echo "REQUEST_FILE=$request" >> "$GITHUB_ENV"
+      - name: Aggregate five independent completion proofs
+        id: aggregate
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          python control-plane/scripts/ordinary_chat_completion_gate.py aggregate \
+            --request "$REQUEST_FILE" \
+            --reports-dir lane-evidence \
+            --output-dir final-proof
+      - name: Upload final immediately-usable proof bundle
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ordinary-chat-v4-proof-${{ github.run_id }}
+          path: final-proof/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Persist proof back to GitHub for ordinary-chat retrieval
+        if: always() && github.event_name == 'push'
+        shell: bash
+        run: |
+          set -euo pipefail
+          request_id="$(python - <<'PY'
+          import json, os
+          request = json.load(open(os.environ['REQUEST_FILE'], encoding='utf-8'))
+          print(request['request_id'])
+          PY
+          )"
+          destination="control-plane/ordinary-chat-proofs/$request_id"
+          mkdir -p "$destination"
+          if [ -d final-proof ]; then
+            cp -f final-proof/* "$destination"/ || true
+          fi
+          cp -f "$REQUEST_FILE" "$destination/request.json"
+          python - <<'PY'
+          import json, os, pathlib, time
+          destination = pathlib.Path('control-plane/ordinary-chat-proofs') / json.load(open(os.environ['REQUEST_FILE'], encoding='utf-8'))['request_id']
+          payload = {
+              'schemaVersion': 1,
+              'github_repository': os.environ.get('GITHUB_REPOSITORY'),
+              'github_sha': os.environ.get('GITHUB_SHA'),
+              'github_run_id': os.environ.get('GITHUB_RUN_ID'),
+              'github_run_attempt': os.environ.get('GITHUB_RUN_ATTEMPT'),
+              'persisted_at_unix': int(time.time()),
+          }
+          (destination / 'run-pointer.json').write_text(json.dumps(payload, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          PY
+          git config user.name 'ordinary-chat-proof-bot'
+          git config user.email 'ordinary-chat-proof-bot@users.noreply.github.com'
+          git add "$destination"
+          if ! git diff --cached --quiet; then
+            git commit -m "proof: persist ordinary-chat v4 result $request_id"
+            git push origin HEAD:ordinary-chat-agent-stack-v4-immediate-use
+          fi
+      - name: Enforce five-of-five and ten-of-ten completion
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, pathlib
+          path = pathlib.Path('final-proof/completion-report.json')
+          if not path.is_file():
+              raise SystemExit('completion-report.json missing')
+          report = json.loads(path.read_text(encoding='utf-8'))
+          print(json.dumps(report, indent=2, sort_keys=True))
+          if report.get('result') != 'PASS':
+              raise SystemExit('overall result is not PASS')
+          if report.get('completion_methods_passed') != 5:
+              raise SystemExit('five completion methods did not all pass')
+          if report.get('lanes_passed') != 10:
+              raise SystemExit('ten verification lanes did not all pass')
+          PY

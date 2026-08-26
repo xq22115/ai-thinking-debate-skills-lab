@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "request_id": "prove-ready-20260827t0704",
+  "goal": "Prove that ordinary ChatGPT can use GitHub as an execution intermediary without Work, Codex, or an online local device, and produce five independent completion proofs, ten verification-lane results, and a downloadable integrity-checked artifact bundle.",
+  "intent": "ordinary_chat_immediate_use",
+  "mode": "prove-ready",
+  "requested_completion_methods": ["M1", "M2", "M3", "M4", "M5"]
+}

@@ -1,0 +1,60 @@
+{
+  "completion_methods": [
+    {
+      "id": "M1",
+      "lanes": {
+        "A01": "PASS"
+      },
+      "name": "goal_contract_proof",
+      "result": "PASS"
+    },
+    {
+      "id": "M2",
+      "lanes": {
+        "A02": "PASS",
+        "A08": "PASS"
+      },
+      "name": "route_reachability_proof",
+      "result": "PASS"
+    },
+    {
+      "id": "M3",
+      "lanes": {
+        "A03": "PASS",
+        "A06": "FAIL"
+      },
+      "name": "dynamic_execution_proof",
+      "result": "FAIL"
+    },
+    {
+      "id": "M4",
+      "lanes": {
+        "A04": "PASS",
+        "A10": "PASS"
+      },
+      "name": "recovery_adversarial_proof",
+      "result": "PASS"
+    },
+    {
+      "id": "M5",
+      "lanes": {
+        "A05": "PASS",
+        "A09": "PASS"
+      },
+      "name": "artifact_delivery_proof",
+      "result": "PASS"
+    }
+  ],
+  "completion_methods_passed": 4,
+  "generated_at_unix": 1787786423,
+  "github_repository": "xq22115/ai-thinking-debate-skills-lab",
+  "github_run_id": "33022932191",
+  "github_sha": "52a3932649eb36d2d396c46cdbd5f233dd42044f",
+  "goal": "Re-run the corrected ordinary-chat GitHub execution relay from a fresh request. Require all five independent completion methods and all ten verification lanes to pass on one exact Git SHA, persist proof back into GitHub, and produce an integrity-checked downloadable bundle without Work, Codex, or an online local device.",
+  "goal_sha256": "3984edc62577ef15f767779ee0015f3c516f6eaabf253a102a68c65256717784",
+  "lanes_passed": 9,
+  "request_failures": [],
+  "request_id": "prove-ready-v4-r2-20260827t0725",
+  "result": "FAIL",
+  "schemaVersion": 1
+}

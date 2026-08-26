@@ -1,0 +1,60 @@
+{
+  "completion_methods": [
+    {
+      "id": "M1",
+      "lanes": {
+        "A01": "PASS"
+      },
+      "name": "goal_contract_proof",
+      "result": "PASS"
+    },
+    {
+      "id": "M2",
+      "lanes": {
+        "A02": "PASS",
+        "A08": "PASS"
+      },
+      "name": "route_reachability_proof",
+      "result": "PASS"
+    },
+    {
+      "id": "M3",
+      "lanes": {
+        "A03": "PASS",
+        "A06": "PASS"
+      },
+      "name": "dynamic_execution_proof",
+      "result": "PASS"
+    },
+    {
+      "id": "M4",
+      "lanes": {
+        "A04": "PASS",
+        "A10": "PASS"
+      },
+      "name": "recovery_adversarial_proof",
+      "result": "PASS"
+    },
+    {
+      "id": "M5",
+      "lanes": {
+        "A05": "PASS",
+        "A09": "PASS"
+      },
+      "name": "artifact_delivery_proof",
+      "result": "PASS"
+    }
+  ],
+  "completion_methods_passed": 5,
+  "generated_at_unix": 1787786745,
+  "github_repository": "xq22115/ai-thinking-debate-skills-lab",
+  "github_run_id": "33023274307",
+  "github_sha": "f1d0179e9e3931d5b48007ce663ab23ba1e3e0b3",
+  "goal": "Validate the final ordinary-chat configuration after the router Skill was upgraded to select the GitHub Actions relay. Require the exact final Git revision to pass all five independent completion methods and all ten verification lanes, including live modern-era MCP negotiation, chaos/recovery, supply-chain checks, observability, artifact integrity, and proof persistence without requiring Work, Codex, or an online local device.",
+  "goal_sha256": "7b438c49b9747f3e37f883a9bfdae2843efb3f7f0c1ee49166381b00fc8b8f93",
+  "lanes_passed": 10,
+  "request_failures": [],
+  "request_id": "prove-ready-v4-final-20260827t0742",
+  "result": "PASS",
+  "schemaVersion": 1
+}

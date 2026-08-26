@@ -5,7 +5,8 @@ import { runCapabilityHealth, runCapabilityRoute, runLiveness } from "./adaptive
 import { readCapabilities, runBridge, submitEnabled } from "./bridge.js";
 import { memoryWriteEnabled, runMemory } from "./memory.js";
 
-export const GATEWAY_VERSION = "0.3.0";
+export const GATEWAY_VERSION = "0.4.0";
+export const MCP_PROTOCOL_TARGET = "2026-07-28";
 
 function toolResult(payload: Record<string, unknown>) {
   return {

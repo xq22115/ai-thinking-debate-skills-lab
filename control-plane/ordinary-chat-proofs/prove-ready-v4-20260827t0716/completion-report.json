@@ -1,0 +1,60 @@
+{
+  "completion_methods": [
+    {
+      "id": "M1",
+      "lanes": {
+        "A01": "PASS"
+      },
+      "name": "goal_contract_proof",
+      "result": "PASS"
+    },
+    {
+      "id": "M2",
+      "lanes": {
+        "A02": "PASS",
+        "A08": "PASS"
+      },
+      "name": "route_reachability_proof",
+      "result": "PASS"
+    },
+    {
+      "id": "M3",
+      "lanes": {
+        "A03": "FAIL",
+        "A06": "FAIL"
+      },
+      "name": "dynamic_execution_proof",
+      "result": "FAIL"
+    },
+    {
+      "id": "M4",
+      "lanes": {
+        "A04": "FAIL",
+        "A10": "FAIL"
+      },
+      "name": "recovery_adversarial_proof",
+      "result": "FAIL"
+    },
+    {
+      "id": "M5",
+      "lanes": {
+        "A05": "PASS",
+        "A09": "PASS"
+      },
+      "name": "artifact_delivery_proof",
+      "result": "PASS"
+    }
+  ],
+  "completion_methods_passed": 3,
+  "generated_at_unix": 1787786170,
+  "github_repository": "xq22115/ai-thinking-debate-skills-lab",
+  "github_run_id": "33022644358",
+  "github_sha": "e066c88aca8bb3193641181c61132f69a69b320b",
+  "goal": "Execute the ordinary-chat GitHub relay end to end on this exact revision, require five independent completion proofs and ten verification lanes, persist the proof back into GitHub, and produce an integrity-checked downloadable artifact bundle without depending on Work, Codex, or an online local device.",
+  "goal_sha256": "66d1e189e3fb8471b3b90befaed7fbeccac32a3ae0bf8fccef01ef745d2bc35e",
+  "lanes_passed": 6,
+  "request_failures": [],
+  "request_id": "prove-ready-v4-20260827t0716",
+  "result": "FAIL",
+  "schemaVersion": 1
+}

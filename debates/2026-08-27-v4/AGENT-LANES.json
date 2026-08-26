@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-08-27",
+  "goal": "Make the ordinary ChatGPT + GitHub intermediary path immediately usable and prove completion with independent evidence.",
+  "base_sha": "db8ab95217db708df1cb892643dae72750500e4d",
+  "integration_branch": "ordinary-chat-agent-stack-v4-immediate-use",
+  "lanes": [
+    {"id": "A01", "branch": "v4-a01-goal-proof", "role": "goal-proof", "completion_method": "M1", "attack": "ambiguity, goal drift, incomplete success criteria"},
+    {"id": "A02", "branch": "v4-a02-route-proof", "role": "route-proof", "completion_method": "M2", "attack": "unreachable tool path, host-only assumption, stale readiness"},
+    {"id": "A03", "branch": "v4-a03-execution-proof", "role": "execution-proof", "completion_method": "M3", "attack": "static-only validation, code that compiles but cannot execute"},
+    {"id": "A04", "branch": "v4-a04-recovery-proof", "role": "recovery-proof", "completion_method": "M4", "attack": "worker death, stale state, record corruption, false completion"},
+    {"id": "A05", "branch": "v4-a05-artifact-proof", "role": "artifact-proof", "completion_method": "M5", "attack": "missing output, corrupt archive, unverified hashes"},
+    {"id": "A06", "branch": "v4-a06-protocol-latest", "role": "protocol-latest", "completion_method": "M3", "attack": "outdated MCP assumptions, incompatible Node/SDK behavior"},
+    {"id": "A07", "branch": "v4-a07-plugin-supply-chain", "role": "plugin-supply-chain", "completion_method": "cross-check", "attack": "floating actions, request-to-shell injection, dependency drift"},
+    {"id": "A08", "branch": "v4-a08-local-bridge", "role": "local-bridge-independence", "completion_method": "M2", "attack": "hidden dependency on Work, Codex, local device, Claude path"},
+    {"id": "A09", "branch": "v4-a09-observability", "role": "observability", "completion_method": "M5", "attack": "untraceable success, missing SHA/run identity, no receipt chain"},
+    {"id": "A10", "branch": "v4-a10-red-team", "role": "red-team", "completion_method": "M4", "attack": "unsafe request shapes, secret leakage, arbitrary execution, optimistic retry"}
+  ],
+  "rule": "No lane may claim completion for another lane. Overall PASS requires five-of-five completion methods and ten-of-ten verification lanes on one exact Git SHA."
+}

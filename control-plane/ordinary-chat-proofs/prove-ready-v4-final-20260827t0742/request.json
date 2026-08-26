@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "request_id": "prove-ready-v4-final-20260827t0742",
+  "goal": "Validate the final ordinary-chat configuration after the router Skill was upgraded to select the GitHub Actions relay. Require the exact final Git revision to pass all five independent completion methods and all ten verification lanes, including live modern-era MCP negotiation, chaos/recovery, supply-chain checks, observability, artifact integrity, and proof persistence without requiring Work, Codex, or an online local device.",
+  "intent": "ordinary_chat_immediate_use",
+  "mode": "prove-ready",
+  "requested_completion_methods": ["M1", "M2", "M3", "M4", "M5"]
+}
