@@ -44,6 +44,18 @@ jobs:
           python control-plane/scripts/validate_quality_runtime_binding.py
       - name: Run deep-reasoning and lifecycle regression tests
         working-directory: control-plane
+        env: &deterministic_git
+          GIT_CONFIG_COUNT: '5'
+          GIT_CONFIG_KEY_0: maintenance.auto
+          GIT_CONFIG_VALUE_0: 'false'
+          GIT_CONFIG_KEY_1: maintenance.autoDetach
+          GIT_CONFIG_VALUE_1: 'false'
+          GIT_CONFIG_KEY_2: gc.auto
+          GIT_CONFIG_VALUE_2: '0'
+          GIT_CONFIG_KEY_3: gc.autoDetach
+          GIT_CONFIG_VALUE_3: 'false'
+          GIT_CONFIG_KEY_4: receive.autogc
+          GIT_CONFIG_VALUE_4: 'false'
         run: |
           python -m unittest \
             tests/test_continuous_thinking_global.py \
@@ -58,6 +70,7 @@ jobs:
             tests/test_run_local_agent_workflow.py \
             tests/test_manage_local_agent_run.py
       - name: Compare full control-plane suite against main baseline
+        env: *deterministic_git
         run: |
           set -u
           HEAD_LOG=/tmp/head-control-plane-tests.log

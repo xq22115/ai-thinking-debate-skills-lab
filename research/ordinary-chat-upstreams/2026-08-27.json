@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-08-27",
+  "policy": {
+    "preferPatternsOverVendoring": true,
+    "doNotCopyLargeUpstreamSourceTrees": true,
+    "recordExactUpstreamCommit": true,
+    "keepOrdinaryChatCoreDependencyLight": true,
+    "hostProductGatesRemainAuthoritative": true
+  },
+  "upstreams": [
+    {
+      "repo": "OpenHands/OpenHands",
+      "commit": "59981caf7fd92971681b0ab5354c37e9f1cab406",
+      "observedAt": "2026-08-26",
+      "patterns": [
+        "single control surface over multiple local/remote/cloud agent backends",
+        "agent server boundary separate from UI and automation service",
+        "workspace-scoped execution"
+      ],
+      "adopted": [
+        "backend selection is separated from ordinary-chat routing",
+        "execution remains behind narrow adapters instead of one universal shell"
+      ],
+      "notAdopted": [
+        "full Agent Canvas dependency",
+        "unrestricted host filesystem mode"
+      ]
+    },
+    {
+      "repo": "langchain-ai/langgraph",
+      "commit": "38031739e551638e373fb553453256c23feeb41f",
+      "observedAt": "2026-08-24",
+      "patterns": [
+        "durable execution",
+        "resume-aware long-running state",
+        "human inspection of execution state"
+      ],
+      "adopted": [
+        "read-only worker liveness reconciliation",
+        "stale-run detection without unsafe automatic mutation retry"
+      ],
+      "notAdopted": [
+        "LangGraph runtime dependency for the existing A01-A10 kernel"
+      ]
+    },
+    {
+      "repo": "pydantic/pydantic-ai",
+      "commit": "eeb04425b6a345392696c9c8a6078d1749789cf6",
+      "observedAt": "2026-08-26",
+      "patterns": [
+        "typed composable capabilities",
+        "workspace-rooted file access and allowlisted execution",
+        "durable execution and instrumentation as separate capabilities"
+      ],
+      "adopted": [
+        "machine-readable capability registry",
+        "fixed script wrappers with validated inputs",
+        "separation of routing, health, execution and observability"
+      ],
+      "notAdopted": [
+        "replacement of the existing executor with Pydantic AI Harness"
+      ]
+    },
+    {
+      "repo": "microsoft/playwright-cli",
+      "commit": "60cb176373cf4400405122703e6de26cd58c7a1c",
+      "observedAt": "2026-08-24",
+      "patterns": [
+        "CLI plus Skill for token-efficient deterministic browser work",
+        "session dashboard for visual monitoring",
+        "generated runtime artifacts kept outside source logic"
+      ],
+      "adopted": [
+        "Playwright CLI remains first choice for replayable browser tasks",
+        "Playwright MCP reserved for persistent/stateful exploration"
+      ],
+      "notAdopted": [
+        "treating MCP as the default for every browser task"
+      ]
+    },
+    {
+      "repo": "browser-use/browser-use",
+      "commit": "28670f720f63cc5f525a2acd6d6072867689ab68",
+      "observedAt": "2026-08-26",
+      "patterns": [
+        "agent-oriented browser CLI and Skill installation",
+        "adaptive multi-step browser loop",
+        "CLI for existing agents versus Python library for embedded automation"
+      ],
+      "adopted": [
+        "optional browser-use-cli capability for adaptive browser tasks",
+        "separate bootstrap so Playwright remains independently usable"
+      ],
+      "notAdopted": [
+        "making Browser Use a mandatory dependency",
+        "requiring hosted Browser Use Cloud"
+      ]
+    },
+    {
+      "repo": "modelcontextprotocol/typescript-sdk",
+      "commit": "7b781ed4e25355a25d15974f3c76de81299694ed",
+      "observedAt": "2026-08-25",
+      "patterns": [
+        "MCP 2026-07-28 stateless transport",
+        "server discovery and cache-aware catalogs",
+        "authorization hardening",
+        "bounded HTTP request bodies and JSON-RPC batch sizes"
+      ],
+      "adopted": [
+        "TypeScript SDK v2 gateway",
+        "read-only capability health and adaptive route facade",
+        "keep protocol concerns separate from local executor state"
+      ],
+      "notAdopted": [
+        "hand-rolling protocol discovery already owned by the SDK"
+      ]
+    }
+  ]
+}

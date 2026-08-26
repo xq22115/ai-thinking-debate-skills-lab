@@ -1,53 +1,93 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
+  "updated": "2026-08-27",
+  "decisionOrder": [
+    "classify_intent",
+    "read_capability_registry",
+    "read_ttl_health_snapshot",
+    "rank_compatible_routes",
+    "run_route_specific_preflight",
+    "execute_smallest_sufficient_route",
+    "verify_terminal_evidence"
+  ],
   "rules": [
     {
       "name": "provider-native-first",
       "when": "a connected native app directly supports the provider and requested action",
-      "route": "native_plugin"
+      "route": "native_plugin",
+      "intent": "repository_action"
     },
     {
       "name": "deterministic-local-first",
       "when": "the task is deterministic, bounded, local, and does not need an autonomous loop",
-      "route": "remote-desktop-commander_or_cli_skill"
+      "route": "remote-desktop-commander_or_cli_skill",
+      "intent": "local_bounded"
     },
     {
       "name": "long-local-task",
       "when": "the task requires repeated inspect-act-verify cycles or multi-file repair",
-      "route": "chat-work-agent_or_a01-a10-runtime"
+      "route": "health_rank(chat-work-agent,a01-a10-runtime)",
+      "intent": "local_long"
+    },
+    {
+      "name": "governed-multi-step-repair",
+      "when": "the task benefits from dependency-aware multi-role execution and receipt adjudication",
+      "route": "health_rank(a01-a10-runtime,chat-work-agent)",
+      "intent": "multi_step_repair"
     },
     {
       "name": "browser-deterministic",
       "when": "browser work is scripted/replayable and persistent interactive state is not required",
-      "route": "playwright-cli"
+      "route": "health_rank(playwright-cli,browser-use-cli,playwright-mcp)",
+      "intent": "browser_deterministic"
+    },
+    {
+      "name": "browser-adaptive",
+      "when": "browser work needs an agentic multi-step loop that adapts to changing page state but does not specifically require MCP introspection",
+      "route": "health_rank(browser-use-cli,playwright-mcp,playwright-cli)",
+      "intent": "browser_adaptive"
     },
     {
       "name": "browser-stateful",
-      "when": "browser work needs persistent session state, accessibility-tree introspection, or interactive exploration",
-      "route": "playwright-mcp"
+      "when": "browser work needs persistent session state, accessibility-tree introspection, extension attachment, or exploratory interaction",
+      "route": "health_rank(playwright-mcp,browser-use-cli,playwright-cli)",
+      "intent": "browser_stateful"
     },
     {
       "name": "project-memory-read",
       "when": "the task needs explicit project recall or provenance search for a workspace",
-      "route": "project-memory"
+      "route": "project-memory",
+      "intent": "project_recall"
     },
     {
       "name": "local-observability",
-      "when": "the user needs visual preflight, run status, or receipt inspection without mutation",
-      "route": "ordinary-chat-dashboard"
+      "when": "the user needs visual preflight, run status, receipt inspection, or capability health without mutation",
+      "route": "ordinary-chat-dashboard",
+      "intent": "observability"
     },
     {
       "name": "mcp-gateway",
-      "when": "the host exposes custom MCP and the request is capability discovery, preflight, run status, receipt retrieval, project-memory search, or a guarded mutation supported by the bridge",
-      "route": "ordinary-chat-mcp"
+      "when": "the host exposes custom MCP and the request is capability discovery, health, adaptive routing, preflight, liveness, run status, receipt retrieval, project-memory search, or a guarded mutation supported by the bridge",
+      "route": "ordinary-chat-mcp",
+      "intent": "capability_discovery"
     }
   ],
+  "adaptive": {
+    "healthCacheTtlSecondsDefault": 60,
+    "externalAppsRemainConditionalUntilHostPreflight": true,
+    "requireReadyModeAvailable": true,
+    "preferSmallestSufficientInterface": true,
+    "doNotExecuteDuringRouteSelection": true,
+    "doNotAutoRetryStaleMutationRuns": true,
+    "staleRunDetectionUsesWorkerPid": true
+  },
   "escalation": {
     "requirePreflightBeforeLocalMutation": true,
     "requirePreflightBeforeAgentRun": true,
     "requireCapabilityAvailable": true,
     "requireCleanRepoForA01A10": true,
     "bindA01A10ToQueuedBaseSha": true,
+    "requireLivenessCheckForUnexpectedlyLongActiveRuns": true,
     "fallbackMustBeExplicit": true
   },
   "antiPatterns": [
@@ -57,6 +97,8 @@
     "raw_shell_as_universal_tool",
     "claim_host_feature_unlock",
     "treat_process_start_as_completion",
+    "treat_persisted_running_as_proof_worker_is_alive",
+    "auto_retry_unknown_partial_mutation",
     "allow_generated_browser_artifacts_to_dirty_agent_repo"
   ]
 }

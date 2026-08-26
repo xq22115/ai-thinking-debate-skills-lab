@@ -6,9 +6,15 @@ on:
       - '.gitignore'
       - 'control-plane/scripts/ordinary_chat_bridge.py'
       - 'control-plane/scripts/project_memory.py'
+      - 'control-plane/scripts/capability_health.py'
+      - 'control-plane/scripts/capability_router.py'
+      - 'control-plane/scripts/run_reconciler.py'
       - 'control-plane/scripts/bootstrap_ordinary_chat_stack.sh'
+      - 'control-plane/scripts/bootstrap_browser_use.sh'
       - 'control-plane/tests/test_ordinary_chat_bridge.py'
       - 'control-plane/tests/test_project_memory.py'
+      - 'control-plane/tests/test_capability_router.py'
+      - 'control-plane/tests/test_run_reconciler.py'
       - 'control-plane/tests/test_ordinary_chat_dashboard.py'
       - 'control-plane/ordinary-chat-dashboard/**'
       - 'control-plane/ai-system/mcp/**'
@@ -16,9 +22,10 @@ on:
       - 'control-plane/ai-system/configs/ordinary-chat-*.json'
       - 'skills/ordinary-chat-agent-router/**'
       - 'debates/2026-08-26/**'
+      - 'research/ordinary-chat-upstreams/**'
       - '.github/workflows/ordinary-chat-agent-stack.yml'
   push:
-    branches: [ordinary-chat-agent-stack-v2]
+    branches: [ordinary-chat-agent-stack-v2, ordinary-chat-agent-stack-v3-adaptive-runtime]
 
 permissions:
   contents: read
@@ -31,15 +38,22 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Compile bridge scripts
+      - name: Compile ordinary-chat Python
         run: |
           python -m py_compile control-plane/scripts/ordinary_chat_bridge.py
           python -m py_compile control-plane/scripts/project_memory.py
+          python -m py_compile control-plane/scripts/capability_health.py
+          python -m py_compile control-plane/scripts/capability_router.py
+          python -m py_compile control-plane/scripts/run_reconciler.py
           python -m py_compile control-plane/ordinary-chat-dashboard/server.py
       - name: Run bridge tests
         run: python control-plane/tests/test_ordinary_chat_bridge.py
       - name: Run memory tests
         run: python control-plane/tests/test_project_memory.py
+      - name: Run adaptive routing tests
+        run: python control-plane/tests/test_capability_router.py
+      - name: Run liveness reconciliation tests
+        run: python control-plane/tests/test_run_reconciler.py
       - name: Run dashboard tests
         run: python control-plane/tests/test_ordinary_chat_dashboard.py
       - name: Validate JSON policies
@@ -57,7 +71,11 @@ jobs:
               print('PASS', path)
           PY
       - name: Check bootstrap syntax
-        run: bash -n control-plane/scripts/bootstrap_ordinary_chat_stack.sh
+        run: |
+          bash -n control-plane/scripts/bootstrap_ordinary_chat_stack.sh
+          if [ -f control-plane/scripts/bootstrap_browser_use.sh ]; then
+            bash -n control-plane/scripts/bootstrap_browser_use.sh
+          fi
       - name: Verify runtime artifacts are ignored
         run: |
           for path in \
@@ -78,6 +96,9 @@ jobs:
             control-plane/ai-system/browser \
             control-plane/scripts/ordinary_chat_bridge.py \
             control-plane/scripts/project_memory.py \
+            control-plane/scripts/capability_health.py \
+            control-plane/scripts/capability_router.py \
+            control-plane/scripts/run_reconciler.py \
             control-plane/ordinary-chat-dashboard \
             skills/ordinary-chat-agent-router; then
             echo 'Potential committed secret detected' >&2
