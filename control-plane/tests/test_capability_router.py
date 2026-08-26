@@ -132,6 +132,21 @@ class CapabilityRouterTests(unittest.TestCase):
         result = router.route("browser_adaptive", require_ready=True)
         self.assertEqual(result["result"], "PASS")
         self.assertEqual(result["selected"]["id"], "browser-use-cli")
+        self.assertEqual(result["health_probe"], "FRESH")
+
+    def test_require_ready_reprobes_when_cached_backend_disappears(self):
+        browser = self._exe("browser-use")
+        os.environ["BROWSER_USE_BIN"] = str(browser)
+        warm = health.cached_or_snapshot()
+        self.assertTrue(warm["capabilities"]["browser-use-cli"]["ready"])
+        self.assertEqual(health.cached_or_snapshot()["cache"], "HIT")
+        browser.unlink()
+        result = router.route("browser_adaptive", require_ready=True)
+        self.assertEqual(result["health_probe"], "FRESH")
+        self.assertEqual(result["result"], "BLOCKED")
+        browser_candidate = next(item for item in result["candidates"] if item["id"] == "browser-use-cli")
+        self.assertFalse(browser_candidate["ready"])
+        self.assertEqual(browser_candidate["state"], "UNAVAILABLE")
 
     def test_adaptive_browser_falls_back_to_playwright_cli_when_only_ready_backend(self):
         playwright = self._exe("playwright-cli")
