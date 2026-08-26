@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
 """Read-only liveness reconciliation for ordinary-chat agent runs.
 
-The reconciler never retries or mutates a run. It compares the persisted state
-with worker PID liveness so ordinary chat can distinguish a genuinely running
-worker from a stale record after a crash or host restart.
+The reconciler never retries or mutates a run. It compares persisted state with
+worker PID liveness, process-start identity when observable, and record freshness
+so ordinary chat does not confuse a reused PID or a long-silent worker with a
+verified-live agent.
 """
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import json
 import os
 import pathlib
 import re
+import subprocess
 import time
 from typing import Any
 
@@ -25,12 +28,24 @@ def _state_dir() -> pathlib.Path:
     return pathlib.Path(raw).expanduser().resolve()
 
 
-def _grace_seconds() -> int:
+def _bounded_int(name: str, default: int, low: int, high: int) -> int:
     try:
-        value = int(os.environ.get("ORDINARY_CHAT_STARTUP_GRACE_SECONDS", "30"))
+        value = int(os.environ.get(name, str(default)))
     except ValueError:
-        value = 30
-    return min(600, max(1, value))
+        value = default
+    return min(high, max(low, value))
+
+
+def _grace_seconds() -> int:
+    return _bounded_int("ORDINARY_CHAT_STARTUP_GRACE_SECONDS", 30, 1, 600)
+
+
+def _max_silence_seconds() -> int:
+    return _bounded_int("ORDINARY_CHAT_LIVENESS_MAX_SILENCE_SECONDS", 300, 30, 86400)
+
+
+def _identity_tolerance_seconds() -> int:
+    return _bounded_int("ORDINARY_CHAT_PROCESS_START_TOLERANCE_SECONDS", 15, 2, 120)
 
 
 def _record_path(run_id: str) -> pathlib.Path:
@@ -58,16 +73,57 @@ def _pid_alive(pid: int) -> bool | None:
     return True
 
 
+def _process_start_unix(pid: int) -> int | None:
+    """Best-effort process birth time without requiring third-party packages.
+
+    `ps -o lstart=` is available on macOS and common Linux distributions. A
+    failure is treated as unknown rather than as proof that the worker is dead.
+    """
+    if pid <= 0:
+        return None
+    try:
+        cp = subprocess.run(
+            ["ps", "-o", "lstart=", "-p", str(pid)],
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=2,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    text = cp.stdout.strip() if cp.returncode == 0 else ""
+    if not text:
+        return None
+    try:
+        stamp = dt.datetime.strptime(text, "%a %b %d %H:%M:%S %Y")
+    except ValueError:
+        return None
+    return int(stamp.timestamp())
+
+
+def _process_identity(recorded_started: int | None, observed_started: int | None) -> str:
+    if not recorded_started or observed_started is None:
+        return "UNKNOWN"
+    tolerance = _identity_tolerance_seconds()
+    # The worker records worker_started_at_unix immediately after it starts, so
+    # the OS-observed process birth should be at or just before that timestamp.
+    if observed_started > recorded_started + 2:
+        return "MISMATCH"
+    if recorded_started - observed_started > tolerance:
+        return "MISMATCH"
+    return "MATCH"
+
+
 def inspect(run_id: str) -> dict[str, Any]:
     if not RUN_ID_RE.fullmatch(run_id):
-        return {"schemaVersion": 1, "result": "NOT_FOUND", "reason": "invalid_run_id"}
+        return {"schemaVersion": 2, "result": "NOT_FOUND", "reason": "invalid_run_id"}
     path = _record_path(run_id)
     if not path.is_file():
-        return {"schemaVersion": 1, "result": "NOT_FOUND", "run_id": run_id}
+        return {"schemaVersion": 2, "result": "NOT_FOUND", "run_id": run_id}
     try:
         record = _read_record(run_id)
     except (OSError, ValueError, json.JSONDecodeError):
-        return {"schemaVersion": 1, "result": "FAIL", "run_id": run_id, "reason": "record_unreadable"}
+        return {"schemaVersion": 2, "result": "FAIL", "run_id": run_id, "reason": "record_unreadable"}
 
     status = str(record.get("status") or "UNKNOWN")
     now = int(time.time())
@@ -76,7 +132,7 @@ def inspect(run_id: str) -> dict[str, Any]:
 
     if status in TERMINAL:
         return {
-            "schemaVersion": 1,
+            "schemaVersion": 2,
             "run_id": run_id,
             "persisted_status": status,
             "effective_status": status,
@@ -87,7 +143,7 @@ def inspect(run_id: str) -> dict[str, Any]:
 
     if status not in ACTIVE:
         return {
-            "schemaVersion": 1,
+            "schemaVersion": 2,
             "run_id": run_id,
             "persisted_status": status,
             "effective_status": status,
@@ -102,7 +158,7 @@ def inspect(run_id: str) -> dict[str, Any]:
     if pid is None:
         if age is not None and age > _grace_seconds():
             return {
-                "schemaVersion": 1,
+                "schemaVersion": 2,
                 "run_id": run_id,
                 "persisted_status": status,
                 "effective_status": "STALE",
@@ -113,7 +169,7 @@ def inspect(run_id: str) -> dict[str, Any]:
                 "reason": "active_record_without_worker_pid_past_grace",
             }
         return {
-            "schemaVersion": 1,
+            "schemaVersion": 2,
             "run_id": run_id,
             "persisted_status": status,
             "effective_status": status,
@@ -124,20 +180,9 @@ def inspect(run_id: str) -> dict[str, Any]:
         }
 
     alive = _pid_alive(pid)
-    if alive is True:
-        return {
-            "schemaVersion": 1,
-            "run_id": run_id,
-            "persisted_status": status,
-            "effective_status": status,
-            "liveness": "LIVE",
-            "worker_pid": pid,
-            "age_seconds": age,
-            "result": "PASS",
-        }
     if alive is False:
         return {
-            "schemaVersion": 1,
+            "schemaVersion": 2,
             "run_id": run_id,
             "persisted_status": status,
             "effective_status": "STALE",
@@ -147,16 +192,78 @@ def inspect(run_id: str) -> dict[str, Any]:
             "result": "PASS",
             "reason": "worker_pid_not_alive",
         }
+    if alive is None:
+        return {
+            "schemaVersion": 2,
+            "run_id": run_id,
+            "persisted_status": status,
+            "effective_status": status,
+            "liveness": "UNKNOWN",
+            "worker_pid": pid,
+            "age_seconds": age,
+            "result": "CONDITIONAL",
+            "reason": "worker_pid_liveness_unknown",
+        }
+
+    recorded_started_raw = record.get("worker_started_at_unix")
+    recorded_started = recorded_started_raw if isinstance(recorded_started_raw, int) else None
+    observed_started = _process_start_unix(pid)
+    identity = _process_identity(recorded_started, observed_started)
+
+    if identity == "MISMATCH":
+        return {
+            "schemaVersion": 2,
+            "run_id": run_id,
+            "persisted_status": status,
+            "effective_status": "STALE",
+            "liveness": "STALE",
+            "worker_pid": pid,
+            "age_seconds": age,
+            "process_identity": identity,
+            "observed_process_started_at_unix": observed_started,
+            "recorded_worker_started_at_unix": recorded_started,
+            "result": "PASS",
+            "reason": "worker_pid_reused_or_identity_mismatch",
+        }
+
+    if age is not None and age > _max_silence_seconds():
+        return {
+            "schemaVersion": 2,
+            "run_id": run_id,
+            "persisted_status": status,
+            "effective_status": status,
+            "liveness": "SUSPECT",
+            "worker_pid": pid,
+            "age_seconds": age,
+            "process_identity": identity,
+            "result": "CONDITIONAL",
+            "reason": "worker_alive_but_record_silent_past_threshold",
+        }
+
+    if identity != "MATCH":
+        return {
+            "schemaVersion": 2,
+            "run_id": run_id,
+            "persisted_status": status,
+            "effective_status": status,
+            "liveness": "LIVE_UNCONFIRMED",
+            "worker_pid": pid,
+            "age_seconds": age,
+            "process_identity": identity,
+            "result": "CONDITIONAL",
+            "reason": "worker_alive_process_identity_unavailable",
+        }
+
     return {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "run_id": run_id,
         "persisted_status": status,
         "effective_status": status,
-        "liveness": "UNKNOWN",
+        "liveness": "LIVE",
         "worker_pid": pid,
         "age_seconds": age,
-        "result": "CONDITIONAL",
-        "reason": "worker_pid_liveness_unknown",
+        "process_identity": identity,
+        "result": "PASS",
     }
 
 

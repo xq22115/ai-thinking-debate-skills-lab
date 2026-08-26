@@ -4,6 +4,7 @@
 This module intentionally probes only fixed, known execution surfaces. It does not
 accept arbitrary commands and never emits credential values. External ChatGPT app
 state is represented as requiring host-side preflight rather than guessed locally.
+Cached health is treated as untrusted persisted state and is validated before use.
 """
 from __future__ import annotations
 
@@ -79,6 +80,38 @@ def _atomic_json(path: pathlib.Path, payload: dict[str, Any]) -> None:
     finally:
         if os.path.exists(temp_path):
             os.unlink(temp_path)
+
+
+def _valid_cached_payload(value: Any, now: int) -> bool:
+    if not isinstance(value, dict) or value.get("schemaVersion") != 1:
+        return False
+    generated = value.get("generated_at_unix")
+    expires = value.get("expires_at_unix")
+    ttl = value.get("ttl_seconds")
+    capabilities = value.get("capabilities")
+    if not all(isinstance(item, int) and not isinstance(item, bool) for item in (generated, expires, ttl)):
+        return False
+    if not 5 <= ttl <= 3600:
+        return False
+    if generated > now + 5 or expires <= now:
+        return False
+    if abs((generated + ttl) - expires) > 2:
+        return False
+    # A valid cache can never extend more than the maximum configured TTL from now.
+    if expires > now + 3605:
+        return False
+    if not isinstance(capabilities, dict) or not capabilities:
+        return False
+    for capability_id, item in capabilities.items():
+        if not isinstance(capability_id, str) or not isinstance(item, dict):
+            return False
+        ready = item.get("ready")
+        if ready is not None and not isinstance(ready, bool):
+            return False
+        state = item.get("state")
+        if not isinstance(state, str) or not state:
+            return False
+    return value.get("result") == "PASS"
 
 
 def snapshot(*, persist: bool = True, ttl_seconds: int | None = None) -> dict[str, Any]:
@@ -162,10 +195,11 @@ def snapshot(*, persist: bool = True, ttl_seconds: int | None = None) -> dict[st
 
 def cached_or_snapshot() -> dict[str, Any]:
     path = _state_dir() / "health" / "capability-health.json"
+    now = int(time.time())
     if path.is_file():
         try:
             value = json.loads(path.read_text(encoding="utf-8"))
-            if isinstance(value, dict) and int(value.get("expires_at_unix", 0)) > int(time.time()):
+            if _valid_cached_payload(value, now):
                 value["cache"] = "HIT"
                 return value
         except (OSError, ValueError, TypeError, json.JSONDecodeError):
