@@ -2,6 +2,7 @@ import importlib.util
 import json
 import os
 import pathlib
+import stat
 import sys
 import tempfile
 import time
@@ -56,6 +57,14 @@ class CapabilityRouterTests(unittest.TestCase):
         self.assertIsNone(payload["capabilities"]["github-native"]["ready"])
         self.assertTrue(payload["capabilities"]["browser-use-cli"]["ready"])
         self.assertFalse(payload["capabilities"]["playwright-cli"]["ready"])
+
+    def test_persisted_health_cache_is_private_on_posix(self):
+        health.snapshot(persist=True, ttl_seconds=30)
+        path = self._cache_path()
+        self.assertTrue(path.is_file())
+        if os.name == "posix":
+            self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o600)
+            self.assertEqual(stat.S_IMODE(path.parent.stat().st_mode), 0o700)
 
     def test_health_cache_roundtrip(self):
         first = health.cached_or_snapshot()
