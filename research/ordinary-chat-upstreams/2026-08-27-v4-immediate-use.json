@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-08-27",
+  "scope": "2026-06 through 2026-08 ordinary-chat agent execution, routing, MCP, browser, reliability, and observability",
+  "sources": [
+    {
+      "project": "OpenHands/OpenHands",
+      "evidence": "Aug 2026 commits include agent-server telemetry, Activity Log/run-cost export, MCP credential preservation, skills UI, and automation interface improvements.",
+      "adopted": ["execution evidence must be exported", "runtime state and credentials are separate concerns", "agent UX should expose run state rather than hide it"]
+    },
+    {
+      "project": "modelcontextprotocol/typescript-sdk",
+      "evidence": "2026-07-28 stable protocol line uses modern server/discover behavior and per-response server identity metadata; migration guidance changes connection semantics.",
+      "adopted": ["real client integration tests", "explicit protocol target", "transport interruption must fail closed", "capability discovery is a runtime concern"]
+    },
+    {
+      "project": "pydantic/pydantic-ai",
+      "evidence": "Toolsets and tool_choice support dynamically constraining available capabilities instead of loading every tool for every request.",
+      "adopted": ["smallest sufficient tool surface", "task-specific capability restriction", "do not expose universal shell as a convenience tool"]
+    },
+    {
+      "project": "microsoft/playwright CLI",
+      "evidence": "Playwright CLI supports agent skills installation and CLI-first snapshots for coding agents.",
+      "adopted": ["CLI+Skill for deterministic browser work", "MCP only when persistent interactive state adds value", "generated browser state must not dirty the agent repository"]
+    },
+    {
+      "project": "browser-use/browser-use",
+      "evidence": "Aug 2026 fixes/issues emphasize long-session state correctness, async callback handling, resource cleanup, storage-state correctness, and false-success browser actions.",
+      "adopted": ["false-success is a first-class failure mode", "long-running browser sessions need explicit liveness/resource checks", "adaptive browser backend remains optional and independently health-checked"]
+    },
+    {
+      "project": "microsoft/agent-framework",
+      "evidence": "Jul-Aug 2026 work includes MCP 2.0 migration, timeout bounding for background agents, durable-task separation, orphan approval prevention, and workflow routing metadata.",
+      "adopted": ["background work must be bounded", "routing metadata must be visible", "orphan state is tested as a failure mode", "durability is separated from orchestration"]
+    },
+    {
+      "project": "openai/openai-agents-python",
+      "evidence": "Current guardrail and tracing docs distinguish workflow boundaries, tool-level validation, recoverable tool-not-found behavior, and end-to-end traces.",
+      "adopted": ["validate at tool/relay boundary", "make failures recoverable without pretending success", "trace exact run identity and completion evidence"]
+    }
+  ],
+  "v4Synthesis": [
+    "GitHub Actions can be an ordinary-chat cloud execution relay when requests are declarative and execution is fixed/allowlisted.",
+    "Immediate usability must be proven by multiple independent evidence channels, not CI green alone.",
+    "A local device is an optional high-power backend, not a prerequisite for the ordinary-chat GitHub path.",
+    "Ten independent lanes are used as verification workers; five orthogonal completion methods form the final gate.",
+    "Artifacts, hashes, run SHA, workflow run id, and lane evidence are part of the product surface, not debugging leftovers."
+  ]
+}
