@@ -89,3 +89,64 @@ test("gateway exposes only the expected read-only default surface", async () => 
     await handler.close();
   }
 });
+
+test("transport interruption fails closed and a fresh client reconnects", async () => {
+  process.env.ORDINARY_CHAT_MCP_ALLOW_SUBMIT = "false";
+  process.env.ORDINARY_CHAT_MEMORY_ALLOW_WRITE = "false";
+  delete process.env.ORDINARY_CHAT_ALLOWED_ROOTS;
+
+  const handler = createGatewayHandler();
+  let disconnected = false;
+  const makeTransport = () =>
+    new StreamableHTTPClientTransport(new URL("http://test.local/mcp"), {
+      fetch: async (url, init) => {
+        if (disconnected) {
+          throw new TypeError("simulated MCP transport interruption");
+        }
+        return handler.fetch(new Request(url, init));
+      },
+    });
+
+  const first = new Client(
+    { name: "ordinary-chat-chaos-client-1", version: "1.0.0" },
+    { versionNegotiation: { mode: "auto" } },
+  );
+  let second: Client | null = null;
+
+  try {
+    await first.connect(makeTransport());
+    const before = await first.listTools();
+    assert.deepEqual(before.tools.map((tool) => tool.name).sort(), DEFAULT_READ_ONLY_TOOLS);
+
+    disconnected = true;
+    await assert.rejects(
+      first.listTools(),
+      (error: unknown) => error instanceof TypeError && error.message.includes("simulated MCP transport interruption"),
+    );
+
+    // Recovery is explicit: restore the transport and establish a fresh client.
+    // No cached tool-list response is accepted as proof that the disconnected
+    // session remained healthy.
+    disconnected = false;
+    await first.close();
+    second = new Client(
+      { name: "ordinary-chat-chaos-client-2", version: "1.0.0" },
+      { versionNegotiation: { mode: "auto" } },
+    );
+    await second.connect(makeTransport());
+    const after = await second.listTools();
+    assert.deepEqual(after.tools.map((tool) => tool.name).sort(), DEFAULT_READ_ONLY_TOOLS);
+  } finally {
+    disconnected = false;
+    if (second) {
+      await second.close();
+    } else {
+      try {
+        await first.close();
+      } catch {
+        // The primary assertion above already verifies the interruption path.
+      }
+    }
+    await handler.close();
+  }
+});
