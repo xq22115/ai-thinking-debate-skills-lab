@@ -9,6 +9,7 @@ completion methods to pass before the task can be called immediately usable.
 from __future__ import annotations
 
 import argparse
+import ast
 import hashlib
 import json
 import os
@@ -153,6 +154,13 @@ def _append(report: dict[str, Any], name: str, ok: bool, **details: Any) -> None
         report["result"] = "FAIL"
 
 
+def _append_run(report: dict[str, Any], name: str, run_result: dict[str, Any]) -> None:
+    """Attach subprocess evidence without duplicating the positional success flag."""
+    ok = bool(run_result.get("ok"))
+    details = {key: value for key, value in run_result.items() if key != "ok"}
+    _append(report, name, ok, **details)
+
+
 def _registry() -> dict[str, dict[str, Any]]:
     value = _json_load(CAPABILITIES)
     items = value.get("capabilities")
@@ -191,13 +199,11 @@ def _lane_a03(report: dict[str, Any]) -> None:
         [sys.executable, "control-plane/tests/test_ordinary_chat_dashboard.py"],
     ]
     for index, command in enumerate(commands, 1):
-        result = _run(command, timeout=180)
-        _append(report, f"execution_{index}", bool(result["ok"]), **result)
+        _append_run(report, f"execution_{index}", _run(command, timeout=180))
 
 
 def _lane_a04(report: dict[str, Any]) -> None:
-    result = _run([sys.executable, "control-plane/tests/test_ordinary_chat_chaos.py"], timeout=180)
-    _append(report, "chaos_suite", bool(result["ok"]), **result)
+    _append_run(report, "chaos_suite", _run([sys.executable, "control-plane/tests/test_ordinary_chat_chaos.py"], timeout=180))
     reconciler = CONTROL_PLANE / "scripts" / "run_reconciler.py"
     _append(report, "reconciler_present", reconciler.is_file())
     text = reconciler.read_text(encoding="utf-8") if reconciler.is_file() else ""
@@ -253,15 +259,14 @@ def _lane_a05(report: dict[str, Any]) -> None:
 
 def _lane_a06(report: dict[str, Any]) -> None:
     node = _run(["node", "--version"], cwd=MCP_DIR, timeout=30)
-    _append(report, "node_available", bool(node["ok"]), **node)
+    _append_run(report, "node_available", node)
     version_text = node.get("stdout_tail", "").strip().lstrip("v")
     major = int(version_text.split(".", 1)[0]) if version_text and version_text.split(".", 1)[0].isdigit() else 0
     _append(report, "node_20_plus", major >= 20, observed=version_text)
     install = _run(["npm", "install", "--no-audit", "--no-fund"], cwd=MCP_DIR, timeout=240)
-    _append(report, "mcp_dependency_install", bool(install["ok"]), **install)
-    if install["ok"]:
-        check = _run(["npm", "run", "check"], cwd=MCP_DIR, timeout=240)
-        _append(report, "mcp_check", bool(check["ok"]), **check)
+    _append_run(report, "mcp_dependency_install", install)
+    if install.get("ok"):
+        _append_run(report, "mcp_check", _run(["npm", "run", "check"], cwd=MCP_DIR, timeout=240))
     package = _json_load(MCP_DIR / "package.json")
     _append(report, "mcp_v2_packages", "@modelcontextprotocol/server" in package.get("dependencies", {}) and "@modelcontextprotocol/client" in package.get("devDependencies", {}))
     source_text = "\n".join(path.read_text(encoding="utf-8") for path in (MCP_DIR / "src").glob("*.ts"))
@@ -314,6 +319,29 @@ def _scan_secrets(paths: list[pathlib.Path]) -> list[str]:
     return sorted(set(findings))
 
 
+def _unsafe_python_execution(path: pathlib.Path) -> list[str]:
+    """Detect executable AST constructs, not detector strings/comments in source."""
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    findings: list[str] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        func = node.func
+        if isinstance(func, ast.Name) and func.id in {"eval", "exec"}:
+            findings.append(func.id)
+        if (
+            isinstance(func, ast.Attribute)
+            and func.attr == "system"
+            and isinstance(func.value, ast.Name)
+            and func.value.id == "os"
+        ):
+            findings.append("os.system")
+        for keyword in node.keywords:
+            if keyword.arg == "shell" and isinstance(keyword.value, ast.Constant) and keyword.value.value is True:
+                findings.append("shell_true")
+    return sorted(set(findings))
+
+
 def _lane_a10(report: dict[str, Any]) -> None:
     with tempfile.TemporaryDirectory() as temp:
         bad = pathlib.Path(temp) / "bad.json"
@@ -328,11 +356,11 @@ def _lane_a10(report: dict[str, Any]) -> None:
         }), encoding="utf-8")
         _, failures = validate_request(bad)
         _append(report, "negative_request_command_rejected", any(item.startswith("request_unknown_fields") for item in failures), failures=failures)
-    script = pathlib.Path(__file__).read_text(encoding="utf-8")
+    unsafe = _unsafe_python_execution(pathlib.Path(__file__))
+    _append(report, "no_shell_true", "shell_true" not in unsafe, findings=unsafe)
+    _append(report, "no_os_system", "os.system" not in unsafe, findings=unsafe)
+    _append(report, "no_eval_exec", "eval" not in unsafe and "exec" not in unsafe, findings=unsafe)
     workflow = WORKFLOW.read_text(encoding="utf-8") if WORKFLOW.is_file() else ""
-    _append(report, "no_shell_true", "shell=True" not in script)
-    _append(report, "no_os_system", "os.system(" not in script)
-    _append(report, "no_eval_exec", "eval(" not in script and "exec(" not in script)
     _append(report, "workflow_no_user_shell_expression", "request.command" not in workflow and "inputs.command" not in workflow)
     findings = _scan_secrets([
         CONTROL_PLANE / "scripts",
