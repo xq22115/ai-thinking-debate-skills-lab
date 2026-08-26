@@ -1,0 +1,433 @@
+{
+  "lanes": {
+    "A01": {
+      "checks": [
+        {
+          "failures": [],
+          "name": "request_schema",
+          "result": "PASS"
+        },
+        {
+          "name": "goal_binding",
+          "result": "PASS"
+        },
+        {
+          "configured": [
+            "M1",
+            "M2",
+            "M3",
+            "M4",
+            "M5"
+          ],
+          "name": "method_set",
+          "result": "PASS"
+        },
+        {
+          "name": "request_path_scoped",
+          "result": "PASS"
+        }
+      ],
+      "generated_at_unix": 1787786395,
+      "github_run_id": "33022932191",
+      "github_sha": "52a3932649eb36d2d396c46cdbd5f233dd42044f",
+      "goal_sha256": "3984edc62577ef15f767779ee0015f3c516f6eaabf253a102a68c65256717784",
+      "lane": "A01",
+      "repository": "xq22115/ai-thinking-debate-skills-lab",
+      "request_id": "prove-ready-v4-r2-20260827t0725",
+      "result": "PASS",
+      "schemaVersion": 1
+    },
+    "A02": {
+      "checks": [
+        {
+          "failures": [],
+          "name": "request_valid",
+          "result": "PASS"
+        },
+        {
+          "name": "github_actions_runtime",
+          "result": "PASS"
+        },
+        {
+          "name": "github_run_identity",
+          "result": "PASS"
+        },
+        {
+          "name": "relay_registry",
+          "result": "PASS"
+        },
+        {
+          "name": "relay_routing",
+          "result": "PASS"
+        }
+      ],
+      "generated_at_unix": 1787786397,
+      "github_run_id": "33022932191",
+      "github_sha": "52a3932649eb36d2d396c46cdbd5f233dd42044f",
+      "goal_sha256": "3984edc62577ef15f767779ee0015f3c516f6eaabf253a102a68c65256717784",
+      "lane": "A02",
+      "repository": "xq22115/ai-thinking-debate-skills-lab",
+      "request_id": "prove-ready-v4-r2-20260827t0725",
+      "result": "PASS",
+      "schemaVersion": 1
+    },
+    "A03": {
+      "checks": [
+        {
+          "failures": [],
+          "name": "request_valid",
+          "result": "PASS"
+        },
+        {
+          "duration_ms": 53,
+          "name": "execution_1",
+          "result": "PASS",
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": ""
+        },
+        {
+          "duration_ms": 305,
+          "name": "execution_2",
+          "result": "PASS",
+          "returncode": 0,
+          "stderr_tail": ".............\n----------------------------------------------------------------------\nRan 13 tests in 0.024s\n\nOK\n",
+          "stdout_tail": ""
+        },
+        {
+          "duration_ms": 116,
+          "name": "execution_3",
+          "result": "PASS",
+          "returncode": 0,
+          "stderr_tail": ".......\n----------------------------------------------------------------------\nRan 7 tests in 0.044s\n\nOK\n",
+          "stdout_tail": ""
+        },
+        {
+          "duration_ms": 87,
+          "name": "execution_4",
+          "result": "PASS",
+          "returncode": 0,
+          "stderr_tail": "................\n----------------------------------------------------------------------\nRan 16 tests in 0.027s\n\nOK\n",
+          "stdout_tail": ""
+        },
+        {
+          "duration_ms": 125,
+          "name": "execution_5",
+          "result": "PASS",
+          "returncode": 0,
+          "stderr_tail": "...........\n----------------------------------------------------------------------\nRan 11 tests in 0.036s\n\nOK\n",
+          "stdout_tail": ""
+        },
+        {
+          "duration_ms": 2119,
+          "name": "execution_6",
+          "result": "PASS",
+          "returncode": 0,
+          "stderr_tail": "dashboard: \"GET /api/healthz HTTP/1.1\" 200 -\n.dashboard: \"GET / HTTP/1.1\" 200 -\n.dashboard: \"POST /api/run/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa HTTP/1.1\" 405 -\ndashboard: \"PUT /api/run/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa HTTP/1.1\" 405 -\ndashboard: \"PATCH /api/run/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa HTTP/1.1\" 405 -\ndashboard: \"DELETE /api/run/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa HTTP/1.1\" 405 -\n.dashboard: \"GET /server.py HTTP/1.1\" 404 -\n.\n----------------------------------------------------------------------\nRan 4 tests in 2.013s\n\nOK\n",
+          "stdout_tail": ""
+        }
+      ],
+      "generated_at_unix": 1787786393,
+      "github_run_id": "33022932191",
+      "github_sha": "52a3932649eb36d2d396c46cdbd5f233dd42044f",
+      "goal_sha256": "3984edc62577ef15f767779ee0015f3c516f6eaabf253a102a68c65256717784",
+      "lane": "A03",
+      "repository": "xq22115/ai-thinking-debate-skills-lab",
+      "request_id": "prove-ready-v4-r2-20260827t0725",
+      "result": "PASS",
+      "schemaVersion": 1
+    },
+    "A04": {
+      "checks": [
+        {
+          "failures": [],
+          "name": "request_valid",
+          "result": "PASS"
+        },
+        {
+          "duration_ms": 252,
+          "name": "chaos_suite",
+          "result": "PASS",
+          "returncode": 0,
+          "stderr_tail": ".......\n----------------------------------------------------------------------\nRan 7 tests in 0.112s\n\nOK\n",
+          "stdout_tail": ""
+        },
+        {
+          "name": "reconciler_present",
+          "result": "PASS"
+        },
+        {
+          "name": "no_auto_retry_in_reconciler",
+          "result": "PASS"
+        }
+      ],
+      "generated_at_unix": 1787786392,
+      "github_run_id": "33022932191",
+      "github_sha": "52a3932649eb36d2d396c46cdbd5f233dd42044f",
+      "goal_sha256": "3984edc62577ef15f767779ee0015f3c516f6eaabf253a102a68c65256717784",
+      "lane": "A04",
+      "repository": "xq22115/ai-thinking-debate-skills-lab",
+      "request_id": "prove-ready-v4-r2-20260827t0725",
+      "result": "PASS",
+      "schemaVersion": 1
+    },
+    "A05": {
+      "checks": [
+        {
+          "failures": [],
+          "name": "request_valid",
+          "result": "PASS"
+        },
+        {
+          "missing": [],
+          "name": "required_files",
+          "result": "PASS"
+        },
+        {
+          "name": "zip_created",
+          "result": "PASS",
+          "size": 35022
+        },
+        {
+          "bad_member": null,
+          "name": "zip_roundtrip",
+          "result": "PASS"
+        },
+        {
+          "entries": 12,
+          "name": "sha256_manifest",
+          "result": "PASS"
+        }
+      ],
+      "generated_at_unix": 1787786392,
+      "github_run_id": "33022932191",
+      "github_sha": "52a3932649eb36d2d396c46cdbd5f233dd42044f",
+      "goal_sha256": "3984edc62577ef15f767779ee0015f3c516f6eaabf253a102a68c65256717784",
+      "lane": "A05",
+      "repository": "xq22115/ai-thinking-debate-skills-lab",
+      "request_id": "prove-ready-v4-r2-20260827t0725",
+      "result": "PASS",
+      "schemaVersion": 1
+    },
+    "A06": {
+      "checks": [
+        {
+          "failures": [],
+          "name": "request_valid",
+          "result": "PASS"
+        },
+        {
+          "duration_ms": 4,
+          "name": "node_available",
+          "result": "PASS",
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "v22.23.2\n"
+        },
+        {
+          "name": "node_20_plus",
+          "observed": "22.23.2",
+          "result": "PASS"
+        },
+        {
+          "duration_ms": 5626,
+          "name": "mcp_dependency_install",
+          "result": "PASS",
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "\nadded 23 packages in 6s\n"
+        },
+        {
+          "duration_ms": 4948,
+          "name": "mcp_check",
+          "result": "PASS",
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "\n> ordinary-chat-agent-mcp@0.1.0 check\n> npm run typecheck && npm test && npm run build\n\n\n> ordinary-chat-agent-mcp@0.1.0 typecheck\n> tsc --noEmit -p tsconfig.json\n\n\n> ordinary-chat-agent-mcp@0.1.0 test\n> tsx --test tests/*.test.ts\n\nTAP version 13\n# Subtest: gateway exposes only the expected read-only default surface\nok 1 - gateway exposes only the expected read-only default surface\n  ---\n  duration_ms: 524.873609\n  type: 'test'\n  ...\n# Subtest: transport interruption fails closed and a fresh client reconnects\nok 2 - transport interruption fails closed and a fresh client reconnects\n  ---\n  duration_ms: 15.109463\n  type: 'test'\n  ...\n1..2\n# tests 2\n# suites 0\n# pass 2\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 1202.371165\n\n> ordinary-chat-agent-mcp@0.1.0 build\n> tsc -p tsconfig.build.json\n\n"
+        },
+        {
+          "name": "mcp_v2_packages",
+          "result": "PASS"
+        },
+        {
+          "name": "protocol_2026_07_28",
+          "result": "FAIL"
+        }
+      ],
+      "generated_at_unix": 1787786400,
+      "github_run_id": "33022932191",
+      "github_sha": "52a3932649eb36d2d396c46cdbd5f233dd42044f",
+      "goal_sha256": "3984edc62577ef15f767779ee0015f3c516f6eaabf253a102a68c65256717784",
+      "lane": "A06",
+      "repository": "xq22115/ai-thinking-debate-skills-lab",
+      "request_id": "prove-ready-v4-r2-20260827t0725",
+      "result": "FAIL",
+      "schemaVersion": 1
+    },
+    "A07": {
+      "checks": [
+        {
+          "failures": [],
+          "name": "request_valid",
+          "result": "PASS"
+        },
+        {
+          "name": "pinned_actions",
+          "result": "PASS",
+          "uses": [
+            "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+            "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+            "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+            "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+            "actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+            "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+          ]
+        },
+        {
+          "name": "no_latest_in_relay_workflow",
+          "result": "PASS"
+        },
+        {
+          "name": "no_request_command_field",
+          "result": "PASS"
+        },
+        {
+          "name": "request_has_no_env_override",
+          "result": "PASS"
+        }
+      ],
+      "generated_at_unix": 1787786396,
+      "github_run_id": "33022932191",
+      "github_sha": "52a3932649eb36d2d396c46cdbd5f233dd42044f",
+      "goal_sha256": "3984edc62577ef15f767779ee0015f3c516f6eaabf253a102a68c65256717784",
+      "lane": "A07",
+      "repository": "xq22115/ai-thinking-debate-skills-lab",
+      "request_id": "prove-ready-v4-r2-20260827t0725",
+      "result": "PASS",
+      "schemaVersion": 1
+    },
+    "A08": {
+      "checks": [
+        {
+          "failures": [],
+          "name": "request_valid",
+          "result": "PASS"
+        },
+        {
+          "name": "local_device_not_required",
+          "result": "PASS"
+        },
+        {
+          "name": "work_or_codex_not_required",
+          "result": "PASS"
+        },
+        {
+          "name": "workflow_independent_of_chat_work_agent",
+          "result": "PASS"
+        },
+        {
+          "name": "workflow_independent_of_claude",
+          "result": "PASS"
+        }
+      ],
+      "generated_at_unix": 1787786392,
+      "github_run_id": "33022932191",
+      "github_sha": "52a3932649eb36d2d396c46cdbd5f233dd42044f",
+      "goal_sha256": "3984edc62577ef15f767779ee0015f3c516f6eaabf253a102a68c65256717784",
+      "lane": "A08",
+      "repository": "xq22115/ai-thinking-debate-skills-lab",
+      "request_id": "prove-ready-v4-r2-20260827t0725",
+      "result": "PASS",
+      "schemaVersion": 1
+    },
+    "A09": {
+      "checks": [
+        {
+          "failures": [],
+          "name": "request_valid",
+          "result": "PASS"
+        },
+        {
+          "name": "repository_identity",
+          "observed": "xq22115/ai-thinking-debate-skills-lab",
+          "result": "PASS"
+        },
+        {
+          "name": "github_sha",
+          "observed": "52a3932649eb36d2d396c46cdbd5f233dd42044f",
+          "result": "PASS"
+        },
+        {
+          "name": "github_run_id",
+          "observed": "33022932191",
+          "result": "PASS"
+        },
+        {
+          "name": "proof_metadata",
+          "result": "PASS"
+        }
+      ],
+      "generated_at_unix": 1787786396,
+      "github_run_id": "33022932191",
+      "github_sha": "52a3932649eb36d2d396c46cdbd5f233dd42044f",
+      "goal_sha256": "3984edc62577ef15f767779ee0015f3c516f6eaabf253a102a68c65256717784",
+      "lane": "A09",
+      "repository": "xq22115/ai-thinking-debate-skills-lab",
+      "request_id": "prove-ready-v4-r2-20260827t0725",
+      "result": "PASS",
+      "schemaVersion": 1
+    },
+    "A10": {
+      "checks": [
+        {
+          "failures": [],
+          "name": "request_valid",
+          "result": "PASS"
+        },
+        {
+          "failures": [
+            "request_unknown_fields:command"
+          ],
+          "name": "negative_request_command_rejected",
+          "result": "PASS"
+        },
+        {
+          "findings": [],
+          "name": "no_shell_true",
+          "result": "PASS"
+        },
+        {
+          "findings": [],
+          "name": "no_os_system",
+          "result": "PASS"
+        },
+        {
+          "findings": [],
+          "name": "no_eval_exec",
+          "result": "PASS"
+        },
+        {
+          "name": "workflow_no_user_shell_expression",
+          "result": "PASS"
+        },
+        {
+          "findings": [],
+          "name": "secret_prefix_scan",
+          "result": "PASS"
+        }
+      ],
+      "generated_at_unix": 1787786393,
+      "github_run_id": "33022932191",
+      "github_sha": "52a3932649eb36d2d396c46cdbd5f233dd42044f",
+      "goal_sha256": "3984edc62577ef15f767779ee0015f3c516f6eaabf253a102a68c65256717784",
+      "lane": "A10",
+      "repository": "xq22115/ai-thinking-debate-skills-lab",
+      "request_id": "prove-ready-v4-r2-20260827t0725",
+      "result": "PASS",
+      "schemaVersion": 1
+    }
+  },
+  "schemaVersion": 1
+}
