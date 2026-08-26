@@ -4,7 +4,7 @@ import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/cli
 
 import { createGatewayHandler } from "../src/mcp.js";
 
-test("gateway lists read-only tools and calls capability/preflight tools", async () => {
+test("gateway lists and calls adaptive read-only tools", async () => {
   process.env.ORDINARY_CHAT_MCP_ALLOW_SUBMIT = "false";
   process.env.ORDINARY_CHAT_MEMORY_ALLOW_WRITE = "false";
   delete process.env.ORDINARY_CHAT_ALLOWED_ROOTS;
@@ -24,9 +24,12 @@ test("gateway lists read-only tools and calls capability/preflight tools", async
     const names = listed.tools.map((tool) => tool.name).sort();
     assert.deepEqual(names, [
       "agent_receipt_summary",
+      "agent_run_liveness",
       "agent_run_status",
       "bridge_preflight",
       "capabilities",
+      "capability_health",
+      "capability_route",
       "project_memory_search",
     ]);
 
@@ -35,10 +38,32 @@ test("gateway lists read-only tools and calls capability/preflight tools", async
     assert.equal(capabilityData.schemaVersion, 1);
     assert.ok(Array.isArray(capabilityData.capabilities));
 
+    const health = await client.callTool({ name: "capability_health", arguments: {} });
+    const healthData = health.structuredContent as Record<string, unknown>;
+    assert.equal(healthData.result, "PASS");
+    assert.equal(healthData.schemaVersion, 1);
+    assert.equal(typeof healthData.capabilities, "object");
+
+    const route = await client.callTool({
+      name: "capability_route",
+      arguments: { intent: "repository_action" },
+    });
+    const routeData = route.structuredContent as Record<string, unknown>;
+    assert.equal(routeData.result, "CONDITIONAL");
+    const selected = routeData.selected as Record<string, unknown>;
+    assert.equal(selected.id, "github-native");
+
     const preflight = await client.callTool({ name: "bridge_preflight", arguments: {} });
     const preflightData = preflight.structuredContent as Record<string, unknown>;
     assert.equal(preflightData.result, "BLOCKED");
     assert.equal(preflightData.allowed_roots_configured, false);
+
+    const liveness = await client.callTool({
+      name: "agent_run_liveness",
+      arguments: { runId: "f".repeat(32) },
+    });
+    const livenessData = liveness.structuredContent as Record<string, unknown>;
+    assert.equal(livenessData.result, "NOT_FOUND");
   } finally {
     await client.close();
     await handler.close();
