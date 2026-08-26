@@ -33,6 +33,13 @@ class RunReconcilerTests(unittest.TestCase):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(payload), encoding="utf-8")
 
+    def test_process_start_probe_identifies_current_test_process(self):
+        observed = reconciler._process_start_unix(os.getpid())
+        self.assertIsNotNone(observed)
+        now = int(time.time())
+        self.assertLessEqual(observed, now + 2)
+        self.assertGreaterEqual(observed, now - 3600)
+
     def test_terminal_status_remains_terminal(self):
         run_id = "a" * 32
         self._record(run_id, {"status": "PASS", "worker_pid": 999999, "updated_at_unix": int(time.time())})
