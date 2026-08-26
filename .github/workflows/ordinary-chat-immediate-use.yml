@@ -6,6 +6,15 @@ on:
       - ordinary-chat-agent-stack-v4-immediate-use
     paths:
       - 'control-plane/ordinary-chat-requests/*.json'
+  pull_request:
+    paths:
+      - 'control-plane/ordinary-chat-requests/*.json'
+      - 'control-plane/scripts/ordinary_chat_completion_gate.py'
+      - 'control-plane/tests/test_ordinary_chat_completion_gate.py'
+      - 'control-plane/ai-system/configs/ordinary-chat-immediate-use.json'
+      - 'control-plane/ai-system/configs/ordinary-chat-capabilities.json'
+      - 'control-plane/ai-system/configs/ordinary-chat-routing.json'
+      - '.github/workflows/ordinary-chat-immediate-use.yml'
   workflow_dispatch:
 
 permissions:
@@ -58,11 +67,14 @@ jobs:
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '22'
-      - name: Resolve declarative request from this commit
+      - name: Resolve declarative request
         shell: bash
         run: |
           set -euo pipefail
-          request="$(git diff --name-only HEAD^ HEAD -- 'control-plane/ordinary-chat-requests/*.json' | sort | tail -n 1 || true)"
+          request=""
+          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+            request="$(git diff --name-only HEAD^ HEAD -- 'control-plane/ordinary-chat-requests/*.json' | sort | tail -n 1 || true)"
+          fi
           if [ -z "$request" ]; then
             request="$(find control-plane/ordinary-chat-requests -maxdepth 1 -type f -name '*.json' | sort | tail -n 1)"
           fi
@@ -109,11 +121,14 @@ jobs:
           pattern: ordinary-chat-v4-lane-*
           path: lane-evidence
           merge-multiple: true
-      - name: Resolve declarative request from this commit
+      - name: Resolve declarative request
         shell: bash
         run: |
           set -euo pipefail
-          request="$(git diff --name-only HEAD^ HEAD -- 'control-plane/ordinary-chat-requests/*.json' | sort | tail -n 1 || true)"
+          request=""
+          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+            request="$(git diff --name-only HEAD^ HEAD -- 'control-plane/ordinary-chat-requests/*.json' | sort | tail -n 1 || true)"
+          fi
           if [ -z "$request" ]; then
             request="$(find control-plane/ordinary-chat-requests -maxdepth 1 -type f -name '*.json' | sort | tail -n 1)"
           fi
