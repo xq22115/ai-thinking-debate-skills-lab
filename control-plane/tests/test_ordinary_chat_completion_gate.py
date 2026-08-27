@@ -45,11 +45,14 @@ class OrdinaryChatCompletionGateTests(unittest.TestCase):
             _, failures = gate.validate_request(path)
             self.assertIn("completion_method_set_invalid", failures)
 
-    def test_request_id_is_bounded_and_path_safe(self):
+    def test_request_id_is_bounded_path_safe_and_ref_safe(self):
+        bad_ids = ["../bad", "bad.name", "bad_name", "bad..name"]
         with tempfile.TemporaryDirectory() as temp:
-            path = self._write_request(pathlib.Path(temp), request_id="../bad")
-            _, failures = gate.validate_request(path)
-            self.assertIn("request_id_invalid", failures)
+            root = pathlib.Path(temp)
+            for request_id in bad_ids:
+                path = self._write_request(root, request_id=request_id)
+                _, failures = gate.validate_request(path)
+                self.assertIn("request_id_invalid", failures, request_id)
 
     def test_five_methods_and_ten_lanes_are_hard_requirements(self):
         config = gate._json_load(gate.CONFIG)
@@ -61,6 +64,28 @@ class OrdinaryChatCompletionGateTests(unittest.TestCase):
         required = gate._required_pack_files()
         missing = [path for path in required if not path.is_file()]
         self.assertEqual(missing, [])
+
+    def test_proof_persistence_is_immutable_and_does_not_move_source_branch(self):
+        config = gate._json_load(gate.CONFIG)
+        relay = config["relay"]
+        self.assertEqual(relay["proofPersistence"], "immutable_tag")
+        self.assertEqual(relay["proofRefPrefix"], "refs/tags/ordinary-chat-proof/")
+        self.assertFalse(relay["sourceBranchMutation"])
+        self.assertFalse(relay["proofRefOverwriteAllowed"])
+        self.assertTrue(relay["proofCommitMustHaveSourceShaAsParent"])
+
+        workflow = gate.WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn('proof_ref="refs/tags/ordinary-chat-proof/$request_id"', workflow)
+        self.assertIn('git ls-remote --exit-code --tags origin "$proof_ref"', workflow)
+        self.assertIn('git push origin "$proof_ref"', workflow)
+        self.assertIn('test "$(git rev-parse HEAD^)" = "$GITHUB_SHA"', workflow)
+        self.assertNotIn("git push origin HEAD:ordinary-chat-agent-stack-v4-immediate-use", workflow)
+        self.assertNotIn("git push --force", workflow)
+        self.assertNotIn("git push -f", workflow)
+
+    def test_proof_persistence_runs_only_after_successful_aggregate(self):
+        workflow = gate.WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn("if: steps.aggregate.outcome == 'success' && github.event_name == 'push'", workflow)
 
 
 if __name__ == "__main__":
