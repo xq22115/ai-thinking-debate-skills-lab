@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 2,
+  "request_id": "v5-e2e-doc-upgrade-20260827t0955",
+  "goal": "Upgrade the existing ordinary-chat stack documentation in place so it documents the real v5 GitHub cloud task runtime while preserving all existing local, browser, memory, A01-A10, MCP, and dashboard layers. Prove the exact document mutation, task-specific acceptance, and idempotent durable resume.",
+  "intent": "ordinary_chat_task",
+  "mode": "execute",
+  "mutation": {
+    "required": true,
+    "commit": true,
+    "allowed_paths": [
+      "docs/ordinary-chat-agent-stack-v2.md"
+    ]
+  },
+  "steps": [
+    {
+      "id": "inspect-existing",
+      "action": "read_text",
+      "with": {
+        "path": "docs/ordinary-chat-agent-stack-v2.md",
+        "max_chars": 30000
+      }
+    },
+    {
+      "id": "locate-anchor",
+      "action": "search_text",
+      "depends_on": ["inspect-existing"],
+      "with": {
+        "pattern": "### 1. Connected provider app",
+        "include": ["docs/ordinary-chat-agent-stack-v2.md"]
+      }
+    },
+    {
+      "id": "upgrade-runtime-order",
+      "action": "replace_text",
+      "depends_on": ["locate-anchor"],
+      "with": {
+        "path": "docs/ordinary-chat-agent-stack-v2.md",
+        "find": "### 1. Connected provider app\nUse an installed first-party/provider app first when it already supports the requested action.\n",
+        "replace": "### 1. Connected provider app\nUse an installed first-party/provider app first when it already supports the requested action.\n\n### 1A. GitHub cloud task runtime\nFor a real dependency-aware repository task that ordinary Chat should execute without requiring Work, Codex, or an online local device, create a dedicated `chat-task/<request_id>` branch from the verified v5 runtime and submit one schema-v2 declarative request. The request binds the user goal, structured actions, dependencies, explicit mutation paths, and task-specific acceptance checks; it does not carry a shell command.\n\nThe GitHub Actions task runtime executes the plan, checks the actual changed-path set, evaluates the requested outcome, and then replays the same request from saved state. A mutating task is complete only when all five task-outcome proofs pass and the resume probe executes zero steps and produces zero new diff. The older A01-A10 immediate-use workflow remains an infrastructure self-test and cannot substitute for task completion.\n",
+        "expected_count": 1
+      }
+    }
+  ],
+  "acceptance": [
+    {
+      "type": "step_passed",
+      "step_id": "inspect-existing"
+    },
+    {
+      "type": "step_passed",
+      "step_id": "locate-anchor"
+    },
+    {
+      "type": "step_passed",
+      "step_id": "upgrade-runtime-order"
+    },
+    {
+      "type": "file_contains",
+      "path": "docs/ordinary-chat-agent-stack-v2.md",
+      "text": "### 1A. GitHub cloud task runtime"
+    },
+    {
+      "type": "file_contains",
+      "path": "docs/ordinary-chat-agent-stack-v2.md",
+      "text": "resume probe executes zero steps and produces zero new diff"
+    },
+    {
+      "type": "changed_path",
+      "path": "docs/ordinary-chat-agent-stack-v2.md"
+    },
+    {
+      "type": "no_unexpected_changes",
+      "paths": [
+        "docs/ordinary-chat-agent-stack-v2.md"
+      ]
+    }
+  ],
+  "metadata": {
+    "purpose": "real_task_e2e_not_self_test",
+    "source_runtime_sha": "c4a02862e6f1e1d72383dbefb78d1c76ab12ddaf"
+  }
+}
