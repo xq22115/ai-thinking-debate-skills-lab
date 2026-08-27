@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 2,
+  "execution_kind": "deterministic_verification_lanes_not_independent_ai_agents",
+  "historical_version": "v4",
+  "purpose": "infrastructure_self_test_only",
+  "task_executor": false,
+  "source_branch": "ordinary-chat-agent-stack-v4-immediate-use",
+  "superseded_by": "ordinary-chat-agent-stack-v5-task-runtime",
+  "lanes": [
+    {"id":"A01","role":"goal-proof","attack":"ambiguity, goal drift, incomplete success criteria"},
+    {"id":"A02","role":"route-proof","attack":"unreachable tool path, host-only assumption, stale readiness"},
+    {"id":"A03","role":"execution-proof","attack":"static-only validation, code that compiles but cannot execute"},
+    {"id":"A04","role":"recovery-proof","attack":"worker death, stale state, record corruption, false completion"},
+    {"id":"A05","role":"artifact-proof","attack":"missing output, corrupt archive, unverified hashes"},
+    {"id":"A06","role":"protocol-latest","attack":"outdated protocol assumptions, incompatible runtime behavior"},
+    {"id":"A07","role":"supply-chain","attack":"floating actions, request-to-shell injection, dependency drift"},
+    {"id":"A08","role":"runtime-independence","attack":"hidden dependency on unrelated execution surfaces"},
+    {"id":"A09","role":"observability","attack":"untraceable success, missing SHA/run identity, no receipt chain"},
+    {"id":"A10","role":"red-team","attack":"unsafe request shapes, secret leakage, arbitrary execution, optimistic retry"}
+  ],
+  "interpretation": "Passing these lanes is diagnostic evidence for the v4 relay only. It must never be substituted for task-specific v5 completion evidence."
+}

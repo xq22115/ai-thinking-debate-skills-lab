@@ -4,8 +4,14 @@ on:
   pull_request:
     paths:
       - '.gitignore'
+      - 'README.md'
+      - 'control-plane/README.md'
+      - 'control-plane/index.html'
+      - 'control-plane/package.json'
       - 'control-plane/scripts/ordinary_chat_bridge.py'
       - 'control-plane/scripts/ordinary_chat_completion_gate.py'
+      - 'control-plane/scripts/ordinary_chat_task_runtime.py'
+      - 'control-plane/scripts/ordinary_chat_v5_review.py'
       - 'control-plane/scripts/project_memory.py'
       - 'control-plane/scripts/capability_health.py'
       - 'control-plane/scripts/capability_router.py'
@@ -14,21 +20,26 @@ on:
       - 'control-plane/scripts/bootstrap_browser_use.sh'
       - 'control-plane/tests/test_ordinary_chat_bridge.py'
       - 'control-plane/tests/test_ordinary_chat_completion_gate.py'
+      - 'control-plane/tests/test_ordinary_chat_task_runtime.py'
       - 'control-plane/tests/test_ordinary_chat_chaos.py'
       - 'control-plane/tests/test_project_memory.py'
       - 'control-plane/tests/test_capability_router.py'
       - 'control-plane/tests/test_run_reconciler.py'
       - 'control-plane/tests/test_ordinary_chat_dashboard.py'
       - 'control-plane/ordinary-chat-dashboard/**'
-      - 'control-plane/ordinary-chat-requests/**'
+      - 'control-plane/ordinary-chat-task-requests/**'
       - 'control-plane/ai-system/mcp/**'
       - 'control-plane/ai-system/browser/**'
       - 'control-plane/ai-system/configs/ordinary-chat-*.json'
       - 'skills/ordinary-chat-agent-router/**'
       - 'debates/2026-08-26/**'
       - 'research/ordinary-chat-upstreams/**'
+      - 'archive/ordinary-chat-v4-evidence/**'
       - '.github/workflows/ordinary-chat-agent-stack.yml'
       - '.github/workflows/ordinary-chat-immediate-use.yml'
+      - '.github/workflows/ordinary-chat-task-execute.yml'
+      - '.github/workflows/ordinary-chat-task-runtime-ci.yml'
+      - '.github/workflows/ordinary-chat-v5-review.yml'
   push:
     branches:
       - ordinary-chat-agent-stack-v2
@@ -36,6 +47,7 @@ on:
       - ordinary-chat-agent-stack-v3.1-adversarial-verification
       - ordinary-chat-agent-stack-v3.2-chaos-recovery
       - ordinary-chat-agent-stack-v4-immediate-use
+      - ordinary-chat-agent-stack-v5-task-runtime
 
 permissions:
   contents: read
@@ -43,6 +55,7 @@ permissions:
 jobs:
   python-and-policy:
     runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -54,16 +67,19 @@ jobs:
         run: |
           python -m py_compile control-plane/scripts/ordinary_chat_bridge.py
           python -m py_compile control-plane/scripts/ordinary_chat_completion_gate.py
+          python -m py_compile control-plane/scripts/ordinary_chat_task_runtime.py
+          python -m py_compile control-plane/scripts/ordinary_chat_v5_review.py
           python -m py_compile control-plane/scripts/project_memory.py
           python -m py_compile control-plane/scripts/capability_health.py
           python -m py_compile control-plane/scripts/capability_router.py
           python -m py_compile control-plane/scripts/run_reconciler.py
           python -m py_compile control-plane/ordinary-chat-dashboard/server.py
-          python -m py_compile control-plane/tests/test_ordinary_chat_chaos.py
       - name: Run bridge tests
         run: python control-plane/tests/test_ordinary_chat_bridge.py
       - name: Run completion-gate contract tests
         run: python control-plane/tests/test_ordinary_chat_completion_gate.py
+      - name: Run real task runtime regression tests
+        run: python -m unittest control-plane/tests/test_ordinary_chat_task_runtime.py -v
       - name: Run memory tests
         run: python control-plane/tests/test_project_memory.py
       - name: Run adaptive routing tests
@@ -83,12 +99,24 @@ jobs:
               pathlib.Path('control-plane/ai-system/configs/ordinary-chat-routing.json'),
               pathlib.Path('control-plane/ai-system/configs/ordinary-chat-security.json'),
               pathlib.Path('control-plane/ai-system/configs/ordinary-chat-immediate-use.json'),
+              pathlib.Path('control-plane/ai-system/configs/ordinary-chat-task-runtime.json'),
               pathlib.Path('control-plane/ai-system/browser/playwright.mcp.example.json'),
+              pathlib.Path('archive/ordinary-chat-v4-evidence/deterministic-lanes.json'),
           ]
           for path in paths:
               json.loads(path.read_text(encoding='utf-8'))
               print('PASS', path)
           PY
+      - name: Reject active generated-v4 evidence and demo-template residue
+        run: |
+          set -euo pipefail
+          test ! -e control-plane/ordinary-chat-proofs
+          test ! -e control-plane/ordinary-chat-requests
+          test ! -e debates/2026-08-27-v4/AGENT-LANES.json
+          if grep -RInE 'Demo Repository|demo repository|sample package.json|demo-repo' README.md control-plane/README.md control-plane/index.html control-plane/package.json; then
+            echo 'demo-template residue remains in active entry points' >&2
+            exit 1
+          fi
       - name: Check bootstrap syntax
         run: |
           bash -n control-plane/scripts/bootstrap_ordinary_chat_stack.sh
@@ -108,13 +136,13 @@ jobs:
               exit 1
             }
           done
-      - name: Scan new stack for common committed secret prefixes
+      - name: Scan active stack for common committed secret prefixes
         run: |
           if grep -RInE '(sk-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,}|xox[baprs]-[A-Za-z0-9-]{20,})' \
             control-plane/ai-system/mcp \
             control-plane/ai-system/browser \
             control-plane/scripts/ordinary_chat_bridge.py \
-            control-plane/scripts/ordinary_chat_completion_gate.py \
+            control-plane/scripts/ordinary_chat_task_runtime.py \
             control-plane/scripts/project_memory.py \
             control-plane/scripts/capability_health.py \
             control-plane/scripts/capability_router.py \
@@ -127,6 +155,7 @@ jobs:
 
   mcp-v2:
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: control-plane/ai-system/mcp
@@ -137,5 +166,7 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '22'
-      - run: npm install --no-audit --no-fund
-      - run: npm run check
+      - name: Install exact direct dependency set without mutating source lock state
+        run: npm install --no-audit --no-fund --package-lock=false
+      - name: Typecheck, test, and build MCP gateway
+        run: npm run check

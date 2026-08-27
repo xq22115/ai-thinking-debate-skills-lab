@@ -36,8 +36,13 @@
       },
       "mcp-check": {
         "commands": [
-          {"argv": ["npm", "install", "--no-package-lock", "--ignore-scripts"], "cwd": "control-plane/ai-system/mcp", "timeoutSeconds": 300},
+          {"argv": ["npm", "install", "--package-lock=false", "--no-audit", "--no-fund"], "cwd": "control-plane/ai-system/mcp", "timeoutSeconds": 300},
           {"argv": ["npm", "run", "check"], "cwd": "control-plane/ai-system/mcp", "timeoutSeconds": 300}
+        ]
+      },
+      "mcp-lockfile-refresh": {
+        "commands": [
+          {"argv": ["npm", "install", "--package-lock-only", "--ignore-scripts", "--no-audit", "--no-fund"], "cwd": "control-plane/ai-system/mcp", "timeoutSeconds": 300}
         ]
       }
     }
