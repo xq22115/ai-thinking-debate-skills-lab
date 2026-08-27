@@ -1,23 +1,35 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "updated": "2026-08-27",
   "decisionOrder": [
     "classify_intent",
+    "bind_task_goal_and_acceptance",
     "read_capability_registry",
-    "read_ttl_health_snapshot",
+    "read_ttl_health_snapshot_when_relevant",
     "rank_compatible_routes",
     "run_route_specific_preflight",
     "execute_smallest_sufficient_route",
-    "verify_terminal_evidence",
-    "require_five_proof_completion_when_claiming_immediate_use"
+    "verify_task_outcome_not_process_start",
+    "prove_durable_resume_for_mutating_cloud_tasks",
+    "return_receipts_and_exact_revision"
   ],
   "rules": [
     {
-      "name": "ordinary-chat-github-relay",
-      "when": "ordinary chat needs a real cloud execution path that must not depend on Work, Codex, or an online local device",
+      "name": "ordinary-chat-real-github-task",
+      "when": "ordinary chat needs a real dependency-aware repository task to execute without requiring Work, Codex, or an online local device",
+      "route": "github-task-runtime",
+      "intent": "ordinary_chat_task",
+      "branchContract": "chat-task/<request_id>",
+      "completionGate": "task_outcome_five_methods",
+      "selfTestIsNotCompletion": true
+    },
+    {
+      "name": "ordinary-chat-infrastructure-self-test",
+      "when": "the user explicitly asks to validate the ordinary-chat execution infrastructure itself",
       "route": "github-actions-relay",
-      "intent": "ordinary_chat_immediate_use",
-      "completionGate": "five_methods_ten_lanes"
+      "intent": "ordinary_chat_infrastructure_self_test",
+      "completionGate": "five_methods_ten_lanes",
+      "taskExecutor": false
     },
     {
       "name": "provider-native-first",
@@ -80,28 +92,43 @@
       "intent": "capability_discovery"
     }
   ],
+  "cloudTask": {
+    "requestSchemaVersion": 2,
+    "sourceBranch": "ordinary-chat-agent-stack-v5-task-runtime",
+    "taskBranchPrefix": "chat-task/",
+    "requestDirectory": "control-plane/ordinary-chat-task-requests",
+    "resultDirectory": "control-plane/ordinary-chat-task-results",
+    "workflow": ".github/workflows/ordinary-chat-task-execute.yml",
+    "runtime": "control-plane/scripts/ordinary_chat_task_runtime.py",
+    "requestSuppliedShell": false,
+    "mutationRequiresExplicitAllowedPaths": true,
+    "mutationCommitRequiresDedicatedTaskBranch": true,
+    "sourceAndTaskEvidenceBranchesSeparated": true,
+    "resumeMustExecuteZeroSteps": true,
+    "resumeMustProduceZeroNewDiff": true
+  },
+  "completion": {
+    "taskMethods": [
+      "goal_contract",
+      "effect_or_execution",
+      "outcome_acceptance",
+      "durable_resume",
+      "receipt_integrity"
+    ],
+    "requiredTaskMethodPassCount": 5,
+    "allowSelfTestToClaimTaskCompletion": false,
+    "allowProcessStartToClaimCompletion": false,
+    "allowPartialPassToClaimCompletion": false
+  },
   "adaptive": {
     "healthCacheTtlSecondsDefault": 60,
     "externalAppsRemainConditionalUntilHostPreflight": true,
     "requireReadyModeAvailable": true,
     "preferSmallestSufficientInterface": true,
     "doNotExecuteDuringRouteSelection": true,
-    "doNotAutoRetryStaleMutationRuns": true,
+    "doNotAutoRetryUnknownPartialMutation": true,
     "staleRunDetectionUsesWorkerPidAndIdentity": true,
-    "immediateUseRelayBypassesLocalDeviceDependency": true,
-    "immediateUseClaimsRequireFiveIndependentProofs": true
-  },
-  "completion": {
-    "immediateUseMethods": [
-      "goal_contract_proof",
-      "route_reachability_proof",
-      "dynamic_execution_proof",
-      "recovery_adversarial_proof",
-      "artifact_delivery_proof"
-    ],
-    "requiredMethodPassCount": 5,
-    "requiredVerificationLanePassCount": 10,
-    "allowPartialPassToClaimCompletion": false
+    "ordinaryChatCloudTaskDoesNotRequireLocalDevice": true
   },
   "escalation": {
     "requirePreflightBeforeLocalMutation": true,
@@ -113,16 +140,15 @@
     "fallbackMustBeExplicit": true
   },
   "antiPatterns": [
-    "load_every_tool_for_every_task",
-    "duplicate_provider_credentials_without_need",
-    "silent_fallback_to_browser",
-    "raw_shell_as_universal_tool",
+    "self_test_as_task_completion",
+    "green_ci_as_only_completion_proof",
+    "proof_commits_mixed_into_source_revision",
     "request_supplied_shell_command",
-    "claim_host_feature_unlock",
-    "treat_process_start_as_completion",
-    "treat_ci_green_as_the_only_completion_proof",
-    "treat_persisted_running_as_proof_worker_is_alive",
-    "auto_retry_unknown_partial_mutation",
-    "allow_generated_browser_artifacts_to_dirty_agent_repo"
+    "process_start_as_completion",
+    "retry_non_idempotent_side_effect_without_receipt",
+    "unknown_partial_mutation_auto_retry",
+    "load_every_tool_for_every_task",
+    "silent_fallback_to_browser",
+    "claim_host_feature_unlock"
   ]
 }

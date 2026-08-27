@@ -1,41 +1,18 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "updated": "2026-08-27",
-  "goal": "Use ordinary ChatGPT chat with GitHub as an execution intermediary, without requiring Work or Codex, and produce auditable task evidence and downloadable artifacts.",
+  "purpose": "infrastructure_self_test_only",
+  "taskExecutor": false,
+  "goal": "Self-test the ordinary-chat GitHub execution infrastructure and produce auditable diagnostic evidence. Passing this self-test must never be used as proof that a user task was completed.",
   "primaryRoute": "github-actions-relay",
   "allowedRequestModes": ["prove-ready", "audit"],
   "allowedIntent": "ordinary_chat_immediate_use",
   "completionMethods": [
-    {
-      "id": "M1",
-      "name": "goal_contract_proof",
-      "description": "The requested goal is machine-readable, bounded, unambiguous, and maps to the ordinary-chat target.",
-      "lanes": ["A01"]
-    },
-    {
-      "id": "M2",
-      "name": "route_reachability_proof",
-      "description": "The GitHub relay is actually executing inside an Actions run and does not depend on an online local device.",
-      "lanes": ["A02", "A08"]
-    },
-    {
-      "id": "M3",
-      "name": "dynamic_execution_proof",
-      "description": "Repository execution paths and MCP integration execute successfully instead of only passing static checks.",
-      "lanes": ["A03", "A06"]
-    },
-    {
-      "id": "M4",
-      "name": "recovery_adversarial_proof",
-      "description": "Injected failures, stale state, transport interruption, and unsafe request shapes fail closed without false completion.",
-      "lanes": ["A04", "A10"]
-    },
-    {
-      "id": "M5",
-      "name": "artifact_delivery_proof",
-      "description": "The final output bundle, hashes, run metadata, and proof reports are reproducibly produced and verified.",
-      "lanes": ["A05", "A09"]
-    }
+    {"id": "M1", "name": "goal_contract_proof", "description": "The self-test request is machine-readable and bounded.", "lanes": ["A01"]},
+    {"id": "M2", "name": "route_reachability_proof", "description": "The diagnostic relay executes in GitHub Actions without a local device.", "lanes": ["A02", "A08"]},
+    {"id": "M3", "name": "dynamic_execution_proof", "description": "Infrastructure execution and MCP integration tests run rather than only static checks.", "lanes": ["A03", "A06"]},
+    {"id": "M4", "name": "recovery_adversarial_proof", "description": "Infrastructure failure handling and red-team checks fail closed.", "lanes": ["A04", "A10"]},
+    {"id": "M5", "name": "artifact_delivery_proof", "description": "Diagnostic evidence is packaged with run identity and hashes.", "lanes": ["A05", "A09"]}
   ],
   "agents": [
     {"id": "A01", "role": "goal-proof", "checks": ["request_schema", "goal_binding", "method_set"]},

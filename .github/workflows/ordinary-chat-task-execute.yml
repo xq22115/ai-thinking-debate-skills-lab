@@ -8,6 +8,11 @@ on:
     paths:
       - 'control-plane/ordinary-chat-task-requests/*.json'
   workflow_dispatch:
+    inputs:
+      request_path:
+        description: Exact task request path under control-plane/ordinary-chat-task-requests/
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -34,19 +39,40 @@ jobs:
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '22'
-      - name: Resolve the request changed by this push
+      - name: Resolve exactly one declarative request
+        env:
+          DISPATCH_REQUEST: ${{ inputs.request_path }}
         shell: bash
         run: |
           set -euo pipefail
           request=""
           if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
-            request="$(git diff --name-only HEAD^ HEAD -- 'control-plane/ordinary-chat-task-requests/*.json' | sort | tail -n 1 || true)"
+            mapfile -t requests < <(git diff --name-only HEAD^ HEAD -- 'control-plane/ordinary-chat-task-requests/*.json')
+            if [ "${#requests[@]}" -ne 1 ]; then
+              echo "expected exactly one changed task request, got ${#requests[@]}" >&2
+              exit 2
+            fi
+            request="${requests[0]}"
+          else
+            request="${DISPATCH_REQUEST}"
           fi
-          if [ -z "$request" ]; then
-            request="$(find control-plane/ordinary-chat-task-requests -maxdepth 1 -type f -name '*.json' | sort | tail -n 1)"
-          fi
-          test -n "$request" && test -f "$request"
+          case "$request" in
+            control-plane/ordinary-chat-task-requests/*.json) ;;
+            *) echo "invalid request path: $request" >&2; exit 2 ;;
+          esac
+          test -f "$request"
           echo "REQUEST_FILE=$request" >> "$GITHUB_ENV"
+          commit_task="$(python - "$request" <<'PY'
+          import json, sys
+          value = json.load(open(sys.argv[1], encoding='utf-8')).get('mutation', {}).get('commit', False)
+          print('true' if value is True else 'false')
+          PY
+          )"
+          echo "COMMIT_TASK=$commit_task" >> "$GITHUB_ENV"
+          if [ "$commit_task" = "true" ] && [[ "${GITHUB_REF}" != refs/heads/chat-task/* ]]; then
+            echo "mutation.commit=true requires a dedicated chat-task/* branch" >&2
+            exit 2
+          fi
       - name: Execute dependency-aware task plan
         shell: bash
         run: |
@@ -67,7 +93,7 @@ jobs:
             --state "$RUNNER_TEMP/ordinary-chat-task/state/state.json" \
             --output "$RUNNER_TEMP/ordinary-chat-task/output/resume.json" \
             --resume-probe
-      - name: Adjudicate five outcome proofs
+      - name: Adjudicate five task-outcome proofs
         shell: bash
         run: |
           set -euo pipefail
@@ -76,7 +102,7 @@ jobs:
             --primary "$RUNNER_TEMP/ordinary-chat-task/output/primary.json" \
             --resume "$RUNNER_TEMP/ordinary-chat-task/output/resume.json" \
             --output "$RUNNER_TEMP/ordinary-chat-task/output/completion-report.json"
-      - name: Build auditable task result
+      - name: Build auditable task result bundle
         shell: bash
         run: |
           set -euo pipefail
@@ -92,14 +118,29 @@ jobs:
           cp "$RUNNER_TEMP/ordinary-chat-task/output/resume.json" "$result_dir/resume.json"
           cp "$RUNNER_TEMP/ordinary-chat-task/output/completion-report.json" "$result_dir/completion-report.json"
           cp "$RUNNER_TEMP/ordinary-chat-task/state/state.json" "$result_dir/state.json"
-          python - <<'PY'
+          if [ -d "$RUNNER_TEMP/ordinary-chat-task/output/fetch" ]; then
+            cp -R "$RUNNER_TEMP/ordinary-chat-task/output/fetch" "$result_dir/fetch"
+          fi
+          RESULT_DIR="$result_dir" python - <<'PY'
+          import json, os, pathlib
+          root = pathlib.Path(os.environ['RESULT_DIR'])
+          pointer = {
+              'schemaVersion': 1,
+              'github_repository': os.environ['GITHUB_REPOSITORY'],
+              'github_run_id': os.environ['GITHUB_RUN_ID'],
+              'github_run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'source_request_sha': os.environ['GITHUB_SHA'],
+              'task_branch': os.environ['GITHUB_REF_NAME'],
+          }
+          (root / 'run-pointer.json').write_text(json.dumps(pointer, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          PY
+          RESULT_DIR="$result_dir" python - <<'PY'
           import hashlib, json, os, pathlib
-          request_id = json.load(open(os.environ['REQUEST_FILE'], encoding='utf-8'))['request_id']
-          root = pathlib.Path('control-plane/ordinary-chat-task-results') / request_id
+          root = pathlib.Path(os.environ['RESULT_DIR'])
           manifest = {}
-          for path in sorted(root.iterdir()):
-              if path.is_file():
-                  manifest[path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
+          for path in sorted(root.rglob('*')):
+              if path.is_file() and path.name != 'SHA256SUMS.json':
+                  manifest[path.relative_to(root).as_posix()] = hashlib.sha256(path.read_bytes()).hexdigest()
           (root / 'SHA256SUMS.json').write_text(json.dumps(manifest, indent=2, sort_keys=True) + '\n', encoding='utf-8')
           PY
           echo "RESULT_DIR=$result_dir" >> "$GITHUB_ENV"
@@ -110,18 +151,21 @@ jobs:
           path: ${{ env.RESULT_DIR }}
           if-no-files-found: error
           retention-days: 30
-      - name: Commit task mutations and receipts only on dedicated task branches
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/chat-task/')
+      - name: Verify and commit task mutations on dedicated task branch
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/chat-task/') && env.COMMIT_TASK == 'true'
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
-          import json, os, pathlib, subprocess
+          import json, os, subprocess
           primary = json.load(open(os.environ['RUNNER_TEMP'] + '/ordinary-chat-task/output/primary.json', encoding='utf-8'))
           expected = set(primary['changed_paths'])
-          actual = set(subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines())
+          tracked = set(subprocess.check_output(['git', 'diff', '--name-only', 'HEAD'], text=True).splitlines())
+          untracked = set(subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard'], text=True).splitlines())
+          result_prefix = os.environ['RESULT_DIR'].rstrip('/') + '/'
+          actual = {p for p in tracked | untracked if not p.startswith(result_prefix)}
           if actual != expected:
-              raise SystemExit(f'git diff mismatch: expected={sorted(expected)} actual={sorted(actual)}')
+              raise SystemExit(f'working tree mismatch: expected={sorted(expected)} actual={sorted(actual)}')
           for path in expected:
               if path.startswith('control-plane/ordinary-chat-task-results/') or path.startswith('control-plane/ordinary-chat-task-requests/'):
                   raise SystemExit(f'request attempted to mutate control data: {path}')
@@ -129,5 +173,5 @@ jobs:
           git config user.name 'ordinary-chat-task-bot'
           git config user.email 'ordinary-chat-task-bot@users.noreply.github.com'
           git add -A
-          git commit -m "task: complete $(basename "$REQUEST_FILE" .json)" 
+          git commit -m "task: complete $(basename "$REQUEST_FILE" .json)"
           git push origin "HEAD:${GITHUB_REF_NAME}"

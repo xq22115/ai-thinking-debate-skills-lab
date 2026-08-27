@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "captured": "2026-08-27",
+  "purpose": "patterns adopted for ordinary-chat task execution; evidence is not vendored code",
+  "sources": [
+    {
+      "source": "Model Context Protocol core maintainers",
+      "date": "2026-07-28",
+      "url": "https://blog.modelcontextprotocol.io/posts/2026-07-28/",
+      "observed": ["stateless core", "Tasks moved to io.modelcontextprotocol/tasks extension", "poll/update task lifecycle", "authorization hardening", "Roots/Sampling/Logging deprecated"],
+      "adopted": ["separate task lifecycle from transport/capability layer", "explicit task handles/receipts rather than assuming one synchronous call equals completion"]
+    },
+    {
+      "source": "PydanticAI issue 6902",
+      "date": "2026-07-30",
+      "url": "https://github.com/pydantic/pydantic-ai/issues/6902",
+      "observed": ["DynamicToolset could silently lose durable wrapping"],
+      "adopted": ["do not infer durability from configuration presence; prove replay behavior"]
+    },
+    {
+      "source": "PydanticAI issue 6907",
+      "date": "2026-07-30",
+      "url": "https://github.com/pydantic/pydantic-ai/issues/6907",
+      "observed": ["non-idempotent tool calls could re-execute on flow retry when replay caching failed"],
+      "adopted": ["resume gate requires zero step re-execution and zero new diff"]
+    },
+    {
+      "source": "PydanticAI issue 6884",
+      "date": "2026-07-29",
+      "url": "https://github.com/pydantic/pydantic-ai/issues/6884",
+      "observed": ["unbounded per-turn tool-call fanout caused production failures"],
+      "adopted": ["bounded request step count", "dependency graph rather than unrestricted fanout"]
+    }
+  ],
+  "antiPatterns": ["self_test_as_task_completion", "configured_durability_without_replay_probe", "unbounded_tool_fanout", "proof_data_mixed_with_source_revision"]
+}

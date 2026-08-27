@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "updated": "2026-08-27",
   "capabilities": [
     {
@@ -8,20 +8,36 @@
       "status": "available",
       "priority": 10,
       "risk": "provider_scoped",
-      "useFor": ["repository", "issue", "pull_request", "workflow", "file"]
+      "useFor": ["repository", "issue", "pull_request", "workflow", "file", "task_branch_creation", "task_request_submission"]
+    },
+    {
+      "id": "github-task-runtime",
+      "kind": "cloud_task_runtime",
+      "status": "regression_validated_e2e_pending",
+      "priority": 12,
+      "risk": "scoped_repository_mutation",
+      "entrypoint": ".github/workflows/ordinary-chat-task-execute.yml",
+      "requestContract": "control-plane/ai-system/configs/ordinary-chat-task-runtime.json",
+      "runtime": "control-plane/scripts/ordinary_chat_task_runtime.py",
+      "taskBranchPattern": "chat-task/**",
+      "localDeviceRequired": false,
+      "workOrCodexRequired": false,
+      "requestSuppliedShell": false,
+      "durableResumeRequired": true,
+      "useFor": ["ordinary_chat_task", "dependency_plan", "repository_read", "scoped_repository_write", "allowlisted_https_fetch", "registered_recipe", "outcome_verification", "durable_resume", "task_receipt"]
     },
     {
       "id": "github-actions-relay",
-      "kind": "cloud_execution_relay",
-      "status": "implemented",
-      "priority": 15,
+      "kind": "cloud_self_test_relay",
+      "status": "implemented_self_test_only",
+      "priority": 18,
       "risk": "bounded_ci_execution",
       "entrypoint": ".github/workflows/ordinary-chat-immediate-use.yml",
       "requestContract": "control-plane/ai-system/configs/ordinary-chat-immediate-use.json",
       "localDeviceRequired": false,
       "workOrCodexRequired": false,
       "arbitraryShell": false,
-      "useFor": ["ordinary_chat_immediate_use", "five_proof_verification", "ten_lane_verification", "artifact_delivery", "cloud_self_test"]
+      "useFor": ["ordinary_chat_infrastructure_self_test", "five_proof_verification", "ten_lane_verification", "cloud_self_test"]
     },
     {
       "id": "remote-desktop-commander",
