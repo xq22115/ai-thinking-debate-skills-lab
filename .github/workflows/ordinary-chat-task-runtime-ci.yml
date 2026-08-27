@@ -1,0 +1,40 @@
+name: Ordinary Chat Task Runtime CI
+
+on:
+  push:
+    branches:
+      - ordinary-chat-agent-stack-v5-task-runtime
+    paths:
+      - 'control-plane/scripts/ordinary_chat_task_runtime.py'
+      - 'control-plane/tests/test_ordinary_chat_task_runtime.py'
+      - 'control-plane/ai-system/configs/ordinary-chat-task-runtime.json'
+      - '.github/workflows/ordinary-chat-task-runtime-ci.yml'
+      - '.github/workflows/ordinary-chat-task-execute.yml'
+  pull_request:
+    paths:
+      - 'control-plane/scripts/ordinary_chat_task_runtime.py'
+      - 'control-plane/tests/test_ordinary_chat_task_runtime.py'
+      - 'control-plane/ai-system/configs/ordinary-chat-task-runtime.json'
+      - '.github/workflows/ordinary-chat-task-runtime-ci.yml'
+      - '.github/workflows/ordinary-chat-task-execute.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  runtime-regression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Compile runtime
+        run: python -m py_compile control-plane/scripts/ordinary_chat_task_runtime.py
+      - name: Run real mutation/resume/negative tests
+        run: python -m unittest control-plane/tests/test_ordinary_chat_task_runtime.py -v
+      - name: Validate runtime registry
+        run: python -m json.tool control-plane/ai-system/configs/ordinary-chat-task-runtime.json >/dev/null

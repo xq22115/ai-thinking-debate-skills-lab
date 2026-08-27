@@ -1,0 +1,133 @@
+name: Ordinary Chat Task Execute
+
+on:
+  push:
+    branches:
+      - 'chat-task/**'
+      - ordinary-chat-agent-stack-v5-task-runtime
+    paths:
+      - 'control-plane/ordinary-chat-task-requests/*.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ordinary-chat-task-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  execute-and-adjudicate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact task revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: true
+          fetch-depth: 2
+      - name: Set up Python 3.12
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Set up Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Resolve the request changed by this push
+        shell: bash
+        run: |
+          set -euo pipefail
+          request=""
+          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+            request="$(git diff --name-only HEAD^ HEAD -- 'control-plane/ordinary-chat-task-requests/*.json' | sort | tail -n 1 || true)"
+          fi
+          if [ -z "$request" ]; then
+            request="$(find control-plane/ordinary-chat-task-requests -maxdepth 1 -type f -name '*.json' | sort | tail -n 1)"
+          fi
+          test -n "$request" && test -f "$request"
+          echo "REQUEST_FILE=$request" >> "$GITHUB_ENV"
+      - name: Execute dependency-aware task plan
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/ordinary-chat-task/state" "$RUNNER_TEMP/ordinary-chat-task/output"
+          python control-plane/scripts/ordinary_chat_task_runtime.py execute \
+            --request "$REQUEST_FILE" \
+            --config control-plane/ai-system/configs/ordinary-chat-task-runtime.json \
+            --state "$RUNNER_TEMP/ordinary-chat-task/state/state.json" \
+            --output "$RUNNER_TEMP/ordinary-chat-task/output/primary.json"
+      - name: Prove durable resume is idempotent
+        shell: bash
+        run: |
+          set -euo pipefail
+          python control-plane/scripts/ordinary_chat_task_runtime.py execute \
+            --request "$REQUEST_FILE" \
+            --config control-plane/ai-system/configs/ordinary-chat-task-runtime.json \
+            --state "$RUNNER_TEMP/ordinary-chat-task/state/state.json" \
+            --output "$RUNNER_TEMP/ordinary-chat-task/output/resume.json" \
+            --resume-probe
+      - name: Adjudicate five outcome proofs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python control-plane/scripts/ordinary_chat_task_runtime.py adjudicate \
+            --request "$REQUEST_FILE" \
+            --primary "$RUNNER_TEMP/ordinary-chat-task/output/primary.json" \
+            --resume "$RUNNER_TEMP/ordinary-chat-task/output/resume.json" \
+            --output "$RUNNER_TEMP/ordinary-chat-task/output/completion-report.json"
+      - name: Build auditable task result
+        shell: bash
+        run: |
+          set -euo pipefail
+          request_id="$(python - <<'PY'
+          import json, os
+          print(json.load(open(os.environ['REQUEST_FILE'], encoding='utf-8'))['request_id'])
+          PY
+          )"
+          result_dir="control-plane/ordinary-chat-task-results/$request_id"
+          mkdir -p "$result_dir"
+          cp "$REQUEST_FILE" "$result_dir/request.json"
+          cp "$RUNNER_TEMP/ordinary-chat-task/output/primary.json" "$result_dir/primary.json"
+          cp "$RUNNER_TEMP/ordinary-chat-task/output/resume.json" "$result_dir/resume.json"
+          cp "$RUNNER_TEMP/ordinary-chat-task/output/completion-report.json" "$result_dir/completion-report.json"
+          cp "$RUNNER_TEMP/ordinary-chat-task/state/state.json" "$result_dir/state.json"
+          python - <<'PY'
+          import hashlib, json, os, pathlib
+          request_id = json.load(open(os.environ['REQUEST_FILE'], encoding='utf-8'))['request_id']
+          root = pathlib.Path('control-plane/ordinary-chat-task-results') / request_id
+          manifest = {}
+          for path in sorted(root.iterdir()):
+              if path.is_file():
+                  manifest[path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
+          (root / 'SHA256SUMS.json').write_text(json.dumps(manifest, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          PY
+          echo "RESULT_DIR=$result_dir" >> "$GITHUB_ENV"
+      - name: Upload complete task receipt bundle
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ordinary-chat-task-${{ github.run_id }}
+          path: ${{ env.RESULT_DIR }}
+          if-no-files-found: error
+          retention-days: 30
+      - name: Commit task mutations and receipts only on dedicated task branches
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/chat-task/')
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, pathlib, subprocess
+          primary = json.load(open(os.environ['RUNNER_TEMP'] + '/ordinary-chat-task/output/primary.json', encoding='utf-8'))
+          expected = set(primary['changed_paths'])
+          actual = set(subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines())
+          if actual != expected:
+              raise SystemExit(f'git diff mismatch: expected={sorted(expected)} actual={sorted(actual)}')
+          for path in expected:
+              if path.startswith('control-plane/ordinary-chat-task-results/') or path.startswith('control-plane/ordinary-chat-task-requests/'):
+                  raise SystemExit(f'request attempted to mutate control data: {path}')
+          PY
+          git config user.name 'ordinary-chat-task-bot'
+          git config user.email 'ordinary-chat-task-bot@users.noreply.github.com'
+          git add -A
+          git commit -m "task: complete $(basename "$REQUEST_FILE" .json)" 
+          git push origin "HEAD:${GITHUB_REF_NAME}"
