@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "updated": "2026-08-27",
   "goal": "Use ordinary ChatGPT chat with GitHub as an execution intermediary, without requiring Work or Codex, and produce auditable task evidence and downloadable artifacts.",
   "primaryRoute": "github-actions-relay",
@@ -44,16 +44,22 @@
     {"id": "A04", "role": "recovery-proof", "checks": ["chaos_suite", "record_integrity", "process_kill_recovery"]},
     {"id": "A05", "role": "artifact-proof", "checks": ["required_files", "zip_roundtrip", "sha256_manifest"]},
     {"id": "A06", "role": "protocol-latest", "checks": ["node_22", "mcp_typecheck", "mcp_client_integration", "mcp_build"]},
-    {"id": "A07", "role": "plugin-supply-chain", "checks": ["pinned_actions", "no_request_command_field", "no_latest_in_relay_workflow"]},
+    {"id": "A07", "role": "plugin-supply-chain", "checks": ["pinned_actions", "no_request_command_field", "no_latest_in_relay_workflow", "source_head_non_mutation"]},
     {"id": "A08", "role": "local-bridge-independence", "checks": ["relay_does_not_require_local_device", "relay_does_not_require_chat_work_agent", "relay_does_not_require_claude"]},
-    {"id": "A09", "role": "observability", "checks": ["github_sha", "github_run_id", "repository_identity", "proof_metadata"]},
-    {"id": "A10", "role": "red-team", "checks": ["negative_request_shapes", "secret_prefix_scan", "no_arbitrary_shell", "no_auto_retry_stale_mutation"]}
+    {"id": "A09", "role": "observability", "checks": ["github_sha", "github_run_id", "repository_identity", "proof_metadata", "immutable_proof_ref"]},
+    {"id": "A10", "role": "red-team", "checks": ["negative_request_shapes", "secret_prefix_scan", "no_arbitrary_shell", "no_auto_retry_stale_mutation", "proof_ref_no_overwrite"]}
   ],
   "relay": {
     "requestDirectory": "control-plane/ordinary-chat-requests",
     "workflow": ".github/workflows/ordinary-chat-immediate-use.yml",
     "script": "control-plane/scripts/ordinary_chat_completion_gate.py",
     "artifactPrefix": "ordinary-chat-v4-proof",
+    "proofPersistence": "immutable_tag",
+    "proofRefPrefix": "refs/tags/ordinary-chat-proof/",
+    "proofRefDerivedFrom": "validated_request_id",
+    "sourceBranchMutation": false,
+    "proofRefOverwriteAllowed": false,
+    "proofCommitMustHaveSourceShaAsParent": true,
     "mutationSurface": "none",
     "arbitraryShell": false,
     "localDeviceRequired": false,
