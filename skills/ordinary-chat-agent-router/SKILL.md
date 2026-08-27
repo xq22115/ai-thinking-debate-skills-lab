@@ -19,7 +19,7 @@ Do not confuse capability expansion with a claim that hidden host tools or produ
 6. Run the selected route's own preflight before mutation or long execution.
 7. Execute only through the selected authorized backend.
 8. Verify terminal evidence; for unexpectedly long active runs, check `agent_run_liveness` before trusting persisted `RUNNING` state.
-9. When claiming immediate usability, require all five completion methods and all ten verification lanes on one exact Git SHA.
+9. When claiming immediate usability, require all five completion methods and all ten verification lanes on one exact source Git SHA, plus an immutable proof ref whose proof commit has that source SHA as its direct parent.
 
 Route selection never executes work and never silently upgrades privilege.
 
@@ -33,13 +33,14 @@ Ordinary-chat relay sequence:
 2. The request may contain only the fixed request-contract fields; never place shell commands, executable paths, environment overrides, or credentials in the request.
 3. GitHub push triggers `.github/workflows/ordinary-chat-immediate-use.yml`.
 4. Ten independent verification lanes A01-A10 run on GitHub-hosted runners.
-5. The aggregate gate requires five independent completion methods M1-M5 and ten-of-ten lane PASS.
-6. Read the persisted proof under `control-plane/ordinary-chat-proofs/<request_id>/`.
-7. Match `completion-report.json`, `run-pointer.json`, the exact Git SHA, and GitHub run id.
-8. Download the final `ordinary-chat-v4-proof-<run_id>` Actions artifact when a user needs the complete output bundle.
-9. Verify the artifact and inner use-pack hashes before calling the task complete.
+5. The aggregate gate requires five independent completion methods M1-M5 and ten-of-ten lane PASS on the source SHA.
+6. On successful aggregate only, the workflow creates a proof-only commit whose direct parent is the tested source SHA and publishes it under immutable tag `ordinary-chat-proof/<request_id>`; it must not move the source branch.
+7. Read the persisted proof from ref `ordinary-chat-proof/<request_id>` under `control-plane/ordinary-chat-proofs/<request_id>/`.
+8. Match `completion-report.json`, `run-pointer.json`, the exact source SHA, GitHub run id, request id, and proof ref. `run-pointer.json` must state `proof_persistence=immutable_tag` and `source_branch_mutated=false`.
+9. Download the final `ordinary-chat-v4-proof-<run_id>` Actions artifact when a user needs the complete output bundle.
+10. Verify the artifact and inner use-pack hashes, then verify the proof tag resolves to a commit whose direct parent is the tested source SHA before calling the task complete.
 
-A persisted proof is not optional bookkeeping. It is the ordinary-chat retrieval surface that closes the loop without requiring the local machine to be online.
+A persisted proof is not optional bookkeeping. It is the ordinary-chat retrieval surface that closes the loop without requiring the local machine to be online. Evidence persistence must never invalidate the source revision that was just tested.
 
 ## Five Independent Completion Methods
 Immediate-use completion is true only when all five pass:
@@ -47,7 +48,7 @@ Immediate-use completion is true only when all five pass:
 - **M2 Route reachability proof** — GitHub Actions is the executing environment and the relay does not depend on Work/Codex or a local device.
 - **M3 Dynamic execution proof** — Python execution tests and modern MCP client integration/typecheck/build run successfully.
 - **M4 Recovery/adversarial proof** — chaos, stale-state, request-shape, liveness, and red-team checks fail closed without false completion.
-- **M5 Artifact delivery proof** — the final bundle exists, ZIP round-trip succeeds, run metadata exists, and SHA256 evidence is produced.
+- **M5 Artifact delivery proof** — the final bundle exists, ZIP round-trip succeeds, run metadata exists, SHA256 evidence is produced, and durable proof persistence does not move the tested source branch.
 
 Do not substitute one green CI workflow for these five methods.
 
@@ -58,12 +59,12 @@ Do not substitute one green CI workflow for these five methods.
 - A04 recovery proof
 - A05 artifact proof
 - A06 protocol-latest proof
-- A07 plugin/action supply-chain proof
+- A07 plugin/action supply-chain + source-head non-mutation proof
 - A08 local-bridge independence proof
-- A09 observability proof
-- A10 red-team proof
+- A09 observability + immutable proof-ref proof
+- A10 red-team + proof-ref overwrite prevention proof
 
-No lane may claim another lane's completion. Overall PASS requires 5/5 methods and 10/10 lanes on the same revision.
+No lane may claim another lane's completion. Overall PASS requires 5/5 methods and 10/10 lanes on the same source revision.
 
 ## Routing
 - Ordinary-chat immediate-use / cloud self-test / proof bundle while local device is unavailable: prefer GitHub Actions relay.
@@ -90,10 +91,12 @@ Before local mutation or agent launch, verify:
 - the queued A01-A10 base SHA is fixed and has not drifted before worker execution.
 
 For the GitHub relay, verify instead:
-- the request is declarative and schema-valid;
+- the request is declarative, schema-valid, and uses a proof-ref-safe request id;
 - the target branch is the relay branch;
 - the workflow and action dependencies are SHA-pinned;
-- the executing run id and Git SHA are recorded;
+- the executing run id and source Git SHA are recorded;
+- the configured proof persistence is immutable-tag mode with source-branch mutation disabled;
+- no existing proof ref may be overwritten;
 - the proof path and final artifact correspond to that exact run.
 
 Host-side apps such as GitHub and Remote Desktop Commander stay `CONDITIONAL` in local health snapshots until their actual connected-app preflight succeeds. Never convert an unknown external state into a fabricated local PASS.
@@ -105,7 +108,7 @@ If persisted state says `QUEUED` or `RUNNING` but the worker PID is gone, treat 
 
 For A01-A10, a base-ref change between submission and worker start is a veto rather than permission to run against a newer commit silently.
 
-For GitHub relay runs, a new request receives a new request id. Never overwrite a previous proof to make a later run look successful.
+For GitHub relay runs, a new request receives a new request id. Successful proof refs are immutable and must never be overwritten to make a later run look successful. A retry after a successful proof must use a new request id; a retry after a failed aggregate has no success proof ref to overwrite.
 
 ## Context Efficiency
 Do not load every capability description for every task. Select the smallest interface that can finish the job. Escalate from native app/CLI to GitHub relay, MCP, or agent runtime only when the task actually needs added execution, state, autonomy, or observability.
@@ -115,7 +118,7 @@ Use CLI+Skill for high-frequency deterministic browser operations; use MCP when 
 ## Local Artifact Discipline
 Generated browser and MCP runtime outputs must remain ignored so they do not make the governed source repository dirty. Playwright snapshots, generated Playwright skills, MCP `node_modules`, MCP `dist`, and local `.env` are runtime artifacts, not source changes.
 
-GitHub relay proof artifacts are intentional evidence. They live under `control-plane/ordinary-chat-proofs/<request_id>/` and must be linked to the request id, Git SHA, and run id.
+GitHub relay proof artifacts are intentional evidence. They live under `control-plane/ordinary-chat-proofs/<request_id>/` in the immutable proof ref `ordinary-chat-proof/<request_id>`, not as a post-validation mutation of the source branch. They must be linked to the request id, source Git SHA, run id, and proof ref.
 
 ## Source Discipline
 When adopting an upstream agent design, record its exact repository commit and the specific pattern being adopted. Prefer pattern-level integration over vendoring a large upstream tree unless a source dependency is genuinely required. See `research/ordinary-chat-upstreams/`.
