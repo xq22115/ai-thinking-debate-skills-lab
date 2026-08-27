@@ -48,8 +48,13 @@ test("gateway exposes only the expected read-only default surface in the modern 
 
     const capabilities = await client.callTool({ name: "capabilities", arguments: {} });
     const capabilityData = capabilities.structuredContent as Record<string, unknown>;
-    assert.equal(capabilityData.schemaVersion, 1);
+    assert.equal(capabilityData.schemaVersion, 2, "MCP capability tool must expose the v2 capability registry contract");
     assert.ok(Array.isArray(capabilityData.capabilities));
+    const capabilityRows = capabilityData.capabilities as Array<Record<string, unknown>>;
+    const capabilityById = new Map(capabilityRows.map((item) => [String(item.id), item]));
+    assert.equal(capabilityById.get("github-task-runtime")?.status, "e2e_verified");
+    assert.equal(capabilityById.get("github-actions-relay")?.status, "implemented_self_test_only");
+    assert.equal(capabilityById.get("github-actions-relay")?.kind, "cloud_self_test_relay");
 
     const health = await client.callTool({ name: "capability_health", arguments: {} });
     const healthData = health.structuredContent as Record<string, unknown>;
@@ -127,9 +132,6 @@ test("transport interruption fails closed and a fresh modern-era client reconnec
       (error: unknown) => error instanceof TypeError && error.message.includes("simulated MCP transport interruption"),
     );
 
-    // Recovery is explicit: restore the transport and establish a fresh client.
-    // No cached tool-list response is accepted as proof that the disconnected
-    // session remained healthy.
     disconnected = false;
     await first.close();
     second = new Client(
