@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "updated": "2026-08-28",
+  "integration_sha": null,
+  "lanes": {},
+  "required_checks_enforced": false,
+  "ordinary_chat_live_e2e": false,
+  "local_device_live_e2e": false,
+  "browser_live_e2e": false,
+  "ux_flight_recorder_live_evidence": false,
+  "unresolved_blockers": [
+    "remote_desktop_commander_has_no_connected_device",
+    "required_status_checks_not_enforced_on_default_branch",
+    "live_chatgpt_stream_and_switch_evidence_not_captured"
+  ]
+}

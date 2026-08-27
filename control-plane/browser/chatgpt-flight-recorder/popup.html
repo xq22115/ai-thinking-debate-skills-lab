@@ -1,0 +1,9 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Chat UX Flight Recorder</title>
+<style>body{font:13px system-ui;width:300px;padding:12px}button{margin:4px 4px 4px 0}pre{white-space:pre-wrap;max-height:180px;overflow:auto}</style>
+<h3>Metadata-only recorder</h3>
+<p>No prompt or response text is exported. Export timing data, then analyze it with <code>chat_ux_report.py</code>.</p>
+<button id="export">Export JSON</button><button id="clear">Clear</button>
+<pre id="status"></pre>
+<script src="popup.js"></script>

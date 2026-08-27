@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Ordinary Chat UX Flight Recorder",
+  "version": "0.1.0",
+  "description": "Metadata-only local timing recorder for ChatGPT responsiveness diagnostics.",
+  "permissions": ["storage"],
+  "host_permissions": ["https://chatgpt.com/*"],
+  "content_scripts": [{"matches":["https://chatgpt.com/*"],"js":["content.js"],"run_at":"document_start"}],
+  "action": {"default_popup":"popup.html","default_title":"Chat UX Flight Recorder"}
+}

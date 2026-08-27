@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "updated": "2026-08-28",
+  "goal": "Use ordinary ChatGPT chat as the primary control plane for deep, durable, verifiable agent work while preserving existing capabilities and independently improving chat responsiveness and cross-chat coordination.",
+  "ordinaryChatFirst": true,
+  "preserveExistingCapabilities": true,
+  "deepReasoningAndResponsivenessAreSeparate": true,
+  "goalConfirmations": [
+    {"id":"G01","question":"Is ordinary ChatGPT chat the primary user-facing control plane rather than Codex or Work?","mustBe":true},
+    {"id":"G02","question":"Can long work continue in a durable external runtime without keeping the chat render loop busy?","mustBe":true},
+    {"id":"G03","question":"Are local filesystem, terminal and browser actions routed only through an actually reachable authorized backend?","mustBe":true},
+    {"id":"G04","question":"Are deep reasoning quality and UI responsiveness measured separately so speed never means shallow reasoning?","mustBe":true},
+    {"id":"G05","question":"Can multiple chats discover the same task_ref and coordinate without overwriting each other?","mustBe":true},
+    {"id":"G06","question":"Does every mutation bind actor, branch, base/head SHA, run identity and receipts?","mustBe":true},
+    {"id":"G07","question":"Can interruption, cancellation and resume avoid duplicate non-idempotent side effects?","mustBe":true},
+    {"id":"G08","question":"Are current June-August 2026 upstream options compared before replacing verified components?","mustBe":true},
+    {"id":"G09","question":"Can chat lag be diagnosed as server/network, streaming, main-thread/render or chat-switch latency without capturing conversation text?","mustBe":true},
+    {"id":"G10","question":"Is COMPLETE impossible until ten lanes, hard release gates and live ordinary-chat/local/browser E2E all agree?","mustBe":true}
+  ],
+  "antiFake": [
+    "repository_proof_is_not_live_chat_proof",
+    "self_test_is_not_user_task_completion",
+    "do_not_trade_reasoning_quality_for_speed",
+    "do_not_delete_history_as_primary_performance_fix",
+    "framework_popularity_is_not_compatibility",
+    "process_start_is_not_completion",
+    "stale_chat_text_is_not_repository_truth"
+  ],
+  "observableOutcomes": {
+    "ordinaryChat": "submit/status/cancel/resume/receipt are available through a route exposed to ordinary chat",
+    "responsiveness": "TTFT, maximum stream gap, long-animation-frame/long-task counts and chat-switch-to-paint latency are measurable",
+    "crossChat": "same task_ref has one authoritative event chain and explicit handoff",
+    "closure": "one integration SHA has all ten lane PASS evidence plus live E2E and enforced release checks"
+  }
+}

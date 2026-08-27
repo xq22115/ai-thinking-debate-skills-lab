@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-08-28",
+  "candidates": [
+    {"name":"MCP 2026-07-28","kind":"protocol","source":"https://modelcontextprotocol.io/specification/2026-07-28","decision":"adapt","reason":"Use stateless core and Tasks extension boundary; do not fake durable execution inside one tool call."},
+    {"name":"MCP TypeScript SDK v2","kind":"sdk","source":"https://github.com/modelcontextprotocol/typescript-sdk","decision":"adapt","reason":"Keep v2 gateway but compatibility-gate native Tasks until current extension issues are exercised/fixed."},
+    {"name":"Playwright CLI","kind":"browser","source":"https://github.com/microsoft/playwright-cli","decision":"adopt","reason":"Best deterministic/token-efficient browser path for repeatable agent steps."},
+    {"name":"Playwright MCP","kind":"browser","source":"https://github.com/microsoft/playwright-mcp","decision":"adapt","reason":"Keep for persistent/stateful exploratory browser sessions."},
+    {"name":"Browser Use","kind":"browser_agent","source":"https://github.com/browser-use/browser-use","decision":"defer","reason":"Useful adaptive browser agent, but live-device compatibility must beat the Playwright routes before promotion."},
+    {"name":"Restate durable agents","kind":"durable_runtime","source":"https://restate.dev/blog/building-durable-ai-agents/","decision":"adapt","reason":"Adopt durable-step/idempotency/recovery patterns; do not wholesale replace verified runtime without migration E2E."},
+    {"name":"LangGraph durable execution","kind":"durable_runtime","source":"https://docs.langchain.com/oss/python/langgraph/durable-execution","decision":"adapt","reason":"Adopt checkpoint/thread/idempotency semantics and compare operational fit before runtime replacement."},
+    {"name":"GitHub Agentic Workflows","kind":"cloud_agent","source":"https://github.blog/changelog/2026-06-11-github-agentic-workflows-are-now-in-public-preview/","decision":"evaluate","reason":"Strong repo automation/fallback candidate, not a substitute for ordinary-chat/local/browser live control plane."},
+    {"name":"OpenAI Apps SDK","kind":"chat_ui","source":"https://developers.openai.com/apps-sdk/","decision":"evaluate","reason":"Use in-chat UI where the user plan/surface exposes it; do not assume custom write MCP is available everywhere."},
+    {"name":"OpenAI Plugins","kind":"chat_integration","source":"https://help.openai.com/en/articles/12584461","decision":"adapt","reason":"Prefer installed provider capabilities first; surface/plan availability remains runtime truth."}
+  ]
+}

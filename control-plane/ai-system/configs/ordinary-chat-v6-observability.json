@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "updated": "2026-08-28",
+  "contentCapture": "metadata_only",
+  "requiredCorrelationFields": ["task_ref", "run_id", "chat_actor_id", "branch", "head_sha", "trace_id"],
+  "uxMetrics": ["ttft_ms", "stream_gap_ms", "chat_switch_to_paint_ms", "long_animation_frame_ms", "long_task_ms"],
+  "runtimeEvents": ["submitted", "started", "checkpointed", "blocked", "cancelled", "resumed", "completed"],
+  "evidenceRules": {
+    "noPromptOrResponseText": true,
+    "receiptHashesRequiredForMutation": true,
+    "headShaRequiredForRepositoryEvidence": true,
+    "taskRefRequiredAcrossChats": true,
+    "uxAndRuntimeTracesCorrelatable": true
+  }
+}

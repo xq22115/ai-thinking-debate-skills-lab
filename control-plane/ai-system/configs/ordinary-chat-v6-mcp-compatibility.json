@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "updated": "2026-08-28",
+  "targetSpec": "2026-07-28",
+  "coreModel": "stateless_core_plus_extensions",
+  "tasksExtension": "io.modelcontextprotocol/tasks",
+  "nativeTasksEnablement": "compatibility_gated",
+  "reason": "The protocol direction is correct, but the current TypeScript SDK v2 line has known Tasks-extension handler/notification gaps. Preserve the verified durable backend behind an adapter until exercised compatibility tests pass.",
+  "knownSdkIssues": [
+    {"repo":"modelcontextprotocol/typescript-sdk","issue":2598,"risk":"tasks/get and tasks/cancel can be shadowed/rejected in server 2.0.0"},
+    {"repo":"modelcontextprotocol/typescript-sdk","issue":2569,"risk":"subscriptions/listen cannot currently carry extension task notifications"}
+  ],
+  "requiredBeforeNativeEnablement": [
+    "real client can create/list/get/cancel task",
+    "task notifications survive reconnect or polling fallback is explicit",
+    "transport interruption does not duplicate mutation",
+    "durable backend receipt identity matches MCP task identity"
+  ]
+}
