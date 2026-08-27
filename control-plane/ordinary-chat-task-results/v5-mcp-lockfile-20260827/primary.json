@@ -1,0 +1,103 @@
+{
+  "acceptance": [
+    {
+      "detail": {
+        "status": "PASS",
+        "step_id": "generate-lockfile"
+      },
+      "id": 1,
+      "result": "PASS",
+      "type": "step_passed"
+    },
+    {
+      "detail": "control-plane/ai-system/mcp/package-lock.json",
+      "id": 2,
+      "result": "PASS",
+      "type": "file_contains"
+    },
+    {
+      "detail": "control-plane/ai-system/mcp/package-lock.json",
+      "id": 3,
+      "result": "PASS",
+      "type": "file_contains"
+    },
+    {
+      "detail": "control-plane/ai-system/mcp/package-lock.json",
+      "id": 4,
+      "result": "PASS",
+      "type": "file_contains"
+    },
+    {
+      "detail": {
+        "changed_paths": [
+          "control-plane/ai-system/mcp/package-lock.json"
+        ],
+        "expected": "control-plane/ai-system/mcp/package-lock.json"
+      },
+      "id": 5,
+      "result": "PASS",
+      "type": "changed_path"
+    },
+    {
+      "detail": {
+        "actual": [
+          "control-plane/ai-system/mcp/package-lock.json"
+        ],
+        "expected": [
+          "control-plane/ai-system/mcp/package-lock.json"
+        ]
+      },
+      "id": 6,
+      "result": "PASS",
+      "type": "no_unexpected_changes"
+    }
+  ],
+  "acceptance_changed_paths_basis": [
+    "control-plane/ai-system/mcp/package-lock.json"
+  ],
+  "changed_paths": [
+    "control-plane/ai-system/mcp/package-lock.json"
+  ],
+  "executed_steps": 1,
+  "goal_sha256": "627b99a8389fdde5092468cee5ba4ca37426029804f9b323cf338013a94b8681",
+  "outcome": "PASS",
+  "proofs": {
+    "M1_goal_contract": "PASS",
+    "M2_effect_or_execution": "PASS",
+    "M3_outcome_acceptance": "PASS",
+    "M5_receipt_integrity": "PASS"
+  },
+  "request_id": "v5-mcp-lockfile-20260827",
+  "request_sha256": "5818cd262bbe2372c73ef2ee9ff9cb4b9cc2756c7be9040ebfff3874120badd5",
+  "resume_probe": false,
+  "resumed_steps": 0,
+  "schemaVersion": 1,
+  "steps": {
+    "generate-lockfile": {
+      "duration_ms": 2411,
+      "evidence": {
+        "commands": [
+          {
+            "argv": [
+              "npm",
+              "install",
+              "--package-lock-only",
+              "--ignore-scripts",
+              "--no-audit",
+              "--no-fund"
+            ],
+            "cwd": "control-plane/ai-system/mcp",
+            "duration_ms": 2411,
+            "exit_code": 0,
+            "stderr_tail": "",
+            "stdout_tail": "\nup to date in 2s\n"
+          }
+        ],
+        "recipe": "mcp-lockfile-refresh"
+      },
+      "status": "PASS",
+      "step_hash": "4613b7b9da7cd67cc8f3576dd37fa3274d7c35994c4c4ba5bb675c70d2affca2"
+    }
+  },
+  "unexpected_changes": []
+}

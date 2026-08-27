@@ -1,0 +1,34 @@
+{
+  "primary_changed_paths": [
+    "control-plane/ai-system/mcp/package-lock.json"
+  ],
+  "request_sha256": "5818cd262bbe2372c73ef2ee9ff9cb4b9cc2756c7be9040ebfff3874120badd5",
+  "schemaVersion": 1,
+  "steps": {
+    "generate-lockfile": {
+      "duration_ms": 2411,
+      "evidence": {
+        "commands": [
+          {
+            "argv": [
+              "npm",
+              "install",
+              "--package-lock-only",
+              "--ignore-scripts",
+              "--no-audit",
+              "--no-fund"
+            ],
+            "cwd": "control-plane/ai-system/mcp",
+            "duration_ms": 2411,
+            "exit_code": 0,
+            "stderr_tail": "",
+            "stdout_tail": "\nup to date in 2s\n"
+          }
+        ],
+        "recipe": "mcp-lockfile-refresh"
+      },
+      "status": "PASS",
+      "step_hash": "4613b7b9da7cd67cc8f3576dd37fa3274d7c35994c4c4ba5bb675c70d2affca2"
+    }
+  }
+}

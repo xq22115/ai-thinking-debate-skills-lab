@@ -1,0 +1,20 @@
+{
+  "changed_paths": [
+    "control-plane/ai-system/mcp/package-lock.json"
+  ],
+  "completion_methods": {
+    "M1_goal_contract": "PASS",
+    "M2_effect_or_execution": "PASS",
+    "M3_outcome_acceptance": "PASS",
+    "M4_durable_resume": "PASS",
+    "M5_receipt_integrity": "PASS"
+  },
+  "completion_methods_passed": 5,
+  "goal_sha256": "627b99a8389fdde5092468cee5ba4ca37426029804f9b323cf338013a94b8681",
+  "primary_outcome": "PASS",
+  "request_id": "v5-mcp-lockfile-20260827",
+  "request_sha256": "5818cd262bbe2372c73ef2ee9ff9cb4b9cc2756c7be9040ebfff3874120badd5",
+  "result": "PASS",
+  "resume_outcome": "PASS",
+  "schemaVersion": 1
+}
