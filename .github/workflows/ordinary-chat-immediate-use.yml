@@ -155,8 +155,8 @@ jobs:
           path: final-proof/
           if-no-files-found: error
           retention-days: 14
-      - name: Persist proof back to GitHub for ordinary-chat retrieval
-        if: always() && github.event_name == 'push'
+      - name: Persist successful proof to immutable Git tag
+        if: steps.aggregate.outcome == 'success' && github.event_name == 'push'
         shell: bash
         run: |
           set -euo pipefail
@@ -166,21 +166,29 @@ jobs:
           print(request['request_id'])
           PY
           )"
+          proof_ref="refs/tags/ordinary-chat-proof/$request_id"
+          if git ls-remote --exit-code --tags origin "$proof_ref" >/dev/null 2>&1; then
+            echo "immutable proof ref already exists: $proof_ref" >&2
+            exit 1
+          fi
           destination="control-plane/ordinary-chat-proofs/$request_id"
           mkdir -p "$destination"
-          if [ -d final-proof ]; then
-            cp -f final-proof/* "$destination"/ || true
-          fi
+          cp -f final-proof/* "$destination"/
           cp -f "$REQUEST_FILE" "$destination/request.json"
-          python - <<'PY'
+          PROOF_REF="$proof_ref" python - <<'PY'
           import json, os, pathlib, time
-          destination = pathlib.Path('control-plane/ordinary-chat-proofs') / json.load(open(os.environ['REQUEST_FILE'], encoding='utf-8'))['request_id']
+          request = json.load(open(os.environ['REQUEST_FILE'], encoding='utf-8'))
+          destination = pathlib.Path('control-plane/ordinary-chat-proofs') / request['request_id']
           payload = {
-              'schemaVersion': 1,
+              'schemaVersion': 2,
+              'request_id': request['request_id'],
               'github_repository': os.environ.get('GITHUB_REPOSITORY'),
-              'github_sha': os.environ.get('GITHUB_SHA'),
+              'source_sha': os.environ.get('GITHUB_SHA'),
               'github_run_id': os.environ.get('GITHUB_RUN_ID'),
               'github_run_attempt': os.environ.get('GITHUB_RUN_ATTEMPT'),
+              'proof_ref': os.environ['PROOF_REF'],
+              'proof_persistence': 'immutable_tag',
+              'source_branch_mutated': False,
               'persisted_at_unix': int(time.time()),
           }
           (destination / 'run-pointer.json').write_text(json.dumps(payload, indent=2, sort_keys=True) + '\n', encoding='utf-8')
@@ -188,10 +196,11 @@ jobs:
           git config user.name 'ordinary-chat-proof-bot'
           git config user.email 'ordinary-chat-proof-bot@users.noreply.github.com'
           git add "$destination"
-          if ! git diff --cached --quiet; then
-            git commit -m "proof: persist ordinary-chat v4 result $request_id"
-            git push origin HEAD:ordinary-chat-agent-stack-v4-immediate-use
-          fi
+          git commit -m "proof: persist ordinary-chat v4 result $request_id"
+          git tag "ordinary-chat-proof/$request_id"
+          git push origin "$proof_ref"
+          test "$(git rev-parse HEAD^)" = "$GITHUB_SHA"
+          test "$(git rev-parse "$proof_ref^{commit}")" = "$(git rev-parse HEAD)"
       - name: Enforce five-of-five and ten-of-ten completion
         shell: bash
         run: |
