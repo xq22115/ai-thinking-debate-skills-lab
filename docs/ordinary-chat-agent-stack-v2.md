@@ -8,6 +8,11 @@ Maximize useful capability from an ordinary chat by routing work to authorized e
 ### 1. Connected provider app
 Use an installed first-party/provider app first when it already supports the requested action.
 
+### 1A. GitHub cloud task runtime
+For a real dependency-aware repository task that ordinary Chat should execute without requiring Work, Codex, or an online local device, create a dedicated `chat-task/<request_id>` branch from the verified v5 runtime and submit one schema-v2 declarative request. The request binds the user goal, structured actions, dependencies, explicit mutation paths, and task-specific acceptance checks; it does not carry a shell command.
+
+The GitHub Actions task runtime executes the plan, checks the actual changed-path set, evaluates the requested outcome, and then replays the same request from saved state. A mutating task is complete only when all five task-outcome proofs pass and the resume probe executes zero steps and produces zero new diff. The older A01-A10 immediate-use workflow remains an infrastructure self-test and cannot substitute for task completion.
+
 ### 2. Direct local tool
 For bounded local inspection/editing/terminal work, use the authorized Remote Desktop Commander connection when online.
 
@@ -47,7 +52,7 @@ The bootstrap:
 6. verifies generated artifacts remain ignored and the repository is still clean;
 7. writes a private `bootstrap-receipt.json` under `ORDINARY_CHAT_STATE_DIR` with installed tool versions and no credentials.
 
-Generated Playwright/MCP runtime outputs are deliberately ignored: `.playwright-cli/`, generated Playwright Skill content, MCP `node_modules/`, MCP `dist/`, and MCP `.env`.
+Generated Playwright/MCP runtime outputs are deliberately ignored: `.playwright-cli/`, generated Playwright Skill content, MCP `node_modules/`, MCP `dist`, and MCP `.env`.
 
 For reproducible installs, override the package specs:
 

@@ -13,7 +13,7 @@
     {
       "id": "github-task-runtime",
       "kind": "cloud_task_runtime",
-      "status": "regression_validated_e2e_pending",
+      "status": "e2e_verified",
       "priority": 12,
       "risk": "scoped_repository_mutation",
       "entrypoint": ".github/workflows/ordinary-chat-task-execute.yml",
@@ -24,6 +24,19 @@
       "workOrCodexRequired": false,
       "requestSuppliedShell": false,
       "durableResumeRequired": true,
+      "verification": {
+        "runtimeSourceSha": "c4a02862e6f1e1d72383dbefb78d1c76ab12ddaf",
+        "requestCommit": "5366fb8fea92542fed1b85ec223e560147ed21d8",
+        "taskBotCommit": "3104c754b78ef3dcda939d8beb2aaabf1d677438",
+        "runId": "33031553882",
+        "artifactId": "9630414876",
+        "artifactDigest": "sha256:907ba6ddbd6fccdddbf40a43761020062db15100dd5af3f9fae1c48d0e81b23f",
+        "completionMethodsPassed": 5,
+        "primaryExecutedSteps": 3,
+        "resumeExecutedSteps": 0,
+        "resumeResumedSteps": 3,
+        "unexpectedChanges": 0
+      },
       "useFor": ["ordinary_chat_task", "dependency_plan", "repository_read", "scoped_repository_write", "allowlisted_https_fetch", "registered_recipe", "outcome_verification", "durable_resume", "task_receipt"]
     },
     {

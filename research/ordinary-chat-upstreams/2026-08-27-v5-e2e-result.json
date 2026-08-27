@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "captured": "2026-08-27",
+  "kind": "external_task_attestation",
+  "runtimeSourceSha": "c4a02862e6f1e1d72383dbefb78d1c76ab12ddaf",
+  "taskBranch": "chat-task/v5-e2e-doc-upgrade",
+  "requestId": "v5-e2e-doc-upgrade-20260827t0955",
+  "requestCommit": "5366fb8fea92542fed1b85ec223e560147ed21d8",
+  "taskBotCommit": "3104c754b78ef3dcda939d8beb2aaabf1d677438",
+  "workflowRunId": "33031553882",
+  "workflowArtifactId": "9630414876",
+  "workflowArtifactDigest": "sha256:907ba6ddbd6fccdddbf40a43761020062db15100dd5af3f9fae1c48d0e81b23f",
+  "requestSha256": "27432769c2c5bf15354018dc27f1e92841150e6c0e471174276e0f6130dbb270",
+  "goalSha256": "339927deb72b07d6582ec589a18203639d20bfd9c1c444abce061b6018337e5f",
+  "completionMethods": {
+    "M1_goal_contract": "PASS",
+    "M2_effect_or_execution": "PASS",
+    "M3_outcome_acceptance": "PASS",
+    "M4_durable_resume": "PASS",
+    "M5_receipt_integrity": "PASS"
+  },
+  "primary": {
+    "outcome": "PASS",
+    "executedSteps": 3,
+    "changedPaths": ["docs/ordinary-chat-agent-stack-v2.md"],
+    "unexpectedChanges": []
+  },
+  "resume": {
+    "outcome": "PASS",
+    "executedSteps": 0,
+    "resumedSteps": 3,
+    "changedPaths": [],
+    "unexpectedChanges": []
+  },
+  "taskBotDiff": {
+    "commitsAhead": 1,
+    "projectMutationPaths": ["docs/ordinary-chat-agent-stack-v2.md"],
+    "otherPathsRestrictedToTaskResultNamespace": true
+  },
+  "independentArtifactVerification": {
+    "zipCrc": "PASS",
+    "manifestEntriesVerified": 6,
+    "manifestHashErrors": 0,
+    "completionReport": "PASS",
+    "resumeZeroReexecution": true
+  }
+}

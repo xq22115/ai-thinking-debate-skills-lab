@@ -1,0 +1,124 @@
+name: Ordinary Chat v5 Ten-Lane Review
+
+on:
+  push:
+    branches:
+      - ordinary-chat-agent-stack-v5-task-runtime
+    paths:
+      - 'control-plane/scripts/ordinary_chat_task_runtime.py'
+      - 'control-plane/scripts/ordinary_chat_v5_review.py'
+      - 'control-plane/scripts/capability_router.py'
+      - 'control-plane/tests/test_ordinary_chat_task_runtime.py'
+      - 'control-plane/ai-system/configs/ordinary-chat-*.json'
+      - 'skills/ordinary-chat-agent-router/SKILL.md'
+      - '.github/workflows/ordinary-chat-task-execute.yml'
+      - '.github/workflows/ordinary-chat-v5-review.yml'
+      - 'research/ordinary-chat-upstreams/2026-08-27-v5-e2e-result.json'
+  pull_request:
+    paths:
+      - 'control-plane/scripts/ordinary_chat_task_runtime.py'
+      - 'control-plane/scripts/ordinary_chat_v5_review.py'
+      - 'control-plane/scripts/capability_router.py'
+      - 'control-plane/tests/test_ordinary_chat_task_runtime.py'
+      - 'control-plane/ai-system/configs/ordinary-chat-*.json'
+      - 'skills/ordinary-chat-agent-router/SKILL.md'
+      - '.github/workflows/ordinary-chat-task-execute.yml'
+      - '.github/workflows/ordinary-chat-v5-review.yml'
+      - 'research/ordinary-chat-upstreams/2026-08-27-v5-e2e-result.json'
+
+permissions:
+  contents: read
+
+jobs:
+  review-lane:
+    name: ${{ matrix.lane }}-${{ matrix.focus }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - lane: A01
+            focus: request-contract
+          - lane: A02
+            focus: routing-separation
+          - lane: A03
+            focus: real-mutation
+          - lane: A04
+            focus: durable-replay
+          - lane: A05
+            focus: provenance
+          - lane: A06
+            focus: recipe-supply-chain
+          - lane: A07
+            focus: fetch-boundary
+          - lane: A08
+            focus: negative-cases
+          - lane: A09
+            focus: receipt-integrity
+          - lane: A10
+            focus: anti-fake-completion
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Run heterogeneous review lane
+        run: |
+          python control-plane/scripts/ordinary_chat_v5_review.py \
+            --lane '${{ matrix.lane }}' \
+            --output '${{ runner.temp }}/${{ matrix.lane }}.json'
+      - name: Upload lane evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ordinary-chat-v5-review-${{ matrix.lane }}
+          path: ${{ runner.temp }}/${{ matrix.lane }}.json
+          if-no-files-found: error
+          retention-days: 30
+
+  aggregate-review:
+    needs: review-lane
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Download all lane evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: ordinary-chat-v5-review-*
+          path: ${{ runner.temp }}/review
+          merge-multiple: true
+      - name: Require ten unique heterogeneous PASS lanes
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'review'
+          reports = [json.loads(path.read_text()) for path in sorted(root.glob('A*.json'))]
+          expected = [f'A{i:02d}' for i in range(1, 11)]
+          actual = sorted(item.get('lane') for item in reports)
+          if actual != expected:
+              raise SystemExit(f'lane set mismatch: expected={expected} actual={actual}')
+          failed = [item for item in reports if item.get('result') != 'PASS']
+          if failed:
+              raise SystemExit(f'failed lanes: {failed}')
+          empty = [item['lane'] for item in reports if not item.get('checks')]
+          if empty:
+              raise SystemExit(f'empty lane evidence: {empty}')
+          summary = {
+              'schemaVersion': 1,
+              'result': 'PASS',
+              'lanes_passed': len(reports),
+              'lanes': {item['lane']: item['checks'] for item in reports},
+          }
+          out = pathlib.Path(os.environ['RUNNER_TEMP']) / 'ordinary-chat-v5-review-summary.json'
+          out.write_text(json.dumps(summary, indent=2, sort_keys=True) + '\n')
+          print(json.dumps(summary, indent=2, sort_keys=True))
+          PY
+      - name: Upload aggregate review evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ordinary-chat-v5-review-summary-${{ github.run_id }}
+          path: ${{ runner.temp }}/ordinary-chat-v5-review-summary.json
+          if-no-files-found: error
+          retention-days: 30
