@@ -90,8 +90,11 @@ def lane_a05() -> list[str]:
     require(cloud["sourceAndTaskEvidenceBranchesSeparated"] is True, "source/task evidence separation disabled")
     require(cloud["taskBranchPrefix"] == "chat-task/", "task branch prefix mismatch")
     require("startsWith(github.ref, 'refs/heads/chat-task/')" in workflow, "commit step not restricted to task branch")
-    require("git diff --name-only HEAD" in workflow and "git ls-files --others --exclude-standard" in workflow, "tracked/untracked provenance check missing")
-    return ["branch_separation", "tracked_untracked_diff", "task_branch_commit_only"]
+    tracked_argv = "['git', 'diff', '--name-only', 'HEAD']"
+    untracked_argv = "['git', 'ls-files', '--others', '--exclude-standard']"
+    require(tracked_argv in workflow and untracked_argv in workflow, "tracked/untracked provenance argv check missing")
+    require("if actual != expected:" in workflow, "working-tree equality gate missing")
+    return ["branch_separation", "tracked_untracked_diff_argv", "working_tree_equality_gate", "task_branch_commit_only"]
 
 
 def lane_a06() -> list[str]:
