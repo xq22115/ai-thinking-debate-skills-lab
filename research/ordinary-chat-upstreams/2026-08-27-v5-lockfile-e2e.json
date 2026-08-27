@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-08-27",
+  "purpose": "mcp_lockfile_real_task_e2e",
+  "sourceRuntimeSha": "56651053428003ddf4bb57acc2419bf6677a914a",
+  "taskBranch": "chat-task/v5-mcp-lockfile",
+  "taskRequest": "control-plane/ordinary-chat-task-requests/20260827-v5-mcp-lockfile.json",
+  "requestCommit": "a3e711486bb8665cea93838f442fdb7e99edeae9",
+  "taskBotCommit": "487687f8f9426ee57dec3929b9d4409f1619906d",
+  "workflowRunId": 33033831628,
+  "lockfile": {
+    "path": "control-plane/ai-system/mcp/package-lock.json",
+    "gitBlobSha": "2229e4840cf6cedf022222a600d7f6917f75ee1f",
+    "bytes": 25215,
+    "lockfileVersion": 3
+  },
+  "primary": {
+    "outcome": "PASS",
+    "executedSteps": 1,
+    "changedPaths": ["control-plane/ai-system/mcp/package-lock.json"],
+    "unexpectedChanges": []
+  },
+  "resume": {
+    "outcome": "PASS",
+    "executedSteps": 0,
+    "resumedSteps": 1,
+    "changedPaths": []
+  },
+  "completionMethods": {
+    "M1_goal_contract": "PASS",
+    "M2_effect_or_execution": "PASS",
+    "M3_outcome_acceptance": "PASS",
+    "M4_durable_resume": "PASS",
+    "M5_receipt_integrity": "PASS"
+  },
+  "provenance": {
+    "onlyDeclaredProjectMutation": true,
+    "sourceReuseRule": "reuse_exact_git_blob_bit_for_bit",
+    "generatedByTrustedRecipe": "mcp-lockfile-refresh"
+  }
+}

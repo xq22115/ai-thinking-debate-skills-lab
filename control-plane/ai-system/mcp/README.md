@@ -4,10 +4,11 @@ Tool-first MCP gateway for ordinary chat. It wraps the repository's existing loc
 
 ## Baseline
 - MCP core target: `2026-07-28`
-- TypeScript SDK: `@modelcontextprotocol/server` v2
+- TypeScript SDK: `@modelcontextprotocol/server` `2.0.0`
 - Node.js: 20+
 - Default bind: `127.0.0.1:3000`
 - Default mutations: disabled
+- Dependency policy: exact direct versions + committed npm lockfile + `npm ci`
 
 ## Default read-only tools
 - `capabilities`
@@ -25,14 +26,16 @@ Project-memory mutation tools additionally require `ORDINARY_CHAT_MEMORY_ALLOW_W
 - `project_memory_add`
 - `project_memory_delete`
 
-## Local development
+## Reproducible local development
 
 ```bash
 cd control-plane/ai-system/mcp
-npm install
+npm ci --no-audit --no-fund
 npm run check
 npm run dev
 ```
+
+The committed `package-lock.json` is part of the runtime contract. CI/bootstrap must not silently regenerate it. A deliberate dependency refresh uses the trusted `mcp-lockfile-refresh` recipe on a dedicated task branch, with the resulting lockfile promoted only after task-specific acceptance, changed-path adjudication, and zero-reexecution resume evidence pass.
 
 Health:
 
@@ -57,7 +60,7 @@ The gateway refuses a non-loopback bind unless `MCP_ALLOWED_HOSTS` is configured
 For ChatGPT, use only the remote/custom-MCP connectivity mechanism actually exposed by the current account/workspace (for example an approved HTTPS endpoint or supported secure tunnel). This repository does not bypass ChatGPT plan, workspace, or host-tool restrictions.
 
 ## UI
-The v2 MCP gateway is intentionally tool-only. `@modelcontextprotocol/ext-apps` currently follows its own extension SDK/version line, so UI is decoupled rather than forcing incompatible SDK generations into one server.
+The v2 MCP gateway is intentionally tool-only. `@modelcontextprotocol/ext-apps` follows its own extension SDK/version line, so UI is decoupled rather than forcing incompatible SDK generations into one server.
 
 A host-independent read-only UI is available at:
 
@@ -74,11 +77,14 @@ Use `../browser/README.md` for the Playwright CLI + MCP dual-routing design.
 `ordinary-chat-agent-stack.yml` checks:
 - Python compile/tests
 - project-memory isolation/write gates
-- JSON policies
-- bootstrap shell syntax
+- routing, liveness, chaos/recovery, and task-runtime regressions
+- source/evidence separation and demo-template residue
+- JSON policies and bootstrap syntax
 - common secret prefixes
-- MCP v2 typecheck
-- MCP client integration tests
+- package/lock agreement
+- `npm ci` from the committed lockfile
+- MCP v2 typecheck and client integration tests
 - production TypeScript build
+- lockfile immutability after install
 
 Treat the gateway as active only after the actual consumer can list/call the expected tools and the relevant CI checks pass.

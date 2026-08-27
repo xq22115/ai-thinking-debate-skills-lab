@@ -1,6 +1,6 @@
 {
   "name": "ai-thinking-debate-control-plane-meta",
-  "version": "5.4.0",
+  "version": "5.5.0",
   "private": true,
   "description": "Repository metadata for the AI agent control-plane surface; executable runtimes live under scripts/ and ai-system/mcp/.",
   "license": "MIT"

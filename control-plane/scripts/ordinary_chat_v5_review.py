@@ -27,7 +27,11 @@ CAPS = CONFIG_DIR / "ordinary-chat-capabilities.json"
 ROUTING = CONFIG_DIR / "ordinary-chat-routing.json"
 SKILL = ROOT / "skills/ordinary-chat-agent-router/SKILL.md"
 E2E_LEDGER = ROOT / "research/ordinary-chat-upstreams/2026-08-27-v5-e2e-result.json"
+LOCK_E2E_LEDGER = ROOT / "research/ordinary-chat-upstreams/2026-08-27-v5-lockfile-e2e.json"
 MCP_PACKAGE = ROOT / "control-plane/ai-system/mcp/package.json"
+MCP_LOCK = ROOT / "control-plane/ai-system/mcp/package-lock.json"
+BOOTSTRAP_STACK = ROOT / "control-plane/scripts/bootstrap_ordinary_chat_stack.sh"
+BOOTSTRAP_BROWSER = ROOT / "control-plane/scripts/bootstrap_browser_use.sh"
 
 
 class ReviewFailure(RuntimeError):
@@ -128,19 +132,61 @@ def lane_a06() -> list[str]:
                 for kw in node.keywords:
                     if kw.arg == "shell" and isinstance(kw.value, ast.Constant) and kw.value.value is True:
                         raise ReviewFailure("subprocess shell=True must not exist")
+
     cfg = load(TASK_CONFIG)
     for recipe, spec in cfg["recipes"]["definitions"].items():
         for command in spec["commands"]:
             require(isinstance(command.get("argv"), list) and command["argv"], f"recipe {recipe} must use argv list")
+
     workflow = TASK_WORKFLOW.read_text(encoding="utf-8")
     require("@latest" not in workflow, "task workflow action must not float on @latest")
+
     package = load(MCP_PACKAGE)
     for section in ("dependencies", "devDependencies"):
         for name, version in package.get(section, {}).items():
             require(not version.startswith(("^", "~", ">", "<", "*")), f"direct dependency floats: {name}={version}")
     require(package["dependencies"]["@modelcontextprotocol/server"] == "2.0.0", "MCP server must stay on verified v2 line")
+
+    require(MCP_LOCK.is_file() and MCP_LOCK.stat().st_size > 0, "committed MCP package lock missing or empty")
+    lock = load(MCP_LOCK)
+    require(lock.get("lockfileVersion") == 3, "MCP lockfile must be npm lockfileVersion 3")
+    root_lock = lock.get("packages", {}).get("", {})
+    for section in ("dependencies", "devDependencies"):
+        require(root_lock.get(section, {}) == package.get(section, {}), f"package/lock root mismatch in {section}")
+
+    lock_ledger = load(LOCK_E2E_LEDGER)
+    require(lock_ledger["primary"]["executedSteps"] == 1, "lockfile E2E did not execute the trusted recipe")
+    require(lock_ledger["resume"]["executedSteps"] == 0 and lock_ledger["resume"]["resumedSteps"] == 1, "lockfile E2E does not prove zero-reexecution resume")
+    require(all(value == "PASS" for value in lock_ledger["completionMethods"].values()), "lockfile E2E completion methods are not all PASS")
+    actual_blob = subprocess.check_output(["git", "hash-object", str(MCP_LOCK)], cwd=ROOT, text=True).strip()
+    require(actual_blob == lock_ledger["lockfile"]["gitBlobSha"], "committed lockfile differs from the task-verified Git blob")
+
+    stack = STACK_WORKFLOW.read_text(encoding="utf-8")
+    require("npm ci --no-audit --no-fund" in stack, "full stack gate must install MCP from the lockfile")
+    require("npm install --no-audit --no-fund --package-lock=false" not in stack, "full stack gate still bypasses the lockfile")
+    mcp_check = cfg["recipes"]["definitions"]["mcp-check"]["commands"][0]["argv"]
+    require(mcp_check == ["npm", "ci", "--no-audit", "--no-fund"], "trusted MCP check recipe must use npm ci")
     require("mcp-lockfile-refresh" in cfg["recipes"]["definitions"], "trusted lockfile refresh recipe missing")
-    return ["no_dynamic_shell", "recipe_argv_only", "pinned_actions", "exact_direct_dependencies", "trusted_lockfile_recipe"]
+
+    stack_bootstrap = BOOTSTRAP_STACK.read_text(encoding="utf-8")
+    browser_bootstrap = BOOTSTRAP_BROWSER.read_text(encoding="utf-8")
+    require('@playwright/cli@0.1.18' in stack_bootstrap and '@playwright/mcp@0.0.79' in stack_bootstrap, "Playwright bootstrap defaults are not pinned to the verified versions")
+    require("@latest" not in stack_bootstrap, "Playwright bootstrap still floats on @latest")
+    require("browser-use==0.13.8" in browser_bootstrap, "Browser Use bootstrap default is not pinned")
+
+    return [
+        "no_dynamic_shell",
+        "recipe_argv_only",
+        "pinned_actions",
+        "exact_direct_dependencies",
+        "committed_lockfile",
+        "package_lock_root_agreement",
+        "lockfile_real_task_e2e",
+        "lockfile_exact_git_blob",
+        "npm_ci_full_stack",
+        "npm_ci_trusted_recipe",
+        "pinned_browser_bootstraps",
+    ]
 
 
 def lane_a07() -> list[str]:

@@ -102,6 +102,7 @@ jobs:
               pathlib.Path('control-plane/ai-system/configs/ordinary-chat-task-runtime.json'),
               pathlib.Path('control-plane/ai-system/browser/playwright.mcp.example.json'),
               pathlib.Path('archive/ordinary-chat-v4-evidence/deterministic-lanes.json'),
+              pathlib.Path('research/ordinary-chat-upstreams/2026-08-27-v5-lockfile-e2e.json'),
           ]
           for path in paths:
               json.loads(path.read_text(encoding='utf-8'))
@@ -117,6 +118,26 @@ jobs:
             echo 'demo-template residue remains in active entry points' >&2
             exit 1
           fi
+      - name: Validate reproducible dependency policy
+        run: |
+          set -euo pipefail
+          test -s control-plane/ai-system/mcp/package-lock.json
+          grep -Fq 'PLAYWRIGHT_CLI_SPEC="${PLAYWRIGHT_CLI_SPEC:-@playwright/cli@0.1.18}"' control-plane/scripts/bootstrap_ordinary_chat_stack.sh
+          grep -Fq 'PLAYWRIGHT_MCP_SPEC="${PLAYWRIGHT_MCP_SPEC:-@playwright/mcp@0.0.79}"' control-plane/scripts/bootstrap_ordinary_chat_stack.sh
+          grep -Fq 'BROWSER_USE_SPEC="${BROWSER_USE_SPEC:-browser-use==0.13.8}"' control-plane/scripts/bootstrap_browser_use.sh
+          python - <<'PY'
+          import json, pathlib
+          package = json.loads(pathlib.Path('control-plane/ai-system/mcp/package.json').read_text())
+          lock = json.loads(pathlib.Path('control-plane/ai-system/mcp/package-lock.json').read_text())
+          if lock.get('lockfileVersion') != 3:
+              raise SystemExit('expected npm lockfileVersion 3')
+          root = lock.get('packages', {}).get('', {})
+          for section in ('dependencies', 'devDependencies'):
+              expected = package.get(section, {})
+              actual = root.get(section, {})
+              if actual != expected:
+                  raise SystemExit(f'package/lock mismatch in {section}: expected={expected} actual={actual}')
+          PY
       - name: Check bootstrap syntax
         run: |
           bash -n control-plane/scripts/bootstrap_ordinary_chat_stack.sh
@@ -166,7 +187,9 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '22'
-      - name: Install exact direct dependency set without mutating source lock state
-        run: npm install --no-audit --no-fund --package-lock=false
+      - name: Install exactly from committed lockfile
+        run: npm ci --no-audit --no-fund
       - name: Typecheck, test, and build MCP gateway
         run: npm run check
+      - name: Prove dependency install did not rewrite lockfile
+        run: git diff --exit-code -- package.json package-lock.json

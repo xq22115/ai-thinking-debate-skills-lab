@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 STATE_DIR="${ORDINARY_CHAT_STATE_DIR:-$HOME/.ordinary-chat-agent}"
-BROWSER_USE_SPEC="${BROWSER_USE_SPEC:-browser-use}"
+BROWSER_USE_SPEC="${BROWSER_USE_SPEC:-browser-use==0.13.8}"
 
 need() {
   command -v "$1" >/dev/null 2>&1 || {
@@ -32,7 +32,7 @@ fi
 mkdir -p "$STATE_DIR"
 chmod 700 "$STATE_DIR" 2>/dev/null || true
 
-printf '%s\n' '[1/4] Installing Browser Use CLI with Python 3.12 via uv...'
+printf '%s\n' '[1/4] Installing pinned Browser Use CLI with Python 3.12 via uv...'
 uv tool install --python 3.12 --upgrade --force "$BROWSER_USE_SPEC"
 
 need browser-use
@@ -55,7 +55,7 @@ python3 - "$STATE_DIR/browser-use-bootstrap-receipt.json" "$BROWSER_USE_VERSION"
 import json, os, pathlib, sys, tempfile, time
 path = pathlib.Path(sys.argv[1]).expanduser().resolve()
 payload = {
-    "schemaVersion": 1,
+    "schemaVersion": 2,
     "installed_at_unix": int(time.time()),
     "browser_use_version": sys.argv[2],
     "requested_spec": sys.argv[3],
