@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Durable declarative task runtime for ordinary-chat GitHub execution.
 
-The request describes a goal, dependency-aware steps, mutation scope, and acceptance
-criteria. Requests never carry shell commands. Executable commands come only from the
-version-controlled recipe registry.
+Requests contain a goal, dependency-aware structured steps, mutation scope, and
+acceptance criteria. Requests never carry shell commands. Executable commands come
+only from the version-controlled recipe registry.
 """
 from __future__ import annotations
 
@@ -23,6 +23,7 @@ from typing import Any
 
 REQUEST_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{2,79}$")
 STEP_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
+MUTATING_ACTIONS = {"write_text", "replace_text", "json_set"}
 SECRET_PATTERNS = [
     re.compile(r"gh[pousr]_[A-Za-z0-9_]{12,}"),
     re.compile(r"github_pat_[A-Za-z0-9_]{12,}"),
@@ -77,7 +78,9 @@ def safe_rel(root: pathlib.Path, raw: str) -> tuple[str, pathlib.Path]:
     posix = pathlib.PurePosixPath(normalized)
     if posix.is_absolute() or ".." in posix.parts:
         raise TaskError(f"unsafe path: {raw}")
-    rel = posix.as_posix().lstrip("./")
+    rel = posix.as_posix()
+    if rel.startswith("./"):
+        rel = rel[2:]
     resolved = (root / rel).resolve()
     if resolved != root and root not in resolved.parents:
         raise TaskError(f"path escapes repository: {raw}")
@@ -86,6 +89,17 @@ def safe_rel(root: pathlib.Path, raw: str) -> tuple[str, pathlib.Path]:
 
 def matches(path: str, patterns: list[str]) -> bool:
     return any(fnmatch.fnmatch(path, pattern) for pattern in patterns)
+
+
+def excluded_path(path: str, patterns: list[str]) -> bool:
+    for pattern in patterns:
+        if fnmatch.fnmatch(path, pattern):
+            return True
+        if pattern.endswith("/**"):
+            base = pattern[:-3]
+            if path == base or path.startswith(base + "/"):
+                return True
+    return False
 
 
 def is_mutation_allowed(path: str, request: dict[str, Any], config: dict[str, Any]) -> bool:
@@ -101,12 +115,19 @@ def snapshot(root: pathlib.Path, config: dict[str, Any]) -> dict[str, str]:
     result: dict[str, str] = {}
     for base, dirs, files in os.walk(root):
         base_path = pathlib.Path(base)
-        rel_base = base_path.relative_to(root).as_posix()
-        dirs[:] = [d for d in dirs if not matches(f"{rel_base}/{d}".lstrip("./"), excluded)]
+        rel_base = base_path.relative_to(root)
+        kept_dirs: list[str] = []
+        for name in dirs:
+            candidate = (rel_base / name).as_posix()
+            if candidate.startswith("./"):
+                candidate = candidate[2:]
+            if not excluded_path(candidate, excluded):
+                kept_dirs.append(name)
+        dirs[:] = kept_dirs
         for name in files:
             path = base_path / name
             rel = path.relative_to(root).as_posix()
-            if matches(rel, excluded) or path.is_symlink():
+            if excluded_path(rel, excluded) or path.is_symlink():
                 continue
             try:
                 result[rel] = sha256_file(path)
@@ -149,8 +170,11 @@ def validate_request(request: Any, config: dict[str, Any]) -> dict[str, Any]:
         if not isinstance(step_id, str) or not STEP_ID_RE.fullmatch(step_id) or step_id in ids:
             raise TaskError(f"invalid or duplicate step id: {step_id}")
         ids.add(step_id)
-        if step.get("action") not in config["enabledActions"]:
-            raise TaskError(f"unsupported action for {step_id}: {step.get('action')}")
+        action = step.get("action")
+        if action not in config["enabledActions"]:
+            raise TaskError(f"unsupported action for {step_id}: {action}")
+        if request.get("mode") == "audit" and action in MUTATING_ACTIONS:
+            raise TaskError(f"audit mode cannot run mutating action: {action}")
         if not isinstance(step.get("with", {}), dict):
             raise TaskError(f"with must be an object for {step_id}")
         deps = step.get("depends_on", [])
@@ -166,8 +190,13 @@ def validate_request(request: Any, config: dict[str, Any]) -> dict[str, Any]:
     mutation = request.get("mutation", {})
     if not isinstance(mutation, dict) or set(mutation) - {"required", "commit", "allowed_paths"}:
         raise TaskError("invalid mutation policy")
-    if not isinstance(mutation.get("allowed_paths", []), list):
-        raise TaskError("mutation.allowed_paths must be a list")
+    if not isinstance(mutation.get("required", False), bool) or not isinstance(mutation.get("commit", False), bool):
+        raise TaskError("mutation.required and mutation.commit must be booleans")
+    allowed_paths = mutation.get("allowed_paths", [])
+    if not isinstance(allowed_paths, list) or not all(isinstance(path, str) for path in allowed_paths):
+        raise TaskError("mutation.allowed_paths must be a string list")
+    if request.get("mode") == "audit" and (mutation.get("required") or mutation.get("commit")):
+        raise TaskError("audit mode cannot require or commit mutations")
     return request
 
 
@@ -176,8 +205,7 @@ def allowed_fetch_url(url: str, config: dict[str, Any]) -> urllib.parse.ParseRes
     if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password:
         raise TaskError("fetch_url requires credential-free https URL")
     host = parsed.hostname.lower()
-    allowed = config["fetch"]["allowedHosts"]
-    if host not in allowed:
+    if host not in config["fetch"]["allowedHosts"]:
         raise TaskError(f"fetch host is not allowed: {host}")
     return parsed
 
@@ -236,6 +264,19 @@ def json_pointer_set(document: Any, pointer: str, value: Any) -> Any:
     return document
 
 
+def json_pointer_get(document: Any, pointer: str) -> Any:
+    if not pointer.startswith("/"):
+        raise TaskError("JSON pointer must start with /")
+    cursor = document
+    for raw in pointer[1:].split("/"):
+        part = raw.replace("~1", "/").replace("~0", "~")
+        if isinstance(cursor, list):
+            cursor = cursor[int(part)]
+        else:
+            cursor = cursor[part]
+    return cursor
+
+
 def execute_step(step: dict[str, Any], root: pathlib.Path, request: dict[str, Any], config: dict[str, Any], output_dir: pathlib.Path) -> dict[str, Any]:
     action = step["action"]
     args = step.get("with", {})
@@ -259,7 +300,7 @@ def execute_step(step: dict[str, Any], root: pathlib.Path, request: dict[str, An
                 if not path.is_file() or path.is_symlink():
                     continue
                 rel = path.relative_to(root).as_posix()
-                if rel in seen or matches(rel, config.get("snapshotExclude", [])):
+                if rel in seen or excluded_path(rel, config.get("snapshotExclude", [])):
                     continue
                 seen.add(rel)
                 try:
@@ -275,7 +316,7 @@ def execute_step(step: dict[str, Any], root: pathlib.Path, request: dict[str, An
                         if len(found) >= config["maxSearchMatches"]:
                             return {"matches": found, "truncated": True}
         return {"matches": found, "truncated": False}
-    if action in {"write_text", "replace_text", "json_set"}:
+    if action in MUTATING_ACTIONS:
         rel, path = safe_rel(root, args["path"])
         if not is_mutation_allowed(rel, request, config):
             raise TaskError(f"mutation not allowed: {rel}")
@@ -307,7 +348,7 @@ def execute_step(step: dict[str, Any], root: pathlib.Path, request: dict[str, An
         if not isinstance(url, str):
             raise TaskError("fetch_url requires url")
         allowed_fetch_url(url, config)
-        req = urllib.request.Request(url, headers={"User-Agent": "ordinary-chat-task-runtime/5"})
+        req = urllib.request.Request(url, headers={"User-Agent": "ordinary-chat-task-runtime/5.1"})
         with urllib.request.urlopen(req, timeout=config["fetch"]["timeoutSeconds"]) as response:  # noqa: S310
             final_url = response.geturl()
             allowed_fetch_url(final_url, config)
@@ -349,14 +390,16 @@ def acceptance_checks(request: dict[str, Any], root: pathlib.Path, steps: dict[s
                 needle = check["text"]
                 ok = isinstance(needle, str) and needle in path.read_text(encoding="utf-8")
                 detail = rel
+            elif kind == "file_sha256":
+                rel, path = safe_rel(root, check["path"])
+                actual = sha256_file(path)
+                ok = actual == check.get("sha256")
+                detail = {"path": rel, "actual": actual}
             elif kind == "json_equals":
                 rel, path = safe_rel(root, check["path"])
-                document = load_json(path)
-                cursor: Any = document
-                for part in check["pointer"].lstrip("/").split("/"):
-                    cursor = cursor[part.replace("~1", "/").replace("~0", "~")]
-                ok = cursor == check.get("value")
-                detail = {"path": rel, "actual": cursor}
+                actual = json_pointer_get(load_json(path), check["pointer"])
+                ok = actual == check.get("value")
+                detail = {"path": rel, "actual": actual}
             elif kind == "changed_path":
                 expected = check["path"]
                 ok = expected in changed_paths
@@ -385,14 +428,17 @@ def execute(request_path: pathlib.Path, config_path: pathlib.Path, state_path: p
             raise TaskError("state belongs to a different request revision")
     before = snapshot(root, config)
     steps_by_id = {step["id"]: step for step in request["steps"]}
-    pending = set(steps_by_id)
+    step_order = [step["id"] for step in request["steps"]]
+    pending = set(step_order)
     run_results: dict[str, Any] = {}
     executed = 0
     resumed = 0
     output_dir = output_path.parent
     while pending:
         progress = False
-        for step_id in list(pending):
+        for step_id in step_order:
+            if step_id not in pending:
+                continue
             step = steps_by_id[step_id]
             deps = step.get("depends_on", [])
             if any(dep in pending for dep in deps):
@@ -423,17 +469,25 @@ def execute(request_path: pathlib.Path, config_path: pathlib.Path, state_path: p
                 write_json(state_path, state)
             run_results[step_id] = result
         if not progress:
-            for step_id in sorted(pending):
-                run_results[step_id] = {"status": "FAIL", "reason": "dependency cycle", "step_hash": sha256_bytes(canonical_json(steps_by_id[step_id]))}
+            for step_id in step_order:
+                if step_id in pending:
+                    run_results[step_id] = {"status": "FAIL", "reason": "dependency cycle", "step_hash": sha256_bytes(canonical_json(steps_by_id[step_id]))}
             pending.clear()
     after = snapshot(root, config)
     changed_paths = diff_snapshots(before, after)
+    if not resume_probe:
+        state["primary_changed_paths"] = changed_paths
+        write_json(state_path, state)
+    acceptance_basis = state.get("primary_changed_paths", changed_paths) if resume_probe else changed_paths
     unexpected = [path for path in changed_paths if not is_mutation_allowed(path, request, config)]
-    checks = acceptance_checks(request, root, run_results, changed_paths)
+    checks = acceptance_checks(request, root, run_results, acceptance_basis)
     steps_ok = all(item.get("status") in {"PASS", "RESUMED"} for item in run_results.values())
     acceptance_ok = all(item["result"] == "PASS" for item in checks)
     mutation_required = bool(request.get("mutation", {}).get("required", False))
-    effect_ok = (not mutation_required or bool(changed_paths)) if not resume_probe else (executed == 0 and resumed == len(steps_by_id) and not changed_paths)
+    if resume_probe:
+        effect_ok = executed == 0 and resumed == len(steps_by_id) and not changed_paths
+    else:
+        effect_ok = not mutation_required or bool(changed_paths)
     scope_ok = not unexpected
     result = {
         "schemaVersion": 1,
@@ -445,13 +499,14 @@ def execute(request_path: pathlib.Path, config_path: pathlib.Path, state_path: p
         "resumed_steps": resumed,
         "steps": run_results,
         "changed_paths": changed_paths,
+        "acceptance_changed_paths_basis": acceptance_basis,
         "unexpected_changes": unexpected,
         "acceptance": checks,
         "proofs": {
             "M1_goal_contract": "PASS",
             "M2_effect_or_execution": "PASS" if effect_ok and scope_ok else "FAIL",
             "M3_outcome_acceptance": "PASS" if acceptance_ok else "FAIL",
-            "M5_receipt_integrity": "PASS" if steps_ok and scope_ok and bool(run_results) else "FAIL",
+            "M5_receipt_integrity": "PASS" if steps_ok and scope_ok and len(run_results) == len(steps_by_id) else "FAIL",
         },
     }
     result["outcome"] = "PASS" if steps_ok and acceptance_ok and effect_ok and scope_ok else "FAIL"
