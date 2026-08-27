@@ -30,7 +30,7 @@ CAPABILITIES = CONTROL_PLANE / "ai-system" / "configs" / "ordinary-chat-capabili
 ROUTING = CONTROL_PLANE / "ai-system" / "configs" / "ordinary-chat-routing.json"
 WORKFLOW = REPO_ROOT / ".github" / "workflows" / "ordinary-chat-immediate-use.yml"
 MCP_DIR = CONTROL_PLANE / "ai-system" / "mcp"
-REQUEST_ID_RE = re.compile(r"^[a-z0-9][a-z0-9._-]{2,80}$")
+REQUEST_ID_RE = re.compile(r"^[a-z0-9][a-z0-9-]{2,80}$")
 ALLOWED_REQUEST_KEYS = {
     "schemaVersion",
     "request_id",
