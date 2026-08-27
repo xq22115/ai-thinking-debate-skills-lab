@@ -1,0 +1,126 @@
+{
+  "acceptance": [
+    {
+      "detail": {
+        "status": "RESUMED",
+        "step_id": "inspect-existing"
+      },
+      "id": 1,
+      "result": "PASS",
+      "type": "step_passed"
+    },
+    {
+      "detail": {
+        "status": "RESUMED",
+        "step_id": "locate-anchor"
+      },
+      "id": 2,
+      "result": "PASS",
+      "type": "step_passed"
+    },
+    {
+      "detail": {
+        "status": "RESUMED",
+        "step_id": "upgrade-runtime-order"
+      },
+      "id": 3,
+      "result": "PASS",
+      "type": "step_passed"
+    },
+    {
+      "detail": "docs/ordinary-chat-agent-stack-v2.md",
+      "id": 4,
+      "result": "PASS",
+      "type": "file_contains"
+    },
+    {
+      "detail": "docs/ordinary-chat-agent-stack-v2.md",
+      "id": 5,
+      "result": "PASS",
+      "type": "file_contains"
+    },
+    {
+      "detail": {
+        "changed_paths": [
+          "docs/ordinary-chat-agent-stack-v2.md"
+        ],
+        "expected": "docs/ordinary-chat-agent-stack-v2.md"
+      },
+      "id": 6,
+      "result": "PASS",
+      "type": "changed_path"
+    },
+    {
+      "detail": {
+        "actual": [
+          "docs/ordinary-chat-agent-stack-v2.md"
+        ],
+        "expected": [
+          "docs/ordinary-chat-agent-stack-v2.md"
+        ]
+      },
+      "id": 7,
+      "result": "PASS",
+      "type": "no_unexpected_changes"
+    }
+  ],
+  "acceptance_changed_paths_basis": [
+    "docs/ordinary-chat-agent-stack-v2.md"
+  ],
+  "changed_paths": [],
+  "executed_steps": 0,
+  "goal_sha256": "339927deb72b07d6582ec589a18203639d20bfd9c1c444abce061b6018337e5f",
+  "outcome": "PASS",
+  "proofs": {
+    "M1_goal_contract": "PASS",
+    "M2_effect_or_execution": "PASS",
+    "M3_outcome_acceptance": "PASS",
+    "M5_receipt_integrity": "PASS"
+  },
+  "request_id": "v5-e2e-doc-upgrade-20260827t0955",
+  "request_sha256": "27432769c2c5bf15354018dc27f1e92841150e6c0e471174276e0f6130dbb270",
+  "resume_probe": true,
+  "resumed_steps": 3,
+  "schemaVersion": 1,
+  "steps": {
+    "inspect-existing": {
+      "duration_ms": 0,
+      "evidence": {
+        "path": "docs/ordinary-chat-agent-stack-v2.md",
+        "sha256": "819fbaadf132f5651a6e39f8431c8681bcd937f44ef8506541822aa63719bdb5",
+        "text": "# Ordinary Chat Agent Stack v2\n\n## Objective\nMaximize useful capability from an ordinary chat by routing work to authorized execution layers rather than pretending the chat host itself has become an unrestricted local agent.\n\n## Runtime Order\n\n### 1. Connected provider app\nUse an installed first-party/provider app first when it already supports the requested action.\n\n### 2. Direct local tool\nFor bounded local inspection/editing/terminal work, use the authorized Remote Desktop Commander connection when online.\n\n### 3. Browser\n- deterministic/replayable: Playwright CLI + installed Skill\n- persistent/exploratory: Playwright MCP\n- visual session monitoring: `playwright-cli show`\n\n### 4. Project memory\nUse explicit project-memory search for scoped recall with provenance. Memory is never populated automatically from transcripts.\n\n### 5. Long local agent task\nUse `chat-work-agent` for a long inspect-act-verify loop, or the existing A01-A10 workflow when dependency-aware ten-role execution and receipt adjudication are needed.\n\nA01-A10 submissions bind to the resolved base SHA at queue time. If the named base ref moves before the worker starts, the run is vetoed instead of silently executing against a different commit.\n\n### 6. MCP gateway\nWhen the ChatGPT account/workspace exposes custom MCP, connect the ordinary-chat MCP gateway for capability discovery, bridge preflight, run status, receipt summaries, project-memory search, and explicitly enabled submit tools.\n\n### 7. Local dashboard\nUse the read-only localhost dashboard for visual preflight, run status, and receipt inspection. It serves only the dashboard page and `/api/*`; source files in the dashboard directory are not exposed as static files.\n\n## Local Bootstrap\n\nThe source repository must be clean before bootstrap because the governed A01-A10 preparation also requires a clean source worktree.\n\n```bash\nbash control-plane/scripts/bootstrap_ordinary_chat_stack.sh\n```\n\nThe bootstrap:\n1. validates Git/Python/Node/npm and requires Node.js 20+;\n2. installs Playwright CLI;\n3. installs the Playwright Skill at repository-local `.claude/skills/playwright-cli`;\n4. primes the Playwright MCP package;\n5. compiles and tests bridge, memory, dashboard, and MCP components;\n6. verifies generated artifacts remain ignored and the repository is still clean;\n7. writes a private `bootstrap-receipt.json` under `ORDINARY_CHAT_STATE_DIR` with installed tool versions and no credentials.\n\nGenerated Playwright/MCP runtime outputs are deliberately ignored: `.playwright-cli/`, generated Playwright Skill content, MCP `node_modules/`, MCP `dist/`, and MCP `.env`.\n\nFor reproducible installs, override the package specs:\n\n```bash\nexport PLAYWRIGHT_CLI_SPEC='@playwright/cli@<version>'\nexport PLAYWRIGHT_MCP_SPEC='@playwright/mcp@<version>'\n```\n\n## Required Environment\n\n```bash\nexport ORDINARY_CHAT_ALLOWED_ROOTS=/absolute/allowed/root\nexport CHAT_WORK_AGENT_PATH=/absolute/path/to/chat-work-agent\nexport CLAUDE_PATH=/absolute/path/to/claude\n```\n\nMultiple allowed roots use the operating system path separator.\n\nBridge preflight reports path validity separately from backend readiness through fields including `workspace_allowed`, `repo_root_allowed`, `chat_submit_ready`, and `a01_submit_ready`.\n\n## Default Safety State\n- MCP submit tools: OFF\n- project memory writes: OFF\n- local path access without allowlist: BLOCKED\n- raw shell MCP tool: nonexistent\n- A01-A10 dirty source worktree: BLOCKED/VETO\n- A01-A10 base-ref drift after queueing: VETO\n- remote MCP bind without host policy: refused\n- remote MCP bind without auth/explicit override: refused\n- dashboard: read-only, localhost only\n\nTo enable guarded submit tools after validation:\n\n```bash\nexport ORDINARY_CHAT_MCP_ALLOW_SUBMIT=true\n```\n\nTo separately allow explicit project-memory writes:\n\n```bash\nexport ORDINARY_CHAT_MEMORY_ALLOW_WRITE=true\n```\n\n`ephemeral` memory has a real TTL (default 86400 seconds). Override within the bounded range used by the implementation:\n\n```bash\nexport ORDINARY_CHAT_MEMORY_EPHEMERAL_TTL_SECONDS=3600\n```\n\nMemory database/state directories are hardened to private user permissions where the platform supports POSIX modes. Search treats `%` and `_` literally instead of as SQL wildcard input.\n\n## MCP Gateway\n\nFor a manual local check without creating a package lock in the source tree:\n\n```bash\ncd control-plane/ai-system/mcp\nnpm install --package-lock=false --no-audit --no-fund\nnpm run check\nnpm run dev\n```\n\nDefault endpoint: `http://127.0.0.1:3000/mcp`.\n\n## Dashboard\n\n```bash\npython3 control-plane/ordinary-chat-dashboard/server.py\n```\n\nOpen `http://127.0.0.1:8787/`.\n\nThe dashboard rejects POST/PUT/PATCH/DELETE, blocks direct serving of its Python source files, and sets no-store, frame, content-type, referrer, and CSP headers.\n\n## Verification\nA capability is considered active only after:\n1. its path/capability preflight is PASS;\n2. the relevant backend-specific readiness field is true;\n3. its relevant automated tests are PASS;\n4. the actual consumer can list/call it;\n5. mutations produce the expected run/receipt evidence;\n6. no broader capability was silently substituted.\n\nA long-running worker also re-checks allowlists/backend availability. A01-A10 re-checks source cleanliness and queued base SHA before execution to reduce queue-time/worker-time drift.\n\n## Platform Boundary\nA repository, Skill, MCP server, plugin permission, or browser tool cannot force-enable a ChatGPT host feature, plan-gated feature, hidden model route, or server-side permission that the product has not exposed. The agent-like behavior here comes from routing ordinary chat to authorized external/local runtimes with verifiable state and receipts.\n"
+      },
+      "resumed_from_state": true,
+      "status": "RESUMED",
+      "step_hash": "072422a05c151a93ab0ea31582e642fe6aa689ef0d1e2ebb3469596633fcd094"
+    },
+    "locate-anchor": {
+      "duration_ms": 0,
+      "evidence": {
+        "matches": [
+          {
+            "line": 8,
+            "path": "docs/ordinary-chat-agent-stack-v2.md",
+            "text": "### 1. Connected provider app"
+          }
+        ],
+        "truncated": false
+      },
+      "resumed_from_state": true,
+      "status": "RESUMED",
+      "step_hash": "bc2ec9f5050ed0f319bfd8858119d311ccd3fef0eaf86dd853f8ed7822c667f3"
+    },
+    "upgrade-runtime-order": {
+      "duration_ms": 1,
+      "evidence": {
+        "after_sha256": "f1e7fd542e0234e6595217985e7185cd9c29337faaaa83e161adcc4a3477509e",
+        "before_sha256": "819fbaadf132f5651a6e39f8431c8681bcd937f44ef8506541822aa63719bdb5",
+        "path": "docs/ordinary-chat-agent-stack-v2.md"
+      },
+      "resumed_from_state": true,
+      "status": "RESUMED",
+      "step_hash": "8c5d548e713bfb57898e309a406880991426856ec902e7ab6068109d7cfc5b7d"
+    }
+  },
+  "unexpected_changes": []
+}
