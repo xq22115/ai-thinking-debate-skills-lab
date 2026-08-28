@@ -34,6 +34,13 @@ jobs:
         run: |
           python -m py_compile skills/legal-writing-intelligence/src/research.py
           python -m py_compile skills/legal-writing-intelligence/src/writer.py
+          python -m py_compile skills/legal-writing-intelligence/src/strategy.py
+      - name: Validate machine-readable writing contracts
+        run: |
+          python -m json.tool skills/legal-writing-intelligence/agents.json >/dev/null
+          python -m json.tool skills/legal-writing-intelligence/resources/verified-tools-2026-06-08.json >/dev/null
+          python -m json.tool skills/legal-writing-intelligence/resources/signals.json >/dev/null
+          python -m json.tool skills/legal-writing-intelligence/resources/authority-ledger.json >/dev/null
       - name: Run regression tests
         run: python -m unittest discover -s skills/legal-writing-intelligence/tests -p 'test_*.py' -v
 

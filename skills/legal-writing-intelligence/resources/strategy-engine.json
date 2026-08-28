@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "engine_version": "0.1.0",
+  "entrypoint": "src/strategy.py",
+  "purpose": "Fail-closed strategy preflight before high-stakes legal/business drafting.",
+  "statuses": ["READY", "REVISE"],
+  "release_rule": "Any high-severity strategy flag yields REVISE; prose polishing must not substitute for a missing evidence or decision bridge.",
+  "domains": [
+    "executive-correspondence",
+    "deal-negotiation",
+    "major-project-escalation",
+    "rights-preservation",
+    "privilege-context-review",
+    "settlement-label-context-review"
+  ],
+  "major_project_chain": [
+    "event",
+    "mechanism",
+    "notice_record",
+    "causation",
+    "schedule_effect",
+    "cost_quantum_if_claimed",
+    "mitigation",
+    "instruction_requested",
+    "scoped_preservation_if_needed"
+  ],
+  "deal_chain": [
+    "agreed",
+    "open",
+    "risk_allocation",
+    "conditionality",
+    "trade_space",
+    "package_dependency_if_claimed",
+    "decision_or_approval"
+  ],
+  "hostile_read_roles": [
+    "recipient",
+    "opposing_counsel",
+    "board_auditor",
+    "neutral_fact_finder"
+  ],
+  "signal_library": "resources/signals.json",
+  "authority_ledger": "resources/authority-ledger.json",
+  "writer_entrypoint": "src/writer.py",
+  "research_entrypoint": "src/research.py"
+}
