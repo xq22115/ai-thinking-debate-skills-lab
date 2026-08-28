@@ -78,26 +78,45 @@ def _read_research_receipts(audit_dir: pathlib.Path, actor_id: str) -> list[dict
     return receipts
 
 
+def _receipt_is_accepted_for_effort(row: dict, expected_effort: str) -> bool:
+    return (
+        row.get("schemaVersion") == 2
+        and row.get("quality_evidence_accepted") is True
+        and row.get("post_tool_success") is True
+        and row.get("hook_event_name") == "PostToolUse"
+        and row.get("actor_id") == _RESEARCH_ACTOR
+        and row.get("requested_effort") == expected_effort
+        and row.get("effective_effort") == expected_effort
+        and row.get("effort_readback_source") in {"hook_payload", "CLAUDE_EFFORT"}
+    )
+
+
 def _research_attestation(
     result: dict[str, object],
     task_class: str,
     audit_dir: pathlib.Path,
+    expected_effort: str,
 ) -> tuple[dict[str, object], list[str]]:
     receipts = _read_research_receipts(audit_dir, _RESEARCH_ACTOR)
+    accepted_receipts = [
+        row for row in receipts if _receipt_is_accepted_for_effort(row, expected_effort)
+    ]
     observed_tools = {
         str(row.get("tool_name") or "")
-        for row in receipts
-        if row.get("post_tool_success") is True
-        and row.get("hook_event_name") == "PostToolUse"
-        and row.get("actor_id") == _RESEARCH_ACTOR
+        for row in accepted_receipts
     }
     attestation: dict[str, object] = {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "required": task_class in _DEEP_TASK_CLASSES,
         "actor_id": _RESEARCH_ACTOR,
+        "expected_effort": expected_effort,
         "required_tools": sorted(_REQUIRED_RESEARCH_TOOLS) if task_class in _DEEP_TASK_CLASSES else [],
         "observed_tools": sorted(observed_tools),
         "receipt_count": len(receipts),
+        "accepted_receipt_count": len(accepted_receipts),
+        "observed_effective_efforts": sorted({
+            str(row.get("effective_effort") or "") for row in accepted_receipts
+        }),
         "audit_dir": str(audit_dir),
         "fresh_audit_per_run": True,
         "result": "NOT_REQUIRED" if task_class not in _DEEP_TASK_CLASSES else "NOT_EVALUATED",
@@ -128,17 +147,23 @@ def _research_attestation(
                 elif quality.get("research_stop_reason") != "decision_saturated":
                     failures.append(f"research_not_decision_saturated:{_RESEARCH_ACTOR}")
 
-    missing_tools = sorted(_REQUIRED_RESEARCH_TOOLS - observed_tools)
-    failures.extend(f"successful_tool_receipt_missing:{_RESEARCH_ACTOR}:{tool}" for tool in missing_tools)
-
     for row in receipts:
-        tool = row.get("tool_name")
+        tool = str(row.get("tool_name") or "")
+        if not _receipt_is_accepted_for_effort(row, expected_effort):
+            failures.append(f"research_receipt_not_effort_attested:{_RESEARCH_ACTOR}:{tool or 'unknown'}")
+            continue
         if tool == "WebSearch" and not str(row.get("query") or "").strip():
             failures.append(f"web_search_query_missing:{_RESEARCH_ACTOR}")
         if tool == "WebFetch" and not str(row.get("url") or "").startswith(("http://", "https://")):
             failures.append(f"web_fetch_url_missing:{_RESEARCH_ACTOR}")
         if not str(row.get("tool_use_id") or "").strip():
             failures.append(f"research_tool_use_id_missing:{_RESEARCH_ACTOR}:{tool}")
+
+    missing_tools = sorted(_REQUIRED_RESEARCH_TOOLS - observed_tools)
+    failures.extend(
+        f"successful_tool_receipt_missing:{_RESEARCH_ACTOR}:{tool}"
+        for tool in missing_tools
+    )
 
     failures = sorted(set(failures))
     attestation["result"] = "PASS" if not failures else "FAIL"
@@ -214,7 +239,9 @@ def run_quality_bound_workflow(
         _restore_environment(previous)
 
     result = dict(result)
-    attestation, research_failures = _research_attestation(result, task_class, audit_dir)
+    attestation, research_failures = _research_attestation(
+        result, task_class, audit_dir, effort
+    )
     if research_failures and result.get("result") == "PASS":
         existing = result.get("failures")
         failures = list(existing) if isinstance(existing, list) else []
@@ -224,10 +251,13 @@ def run_quality_bound_workflow(
 
     result["quality_profile_binding"] = binding
     result["reasoning_runtime"] = {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "task_class": task_class,
-        "effort": effort,
+        "requested_effort": effort,
         "effort_bound_via_environment": "CLAUDE_CODE_EFFORT_LEVEL",
+        "effective_effort_verified_by_research_hook": (
+            attestation.get("result") == "PASS" if task_class in _DEEP_TASK_CLASSES else False
+        ),
         "thinking_disable_overrides_cleared_for_run": sorted(cleared_disablers),
         "environment_restored_after_run": True,
     }
