@@ -1,160 +1,133 @@
-# Source Matrix — AI Efficiency Operating System v0.3
+# Source Matrix — AI Efficiency Operating System v0.4
 
 Date: 2026-08-29  
-Version: `0.3.0-rc1`  
+Version: `0.4.0-rc1`  
 Canonical package: `ai-efficiency-operating-system`
 
-This matrix records the provenance used to evolve v0.3. It deliberately separates explicit user directives, recovered account artifacts/chats, current repository truth, current official external sources and assistant synthesis.
+This matrix records the sources used to evolve v0.4. It separates explicit user directives, recovered account artifacts/chats, current repository truth, current external research and new synthesis. Recovery is substantial, not provably exhaustive.
 
 ## Provenance classes
 
-- `USER_DIRECTIVE` — explicit requirement from the user.
-- `ACCOUNT_CHAT_RECOVERY` — prior-account chats or durable Library artifacts recovered in this run; substantial but not provably exhaustive.
-- `REPOSITORY_CANONICAL` — current canonical repository artifacts.
+- `USER_DIRECTIVE` — explicit user requirement.
+- `ACCOUNT_CHAT_RECOVERY` — prior-account chats or durable Library artifacts recovered in this run.
+- `REPOSITORY_CANONICAL` — current canonical repository truth.
 - `EXTERNAL_RESEARCH` — current official/vendor/academic evidence.
-- `ASSISTANT_SYNTHESIS` — formal integration created here; never misrepresented as a direct user instruction.
+- `ASSISTANT_SYNTHESIS` — integration created here; not represented as a direct user instruction.
 - `REQUIRES_CONFIRMATION` — insufficient evidence for promotion.
 
-## Cross-chat / durable-account recovery
+## v0.4 cross-chat / durable-account recovery
 
-| Date / artifact or chat cluster | Recovered mechanism | v0.3 destination |
+| Recovered artifact / cluster | Distinct recovered mechanism | v0.4 destination |
 |---|---|---|
-| 2026-08-20 — ordinary Chat / runtime bridging chats | Ordinary Chat can remain the natural-language control plane, but conversation relay is not capability execution. Real action needs an authorized runtime and receipts. | capability bridge + completion truth |
-| 2026-08-21 — quality/evolution chats | Quality is a closed loop, not prompt length. Preserve global-model delta, coverage frontier, failure attribution and regression protection. | reasoning + evolution |
-| 2026-08-21–23 — deep-thinking controls | Genuine depth requires analysis/evidence/falsification; waiting, polling and token drip are not reasoning. | model-delta depth + research contract |
-| 2026-08-23 — background agent operation | Automation should avoid focus theft; prefer API/CLI/MCP/DOM/Accessibility and reversible/background paths. | background nondisruptive execution |
-| 2026-08-24–25 — output stutter vs reasoning | “Do not answer instantly” means do real work, not make output stutter. Reasoning time and UI/output cadence are different. | performance budgets |
-| 2026-08-25–28 — multi-chat / 429 / stream / history repair | Preserve many chats, tools, quality and depth; remove hot-path/history/retry/lock amplification instead of shrinking workload. | performance + no-goal-shrink |
-| 2026-08-26 — primary-task control | Later tools/agents/retrieval/memory cannot silently overwrite the root task; explicit correction wins. | task contract + goal firewall |
-| 2026-08-26–28 — queue/continuation/cross-PR work | Long work needs durable state, current owner/ref, idempotency/fencing and resume without duplicate effects. | execution + continuity |
-| 2026-08-27 — context/tool efficiency | Discover many/load few; keep heavy context/evidence off always-hot paths. | progressive disclosure + observation cache |
-| 2026-08-28 — owner/supersession/read-back convergence | Live main/runtime evidence outranks stale PR/chat prose; same-owner writes serialize; repo PASS is not product PASS. | identity lock + verification |
-| 2026-08-28 — exact-10 runtime probe | Branches/personas/audit lanes cannot count as real agents; auth/runtime blockers must produce 0 verified rather than fake completion. | agent independence proof |
-| 2026-08-28 — `ordinary-chat-global-agent-convergence-2026-08-28.md` | Ten independent target/route identity checks; protected baseline; capability/deployment state separation; diagnosis parallel/finalization single-writer. | identity lock + execution topology |
-| 2026-08-28 — `ordinary-chat-github-repair-2026-08-28-v2.md` | Five-chat scale regression, lock only admission critical section, network settlement outside global lock, stale CI-generation coalescing. | performance + concurrency |
-| 2026-08-09 — `DeepControl-v5-Research-Basis.txt` | Failed-turn quarantine; semantic compaction rollback; path/hash observation cache; changed-strategy bounded retry + circuit breaker; worker/verifier split; event-driven wait; branch-scoped degradation. | 8 new v0.3 mechanisms |
-| 2026-08-09 — `AI_Agent_Engineering_Research_2026-08-09_Run2.md` | Instruction scope/precedence is host-specific; bounded continuity checkpoints; alternate-path invariants; protocol version awareness; activation precision/recall. Shared root cause: implicit context. | instruction/protocol/skill-admission modules |
-| 2026-08-09 — `AI_Repair_Evolution_Pack_2026_v0.3.0_DELTA.md` | Track sent/delivered/acknowledged/incorporated/verified separately; no universal instruction precedence; no “more skills is always better”; no generated-skill self-approval. | delivery state + admission gate |
-| 2026-08-10 — `00-LATEST-GITHUB-SNAPSHOT.md` | Per-agent context-window lineage/checkpoints; instruction provenance across sessions; skills as discovery/config/runtime harness components, not giant prompts. | context lineage + provenance |
-| 2026-08-10 — `validation_report(20260810-113744).md` | Temporal witness detects whole-store rollback; physical-file contract and reverse coverage prevent staged/described artifacts from passing. | temporal witness + materialization |
-| 2026 — Windows AI dictation deep research artifact | Distinguish raw text accuracy, correction intent and generated writing; track proper nouns/code-switch/hallucination/deletion. | input-fidelity module |
-| 2026 — memory/agent research artifact (`Deep Research report(1)`) | Recurrence-triggered memory consolidation, intent-aware context folding and failure-aware minimal specialist routing. | memory authority + adaptive routing |
-| 2026-08-29 — current continuation | Continue cross-chat recovery, deepen the same canonical skill package and use A01–A10 without creating name collisions. | v0.3 package-wide |
+| `ARCHITECTURE(7).md` — ARR v1.3 | Logical, control, effect/evidence, delivery and external temporal-witness planes are distinct; `logical rewind != authority rewind != effect rewind != delivery rewind`. | `authority-plane-separation` |
+| `ARCHITECTURE(7).md` / `ARCHITECTURE(3).md` | External effect ambiguity is a first-class `UNKNOWN`; read-back before replay; UNKNOWN is not FAILED/not-run. | `unknown-effect-reconciliation` |
+| `ARCHITECTURE(3).md` | Semantic action identity binds run, goal version, tool, canonical args and semantic scope; goal changes use CAS and stale actions are rejected. | `goal-version-cas-and-semantic-action-identity` |
+| `ARCHITECTURE(7).md` | Receiver-side truth: sender cannot self-ACK; receiver/independent observer read-back is authoritative for delivery. | strengthen `continuity-delivery-state-machine` |
+| `ARCHITECTURE(7).md` | Memory authority includes content hash/source/authority ceiling/derived lineage; transform/echo/repetition cannot increase authority. | strengthen `memory-authority-and-recurrence-consolidation` |
+| `ARCHITECTURE(3).md` | Verifier `(name, version)` requires canaries plus false-accept/false-reject budgets before admission. | `verifier-admission-canary-registry` |
+| `ARCHITECTURE(5).md` | Evidence/reviewer independence is clustered by provenance/model/prompt/evidence route; SUPPORT and REFUTE are not averaged. | `correlated-consensus-evidence-clustering` |
+| `SKILL_PATCH_R57.md` | Delegated/headless work must preflight interaction mode, responder/channel reachability and authority; approval required with no responder cannot wait forever; delegation prose creates no approval. | `interaction-topology-preflight` |
+| `DeepLock V2.1 / ARCHITECTURE(2).md` | Shared root cause: authority co-location. Cognitive plane can propose but cannot grant completion. Real agents are external runtime/thread identities; isolation-before-debate reduces conformity. | v0.4 root thesis + A01–A10 truth boundary |
+| `TEST_REPORT_V5.md` | Thread lease, no parallel resume, durable cancellation intent, bounded overload recovery and crash recovery were locally tested; tests used fake peers and do not prove live Codex account E2E. | strengthen resume/liveness gates; retain host-live boundary |
+| `ordinary_chat_global_convergence_matrix_2026-08-28.json` | Ten audit branches were not real agents; mutable source/runtime/behavioral identities can remain BLOCKED even when GitHub convergence succeeds. | agent proof + target identity |
+| `ordinary_chat_accelerator_verification_20260828.md` | Browser candidate passed queue/dedupe/rate-limit/render/stream/cross-tab tests while owning Mac runtime remained blocked; 9/10 is not complete. | performance + owning-runtime completion truth |
+| `ARCHITECTURE(4).md` — Executive Harness | Raw web/tool output is ephemeral evidence; instruction-like external content is quarantined; distribution integrity requires path+SHA-256+size parity. | memory authority + distribution parity |
+| `EXPLORED_LEDGER_R57.md` | New research themes: agentic abstention, blind tool deference, dynamic skill lifecycle, handoff debt, model-aware skill adaptation. | four new judgment/evolution/handoff owners |
+| 2026-08-20–28 ordinary-Chat / performance / cross-PR clusters | Preserve many chats, tools, depth and native controls; optimize hot paths, backpressure, ownership and exact-head read-back rather than shrinking workload. | preserved v0.3 performance/control modules |
+| 2026-08-29 continuation | Continue same canonical package; use A01–A10 workstreams without fake runtime-agent claims; evolve only materially distinct mechanisms. | package-wide v0.4 |
 
-## Root-cause synthesis
+## v0.4 root-cause synthesis
 
-The strongest cross-source common cause is **implicit context**.
+v0.3 identified **implicit context = hidden state**.
 
-Efficiency and correctness collapse when the system silently assumes:
+v0.4 adds the deeper failure:
 
-1. active task/goal;
-2. active instruction precedence;
-3. surviving memory/state after compaction or resume;
-4. target owner/ref/version;
-5. permission/runtime availability;
-6. protocol semantics;
-7. agent independence;
-8. handoff incorporation;
-9. skill activation;
-10. completion.
+> **authority co-location = hidden coupling.**
 
-v0.3 turns these into explicit state, evidence and tests.
+When one context can propose, authorize, execute, interpret evidence, certify completion, self-ACK delivery and rewrite memory, plausible text can bypass real state transitions.
 
-## Canonical repository sources
+Canonical separation:
 
-### `skills/06-evaluation-suite.md`
-Provides goal/evidence fidelity, falsification, marginal-agent gain, durability, tool truthfulness, regression and completion-state discipline.
+`INTENT → PROPOSAL → AUTHORITY → EFFECT → OBSERVATION → EVIDENCE → VERDICT → DELIVERY`
 
-### `skills/07-deliberation-router-spec.md`
-Provides smallest useful topology, escalation/de-escalation, evidence-weighted judging and selective retention.
+Independent temporal witness is added where rollback can repeat irreversible work.
 
-### `skills/11-cross-chat-convergence.md`
-Provides cross-chat convergence ordering and the rule that exact current repository/runtime evidence outranks remembered summaries for mutable state.
+Second synthesis:
 
-### Portable core dependencies
-`evidence-gap-research`, `competing-hypotheses`, `root-cause-clustering`, `compatibility-audit`, `capability-challenge`, `multi-agent-deliberation`, `durable-agent-control-plane`, `recoverable-state`, `completion-gate`.
+> **Capability is incomplete without calibrated non-action and adjudication.**
 
-## Current official external calibration
+A good agent must know when to act, gather, abstain, distrust a tool, or stop/delegate.
 
-External sources calibrate mechanisms; they do not override the active user contract.
+## Current external research calibration
 
-1. **Model Context Protocol — 2026-07-28 Specification**  
-   https://blog.modelcontextprotocol.io/posts/2026-07-28/  
-   Current final release: stateless protocol core, request self-description, header routing, cacheable ordered list results, MRTR, extensions including Tasks, authorization hardening and deprecation policy. Design consequence: protocol behavior must be version-aware, and tool-list caching can reduce repeated discovery work.
+These sources calibrate mechanisms; none overrides the active user task or substitutes for owning-runtime verification.
 
-2. **OpenAI Release Notes — Codex, 2026-08-24**  
-   https://openai.com/products/release-notes/  
-   `codex mcp-server` is deprecated; use Codex app server. Design consequence: historical architecture must not freeze a deprecated execution bridge as canonical.
+1. **AgentAbstain: Do LLM Agents Know When Not to Act?** — arXiv:2607.10059  
+   Paired should-act/should-abstain evaluation; abstention is substantially distinct from general task solving. Post-hoc abstention after an irreversible action is explicitly a failure class.  
+   Consequence: add paired act/abstain and timely-stop gates.
 
-3. **Model Context Protocol — 2026-07-28 Release Candidate / migration framing**  
-   https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate/  
-   Documents breaking changes and version migration. Design consequence: old and new MCP behavior require explicit compatibility branches.
+2. **Agentic Abstention: Do Agents Know When to Stop Instead of Act?** — arXiv:2606.28733  
+   Evaluates sequential abstention on >28,000 tasks and emphasizes timeliness.  
+   Consequence: stopping is a sequence-level decision, not a final-answer checkbox.
 
-4. **OpenAI current agent/model guidance**  
-   Used for lean instructions, relevant-tool exposure and deterministic execution where autonomy is unnecessary.
+3. **When the Tool Decides: LLM Agents Defer Blindly to Graph Neural Network Tools, and Stronger Backbones Defer More** — arXiv:2606.14476  
+   Narrow-domain evidence shows very high agreement with raw tool output and warns that stronger backbones may defer more. This does not prove universal tool deference.  
+   Consequence: separate tool invocation from tool adjudication and preserve domain caveat.
 
-5. **Anthropic context engineering / multi-agent research engineering**  
-   Used for context scarcity, compaction, specialized subagents and coordination cost of over-spawning.
+4. **Dynamic Skill Lifecycle Management for Agentic Reinforcement Learning (SLIM)** — arXiv:2605.10923  
+   Uses marginal contribution / leave-one-skill-out ideas to retain, retire or expand skills.  
+   Consequence: skill portfolios need reversible lifecycle management rather than monotonic accumulation.
 
-6. **2026 context/memory/agent research recovered in account Library**  
-   Used only as research signal for recurrence-based memory consolidation, intent-aware context folding, failure-aware specialist routing and skill evolution. No single paper is treated as universal production proof.
+5. **Skill is Not One-Size-Fits-All: Model-Aware Skill Alignment for LLM Agents (MASA)** — arXiv:2605.30723  
+   Reports that identical skills can help one model and harm another.  
+   Consequence: skill admission/promotion is model/host-conditioned.
 
-## Current repository truth at start of v0.3 write
+6. **Handoff Debt: The Rediscovery Cost When Coding Agents Take Over Interrupted Tasks** — arXiv:2606.02875  
+   Structured context-bearing handoffs substantially reduce event/token rediscovery cost; outcome gains are model-dependent.  
+   Consequence: preserve a canonical evidence core and generate successor-conditioned views.
 
-Immediately before core object creation, live `main` was re-read at:
+7. **Collaborative Human-Agent Protocol (CHAP)** — arXiv:2606.09751  
+   Working-draft protocol research for structured overrides/handoffs/evidence logs. It is not treated as a finalized standard.  
+   Consequence: portable handoff envelopes are evidence-backed design input, not a universal host contract.
 
-`e240855c5026856ff104d8b080b09187a9e32ad6`
+8. **OpenAI Agents SDK documentation (current 2026 guidance)**  
+   Handoffs, agents-as-tools/manager orchestration, sessions and tracing expose distinct ownership/history/tracing choices.  
+   Consequence: do not assume every delegation is a handoff; manager ownership and handoff ownership differ, and session/conversation ownership must be explicit.
 
-Base tree:
+9. **Model Context Protocol 2026-07-28**  
+   Protocol behavior is versioned; current final core differs from older stateful initialization assumptions.  
+   Consequence: protocol behavior remains version-conditioned.
 
-`0c3398175f9c05e273c57992730ec4c8037feed9`
+10. **OpenAI 2026-08-24 Codex release notes**  
+    `codex mcp-server` is deprecated in favor of Codex app server.  
+    Consequence: historical runtime routes require deprecation/retest triggers.
 
-That head already contains concurrent repository work after the previous efficiency-package update. v0.3 therefore builds from live main and must use a non-force fast-forward update; it must not overwrite concurrent work using the older `5fe0e072...` head.
+## Evidence-quality cautions
 
-The final verification file must refresh this after writes and record the actual v0.3 commit/read-back.
+- A research paper/preprint is evidence for a mechanism, not automatic production proof.
+- Blind-tool-deference evidence is narrow to the evaluated tool/domain and must not be universalized.
+- CHAP is a working draft, not a final standard.
+- Model-aware skill and handoff results are explicitly model-dependent.
+- Local/fake-peer tests do not prove the user's live host/account.
+- Reviewer/source count is not evidence independence; provenance and lineage matter.
 
-## Input-fidelity sub-contract
+## Current repository truth before v0.4 write
 
-Cross-chat speech/dictation work adds a general efficiency lesson: preprocessing errors can masquerade as reasoning errors.
+At the start of this continuation, `main` was read at:
 
-Keep separate:
+`14aae76ce9ae3a1be81075890cd947baa9eb3076`
 
-- raw input fidelity;
-- correction intent;
-- generated rewrite quality.
+Tree:
 
-Do not let cleanup change technical terms, proper nouns, dates/numbers or final corrections and then blame the reasoning layer.
+`afa632fb7aa80cc07ef1ef838b70a267c4d4fbb9`
 
-## Memory policy
-
-Durable memory should store validated mechanisms, not every conversational event.
-
-Promote only with:
-
-- recurrence or high materiality;
-- evidence;
-- correct scope/version;
-- provenance;
-- retest trigger.
-
-Transient outages and failed turns remain quarantined/ephemeral.
-
-## Conflict-resolution order
-
-1. current explicit user correction;
-2. exact owning-runtime evidence for mutable runtime state;
-3. current exact repository/object state for repository facts;
-4. current official primary source for product/protocol behavior;
-5. deterministic/independent corroboration;
-6. validated durable account artifact;
-7. coherent assistant synthesis;
-8. popularity/majority as weak evidence only.
+The v0.4 write must re-read live `main` immediately before ref movement and use a non-force fast-forward. If another chat advances `main`, rebuild on that new base rather than overwriting it.
 
 ## Coverage boundary
 
-This continuation materially expands recovery beyond v0.2, including previously missed durable artifacts and cross-chat clusters.
+This continuation materially expands cross-chat/account-artifact recovery beyond v0.3.
 
 `ACCOUNT_CHAT_RECOVERY = EXPANDED_SUBSTANTIAL`  
 `ACCOUNT_WIDE_EXHAUSTIVE = UNVERIFIED`
 
-The retrieval surface still does not expose a provably complete account message inventory/cardinality, so exhaustive-account coverage must not be claimed.
+The available retrieval surface does not expose a provably complete account message inventory/cardinality. Exhaustive-account coverage must not be claimed.

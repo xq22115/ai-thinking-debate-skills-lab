@@ -1,99 +1,83 @@
 # Changelog — AI Efficiency Operating System
 
-## 0.3.0-rc1 — 2026-08-29
+## 0.4.0-rc1 — 2026-08-29
 
-Major evolution from v0.2's layered orchestration contract into an **explicit hidden-state / implicit-context operating system**.
+Major evolution from v0.3's explicit hidden-state model into **authority-separated, calibrated-action orchestration**.
 
 ### Root-cause upgrade
 
-v0.3 identifies a shared failure class across recovered chats and durable artifacts:
+v0.3: implicit context is hidden state.
 
-> implicit assumptions about instruction scope, context survival, memory authority, route/version, delivery, ownership and completion create both inefficiency and false correctness.
+v0.4: **authority co-location is hidden coupling**. A single fallible context must not simultaneously own proposal, authority, effect truth, evidence interpretation, completion verdict, receiver ACK and durable-memory promotion.
 
-The release converts those assumptions into inspectable runtime contracts.
+v0.4 also treats **action competence, abstention competence and tool adjudication as distinct capabilities**.
 
-### Added — 18 distinct modules
+### Added — 10 new canonical modules
 
-- `instruction-scope-precedence-audit`
-- `instruction-provenance-and-retest-trigger`
-- `per-agent-context-lineage`
-- `transactional-failed-turn-quarantine`
-- `semantic-compaction-invariant-rollback`
-- `content-addressed-observation-cache`
-- `changed-strategy-retry-circuit-breaker`
-- `worker-verifier-separation`
-- `event-driven-waiting`
-- `branch-scoped-degradation`
-- `continuity-delivery-state-machine`
-- `protocol-version-compatibility-contract`
-- `alternate-path-invariant-testing`
-- `skill-admission-precision-recall-utility`
-- `memory-authority-and-recurrence-consolidation`
-- `input-fidelity-and-correction-intent`
-- `temporal-witness-and-rollback-detection`
-- `physical-materialization-reverse-coverage`
+- `authority-plane-separation`
+- `unknown-effect-reconciliation`
+- `goal-version-cas-and-semantic-action-identity`
+- `verifier-admission-canary-registry`
+- `interaction-topology-preflight`
+- `correlated-consensus-evidence-clustering`
+- `agentic-abstention-and-timely-stop`
+- `tool-invocation-adjudication-separation`
+- `skill-lifecycle-model-aware-adaptation`
+- `successor-conditioned-portable-handoff`
 
-Total machine-readable modules: **47**.
+Total machine-readable modules: **57**.
 
-### Expanded runtime state
+### Strengthened existing owners
 
-Added explicit state for:
+- delivery now requires receiver/independent-observer ACK; sender cannot self-ACK;
+- memory authority now carries source/content lineage and authority ceilings;
+- materialization adds source/package/install path+hash+size distribution parity;
+- event-driven waiting distinguishes schedule metadata from execution/liveness receipts;
+- resume/fencing includes no-parallel-resume and durable cancellation intent;
+- completion vetoes ambiguous effects and unresolved hard obligations;
+- multi-agent confidence is clustered by provenance/model/prompt/evidence route;
+- skill admission is explicitly model/host-conditioned and lifecycle-managed.
 
-- instruction scope/provenance;
-- context lineage;
-- memory authority;
-- input fidelity;
-- protocol contracts;
-- failed-turn quarantine;
-- delivery state;
-- observation cache;
-- changed-strategy retry;
-- circuit breakers;
-- verifier receipts;
-- alternate-path checks;
-- temporal witnesses.
+### Runtime state
 
-### Expanded evaluation
+Schema expands to `v0.4` with:
 
-Behavioral/evolution suite expands from **31 → 50** cases.
+- goal lineage/CAS;
+- authority lineage;
+- effect ledger with first-class `UNKNOWN`;
+- interaction topology;
+- evidence independence clusters;
+- verifier admission registry;
+- abstention ledger;
+- tool adjudication;
+- model-aware skill lifecycle;
+- successor handoff envelopes;
+- lifecycle receipts;
+- distribution parity receipts.
 
-New cases cover instruction precedence/retest triggers, per-agent context lineage, failed-turn quarantine, semantic compaction rollback, cache invalidation, changed-strategy retry/circuit breaker, worker/verifier separation, event-driven waiting, branch-scoped degradation, false-success handoff states, protocol mismatch, alternate-path bypass, activation precision/recall, paired marginal utility/no self-approval, recurrence-based memory consolidation, input correction fidelity, temporal rollback witness and physical reverse coverage.
+### Evaluation
 
-### Cross-chat recovery expanded
+Behavioral/evolution contract expands from **T01–T50 → T01–T70**.
 
-v0.3 explicitly incorporates previously underused durable account artifacts including:
+New tests cover authority co-location, UNKNOWN effects, stale goal versions, semantic action identity, receiver self-ACK, verifier drift, non-interactive approval deadlocks, delegation-framed authority, correlated consensus inflation, act/abstain pairs, post-hoc abstention, blind tool deference, tool/evidence conflicts, leave-one-out skill value, model-dependent skill harm, handoff debt, successor-view integrity, distribution parity and schedule/liveness false health.
 
-- `DeepControl-v5-Research-Basis.txt`;
-- `AI_Agent_Engineering_Research_2026-08-09_Run2.md`;
-- `AI_Repair_Evolution_Pack_2026_v0.3.0_DELTA.md`;
-- `00-LATEST-GITHUB-SNAPSHOT.md`;
-- `validation_report(20260810-113744).md`;
-- ordinary-Chat global convergence and GitHub repair handoffs;
-- input/dictation and memory-routing research artifacts.
+### Cross-chat recovery
 
-### Current protocol/product calibration
+v0.4 incorporates previously underused account artifacts including ARR architectures, DeepLock V2.1, Executive Harness, R57 interaction-topology and research ledgers, ordinary-Chat convergence/performance verification and long-task recovery tests.
 
-- MCP final `2026-07-28`: version-aware stateless core, routable/cacheable discovery and extensions.
-- OpenAI 2026-08-24: `codex mcp-server` deprecated in favor of Codex app server.
+### Research calibration
 
-These current facts are compatibility/deprecation signals, not substitutes for owning-runtime verification.
-
-### Strengthened truth boundaries
-
-- failed turns cannot become durable truth;
-- sent/delivered handoff does not equal incorporated/verified;
-- worker cannot self-approve critical completion;
-- repository presence cannot imply host loading;
-- package reports cannot validate files that are not physically present;
-- whole-store rollback can require an independent temporal witness;
-- one capability branch failure cannot justify global degradation;
-- ten review workstreams are not ten real agents without runtime/session receipts.
+Added 2026 research signals on agentic abstention, tool deference, dynamic skill lifecycle, model-aware skills, handoff debt and structured human-agent handoff. Research caveats remain explicit; preprints/local tests do not become production proof.
 
 ### Naming
 
-No new efficiency package name was created. The canonical owner remains:
+No new efficiency alias was created. Canonical owner remains:
 
 `ai-efficiency-operating-system`
+
+## 0.3.0-rc1 — 2026-08-29
+
+Evolved v0.2 into an explicit hidden-state operating system with 47 modules and T01–T50, adding instruction scope/provenance, per-agent context lineage, failed-turn quarantine, semantic-compaction rollback, observation caching, changed-strategy retry/circuit breaker, worker/verifier separation, event-driven waiting, branch-scoped degradation, delivery states, protocol contracts, skill-admission metrics, memory authority, input fidelity, temporal witness and physical materialization coverage.
 
 ## 0.2.0-rc1 — 2026-08-28
 

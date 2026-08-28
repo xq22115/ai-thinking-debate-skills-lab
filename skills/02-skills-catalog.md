@@ -31,32 +31,31 @@ Durable task/run identity, isolated writer ownership, claims before mutation, cl
 
 ## Orchestration layer
 
-### ai-efficiency-operating-system — `0.3.0-rc1`
+### ai-efficiency-operating-system — `0.4.0-rc1`
 
-Canonical efficiency OS at repository path `skills/skills/ai-efficiency-operating-system/`.
+Canonical efficiency OS: `skills/skills/ai-efficiency-operating-system/`.
 
-v0.3 preserves v0.2's goal/evidence/context/execution architecture but deepens the root model:
+v0.4 keeps v0.3's rule that implicit context must become explicit state, then adds a deeper invariant:
 
-> **implicit context is hidden state; hidden state must be made explicit, versioned, testable and recoverable.**
+> **proposal, authority, effect, observation, evidence, verdict and delivery are different truth channels.**
 
-The package now composes the portable core with **47 unique machine-readable modules**, including:
+The package now contains **57 unique machine-readable modules** and T01–T70. Major capabilities include:
 
-- immutable task/goal contracts, corrections, ten-dimensional target identity and no-goal-shrink invariants;
-- host/surface-specific instruction-scope/precedence audits plus instruction provenance and retest triggers;
-- progressive disclosure, per-agent context lineage, semantic compaction with invariant rollback and content-addressed observation caching;
-- failed-turn quarantine and recurrence-based memory authority rather than treating chat history as canonical state;
-- raw input vs corrected intent vs generated rewrite fidelity, including proper nouns and code-switch preservation;
-- E0–E6 evidence gating, coverage frontier, competing hypotheses and model-delta depth;
-- adaptive multi-agent coalitions, selective disagreement and strict runtime-agent receipt requirements;
-- parallel-read/serial-write ownership, short critical sections, durable event journal, idempotency/fencing and safe resume;
-- changed-strategy bounded retry with circuit breaker, event-driven waiting and branch-scoped degradation;
-- delivery truth from SENT → DELIVERED → ACKNOWLEDGED → INCORPORATED → VERIFIED;
-- version-aware protocol contracts, including MCP 2026-07-28 compatibility and current deprecation signals;
-- worker/verifier separation, alternate-path invariant testing, temporal rollback witnesses and physical materialization reverse coverage;
-- activation precision/recall, paired no-skill marginal utility, holdout/regression promotion and no self-approval;
-- hot-path amplification/retry/cache/backpressure controls and high-density verified finalization.
+- durable task/goal contracts, correction/supersession, exact-target identity and no-goal-shrink;
+- host/version-scoped instruction and memory authority;
+- progressive disclosure, context lineage, semantic compaction rollback and content-addressed observations;
+- E0–E6 evidence, competing hypotheses and model-delta research;
+- A01–A10 adaptive review with real-agent receipts and correlated-consensus clustering;
+- semantic action identity, goal CAS, leases/fencing, first-class UNKNOWN effects and safe replay;
+- interaction-topology preflight for approvals/auth/input in delegated or non-interactive work;
+- timely ACT/GATHER/ABSTAIN decisions and tool-invocation vs tool-adjudication separation;
+- receiver-side delivery truth, structured successor handoffs and liveness receipts;
+- model/host-aware reversible skill lifecycle with leave-one-out marginal utility;
+- versioned verifier admission/canaries;
+- hot-path/backpressure/performance controls without shrinking protected work;
+- physical/distribution parity and owning-runtime completion gates.
 
-This is an orchestration package, not a renamed duplicate of the nine portable core skills. It must preserve required capabilities, concurrency, genuine reasoning and answer quality rather than trading them away for apparent speed.
+This orchestration layer composes rather than renames the portable core skills.
 
 Package files:
 
@@ -68,17 +67,15 @@ Package files:
 - `VERIFICATION.md`
 - `CHANGELOG.md`
 
-Current package gate requires **47 unique modules and T01–T50** plus exact GitHub read-back. `HOST_LIVE` still requires owning-runtime invocation/postcondition evidence.
+Current package gate requires **57 unique modules and T01–T70** plus exact GitHub read-back. `HOST_LIVE` still requires owning-runtime invocation/postcondition evidence.
 
 ## Candidate supporting skills
-
-These are useful catalog responsibilities but are not yet separate RC1 skill folders:
 
 ### skill-security-review
 Check broad permissions, executable behavior, network calls, secrets, injection surface and supply-chain dependencies.
 
 ### source-ledger
-Record claim ID, source class, source, type, date, version/commit/blob, support/contradiction, confidence and notes. Current archive implementation is `05-source-ledger.json`.
+Record claim ID, source class, source, type, date, version/commit/blob, support/contradiction, confidence and notes.
 
 ### capability-registry
 Prevent duplicate prompts/skills/agents/tools by recording trigger, entrypoint, status, permissions, compatibility, verification and source revision.
@@ -97,7 +94,7 @@ skill-name/
 └── resources/                # optional
 ```
 
-Portable semantic logic must not assume every host uses the same installation/package wrapper. For example, a `SKILL.md` procedural contract can be portable while a Codex plugin manifest, Claude integration path, Windows hook, or MCP declaration remains adapter-specific.
+Portable semantic logic must not assume every host uses the same package wrapper.
 
 ## SKILL.md minimum
 
@@ -108,17 +105,8 @@ description: What it does and when it activates
 ---
 ```
 
-Then define objective, activation, non-goals, workflow, evidence requirements, failure modes, output contract, compatibility boundary and completion gate. Version/status may be recorded in the document or host-specific metadata when the target format has stricter frontmatter rules.
+Then define objective, activation, non-goals, workflow, evidence requirements, failure modes, output contract, compatibility boundary and completion gate.
 
 ## Promotion gate
 
-A skill becomes stable only after:
-- structure/contract validation;
-- positive and negative trigger evals;
-- adversarial/falsification cases;
-- permission and infrastructure-blocker cases where relevant;
-- security review;
-- current compatibility matrix;
-- version/provenance recording;
-- paired marginal-utility / no-skill comparison for automatically routed skills;
-- target-host execution evidence for any host-specific claim.
+A skill becomes stable only after structure validation, positive/hard-negative trigger evals, adversarial cases, compatibility/provenance recording, paired marginal utility, target/protection/holdout regression checks and target-host evidence for host-specific claims.
