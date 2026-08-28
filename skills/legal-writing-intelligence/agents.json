@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "date_window": {"start": "2026-06-01", "end": "2026-08-31"},
+  "agents": [
+    {"id":"agent-01","vendor":"Thomson Reuters","query":"CoCounsel Legal drafting agent brief builder 2026","official_domains":["thomsonreuters.com"],"watch_urls":["https://www.thomsonreuters.com/en/press-releases/2026/august/thomson-reuters-launches-next-generation-of-cocounsel-legal-the-ai-ecosystem-built-for-legal-professionals"]},
+    {"id":"agent-02","vendor":"LexisNexis","query":"Lexis Protégé legal drafting work product 2026","official_domains":["lexisnexis.com"],"watch_urls":["https://www.lexisnexis.com/community/pressroom/b/news/posts/lexis-with-protege-accelerates-frictionless-agentic-productivity-from-first-idea-to-review-ready-legal-work-product"]},
+    {"id":"agent-03","vendor":"Harvey","query":"Harvey legal drafting writing styles Word 2026","official_domains":["harvey.ai"],"watch_urls":["https://www.harvey.ai/blog/the-brief-june-2026"]},
+    {"id":"agent-04","vendor":"Litera","query":"Litera Lito legal AI drafting June 2026","official_domains":["litera.com"],"watch_urls":["https://www.litera.com/blog/whats-new-literas-legal-ai-platform-and-legal-ai-agent-june-2026-release"]},
+    {"id":"agent-05","vendor":"Legora","query":"Legora Agent drafting legal 2026","official_domains":["legora.com"],"watch_urls":["https://legora.com/blog/introducing-the-agent"]},
+    {"id":"agent-06","vendor":"Spellbook","query":"Spellbook Autonomous Contract Management drafting 2026","official_domains":["spellbook.com"],"watch_urls":["https://spellbook.com/blog/introducing-acm"]},
+    {"id":"agent-07","vendor":"LegalOn","query":"LegalOn attorney built prompt workflows drafting 2026","official_domains":["legalontech.com"],"watch_urls":["https://www.legalontech.com/press-releases/legalon-launches-100-attorney-built-prompt-workflows-for-in-house-legal"]},
+    {"id":"agent-08","vendor":"Juro","query":"Juro AI Review redline contracts 2026","official_domains":["juro.com","intercom.help"],"watch_urls":["https://intercom.help/juro/en/articles/12691465-ai-review-in-juro"]},
+    {"id":"agent-09","vendor":"top.legal","query":"top.legal bulk drafting AI contracts Summer 2026","official_domains":["top.legal"],"watch_urls":["https://www.top.legal/en/changelog"]},
+    {"id":"agent-10","vendor":"Junior.Law","query":"Junior JR3 Office Action Builder AI drafting July 2026","official_domains":["junior.law"],"watch_urls":["https://docs.junior.law/releases/office-action-builder"]}
+  ]
+}
