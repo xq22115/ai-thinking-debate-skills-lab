@@ -43,14 +43,17 @@
       "tool_name": "Lexis+ with Protégé for In-House Legal and Compliance",
       "release_date": "2026-07-08",
       "official_url": "https://www.lexisnexis.com/community/pressroom/b/news/posts/lexis-with-protege-is-now-purpose-built-ai-for-in-house-legal-and-compliance-teams",
+      "supporting_official_urls": [
+        "https://www.lexisnexis.com/en-us/products/lexis-plus-protege/legal-drafting.page"
+      ],
       "release_status": "announced_available_platform_capability",
       "specialization": "purpose-built legal and compliance AI for in-house teams, using authoritative LexisNexis content and enterprise context",
       "writing_capabilities": [
-        "supports professional legal work that moves from authoritative research and analysis into drafting",
-        "targets day-to-day in-house legal and compliance workflows rather than general consumer writing"
+        "LexisNexis' official drafting page says Protégé drafts, customizes, and refines legal documents including agreements/contracts and client communications",
+        "the 2026-07-08 official release specifically targets day-to-day in-house legal and compliance work rather than general consumer writing"
       ],
       "access": "Lexis+ with Protégé product access",
-      "evidence_note": "Official LexisNexis PressRoom release dated 2026-07-08 explicitly calls the offering purpose-built AI for in-house legal and compliance teams."
+      "evidence_note": "The official 2026-07-08 PressRoom release proves the new in-house/legal-compliance specialization; the official Legal AI Drafting product page independently proves drafting of legal documents and client communications."
     },
     {
       "lane_id": "04",
