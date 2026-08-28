@@ -10,135 +10,203 @@ Canonical path: `skills/skills/ai-efficiency-operating-system/`
 
 v0.3 is a material evolution, not an instruction-volume increase.
 
-The new package model treats **implicit context as hidden state** and makes previously implicit assumptions explicit for instruction scope, context lineage, failed turns, retry strategy, delivery state, protocol version, skill routing, memory authority, input fidelity, verification ownership and rollback/materialization truth.
+The package now treats **implicit context as hidden state** and makes previously implicit assumptions explicit for instruction scope, context lineage, failed turns, retry strategy, delivery state, protocol version, skill routing, memory authority, input fidelity, verification ownership, temporal rollback and physical materialization.
 
-Repository promotion will be limited to the strongest evidence observed after write/read-back.
+Repository/package evidence supports:
+
+`PACKAGED / GITHUB_COMMITTED / GITHUB_READ_BACK_VERIFIED / PHYSICAL_MATERIALIZATION_VERIFIED / STATIC_CONTRACT_VERIFIED / CROSS_CHAT_RECOVERY_EXPANDED / CURRENT_PROTOCOL_CALIBRATED`
+
+Not promoted:
+
+`ACCOUNT_WIDE_EXHAUSTIVE / TEN_REAL_RUNTIME_AGENTS / HOST_LIVE / DEPLOYED / HEALTHY`
 
 ## Task ledger
 
-- Primary task: continue collecting AI-efficiency mechanisms from other chats/account artifacts, use the A01–A10 ten-duty review topology, and fully evolve the existing canonical package without naming collisions.
-- Desired end state: one substantially stronger package with machine-readable runtime state, provenance, evals and exact GitHub read-back.
-- Hard constraints: no competing aliases; no goal shrink; no fake ten-agent claim; no commit/CI/file-existence false completion.
-- Acceptance: materially broader cross-chat recovery; distinct new mechanisms; parseable structure; unique names; exact-ref commit/read-back; unresolved host/account boundaries explicit.
+- Primary task: continue collecting AI-efficiency mechanisms from other chats/account artifacts, use the A01–A10 ten-duty review topology and substantially evolve the same canonical package.
+- Desired end state: one stronger, machine-readable and testable skill package with exact GitHub read-back and no naming collision.
+- Hard constraints: no competing alias package; no goal shrink; no fake ten-agent claim; no commit/CI/file-existence false completion; preserve concurrent repository work.
+- Acceptance: new cross-chat mechanisms are distinct and traceable; 47 unique modules; T01–T50; exact current main; seven physical package files; catalog/version convergence; unresolved owning-runtime boundaries explicit.
 
-## Ten-workstream truth
+## Ten-workstream execution truth
 
-This run uses A01–A10 as ten independent retrieval/review obligations.
+The run executed the A01–A10 duties as ten independent retrieval/review obligations:
 
-Current ordinary Chat does not expose ten distinct spawned runtime/session identities with task-bound start and terminal receipts. Therefore the truthful label is:
+- A01 task/acceptance orchestration;
+- A02 architecture/evolution design;
+- A03 source recovery;
+- A04 common-root-cause analysis;
+- A05 adversarial omission/false-completion attack;
+- A06 provenance/naming/claim cross-exam;
+- A07 implementation;
+- A08 exact-ref/physical/read-back verification;
+- A09 collision/rollback/concurrency risk;
+- A10 adjudication into one canonical package.
+
+This Chat did **not** expose ten distinct spawned runtime/session identities with independent start + terminal receipts. Therefore the correct label remains:
 
 `TEN_INDEPENDENT_RETRIEVAL_AND_REVIEW_WORKSTREAMS`
 
-not:
+not `TEN_REAL_RUNTIME_AGENTS`.
 
-`TEN_REAL_RUNTIME_AGENTS`
+## Root-cause delta recovered in this continuation
 
-The package keeps T13/T14 and strengthens runtime-agent proof rather than inflating role labels.
+The strongest common cause is **implicit context**: hidden assumptions about goal, instruction scope, surviving state, owner/ref/version, permission, protocol, agent independence, handoff incorporation, skill activation and completion.
 
-## New cross-chat/root-cause findings
+v0.3 adds 18 non-alias mechanisms:
 
-Recovered artifacts establish distinct missing mechanisms:
+1. instruction scope/precedence audit;
+2. instruction provenance + retest trigger;
+3. per-agent context lineage;
+4. transactional failed-turn quarantine;
+5. semantic compaction invariant rollback;
+6. content-addressed observation cache;
+7. changed-strategy bounded retry + circuit breaker;
+8. worker/verifier separation;
+9. event-driven waiting;
+10. branch-scoped degradation;
+11. SENT → DELIVERED → ACKNOWLEDGED → INCORPORATED → VERIFIED continuity states;
+12. protocol-version compatibility contract;
+13. alternate-path invariant testing;
+14. skill activation precision/recall + paired marginal utility + no self-approval;
+15. recurrence-based memory authority/consolidation;
+16. raw input vs corrected intent vs generated rewrite fidelity;
+17. temporal rollback witness;
+18. declared↔actual physical materialization coverage.
 
-1. failed turns must be transactionally quarantined;
-2. compaction must be semantic and rollback on invariant loss;
-3. stable large observations should be cached by exact identity/path/hash;
-4. retry must change strategy, be bounded and open a circuit breaker;
-5. worker and completion judge should be separate for material gates;
-6. idle external waiting should be event-driven when possible;
-7. local capability degradation remains branch-scoped;
-8. instruction precedence is host/surface/version-specific;
-9. durable instructions need provenance and retest triggers;
-10. child/resumed agents need explicit context lineage/checkpoints;
-11. cross-session handoff needs SENT/DELIVERED/ACKNOWLEDGED/INCORPORATED/VERIFIED;
-12. protocol behavior must be negotiated/version-aware;
-13. critical invariants need alternate-path tests;
-14. skill routing needs activation precision/recall and paired marginal utility;
-15. memory consolidation should promote recurrent validated mechanisms, not transient events;
-16. raw input, correction intent and generated rewrite need separate fidelity controls;
-17. independent temporal witnesses can detect stale/whole-store rollback;
-18. physical artifact validation must cover declared→actual and actual→declared.
+Total canonical modules: **47**.
 
-## Static validation before GitHub mutation
+## Current-source calibration
 
-Generated candidate validation:
+- MCP final `2026-07-28`: protocol behavior is versioned; the final core is stateless and supports current routing/cache/extension semantics. Do not impose these semantics on older peers by memory.
+- OpenAI release notes `2026-08-24`: `codex mcp-server` is deprecated in favor of Codex app server. Old chat history cannot permanently freeze a deprecated bridge into the architecture.
 
-- `skillpack.json` JSON parse: PASS;
-- schema version: `3.0`;
-- package version: `0.3.0-rc1`;
-- module count: **47**;
-- module IDs unique: PASS;
-- module IDs lowercase-kebab-case: PASS;
-- E0–E6 exact once: PASS;
-- A01–A10 exact/unique: PASS;
-- `runtime-state.schema.json` JSON parse: PASS;
-- Draft 2020-12 schema structural check: PASS;
-- eval IDs T01–T50: **50 unique**;
-- canonical package name retained: PASS.
+These calibrate compatibility; neither proves host-live behavior.
 
-These checks prove generated structure only, not host-live behavior.
+## Concurrency-safe GitHub mutation
 
-## Live target lock before mutation
+Before object creation, `main` was read at:
 
-Immediately before the planned atomic write, `main` was re-read at:
+- parent head: `e240855c5026856ff104d8b080b09187a9e32ad6`
+- parent tree: `0c3398175f9c05e273c57992730ec4c8037feed9`
 
-- base head: `e240855c5026856ff104d8b080b09187a9e32ad6`
-- base tree: `0c3398175f9c05e273c57992730ec4c8037feed9`
+That head already included unrelated concurrent skill work after the previous efficiency-package revision.
 
-This live head includes concurrent repository work after the previous efficiency-package update. The v0.3 commit must be built from this base or a newer re-read base and must use a non-force fast-forward ref update.
+The v0.3 core was created as one Git tree/commit from that live base:
 
-## Core atomic write
+- core tree: `87d05e5078324c3037fc8843671f87f7c13c38f0`
+- core commit: `c411efe86e208ebe872e943376d15aa939865e1c`
+- parent: `e240855c5026856ff104d8b080b09187a9e32ad6`
+- ref update: `main` fast-forwarded with `force=false`
 
-`CORE_COMMIT_SHA = PENDING_READBACK`
+Immediately before the ref update, main was re-read and still equaled the expected parent. After the update, main was re-read at the core commit.
 
-Core atomic tree updates:
+## Exact blob / materialization read-back
 
-- `skills/skills/ai-efficiency-operating-system/SKILL.md`
-- `skills/skills/ai-efficiency-operating-system/skillpack.json`
-- `skills/skills/ai-efficiency-operating-system/runtime-state.schema.json`
-- `skills/skills/ai-efficiency-operating-system/SOURCE-MATRIX.md`
-- `skills/skills/ai-efficiency-operating-system/EVALS.md`
-- `skills/skills/ai-efficiency-operating-system/VERIFICATION.md`
-- `skills/skills/ai-efficiency-operating-system/CHANGELOG.md`
-- `skills/02-skills-catalog.md`
+The package directory was fetched from updated `main`. All seven canonical physical files were present with these exact blob identities:
 
-## Read-back
+- `CHANGELOG.md` — `85061da4fffcea755efc751b20cd55e88974df79`
+- `EVALS.md` — `d2b5c2f2c99205e4b07687d6942c247d9613fcdd`
+- `SKILL.md` — `df2bc22c4ebf66f9385f050b18e50e641a72d596`
+- `SOURCE-MATRIX.md` — `eee776a90de3189fbf85fc9bb9c6ac01d43b4ad5`
+- `runtime-state.schema.json` — `bb8608789231f33923adc65e49d62c603bc12d72`
+- `skillpack.json` — `362c29ac15e31d28e72a48195929070331335d2a`
+- `VERIFICATION.md` — provisional v0.3 blob `78925a9f3c5bcae6874f14b61387ba4354df6a3e` before this final receipt update.
 
-`READ_BACK = PENDING`
+Catalog read-back:
 
-The final verification revision must record the actual commit and exact blob identities fetched from updated `main`.
+- `skills/02-skills-catalog.md` — `ca3a6a63ba5150b2663226f77672a60a2f950005`
 
-## Physical materialization
+The catalog reports the same canonical package/version and seven-file inventory.
 
-Required package file inventory:
+Result:
 
-1. `SKILL.md`
-2. `skillpack.json`
-3. `runtime-state.schema.json`
-4. `SOURCE-MATRIX.md`
-5. `EVALS.md`
-6. `VERIFICATION.md`
-7. `CHANGELOG.md`
+- declared → actual: PASS;
+- actual core package files → declared package inventory: PASS;
+- same canonical package name: PASS;
+- no `efficiency-v3` / `ai-efficiency-plus` alias: PASS.
 
-Final gate requires both directions:
+## Structural/read-back checks
 
-- declared → actual;
-- actual core → declared/catalogued.
+### `SKILL.md`
+Read back from `main`:
 
-## Current official protocol/product calibration
+- canonical name: `ai-efficiency-operating-system`;
+- version: `0.3.0-rc1`;
+- root thesis: implicit context is hidden state;
+- no-goal-shrink and `不卡頓 != 秒回` preserved;
+- v0.3 completion gate requires seven files, 47 modules and T01–T50.
 
-- MCP final specification `2026-07-28` is a stateless protocol core with versioned request semantics, route/cache support and extensions. Apply only to compatible/negotiated peers.
-- OpenAI release notes dated 2026-08-24 deprecate `codex mcp-server` in favor of Codex app server.
+### `skillpack.json`
+Read back from `main` with blob `362c29ac...`:
 
-These facts calibrate compatibility/deprecation; they do not prove target-host activation.
+- schema version `3.0`;
+- package version `0.3.0-rc1`;
+- E0–E6 present;
+- A01–A10 present;
+- module array begins at file line 94 and contains one module entry per line through line 140: **47 entries**;
+- the last 18 entries are the v0.3 distinct mechanisms listed above;
+- array closes before runtime fields/promotion gate;
+- pending host/account/runtime-agent gates remain UNVERIFIED.
+
+Pre-write generated-structure checks also passed JSON parsing, unique lowercase-kebab module IDs, E0–E6 exactness and A01–A10 uniqueness. Exact GitHub read-back blob identity matches the blob inserted into the atomic tree.
+
+### `runtime-state.schema.json`
+Read-back blob `bb860878...` contains the expanded fields for instruction scope/provenance, context lineage, memory/input state, protocol contracts, failed-turn quarantine, delivery, observation cache, retry/circuit breaker, verifier receipts, alternate paths and temporal witnesses, then closes with the v0.3 completion state machine.
+
+Generated candidate passed Draft 2020-12 schema structural checking before mutation; committed read-back identity matches the created blob.
+
+### `EVALS.md`
+Read-back blob `d2b5c2f...` reaches **T50** and its static package gate requires 47 modules, A01–A10, E0–E6, seven physical files, catalog convergence and no alias package.
+
+### `SOURCE-MATRIX.md`
+Read-back blob `eee776a...` records the expanded cross-chat/account-artifact recovery and separates user directives, account recovery, repository truth, current external research and assistant synthesis.
+
+## v0.2 → v0.3 structural delta
+
+### v0.2
+
+- 29 modules;
+- 31 evals;
+- layered task/context/reasoning/execution/performance/verification/evolution model.
+
+### v0.3
+
+- **47 modules**;
+- **50 evals**;
+- explicit instruction scope/provenance;
+- per-agent context lineage;
+- failed-turn transactional quarantine;
+- semantic compaction rollback;
+- content-addressed observation caching;
+- changed-strategy retry/circuit breaker;
+- worker/verifier separation;
+- event-driven waiting and branch-scoped degradation;
+- explicit delivery state machine;
+- current protocol/deprecation contracts;
+- activation precision/recall + paired marginal utility;
+- recurrence-based memory authority;
+- input/correction fidelity;
+- temporal rollback witness;
+- physical materialization reverse coverage.
+
+## Rollback and safety
+
+- Existing portable core skill folders were not renamed or overwritten by aliases.
+- The canonical package path did not change.
+- Core v0.3 is one atomic commit with exact parent/tree receipts.
+- Ref movement was non-force.
+- Concurrent unrelated main work was preserved because the commit was based on live main rather than the older efficiency head.
+- Git history preserves rollback to exact parent `e240855...` if required.
+- `HOST_LIVE`, `DEPLOYED` and `HEALTHY` remain fail-closed.
 
 ## Pending verification
 
-1. Provably exhaustive account-wide chat corpus — **UNVERIFIED**.
-2. Ten genuinely independent runtime agents in this Chat — **UNVERIFIED**.
-3. Exact target-host loading/invocation of v0.3 — **UNVERIFIED**.
-4. Full live execution of T01–T50 — **NOT RUN**.
-5. Production HEALTHY/recovery evidence — **UNVERIFIED**.
+1. **Provably exhaustive account-wide chat corpus — UNVERIFIED.** Recovery is materially broader, but the available retrieval surface still does not expose a complete account message inventory/cardinality.
+2. **Ten genuinely independent runtime agents — UNVERIFIED.** Ten distinct A01–A10 workstreams were executed; ten runtime/session receipts do not exist in this Chat.
+3. **Target-host loading of v0.3 — NOT RUN.** Repository evidence cannot prove ChatGPT/Codex automatically loaded the package.
+4. **Full live execution of T01–T50 — NOT RUN.** The eval contract is packaged/read-back verified; live-host evaluation remains a separate evidence class.
+5. **Production HEALTHY — UNVERIFIED.** Requires repeated regression/recovery evidence on an owning runtime.
 
-## Highest defensible state before write
+## Highest defensible state
 
-`V03_GENERATED / STATIC_SCHEMA_VALIDATED / CROSS_CHAT_RECOVERY_EXPANDED / GITHUB_WRITE_PENDING / HOST_LIVE_UNVERIFIED`
+`PACKAGED / GITHUB_COMMITTED / GITHUB_READ_BACK_VERIFIED / PHYSICAL_MATERIALIZATION_VERIFIED / STATIC_CONTRACT_VERIFIED / CROSS_CHAT_RECOVERY_EXPANDED / CURRENT_PROTOCOL_CALIBRATED / ACCOUNT_WIDE_EXHAUSTIVE_UNVERIFIED / TEN_RUNTIME_AGENTS_UNVERIFIED / HOST_LIVE_UNVERIFIED`
