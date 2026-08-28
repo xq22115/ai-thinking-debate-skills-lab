@@ -2,7 +2,8 @@ name: Legal Writing Intelligence
 
 on:
   schedule:
-    - cron: '17 * * * *'
+    # 24/7 best-effort radar. GitHub schedule is not a zero-gap daemon SLA.
+    - cron: '7,22,37,52 * * * *'
   workflow_dispatch:
   push:
     paths:
@@ -25,8 +26,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.12'
       - name: Compile scripts
@@ -34,13 +35,14 @@ jobs:
           python -m py_compile skills/legal-writing-intelligence/src/research.py
           python -m py_compile skills/legal-writing-intelligence/src/writer.py
       - name: Run regression tests
-        run: python -m unittest discover -s skills/legal-writing-intelligence/tests -p 'test_*.py'
+        run: python -m unittest discover -s skills/legal-writing-intelligence/tests -p 'test_*.py' -v
 
   research:
     if: github.event_name != 'pull_request' && github.actor != 'github-actions[bot]'
     needs: validate
     strategy:
       fail-fast: false
+      max-parallel: 10
       matrix:
         agent:
           - agent-01
@@ -56,44 +58,70 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.12'
       - name: Run independent research branch
+        id: live-research
+        continue-on-error: true
         run: |
           mkdir -p out
           python skills/legal-writing-intelligence/src/research.py \
             --agent '${{ matrix.agent }}' \
             --out 'out/${{ matrix.agent }}.json'
-      - uses: actions/upload-artifact@v4
+      - name: Preserve worker evidence
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: legal-writing-${{ matrix.agent }}
           path: out/${{ matrix.agent }}.json
+          if-no-files-found: warn
           retention-days: 30
+      - name: Propagate worker crash after preserving evidence
+        if: steps.live-research.outcome != 'success'
+        run: |
+          echo 'Independent research branch crashed before a valid completion.'
+          exit 1
 
   adjudicate:
-    if: github.event_name != 'pull_request' && github.actor != 'github-actions[bot]'
-    needs: research
+    if: ${{ always() && github.event_name != 'pull_request' && github.actor != 'github-actions[bot]' && needs.validate.result == 'success' }}
+    needs:
+      - validate
+      - research
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.12'
-      - uses: actions/download-artifact@v4
+      - name: Prepare receipt directory
+        run: mkdir -p agent-results adjudicated
+      - name: Download every available worker receipt
+        continue-on-error: true
+        uses: actions/download-artifact@v8.0.1
         with:
           pattern: legal-writing-agent-*
           path: agent-results
           merge-multiple: true
       - name: Adjudicate all ten branches
+        id: adjudication
+        continue-on-error: true
         run: |
           python skills/legal-writing-intelligence/src/research.py \
             --adjudicate agent-results \
             --out adjudicated/report.json
-      - uses: actions/upload-artifact@v4
+      - name: Preserve adjudicated report even on failure
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: legal-writing-adjudicated-${{ github.run_id }}
           path: adjudicated/report.json
+          if-no-files-found: warn
           retention-days: 30
+      - name: Fail closed on incomplete adjudication
+        if: steps.adjudication.outcome != 'success'
+        run: |
+          echo 'Ten-lane adjudication failed; inspect the preserved report artifact.'
+          exit 1
