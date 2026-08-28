@@ -32,7 +32,8 @@ jobs:
             control-plane/scripts/validate_acceptance_contract.py \
             control-plane/scripts/continuous_thinking_runtime_binding.py \
             control-plane/scripts/run_quality_bound_workflow.py \
-            control-plane/scripts/validate_quality_runtime_binding.py
+            control-plane/scripts/validate_quality_runtime_binding.py \
+            control-plane/scripts/install_codex_global_quality.py
       - name: Validate machine-readable quality contracts
         run: |
           python -m json.tool .claude/settings.json >/dev/null
@@ -51,6 +52,8 @@ jobs:
             tests/test_quality_bound_workflow.py \
             tests/test_research_tool_attestation_hook.py \
             tests/test_acceptance_contract.py \
+            tests/test_codex_global_quality_installer.py \
+            tests/test_codex_global_quality_registration.py \
             tests/test_local_agent_executor.py \
             tests/test_finalize_local_agent_execution.py \
             tests/test_adjudicate_agent_receipts.py \
