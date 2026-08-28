@@ -35,6 +35,7 @@ jobs:
             control-plane/scripts/continuous_thinking_runtime_binding.py \
             control-plane/scripts/run_quality_bound_workflow.py \
             control-plane/scripts/validate_quality_runtime_binding.py \
+            control-plane/scripts/validate_cross_runtime_research_contract.py \
             control-plane/scripts/install_codex_global_quality.py
       - name: Validate machine-readable quality contracts
         run: |
@@ -45,6 +46,7 @@ jobs:
           python -m json.tool control-plane/ai-system/configs/continuous-thinking-global.json >/dev/null
           python control-plane/scripts/validate_continuous_thinking_global.py
           python control-plane/scripts/validate_quality_runtime_binding.py
+          python control-plane/scripts/validate_cross_runtime_research_contract.py
       - name: Run deep-reasoning and lifecycle regression tests
         working-directory: control-plane
         run: |
@@ -54,6 +56,7 @@ jobs:
             tests/test_quality_bound_workflow.py \
             tests/test_research_tool_attestation_hook.py \
             tests/test_research_saturation_stop_hook.py \
+            tests/test_cross_runtime_research_contract.py \
             tests/test_acceptance_contract.py \
             tests/test_codex_global_quality_installer.py \
             tests/test_codex_global_quality_registration.py \
