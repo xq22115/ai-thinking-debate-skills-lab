@@ -23,6 +23,7 @@ jobs:
       - name: Compile trusted control-plane scripts
         run: |
           python -m py_compile \
+            .claude/hooks/allow-a03-web-research.py \
             .claude/hooks/record-web-research.py \
             control-plane/scripts/local_agent_executor.py \
             control-plane/scripts/finalize_local_agent_execution.py \
