@@ -62,15 +62,15 @@
       }
     },
     {
-      "id": "lane-05-filevine",
-      "product": "Filevine LOIS Console",
-      "mission": "Track Filevine's legal operating intelligence agents and matter-context work-product capabilities from Filevine sources.",
-      "official_domains": ["filevine.com", "www.filevine.com"],
-      "discovery_urls": ["https://www.filevine.com/news/"],
+      "id": "lane-05-clio-vincent",
+      "product": "Vincent Skills by Clio",
+      "mission": "Track Clio's reusable legal task and drafting-standard skills from Clio-owned announcements.",
+      "official_domains": ["clio.com", "www.clio.com"],
+      "discovery_urls": ["https://www.clio.com/about/press/"],
       "seed": {
-        "url": "https://www.filevine.com/news/filevine-launches-lois-console-ai-that-runs-the-firm/",
-        "release_date": "2026-06-02",
-        "required_terms": ["LOIS", "AI", "legal"]
+        "url": "https://www.clio.com/about/press/clio-releases-vincent-skills/",
+        "release_date": "2026-07-22",
+        "required_terms": ["Vincent Skills", "drafting standards", "legal"]
       }
     },
     {
@@ -122,15 +122,15 @@
       }
     },
     {
-      "id": "lane-10-lankalaw",
-      "product": "Lanka Law AI Legal Drafting Tool",
-      "mission": "Track Lanka Law's public AI-assisted legal document drafting service and verify official release details.",
-      "official_domains": ["lankalaw.net", "www.lankalaw.net"],
-      "discovery_urls": ["https://lankalaw.net/"],
+      "id": "lane-10-legalon",
+      "product": "LegalOn Attorney-Built AI Workflows",
+      "mission": "Track LegalOn's attorney-built drafting, redlining and negotiation workflows from LegalOn-owned release pages.",
+      "official_domains": ["legalontech.com", "us-direct.legalontech.com"],
+      "discovery_urls": ["https://us-direct.legalontech.com/new-at-legalon"],
       "seed": {
-        "url": "https://lankalaw.net/2026/06/08/lanka-law-launches-ai-legal-drafting-tool-bringing-professional-document-automation-to-lawyers-businesses-and-the-public/",
-        "release_date": "2026-06-08",
-        "required_terms": ["AI Legal Drafting Tool", "draft", "legal"]
+        "url": "https://us-direct.legalontech.com/new-at-legalon",
+        "release_date": "2026-07-28",
+        "required_terms": ["attorney-built workflows", "indemnity redline", "termination clause"]
       }
     }
   ]
