@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -10,6 +11,7 @@ SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "monitor_sources.py"
 SPEC = importlib.util.spec_from_file_location("monitor_sources", SCRIPT)
 assert SPEC and SPEC.loader
 monitor = importlib.util.module_from_spec(SPEC)
+sys.modules[SPEC.name] = monitor
 SPEC.loader.exec_module(monitor)
 
 
