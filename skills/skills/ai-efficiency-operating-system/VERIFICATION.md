@@ -1,102 +1,210 @@
-# Verification Report — AI Efficiency Operating System
+# Verification Report — AI Efficiency Operating System v0.2
 
-Date: 2026-08-28
-Package: `ai-efficiency-operating-system` `0.1.0-rc1`
-Repository: `xq22115/ai-thinking-debate-skills-lab`
-Branch: `main`
+Date: 2026-08-28  
+Package: `ai-efficiency-operating-system` `0.2.0-rc1`  
+Repository: `xq22115/ai-thinking-debate-skills-lab`  
+Branch: `main`  
 Canonical path: `skills/skills/ai-efficiency-operating-system/`
+
+## Verdict
+
+v0.1 was a thin orchestration index and did not adequately encode the cross-chat mechanisms that had accumulated across prior work. v0.2 is a material redesign into a layered, machine-readable and testable efficiency operating contract.
+
+Repository/package evidence supports:
+
+`PACKAGED / GITHUB_COMMITTED / GITHUB_READ_BACK_VERIFIED / STATIC_SCHEMA_VALIDATED / CROSS_CHAT_RECOVERY_SUBSTANTIAL / 2026_EXTERNAL_RESEARCH_CALIBRATED`
+
+Not promoted:
+
+`ACCOUNT_WIDE_EXHAUSTIVE / TEN_REAL_RUNTIME_AGENTS / HOST_LIVE / DEPLOYED / HEALTHY`
+
+Those require evidence unavailable in this Chat runtime or a target-host execution.
 
 ## Task ledger
 
-- Core goal: consolidate and evolve AI-efficiency-related skills into the canonical skills location without creating a competing naming tree.
-- Confirmed repository facts: the repository already contains a canonical `skills/` archive/catalog and portable `skills/skills/<name>/SKILL.md` packages.
-- Root cause of prior incompleteness: useful rules were distributed across portable skills, cross-chat archive/convergence artifacts, control-plane rules and user directives; copying them into new aliases would worsen duplication.
-- Naming decision: one new orchestration package named `ai-efficiency-operating-system`; existing semantic core skills keep their canonical names.
-- Completion boundary: GitHub packaging/read-back can be verified here; exhaustive account-chat retrieval and target-host live activation cannot be honestly promoted without separate evidence.
+- Primary task: continue collecting AI-efficiency mechanisms from other account chats, use ten-way review division, substantially evolve the existing canonical package, avoid naming confusion, and retain one best package.
+- Desired end state: a much stronger `ai-efficiency-operating-system` in the established GitHub skill location, with provenance, runtime state, evals and read-back evidence.
+- Hard constraints: do not create competing aliases; do not lower quality/features/concurrency/depth to simulate efficiency; do not fake real agents or completion.
+- Acceptance: cross-chat recovery materially expanded; package substantially evolved; canonical name retained; structure valid; committed files read back; unresolved evidence boundaries explicit.
 
-## Ten-role review result
+## Ten-workstream review
 
-The review used the repository's existing A01–A10 responsibility topology. This run does **not** claim ten independent external model/runtime processes.
+The run executed ten independent retrieval/review obligations using the existing A01–A10 topology.
 
-| Role | Review duty | Result |
+Current Chat does **not** expose an agent-spawn/session primitive that yields ten independent runtime/session receipts. Therefore the truthful execution label is:
+
+`TEN_INDEPENDENT_RETRIEVAL_AND_REVIEW_WORKSTREAMS`
+
+not:
+
+`TEN_REAL_RUNTIME_AGENTS`
+
+| Role | Independent duty | Result |
 |---|---|---|
-| A01 Orchestrator | task/root-goal/acceptance ledger | PASS — target and non-goals preserved |
-| A02 Architect/Claimant | consolidation architecture | PASS — orchestration-over-composition selected |
-| A03 Source Research | recover original/cross-chat evidence | PARTIAL — canonical GitHub cross-chat artifacts recovered; exhaustive account corpus unavailable |
-| A04 Root Cause | identify incompleteness/duplication causes | PASS — distribution + alias duplication + weak provenance are primary structural causes |
-| A05 Adversarial | attack omissions/false completion | PASS — host-live and full-account claims kept open |
-| A06 Cross Exam | direct user vs synthesis, naming conflicts | PASS — provenance classes added; collision policy encoded |
-| A07 Implementer | scoped GitHub write | PASS — new package written under canonical package root |
-| A08 Verifier | read-back/structure/acceptance | PASS for repository artifacts; NOT_RUN for live host loading |
-| A09 Risk | overwrite/rollback/permission risk | PASS — additive package; existing core skill folders not overwritten |
-| A10 Adjudicator | retain best solution | PASS — one canonical orchestrator retained; no alternate aliases created |
+| A01 Orchestrator | task contract, source coverage, acceptance | PASS |
+| A02 Architect/Claimant | replace flat v0.1 with layered v0.2 contract | PASS |
+| A03 Source Research | recover prior-chat/account artifacts + current sources | PASS substantial / exhaustive UNVERIFIED |
+| A04 Root Cause | explain prior thinness and efficiency failure mechanisms | PASS |
+| A05 Adversarial | attack fake depth, headcount theater, goal shrink, false completion | PASS |
+| A06 Cross Exam | separate user directives, recovered history, repo truth, external evidence and synthesis | PASS |
+| A07 Implementer | update one canonical package on exact `main` path | PASS |
+| A08 Verifier | static validation + exact GitHub read-back | PASS within repository scope |
+| A09 Risk | protect existing portable skills, rollback/history and host-truth boundary | PASS |
+| A10 Adjudicator | retain one canonical package and strongest mechanisms | PASS |
+
+The package now contains explicit T13/T14 evals that fail any future attempt to label role/persona clones as genuine independent agents without runtime receipts.
+
+## Cross-chat recovery expansion
+
+`SOURCE-MATRIX.md` records eleven high-value dated conversation clusters covering 2026-08-20 through 2026-08-28 plus durable account artifacts.
+
+Recovered mechanisms materially added or strengthened include:
+
+- ordinary Chat control surface vs real capability bridge;
+- runtime/session proof for agent independence;
+- closed-loop skill evolution rather than prompt accumulation;
+- coverage frontier and global-model-delta definition of depth;
+- fixed wait/token-drip/tool wait exclusion from reasoning depth;
+- background non-disruptive desktop operation;
+- deep reasoning vs UI/render/output latency separation;
+- no-goal-shrink performance repair;
+- primary-task/correction precedence over tool/agent/memory/retrieval output;
+- event-sourced durable state, idempotency and fencing;
+- progressive-disclosure context and demand-loaded tools;
+- hot-path delta processing vs repeated full-history amplification;
+- current-owner/main/owning-runtime truth over stale PR/chat summaries.
+
+Coverage is **substantial but not provably exhaustive** because this runtime did not expose a complete account export/list with a verifiable total message cardinality.
+
+## 2026 external calibration
+
+`SOURCE-MATRIX.md` records current official/vendor/research material from OpenAI, Anthropic and 2026 agent/context-engineering research.
+
+The external layer was used to calibrate mechanisms such as lean/context-efficient prompting, relevant-tool exposure, context compaction, parallel research with coordination costs, containment/blast radius, adaptive agent coalition sizing and execution/evaluation-driven skill evolution.
+
+External evidence does not override the user's active task contract or owning-runtime truth.
+
+## v0.2 structural delta
+
+### v0.1
+
+- 3 package files;
+- 15 relatively flat skill entries;
+- basic orchestration workflow;
+- limited source/eval/runtime formalization.
+
+### v0.2
+
+- 7 package files;
+- 29 unique machine-readable modules;
+- E0–E6 evidence ladder;
+- explicit completion state machine;
+- explicit capability truth state machine;
+- A01–A10 review topology plus real-agent receipt gate;
+- tiered adaptive routing;
+- progressive-disclosure context and claim-preserving compaction;
+- coverage-frontier/falsification/model-delta research rules;
+- parallel-read/serial-write, short critical sections, event journal, idempotency and fencing;
+- background non-disruptive execution;
+- capability bridge routing;
+- hot-path amplification and retry/cache/backpressure controls;
+- runtime state JSON Schema;
+- 31 behavioral/adversarial/performance/recovery/completion evals;
+- cross-chat + repository + external source matrix;
+- promotion/rollback skill-evolution loop.
 
 ## GitHub write receipts
 
-- `SKILL.md` creation commit: `ef491f365906869f2ab1bcb54d70d5db094a3068`
-- `skillpack.json` creation commit: `17d49503885a9c66d3b044c67ae182fb818fc4a2`
-- catalog registration commit: `95758fc5775a6bc9f59a13cbac732e3167ab3222`
+Core evolution:
 
-## Read-back verification
+- `SKILL.md` → `5ac9bc6c9be4e4d65efe35db1e1391702548aad0`
+- `skillpack.json` → `69efbbf89f2b8a75ae56ae86e2145abe47b922fd`
+- `runtime-state.schema.json` → `d18a249e478d4dd9d3c4fb5c0af09282a03bfed4`
+- `SOURCE-MATRIX.md` → `2f7bdf15cdccc61c498833a64cdd3841978344cd`
+- `EVALS.md` → `508122ff5b5458e3172b615c40d1d447e5dceebb`
+- `CHANGELOG.md` → `013388a7a0fad6ff53d56e822c866482fccf7814`
+- `skills/02-skills-catalog.md` → `e4bdae694454ac58df6ad839fedd2a22a90aeb70`
 
-Direct GitHub read-back from `main` confirmed:
+## Static validation
 
-- `skills/skills/ai-efficiency-operating-system/SKILL.md` exists with frontmatter name `ai-efficiency-operating-system`, version `0.1.0-rc1`, activation rules, workflow, A01–A10 responsibilities, non-goals, provenance contract and completion gate.
-- `skills/skills/ai-efficiency-operating-system/skillpack.json` exists and contains package metadata, naming policy, five provenance classes, ten review roles, fifteen skill entries, acceptance tests and pending-verification records.
-- `skills/02-skills-catalog.md` registers the orchestrator as an orchestration layer rather than a replacement/alias for the nine portable core skills.
+Before mutation, the exact generated machine-readable content was checked locally:
 
-## Static structure and uniqueness checks
+- `skillpack.json` JSON parse: PASS;
+- `runtime-state.schema.json` JSON parse: PASS;
+- Draft 2020-12 schema validation of the runtime schema: PASS;
+- module count: 29;
+- module IDs unique: PASS;
+- module IDs lowercase-kebab-case: PASS;
+- evidence ladder exact E0–E6: PASS;
+- review IDs exact A01–A10: PASS;
+- review names unique: PASS;
+- package/version consistency in generated SKILL content: PASS.
 
-Result: **PASS (static/read-back level)**.
+These are static/schema checks, not host-live behavioral evidence.
 
-Checks performed against the committed machine-readable content:
+## GitHub read-back
 
-1. Top-level keys present: `schema_version`, `package`, `naming_policy`, `provenance_classes`, `review_topology`, `skills`, `acceptance_tests`, `pending_verification`.
-2. Review IDs are exactly A01 through A10 and role names are unique.
-3. Fifteen `skills[].name` values are unique.
-4. Skill names use lowercase kebab-case.
-5. Every skill entry includes `name`, `category`, `description`, `activation`, `conditions`, `procedure`, `example`, `provenance`, `confidence`.
-6. Existing canonical skills are referenced by their established names instead of being renamed into duplicate aliases.
-7. The package explicitly marks exhaustive account-chat coverage `false` and host-live activation unverified, preventing false promotion.
+After the writes:
 
-No hosted parser/CI execution is claimed by this report. Static structural validation and GitHub read-back are distinct from hosted runtime execution.
+1. `main` resolved to `e4bdae694454ac58df6ad839fedd2a22a90aeb70` before this verification report update.
+2. Directory read-back confirmed seven package files: `CHANGELOG.md`, `EVALS.md`, `SKILL.md`, `SOURCE-MATRIX.md`, `VERIFICATION.md`, `runtime-state.schema.json`, `skillpack.json`.
+3. `SKILL.md` read back from `main` with version `0.2.0-rc1`, full layered contract and `HOST_LIVE_UNVERIFIED` boundary.
+4. `skillpack.json` blob read-back matched committed blob `7923fb7864d6db54020dad00d499cc25a2e3d225` and contains v0.2 schema/package data, 29 modules, E0–E6 and A01–A10.
+5. `runtime-state.schema.json` blob `856c70e96a5d44e0d28c3659faca652ebc51359d` was read back and matches the durable-state contract.
+6. `SOURCE-MATRIX.md` was read back from `main` with the prior-conversation recovery matrix and 2026 external calibration.
+7. `EVALS.md` was read back from `main` with T01–T31.
+8. `skills/02-skills-catalog.md` was read back from `main` and reports the same canonical package/version `0.2.0-rc1`.
 
-## Three current-ChatGPT scenario evaluations
+Therefore the repository package is not merely write-receipted; its final contents/version were read back from the target branch.
 
-These tests apply three randomly selected package behaviors in the current conversation as behavioral scenarios; they are **not** proof that an external host automatically loaded the GitHub skill package.
+## Naming / collision verification
 
-### Scenario 1 — `root-goal-task-compiler`
-Input pattern: a long task receives later supporting details that could distract from the original objective.
-Expected behavior: preserve the evidence-backed root goal; only an explicit correction changes it; bind completion to acceptance tests.
-Observed in this run: the target stayed "consolidate AI-efficiency skillpack into canonical storage" instead of drifting into unrelated repository refactoring.
-Result: PASS (current-chat behavioral application).
+Result: PASS.
 
-### Scenario 2 — `context-budget-routing`
-Input pattern: many connectors/tools are available but only GitHub is causally required for repository discovery and write/read-back.
-Expected behavior: keep capabilities available but avoid indiscriminate loading/calling.
-Observed in this run: work was scoped to repository discovery, canonical skill inspection, writes and read-back rather than invoking unrelated tools.
-Result: PASS (current-chat behavioral application).
+- canonical package remains exactly `ai-efficiency-operating-system`;
+- version is metadata, not a second package name;
+- no `efficiency-*` alias tree was created;
+- the nine portable core skills retain their existing canonical identities and are composed as dependencies;
+- A01–A10 role names are reused rather than duplicated under new aliases.
 
-### Scenario 3 — `completion-gate`
-Input pattern: files were created successfully.
-Expected behavior: do not equate commit existence with completion; perform direct target read-back and preserve unverified live-host claims.
-Observed in this run: both new package files were fetched back from `main`; `HOST_LIVE_VERIFIED` remains open.
-Result: PASS (current-chat behavioral application).
+## 31-eval coverage
 
-## Risk and rollback
+The new suite includes positive/adversarial cases for:
 
-- Existing nine portable core skill folders were not overwritten.
-- The change is additive except for catalog registration.
-- Rollback can delete the new package folder files and revert the catalog commit if adjudication later rejects the package.
-- Any later update to a mutable file must fetch its current blob SHA before replacement.
+- goal drift and correction;
+- no-goal-shrink;
+- stale branch/path;
+- context/tool dedup and compaction;
+- fake depth/source theater;
+- hypotheses/mechanism change;
+- ten-role clone trap and ten-real-agent receipts;
+- minority evidence and selective routing;
+- concurrency, locks, resume and fencing;
+- background focus and capability bridging;
+- hot-path amplification and retry storms;
+- file-write/CI false completion;
+- infrastructure-vs-task status;
+- owning-runtime read-back;
+- baseline/holdout skill evolution;
+- evaluator Goodhart resistance;
+- high-density finalization.
 
-## Pending verification / next actions
+These eval specifications are present and read back. This run does not claim all 31 have been executed against a live ChatGPT/Codex host.
 
-1. **Exhaustive account-wide chat-history coverage — REQUIRES_CONFIRMATION.** The current cross-chat retrieval path did not return a complete account corpus. Existing GitHub cross-chat convergence/source-lock artifacts were used as the strongest recoverable history; this report does not claim that every chat message in the account was individually re-read.
-2. **Target-host live loading — NOT_RUN.** Repository presence/read-back does not prove ChatGPT/Codex/another host automatically loaded this new skill.
-3. **Hosted JSON/parser/CI execution — NOT_RUN.** This run establishes static/read-back structural validation; a target CI/parser run would be required to upgrade that evidence class.
-4. **Future source refresh.** When additional cross-chat artifacts or a full export become available, add only genuinely novel rules, preserve provenance, and merge semantics into this canonical package rather than create aliases.
+## Rollback / safety
+
+- Existing portable core skill folders were not overwritten by aliases.
+- All mutations are preserved in Git history and can be reverted by exact commit.
+- The canonical package path did not change.
+- Host-live/deployed/healthy labels remain gated rather than inferred from GitHub state.
+
+## Pending verification
+
+1. **Provably exhaustive account-wide chat corpus — UNVERIFIED.** Substantial recovery is recorded; complete account enumeration is not exposed by the retrieval surface used here.
+2. **Ten genuinely independent runtime agents — UNVERIFIED.** Ten distinct workstreams were executed, but no ten-session runtime receipts exist in this Chat.
+3. **Target-host loading of v0.2 — NOT RUN.** GitHub read-back cannot prove ChatGPT/Codex automatically loaded the package.
+4. **Full live execution of T01–T31 — NOT RUN.** The suite is packaged and repository-read-back verified; live-host evaluation remains a separate evidence class.
 
 ## Highest defensible state
 
-`PACKAGED / GITHUB_COMMITTED / GITHUB_READ_BACK_VERIFIED / CURRENT_CHAT_SCENARIO_EVAL_PASS / ACCOUNT_WIDE_EXHAUSTIVE_UNVERIFIED / HOST_LIVE_UNVERIFIED`
+`PACKAGED / GITHUB_COMMITTED / GITHUB_READ_BACK_VERIFIED / STATIC_SCHEMA_VALIDATED / CROSS_CHAT_RECOVERY_SUBSTANTIAL / 2026_EXTERNAL_RESEARCH_CALIBRATED / ACCOUNT_WIDE_EXHAUSTIVE_UNVERIFIED / TEN_RUNTIME_AGENTS_UNVERIFIED / HOST_LIVE_UNVERIFIED`
