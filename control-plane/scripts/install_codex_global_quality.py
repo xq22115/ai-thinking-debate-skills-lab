@@ -45,6 +45,18 @@ def managed_block() -> str:
     return f"{BEGIN_MARKER}\n{POLICY.strip()}\n{END_MARKER}"
 
 
+def read_text_exact(path: Path) -> str:
+    """Read UTF-8 without universal-newline translation."""
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        return handle.read()
+
+
+def write_text_exact(path: Path, content: str) -> None:
+    """Write UTF-8 without platform newline translation."""
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        handle.write(content)
+
+
 def resolve_codex_home(explicit: str | None) -> Path:
     if explicit:
         return Path(explicit).expanduser()
@@ -56,7 +68,7 @@ def resolve_codex_home(explicit: str | None) -> Path:
 def active_agents_file(codex_home: Path) -> Path:
     """Mirror Codex global-instruction precedence: non-empty override, then AGENTS."""
     override = codex_home / "AGENTS.override.md"
-    if override.is_file() and override.read_text(encoding="utf-8").strip():
+    if override.is_file() and read_text_exact(override).strip():
         return override
     return codex_home / "AGENTS.md"
 
@@ -87,7 +99,7 @@ def backup_existing(codex_home: Path, target: Path, content: str) -> Path | None
     backup_dir.mkdir(parents=True, exist_ok=True)
     backup = backup_dir / f"{target.name}.{digest}.bak"
     if not backup.exists():
-        backup.write_text(content, encoding="utf-8")
+        write_text_exact(backup, content)
     return backup
 
 
@@ -97,7 +109,7 @@ def atomic_write(target: Path, content: str) -> None:
     prior_mode = target.stat().st_mode if target.exists() else None
     temp = target.with_name(f".{target.name}.tmp-{os.getpid()}")
     try:
-        temp.write_text(content, encoding="utf-8")
+        write_text_exact(temp, content)
         if prior_mode is not None:
             os.chmod(temp, prior_mode)
         os.replace(temp, target)
@@ -130,7 +142,7 @@ def content_with_installed_block(existing: str) -> tuple[str, bool]:
 def install(codex_home: Path) -> dict[str, object]:
     codex_home.mkdir(parents=True, exist_ok=True)
     target = active_agents_file(codex_home)
-    existing = target.read_text(encoding="utf-8") if target.exists() else ""
+    existing = read_text_exact(target) if target.exists() else ""
     content, changed = content_with_installed_block(existing)
     backup = None
     if changed:
@@ -147,7 +159,7 @@ def install(codex_home: Path) -> dict[str, object]:
 
 def check(codex_home: Path) -> dict[str, object]:
     target = active_agents_file(codex_home)
-    content = target.read_text(encoding="utf-8") if target.exists() else ""
+    content = read_text_exact(target) if target.exists() else ""
     try:
         region = managed_region(content)
         installed = region is not None and content[region[0] : region[1]] == managed_block()
@@ -173,7 +185,7 @@ def uninstall(codex_home: Path) -> dict[str, object]:
     for target in candidates:
         if not target.exists():
             continue
-        existing = target.read_text(encoding="utf-8")
+        existing = read_text_exact(target)
         region = managed_region(existing)
         if region is not None:
             planned.append((target, existing, region))
@@ -218,10 +230,14 @@ def main() -> int:
         else:
             result = check(codex_home)
     except (ManagedBlockError, OSError, UnicodeError) as exc:
+        try:
+            target = str(active_agents_file(codex_home))
+        except (OSError, UnicodeError):
+            target = str(codex_home)
         result = {
             "status": "FAIL",
             "command": args.command,
-            "target": str(active_agents_file(codex_home)),
+            "target": target,
             "error": str(exc),
         }
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
