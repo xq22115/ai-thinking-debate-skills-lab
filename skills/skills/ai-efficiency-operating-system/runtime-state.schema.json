@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/xq22115/ai-thinking-debate-skills-lab/skills/skills/ai-efficiency-operating-system/runtime-state.schema.json",
+  "title": "AI Efficiency Operating System Runtime State",
+  "type": "object",
+  "required": [
+    "task_id",
+    "run_id",
+    "goal_hash",
+    "task_contract",
+    "completion_state",
+    "pending_obligations"
+  ],
+  "properties": {
+    "task_id": {"type": "string", "minLength": 1},
+    "run_id": {"type": "string", "minLength": 1},
+    "goal_hash": {"type": "string", "minLength": 8},
+    "task_contract": {
+      "type": "object",
+      "required": ["PRIMARY_TASK", "DESIRED_END_STATE", "HARD_CONSTRAINTS", "ACCEPTANCE_TESTS"],
+      "properties": {
+        "PRIMARY_TASK": {"type": "string"},
+        "DESIRED_END_STATE": {"type": "string"},
+        "ROOT_GOAL": {"type": "string"},
+        "NEGATIONS": {"type": "array", "items": {"type": "string"}},
+        "HARD_CONSTRAINTS": {"type": "array", "items": {"type": "string"}},
+        "ACCEPTANCE_TESTS": {"type": "array", "items": {"type": "string"}},
+        "CURRENT_BLOCKER": {"type": ["string", "null"]},
+        "NEXT_ACTION": {"type": ["string", "null"]},
+        "EVIDENCE": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": true
+    },
+    "identity_lock": {
+      "type": ["object", "null"],
+      "properties": {
+        "surface": {"type": "string"},
+        "repository": {"type": ["string", "null"]},
+        "ref": {"type": ["string", "null"]},
+        "path": {"type": ["string", "null"]},
+        "version": {"type": ["string", "null"]},
+        "runtime": {"type": ["string", "null"]},
+        "owner": {"type": ["string", "null"]},
+        "revision": {"type": ["string", "null"]},
+        "permission": {"type": ["string", "null"]}
+      }
+    },
+    "context_manifest": {"type": "array", "items": {"type": "object"}},
+    "tool_route": {"type": "array", "items": {"type": "object"}},
+    "agent_receipts": {"type": "array", "items": {"type": "object"}},
+    "workstream_receipts": {"type": "array", "items": {"type": "object"}},
+    "hypothesis_ledger": {"type": "array", "items": {"type": "object"}},
+    "evidence_ledger": {"type": "array", "items": {"type": "object"}},
+    "event_journal": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["event", "status"],
+        "properties": {
+          "event": {"type": "string"},
+          "status": {"type": "string"},
+          "evidence": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "writer_lease": {"type": ["object", "null"]},
+    "idempotency_ledger": {"type": "array", "items": {"type": "object"}},
+    "mutation_receipts": {"type": "array", "items": {"type": "object"}},
+    "rollback_target": {"type": ["object", "string", "null"]},
+    "completion_state": {"enum": ["DRAFTED", "PACKAGED", "IMPLEMENTED", "TESTED", "VERIFIED", "HOST_LIVE", "DEPLOYED", "HEALTHY"]},
+    "pending_obligations": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": true
+}
