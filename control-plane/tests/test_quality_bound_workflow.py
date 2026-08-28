@@ -41,18 +41,31 @@ def _deep_pass_result() -> dict:
     }
 
 
-def _write_receipt(tool: str, *, actor: str = "A03") -> None:
+def _write_receipt(
+    tool: str,
+    *,
+    actor: str = "A03",
+    requested_effort: str | None = None,
+    effective_effort: str | None = None,
+    accepted: bool = True,
+) -> None:
     audit_root = pathlib.Path(os.environ["QUALITY_RESEARCH_AUDIT_DIR"])
     actor_dir = audit_root / actor
     actor_dir.mkdir(parents=True, exist_ok=True)
+    requested = requested_effort or str(os.environ.get("CLAUDE_CODE_EFFORT_LEVEL") or "")
+    effective = effective_effort or requested
     payload = {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "actor_id": actor,
         "hook_event_name": "PostToolUse",
         "tool_name": tool,
         "tool_use_id": f"toolu-{tool}",
         "session_id": "session-A03",
         "post_tool_success": True,
+        "quality_evidence_accepted": accepted,
+        "requested_effort": requested,
+        "effective_effort": effective,
+        "effort_readback_source": "hook_payload",
         "query": "current primary docs" if tool == "WebSearch" else "",
         "url": "https://code.claude.com/docs/en/model-config" if tool == "WebFetch" else "",
         "tool_response_sha256": "a" * 64,
@@ -87,8 +100,11 @@ class QualityBoundWorkflowTests(unittest.TestCase):
             self.assertEqual(result["result"], "PASS", result)
             self.assertEqual(observed["effort"], "xhigh")
             self.assertIsNotNone(observed["audit_dir"])
-            self.assertEqual(result["reasoning_runtime"]["effort"], "xhigh")
+            self.assertEqual(result["reasoning_runtime"]["requested_effort"], "xhigh")
+            self.assertTrue(result["reasoning_runtime"]["effective_effort_verified_by_research_hook"])
             self.assertEqual(result["research_runtime_attestation"]["result"], "PASS")
+            self.assertEqual(result["research_runtime_attestation"]["expected_effort"], "xhigh")
+            self.assertEqual(result["research_runtime_attestation"]["observed_effective_efforts"], ["xhigh"])
             self.assertEqual(
                 set(result["research_runtime_attestation"]["observed_tools"]),
                 {"WebSearch", "WebFetch"},
@@ -125,6 +141,41 @@ class QualityBoundWorkflowTests(unittest.TestCase):
             self.assertEqual(result["result"], "FAIL", result)
             self.assertIn("successful_tool_receipt_missing:A03:WebFetch", result["failures"])
 
+    def test_deep_pass_with_downgraded_effort_receipts_fails_closed(self) -> None:
+        def downgraded_delegate(*args, **kwargs):
+            _write_receipt("WebSearch", requested_effort="xhigh", effective_effort="high")
+            _write_receipt("WebFetch", requested_effort="xhigh", effective_effort="high")
+            return _deep_pass_result()
+
+        with tempfile.TemporaryDirectory() as td:
+            with mock.patch.object(module, "run_workflow", side_effect=downgraded_delegate):
+                result = module.run_quality_bound_workflow(
+                    _preparation(), CONTROL_PLANE_ROOT, "/unused/claude", td,
+                    task_class="material",
+                )
+            self.assertEqual(result["result"], "FAIL", result)
+            self.assertIn("research_receipt_not_effort_attested:A03:WebSearch", result["failures"])
+            self.assertIn("research_receipt_not_effort_attested:A03:WebFetch", result["failures"])
+            self.assertIn("successful_tool_receipt_missing:A03:WebSearch", result["failures"])
+            self.assertIn("successful_tool_receipt_missing:A03:WebFetch", result["failures"])
+            self.assertEqual(result["research_runtime_attestation"]["accepted_receipt_count"], 0)
+            self.assertFalse(result["reasoning_runtime"]["effective_effort_verified_by_research_hook"])
+
+    def test_deep_pass_with_self_marked_unaccepted_receipts_fails_closed(self) -> None:
+        def unaccepted_delegate(*args, **kwargs):
+            _write_receipt("WebSearch", accepted=False)
+            _write_receipt("WebFetch", accepted=False)
+            return _deep_pass_result()
+
+        with tempfile.TemporaryDirectory() as td:
+            with mock.patch.object(module, "run_workflow", side_effect=unaccepted_delegate):
+                result = module.run_quality_bound_workflow(
+                    _preparation(), CONTROL_PLANE_ROOT, "/unused/claude", td,
+                    task_class="material",
+                )
+            self.assertEqual(result["result"], "FAIL", result)
+            self.assertEqual(result["research_runtime_attestation"]["accepted_receipt_count"], 0)
+
     def test_simple_run_does_not_force_external_research(self) -> None:
         observed = {}
 
@@ -140,6 +191,8 @@ class QualityBoundWorkflowTests(unittest.TestCase):
                 )
             self.assertEqual(result["result"], "PASS", result)
             self.assertEqual(observed["effort"], "medium")
+            self.assertEqual(result["reasoning_runtime"]["requested_effort"], "medium")
+            self.assertFalse(result["reasoning_runtime"]["effective_effort_verified_by_research_hook"])
             self.assertEqual(result["research_runtime_attestation"]["result"], "NOT_REQUIRED")
 
     def test_critical_run_uses_max_effort_and_clears_then_restores_thinking_disablers(self) -> None:
@@ -165,6 +218,8 @@ class QualityBoundWorkflowTests(unittest.TestCase):
             self.assertIsNone(observed["disable_thinking"])
             self.assertIsNone(observed["disable_adaptive"])
             self.assertIsNone(observed["max_thinking"])
+            self.assertEqual(result["research_runtime_attestation"]["expected_effort"], "max")
+            self.assertEqual(result["research_runtime_attestation"]["observed_effective_efforts"], ["max"])
             self.assertEqual(
                 set(result["reasoning_runtime"]["thinking_disable_overrides_cleared_for_run"]),
                 {
@@ -173,6 +228,7 @@ class QualityBoundWorkflowTests(unittest.TestCase):
                     "MAX_THINKING_TOKENS",
                 },
             )
+            self.assertTrue(result["reasoning_runtime"]["effective_effort_verified_by_research_hook"])
             self.assertTrue(result["reasoning_runtime"]["environment_restored_after_run"])
 
     def test_resume_without_prior_binding_evidence_fails_closed(self) -> None:
