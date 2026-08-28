@@ -13,8 +13,11 @@ from pathlib import Path
 BEGIN_MARKER = "<!-- BEGIN AI-THINKING-DEBATE-SKILLS-LAB CONTINUOUS-QUALITY -->"
 END_MARKER = "<!-- END AI-THINKING-DEBATE-SKILLS-LAB CONTINUOUS-QUALITY -->"
 BACKUP_DIRNAME = "quality-installer-backups"
+POLICY_VERSION = "continuous-quality-v2-falsification-research"
 
-POLICY = """# Continuous Quality Contract
+POLICY = """# Continuous Quality Contract v2
+
+Policy version: `continuous-quality-v2-falsification-research`.
 
 Optimize for first-pass correctness and complete task closure, not artificial delay, token count, source count, or ceremony.
 
@@ -22,7 +25,12 @@ For non-trivial work:
 - reconstruct the real current state, dependencies, protected capabilities, constraints, and observable acceptance criteria before editing;
 - treat the first plausible answer as a hypothesis until evidence verifies it;
 - prefer root-cause and high-information-gain investigation over symptom patching;
-- when current, version-sensitive, unfamiliar, ambiguous, or repeatedly failing, use current primary documentation plus high-signal maintainer/practitioner evidence when it can change the decision;
+- when the user explicitly asks to search, browse, research, look up, or verify current information, or when current/version-sensitive evidence can materially change the decision, perform actual tool-backed research when an applicable research tool is available; internal memory, elapsed time, or prose claiming that research happened is not a substitute;
+- for material or critical triggered research, use this minimum falsification structure before declaring the research saturated: (1) discover the strongest current/primary evidence, (2) inspect the underlying source rather than relying on a search snippet, (3) after inspection, use a materially different route to search for counterevidence, failure modes, conflicting guidance, version changes, or the most important remaining evidence gap, and (4) inspect a distinct follow-up source and reconcile it with the leading conclusion;
+- treat that four-stage sequence as a minimum causal structure, not a source quota: continue researching while a high-impact unknown remains, evidence conflicts, or another investigation is still likely to change the decision;
+- repeating the same query with cosmetic wording or re-reading the same source does not count as an independent challenge route;
+- when the runtime cannot expose or execute an applicable research tool, report that limitation or blocker instead of claiming tool-backed research occurred; instruction compliance alone is not runtime-attested research evidence;
+- prefer current primary documentation, source repositories, changelogs, and maintainer evidence; use practitioner experience to discover operational failure modes, then validate decision-changing claims against primary or runtime evidence when practical;
 - compare causally distinct routes instead of renaming the same approach;
 - after two materially similar failures, change the hypothesis, mechanism, diagnostic instrument, evidence family, environment, or verification method before trying again;
 - preserve working behavior unless the task explicitly changes it;
@@ -33,7 +41,7 @@ For non-trivial work:
 - do not make the user repeatedly request continuation for work that can be completed in the same task;
 - keep final output concise and evidence-dense after the quality gates pass.
 
-Never simulate deep thinking with sleep, slow streaming, artificial first-token delay, or fixed research quotas. Use the maximum useful reasoning, research, testing, and independent evaluation justified by uncertainty and impact.
+Never simulate deep thinking with sleep, slow streaming, artificial first-token delay, deliberate chunk pauses, or fixed research quotas. Reasoning/research and answer delivery are separate phases: do the useful investigation first, then deliver normally once the evidence and release gates pass. Use the maximum useful reasoning, research, testing, and independent evaluation justified by uncertainty and impact; higher reasoning effort is not a substitute for explicit evidence and stopping criteria.
 """
 
 
@@ -151,6 +159,7 @@ def install(codex_home: Path) -> dict[str, object]:
     return {
         "status": "PASS",
         "command": "install",
+        "policy_version": POLICY_VERSION,
         "target": str(target),
         "changed": changed,
         "backup": str(backup) if backup else None,
@@ -170,6 +179,7 @@ def check(codex_home: Path) -> dict[str, object]:
     return {
         "status": "PASS" if installed else "FAIL",
         "command": "check",
+        "policy_version": POLICY_VERSION,
         "target": str(target),
         "installed": installed,
         "error": error,
@@ -206,6 +216,7 @@ def uninstall(codex_home: Path) -> dict[str, object]:
     return {
         "status": "PASS",
         "command": "uninstall",
+        "policy_version": POLICY_VERSION,
         "changed": bool(changed_targets),
         "targets": changed_targets,
         "backups": backups,
@@ -237,6 +248,7 @@ def main() -> int:
         result = {
             "status": "FAIL",
             "command": args.command,
+            "policy_version": POLICY_VERSION,
             "target": target,
             "error": str(exc),
         }
