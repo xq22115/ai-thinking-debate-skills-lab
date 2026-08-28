@@ -29,6 +29,13 @@ Distinguish `VISIBLE`, `AUTHORIZED`, and `VERIFIED`; classify missing tool, perm
 ### durable-agent-control-plane — `0.1.1-rc1`
 Durable task/run identity, isolated writer ownership, claims before mutation, claim-bound receipts, dependency-aware execution, recovery/rehydration, and separate task-result vs execution-infrastructure state.
 
+## Orchestration layer
+
+### ai-efficiency-operating-system — `0.1.0-rc1`
+Canonical efficiency orchestrator that composes the portable core with root-goal/task compilation, identity/path locking, demand-driven context/tool routing, parallel-read/serial-write execution, research saturation stopping, cross-chat convergence, runtime-performance diagnosis and high-density verified finalization. Package: `skills/ai-efficiency-operating-system/` relative to this catalog's `skills/` package root (repository path `skills/skills/ai-efficiency-operating-system/`). Machine-readable contract: `skillpack.json`.
+
+This is an orchestration skill, not a renamed duplicate of the nine portable core skills. It must preserve required capabilities and quality rather than trading them away for apparent speed.
+
 ## Candidate supporting skills
 
 These are useful catalog responsibilities but are not yet separate RC1 skill folders:
