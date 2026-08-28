@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "date_window": {"start": "2026-06-01", "end": "2026-08-31"},
   "agents": [
     {"id":"agent-01","vendor":"Thomson Reuters","query":"CoCounsel Legal drafting agent brief builder 2026","official_domains":["thomsonreuters.com"],"watch_urls":["https://www.thomsonreuters.com/en/press-releases/2026/august/thomson-reuters-launches-next-generation-of-cocounsel-legal-the-ai-ecosystem-built-for-legal-professionals"]},
@@ -10,7 +10,7 @@
     {"id":"agent-06","vendor":"Spellbook","query":"Spellbook Autonomous Contract Management drafting 2026","official_domains":["spellbook.com"],"watch_urls":["https://spellbook.com/blog/introducing-acm"]},
     {"id":"agent-07","vendor":"LegalOn","query":"LegalOn attorney built prompt workflows drafting 2026","official_domains":["legalontech.com"],"watch_urls":["https://www.legalontech.com/press-releases/legalon-launches-100-attorney-built-prompt-workflows-for-in-house-legal"]},
     {"id":"agent-08","vendor":"Juro","query":"Juro AI Review redline contracts 2026","official_domains":["juro.com","intercom.help"],"watch_urls":["https://intercom.help/juro/en/articles/12691465-ai-review-in-juro"]},
-    {"id":"agent-09","vendor":"top.legal","query":"top.legal bulk drafting AI contracts Summer 2026","official_domains":["top.legal"],"watch_urls":["https://www.top.legal/en/changelog"]},
-    {"id":"agent-10","vendor":"Junior.Law","query":"Junior JR3 Office Action Builder AI drafting July 2026","official_domains":["junior.law"],"watch_urls":["https://docs.junior.law/releases/office-action-builder"]}
+    {"id":"agent-09","vendor":"Clio","query":"Clio Vincent Skills contract drafting standards legal AI 2026","official_domains":["clio.com"],"watch_urls":["https://www.clio.com/about/press/clio-releases-vincent-skills/"]},
+    {"id":"agent-10","vendor":"Google Cloud","query":"Gemini Enterprise for Legal contract drafting house style 2026","official_domains":["cloud.google.com"],"watch_urls":["https://cloud.google.com/blog/products/ai-machine-learning/introducing-gemini-enterprise-for-legal"]}
   ]
 }
