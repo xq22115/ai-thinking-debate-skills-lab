@@ -1,0 +1,227 @@
+{
+  "schema_version": "1.0",
+  "package": {
+    "name": "ai-efficiency-operating-system",
+    "version": "0.1.0-rc1",
+    "purpose": "Maximize useful AI progress per unit of context, tool use and iteration without sacrificing required capabilities, quality or verifiable completion.",
+    "canonical_repository": "xq22115/ai-thinking-debate-skills-lab",
+    "canonical_path": "skills/skills/ai-efficiency-operating-system",
+    "source_coverage": "current conversation plus existing cross-chat GitHub convergence artifacts and canonical repository skills",
+    "account_chat_history_exhaustive": false,
+    "coverage_note": "The current runtime did not return a complete account-wide chat corpus. Do not claim exhaustive account coverage. Existing pinned cross-chat GitHub artifacts are treated as the strongest available recovered history.",
+    "status": "PACKAGED_GITHUB_STAGED_HOST_LIVE_UNVERIFIED"
+  },
+  "naming_policy": {
+    "format": "lowercase-kebab-case",
+    "version_location": "metadata_not_name",
+    "collision_rule": "reuse_or_extend_canonical_semantics_before_creating_aliases; never overwrite a different semantic skill",
+    "single_best_solution": true
+  },
+  "provenance_classes": [
+    "USER_DIRECTIVE",
+    "REPOSITORY_CANONICAL",
+    "CROSS_CHAT_GITHUB_RECOVERY",
+    "ASSISTANT_SYNTHESIS",
+    "REQUIRES_CONFIRMATION"
+  ],
+  "review_topology": [
+    {"id":"A01","name":"orchestrator","duty":"task ledger, root goal, dependencies, acceptance ownership"},
+    {"id":"A02","name":"architect-claimant","duty":"candidate solution and architecture"},
+    {"id":"A03","name":"source-research","duty":"original-source and provenance recovery"},
+    {"id":"A04","name":"root-cause","duty":"shared mechanisms and discriminating tests"},
+    {"id":"A05","name":"adversarial","duty":"omission, regression and false-completion attacks"},
+    {"id":"A06","name":"cross-exam","duty":"challenge claims, provenance and naming collisions"},
+    {"id":"A07","name":"implementer","duty":"scoped mutation after identity lock"},
+    {"id":"A08","name":"verifier","duty":"read-back, structural validation and acceptance evidence"},
+    {"id":"A09","name":"risk","duty":"rollback, overwrite, permission and compatibility risk"},
+    {"id":"A10","name":"adjudicator","duty":"retain best-supported solution and unresolved minority evidence"}
+  ],
+  "skills": [
+    {
+      "name": "root-goal-task-compiler",
+      "category": "prompt-and-goal-control",
+      "description": "Compile the request into a stable primary task, desired end state, negations, hard constraints, acceptance tests and evidence-backed root goal before substantive work.",
+      "activation": ["complex task", "long conversation", "goal drift risk", "multiple corrections or constraints"],
+      "conditions": ["newer explicit user correction overrides contradictory assumptions", "supporting details do not silently replace the root goal"],
+      "procedure": ["extract PRIMARY_TASK and DESIRED_END_STATE", "extract NEGATIONS and HARD_CONSTRAINTS", "define observable ACCEPTANCE_TESTS", "invalidate downstream assumptions when the user corrects direction"],
+      "example": "For a repair request, preserve existing functionality and define success as target-runtime read-back rather than a plausible patch description.",
+      "provenance": ["USER_DIRECTIVE", "ASSISTANT_SYNTHESIS"],
+      "confidence": "high"
+    },
+    {
+      "name": "identity-and-path-lock",
+      "category": "execution-safety",
+      "description": "Verify repository, branch or PR, file path, version, runtime/profile, owner/supersession relation and permissions before mutation.",
+      "activation": ["GitHub write", "filesystem mutation", "multi-PR work", "versioned configuration"],
+      "conditions": ["do not guess a path from naming similarity", "moving heads invalidate inherited exact-revision claims"],
+      "procedure": ["identify target surface", "cross-check repository and ref", "read current target before replace", "confirm writer ownership and permission"],
+      "example": "Before updating a skill, fetch the current file SHA on main and update that exact path rather than creating an almost-identical duplicate.",
+      "provenance": ["USER_DIRECTIVE", "CROSS_CHAT_GITHUB_RECOVERY", "REPOSITORY_CANONICAL"],
+      "confidence": "high"
+    },
+    {
+      "name": "evidence-gap-research",
+      "category": "research",
+      "description": "Identify missing evidence before accepting important claims and prioritize sources or tests that can change the decision.",
+      "activation": ["uncertain claim", "current information", "high consequence", "conflicting sources"],
+      "conditions": ["separate source classes", "record contradiction instead of averaging it away"],
+      "procedure": ["make claim ledger", "mark missing evidence", "prioritize primary/current sources", "stop when marginal information gain collapses"],
+      "example": "Do not assume a repository artifact is live product behavior; seek product guidance or runtime observation where the claim requires it.",
+      "provenance": ["REPOSITORY_CANONICAL"],
+      "confidence": "high"
+    },
+    {
+      "name": "competing-hypotheses",
+      "category": "reasoning",
+      "description": "Keep multiple plausible explanations alive until discriminating evidence eliminates them.",
+      "activation": ["ambiguous root cause", "contradictory evidence", "repeated failed fix"],
+      "conditions": ["minority hypotheses with stronger evidence survive majority disagreement"],
+      "procedure": ["create H1/H2/H3+", "list predictions", "run discriminating tests", "update confidence"],
+      "example": "For UI lag, distinguish context explosion, repeated tool discovery, serialization, retries and resource bottlenecks rather than blaming one visible symptom.",
+      "provenance": ["REPOSITORY_CANONICAL"],
+      "confidence": "high"
+    },
+    {
+      "name": "root-cause-clustering",
+      "category": "debugging",
+      "description": "Group symptoms by mechanism fingerprint and repair shared causes before symptom-by-symptom patches.",
+      "activation": ["multiple related failures", "performance regression", "recurring incidents"],
+      "conditions": ["preserve required features", "do not call removal or reduced usage a repair unless explicitly allowed"],
+      "procedure": ["map symptoms to dependencies", "cluster by mechanism", "test highest-leverage cause", "measure regressions"],
+      "example": "If several chat surfaces slow together, inspect context routing, duplicate fetches and shared resource queues before separately tuning each screen.",
+      "provenance": ["USER_DIRECTIVE", "REPOSITORY_CANONICAL"],
+      "confidence": "high"
+    },
+    {
+      "name": "context-budget-routing",
+      "category": "performance",
+      "description": "Keep all capabilities available while loading only the context, tools and evidence needed for the current causal path.",
+      "activation": ["large toolset", "long conversation", "routing latency", "context pollution"],
+      "conditions": ["do not disable useful tools globally", "defer discovery until relevance is established"],
+      "procedure": ["start with minimum relevant context", "discover tools on demand", "cache stable discoveries", "drop repeated paraphrase and stale branches"],
+      "example": "Do not load every connector schema every turn; discover the GitHub write actions only when the task actually needs GitHub mutation.",
+      "provenance": ["USER_DIRECTIVE", "ASSISTANT_SYNTHESIS"],
+      "confidence": "high"
+    },
+    {
+      "name": "capability-challenge",
+      "category": "tool-routing",
+      "description": "Distinguish visible, authorized and verified capability before claiming a tool can or cannot perform an action.",
+      "activation": ["tool limitation", "permission question", "connector failure", "host capability claim"],
+      "conditions": ["classify permission/auth/unsupported/infrastructure/unknown separately"],
+      "procedure": ["check visibility", "check authorization", "attempt or read back capability where safe", "state exact blocker"],
+      "example": "A visible GitHub connector is not proof of write permission; verify repo permissions or successful mutation.",
+      "provenance": ["REPOSITORY_CANONICAL"],
+      "confidence": "high"
+    },
+    {
+      "name": "parallel-read-serial-write",
+      "category": "execution-efficiency",
+      "description": "Parallelize independent investigation while serializing conflicting writes to mutable targets.",
+      "activation": ["multiple independent reads", "multi-agent or multi-tool task", "shared file or branch writes"],
+      "conditions": ["same-path writes require ownership and fresh SHA", "dependent operations remain ordered"],
+      "procedure": ["partition independent reads", "merge evidence", "claim writer ownership", "write sequentially and read back"],
+      "example": "Fetch several source files independently, but update the same catalog only after the package files are committed and the latest catalog SHA is known.",
+      "provenance": ["REPOSITORY_CANONICAL", "ASSISTANT_SYNTHESIS"],
+      "confidence": "high"
+    },
+    {
+      "name": "multi-agent-deliberation",
+      "category": "deliberation",
+      "description": "Activate only roles that add distinct evidence, methods, capabilities, falsification pressure or verification duties.",
+      "activation": ["cross-domain task", "high uncertainty", "independent verification needed"],
+      "conditions": ["role diversity is not runtime independence", "scale by marginal information gain, not headcount"],
+      "procedure": ["choose distinct roles", "retain strong minority evidence", "de-escalate when execution is more informative", "record whether independence was observed or simulated"],
+      "example": "Use source, root-cause, adversarial and verifier roles when each has a separate obligation; do not create ten approving clones.",
+      "provenance": ["USER_DIRECTIVE", "REPOSITORY_CANONICAL"],
+      "confidence": "high"
+    },
+    {
+      "name": "research-saturation-stop",
+      "category": "research-efficiency",
+      "description": "Stop gathering or debating when additional work no longer changes hypotheses, evidence confidence, risks or acceptance outcomes.",
+      "activation": ["broad research", "many sources", "large deliberation council"],
+      "conditions": ["do not use fixed source count or elapsed time as depth metrics"],
+      "procedure": ["track novel evidence per source/role", "measure decision impact", "switch to testing when higher-value", "record remaining uncertainty"],
+      "example": "After multiple sources converge and only repeat the same claim, spend the next unit of effort on a runtime read-back instead.",
+      "provenance": ["USER_DIRECTIVE", "REPOSITORY_CANONICAL", "ASSISTANT_SYNTHESIS"],
+      "confidence": "high"
+    },
+    {
+      "name": "recoverable-state",
+      "category": "continuity",
+      "description": "Persist task identity, checkpoints, evidence references, pending actions, irreversible actions and rollback targets so interruptions do not force full rework.",
+      "activation": ["long-running task", "multi-step mutation", "cross-session workflow"],
+      "conditions": ["state must outlive transient model context when durability matters"],
+      "procedure": ["create task id", "checkpoint after irreversible steps", "store pending obligations", "rehydrate from evidence rather than memory"],
+      "example": "A GitHub run should record the exact branch/head and unfinished verification gate so continuation resumes from evidence, not chat recollection.",
+      "provenance": ["REPOSITORY_CANONICAL", "CROSS_CHAT_GITHUB_RECOVERY"],
+      "confidence": "high"
+    },
+    {
+      "name": "cross-chat-convergence",
+      "category": "knowledge-convergence",
+      "description": "Merge complementary cross-chat work by layer and exact source revision instead of copying summaries into competing skill names.",
+      "activation": ["multiple chats or PRs share one goal", "historical skillpack recovery"],
+      "conditions": ["deduplicate by semantic responsibility", "source heads must be pinned or explicitly refreshed"],
+      "procedure": ["classify archive/portable-skill/execution layers", "pin source revisions", "resolve overlap", "retain one canonical owner per capability"],
+      "example": "Keep archive recovery, portable reasoning skills and execution control plane as separate layers feeding one canonical skill system.",
+      "provenance": ["CROSS_CHAT_GITHUB_RECOVERY", "REPOSITORY_CANONICAL"],
+      "confidence": "high"
+    },
+    {
+      "name": "runtime-performance-diagnosis",
+      "category": "performance",
+      "description": "Diagnose latency and stalls through context pollution, wrong routing, repeated work, cache misses, scheduling, retries, serialization and resource bottlenecks before reducing functionality.",
+      "activation": ["slow response", "chat switching lag", "tool stalls", "repeated execution"],
+      "conditions": ["preserve required feature set and quality", "measure mechanism-specific signals"],
+      "procedure": ["instrument stages", "identify queue/serialization/retry patterns", "audit context/tool loading", "apply high-leverage fix and regression test"],
+      "example": "Replace indiscriminate connector/schema loading with demand-driven discovery and cached stable metadata while leaving connectors available.",
+      "provenance": ["USER_DIRECTIVE", "ASSISTANT_SYNTHESIS"],
+      "confidence": "high"
+    },
+    {
+      "name": "completion-gate",
+      "category": "verification",
+      "description": "Prevent false completion by binding each acceptance criterion to evidence from the actual target revision/environment.",
+      "activation": ["before saying done", "after GitHub/file/runtime mutation", "CI or deployment claim"],
+      "conditions": ["file existence or commit is not live verification", "task failure and infrastructure failure remain distinct"],
+      "procedure": ["enumerate criteria", "bind strongest evidence", "read back mutable target", "state highest proven status and unresolved gaps"],
+      "example": "After creating a skill file, fetch it from main and verify contents; still leave HOST_LIVE_VERIFIED open until the host actually loads it.",
+      "provenance": ["USER_DIRECTIVE", "REPOSITORY_CANONICAL"],
+      "confidence": "high"
+    },
+    {
+      "name": "high-density-finalization",
+      "category": "output-efficiency",
+      "description": "Perform necessary analysis and verification internally, then output only conclusions, decisive evidence, mechanisms, actions and material limitations.",
+      "activation": ["final response after complex work", "large research result"],
+      "conditions": ["compression must not hide unresolved acceptance gaps", "do not use verbosity as proof of depth"],
+      "procedure": ["lead with result", "retain decision-changing evidence", "remove repeated reasoning", "surface exact blockers/TBDs"],
+      "example": "Report repository path, commit/read-back status, verified checks and the one unresolved account-history coverage limitation instead of dumping every intermediate step.",
+      "provenance": ["USER_DIRECTIVE", "ASSISTANT_SYNTHESIS"],
+      "confidence": "high"
+    }
+  ],
+  "acceptance_tests": [
+    "all skills[].name values are unique",
+    "all names match lowercase-kebab-case",
+    "each skill has description, activation, conditions, procedure, example and provenance",
+    "canonical existing skills are composed rather than renamed into duplicates",
+    "runtime-independence claims require observed runtime receipts",
+    "repository commit claims require GitHub write receipt and read-back",
+    "host-live status remains unverified until actual host activation is observed"
+  ],
+  "pending_verification": [
+    {
+      "item": "exhaustive account-wide chat-history coverage",
+      "status": "REQUIRES_CONFIRMATION",
+      "reason": "the current cross-chat retrieval mechanism returned no complete account corpus in this run"
+    },
+    {
+      "item": "target-host live activation",
+      "status": "NOT_RUN",
+      "reason": "GitHub repository presence cannot prove the host loaded or executed the skill"
+    }
+  ]
+}
