@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "orchestrator_branch": "feat/legal-writing-radar-20260828",
+  "common_research_base": "main",
+  "verified_branch_count": 10,
+  "verification_note": "GitHub branch search read-back returned exactly research/legal-writing-01 through -10. Each research branch was created from main and contains one vendor-scoped report commit; the orchestrator catalog remains the final acceptance authority.",
+  "branches": [
+    {
+      "lane_id": "01",
+      "branch": "research/legal-writing-01-harvey",
+      "report_commit": "f560c3029598c092eed34f5f29b8859de36f9821",
+      "report_path": "research-reports/lane-01-harvey-ii.md",
+      "tool_id": "harvey-ii",
+      "official_url": "https://www.harvey.ai/blog/introducing-harvey-ii"
+    },
+    {
+      "lane_id": "02",
+      "branch": "research/legal-writing-02-cocounsel",
+      "report_commit": "d91198bcda7b18c7eb8d81ce483de6639a13b519",
+      "report_path": "research-reports/lane-02-cocounsel.md",
+      "tool_id": "cocounsel-next-gen-legal",
+      "official_url": "https://www.thomsonreuters.com/en-us/posts/innovation/the-next-generation-of-cocounsel-legal-is-here-and-early-access-starts-now/"
+    },
+    {
+      "lane_id": "03",
+      "branch": "research/legal-writing-03-lexis-protege",
+      "report_commit": "601f81dbb5e10e76b6feb9706c9ee8fdd8acc047",
+      "report_path": "research-reports/lane-03-lexis-protege.md",
+      "tool_id": "lexis-protege-in-house",
+      "official_url": "https://www.lexisnexis.com/community/pressroom/b/news/posts/lexis-with-protege-is-now-purpose-built-ai-for-in-house-legal-and-compliance-teams"
+    },
+    {
+      "lane_id": "04",
+      "branch": "research/legal-writing-04-legalon",
+      "report_commit": "0f3e3a48d251b8e59d53b22128babfc90c00a578",
+      "report_path": "research-reports/lane-04-legalon.md",
+      "tool_id": "legalon-prompt-workflows",
+      "official_url": "https://www.legalontech.com/press-releases/legalon-launches-100-attorney-built-prompt-workflows-for-in-house-legal"
+    },
+    {
+      "lane_id": "05",
+      "branch": "research/legal-writing-05-luminance",
+      "report_commit": "fbb9349060a0386db16ce4eca61e0d6fe0fd9604",
+      "report_path": "research-reports/lane-05-luminance.md",
+      "tool_id": "luminance-luna-crescent",
+      "official_url": "https://www.luminance.com/press/luminance-unveils-luna-crescent-the-vertical-ai-model-powering-contract-intelligence-with-market-leading-accuracy-and-speed"
+    },
+    {
+      "lane_id": "06",
+      "branch": "research/legal-writing-06-gc-ai",
+      "report_commit": "656585cccc25377bc49201b2d69deddc4619272a",
+      "report_path": "research-reports/lane-06-gc-ai.md",
+      "tool_id": "gc-ai-easy-edit",
+      "official_url": "https://gc.ai/blog/gc-ai-easy-edit"
+    },
+    {
+      "lane_id": "07",
+      "branch": "research/legal-writing-07-wordsmith",
+      "report_commit": "bcd6659752bd277c304047c27f30f51778c7c7ac",
+      "report_path": "research-reports/lane-07-wordsmith.md",
+      "tool_id": "wordsmith-payments-agents",
+      "official_url": "https://www.wordsmith.ai/blog/wordsmith-for-payments-three-agents-built-for-the-work"
+    },
+    {
+      "lane_id": "08",
+      "branch": "research/legal-writing-08-goheather",
+      "report_commit": "e79ba277ec40cdf4c01e75c726d9fd2211731a38",
+      "report_path": "research-reports/lane-08-goheather.md",
+      "tool_id": "goheather-v3",
+      "official_url": "https://www.goheather.io/post/what-s-new-in-goheather-in-august-2026"
+    },
+    {
+      "lane_id": "09",
+      "branch": "research/legal-writing-09-definely",
+      "report_commit": "b6fa7a3d68a294b85763c84c733cf1883d20b957",
+      "report_path": "research-reports/lane-09-definely.md",
+      "tool_id": "definely-vault",
+      "official_url": "https://www.definely.com/blogs/definely-launches-vault-ai-powered-knowledge-management-solution-for-legal-professionals"
+    },
+    {
+      "lane_id": "10",
+      "branch": "research/legal-writing-10-writer",
+      "report_commit": "2160c9f6355d424aed91aa194f831a9c74a3cd0c",
+      "report_path": "research-reports/lane-10-writer.md",
+      "tool_id": "writer-playbooks-july-2026",
+      "official_url": "https://writer.com/blog/more-powerful-playbooks/"
+    }
+  ]
+}
