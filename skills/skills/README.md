@@ -15,6 +15,7 @@ The skill folder shape follows the current Agent Skills semantic pattern: each p
 7. `multi-agent-deliberation` — dynamic 1–30 role coverage pool routed by marginal information gain; runtime independence is evidence-gated. (`0.1.1-rc1`)
 8. `capability-challenge` — separates `VISIBLE`, `AUTHORIZED`, and `VERIFIED` before terminal `cannot`. (`0.1.1-rc1`)
 9. `durable-agent-control-plane` — durable task identity, isolated writers, receipts, resume/recovery, and task-result vs infrastructure-state separation. (`0.1.1-rc1`)
+10. `elite-legal-correspondence` — evidence-gated high-stakes U.S. commercial/legal correspondence logic plus a ten-lane 2026 legal-AI writing radar. (`0.1.0-rc1`)
 
 ## Composition Order
 
@@ -23,6 +24,8 @@ For complex engineering/research tasks, recommended default composition:
 `capability-challenge → compatibility-audit → evidence-gap-research → competing-hypotheses → root-cause-clustering → multi-agent-deliberation (only if useful) → durable-agent-control-plane (when execution spans actors/interruptions) → execution → completion-gate → recoverable-state checkpoint`
 
 The orchestrator should omit skills when their trigger conditions are absent.
+
+`elite-legal-correspondence` is task-specific and should be composed only when the requested outcome is legal/commercial correspondence or specialist legal-writing AI research.
 
 ## Shared Hard Invariants
 
