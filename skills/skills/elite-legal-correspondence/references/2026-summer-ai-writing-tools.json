@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "research_window": {
+    "start": "2026-06-01",
+    "end": "2026-08-31"
+  },
+  "observed_on": "2026-08-28",
+  "acceptance_rule": "Official vendor/company source + explicit date in research window + specialized AI-assisted legal writing/drafting/work-product capability.",
+  "records": [
+    {
+      "lane": "lane-01-harvey",
+      "product": "Harvey II",
+      "release_date": "2026-08-18",
+      "official_url": "https://www.harvey.ai/blog/introducing-harvey-ii",
+      "source_type": "official product announcement",
+      "specialization": "Legal AI agents with matter/project context and memory designed to carry professional work context into drafting and other legal tasks.",
+      "why_it_matters_for_this_skill": "Shows that elite drafting quality increasingly depends on persistent matter context and user/firm working patterns rather than one-shot prompting.",
+      "verification_status": "VERIFIED_OFFICIAL"
+    },
+    {
+      "lane": "lane-02-lexis",
+      "product": "Lexis+ with Protégé",
+      "release_date": "2026-08-24",
+      "official_url": "https://www.lexisnexis.com/community/pressroom/b/news/posts/lexis-with-protege-accelerates-frictionless-agentic-productivity-from-first-idea-to-review-ready-legal-work-product",
+      "source_type": "official press release",
+      "specialization": "Agentic legal workflow spanning research, analysis, drafting and review-ready legal work product, with authoritative Lexis sources and verification tooling.",
+      "why_it_matters_for_this_skill": "Supports a source-first drafting architecture in which research authority, organization documents, draft generation and review stay connected.",
+      "verification_status": "VERIFIED_OFFICIAL"
+    },
+    {
+      "lane": "lane-03-cocounsel",
+      "product": "CoCounsel Legal",
+      "release_date": "2026-08-21",
+      "official_url": "https://legal.thomsonreuters.com/blog/the-next-generation-of-cocounsel-legal/",
+      "source_type": "official product announcement",
+      "specialization": "Purpose-built legal work-product system using Westlaw, Practical Law and firm knowledge for research, analysis and drafting from plain-language instructions.",
+      "why_it_matters_for_this_skill": "Reinforces that high-end output should be grounded in trusted authority and institutional knowledge, not generic stylistic imitation.",
+      "verification_status": "VERIFIED_OFFICIAL"
+    },
+    {
+      "lane": "lane-04-gemini-legal",
+      "product": "Gemini Enterprise for Legal",
+      "release_date": "2026-08-25",
+      "official_url": "https://cloud.google.com/blog/products/ai-machine-learning/introducing-gemini-enterprise-for-legal",
+      "source_type": "official product announcement",
+      "specialization": "Purpose-built legal agents and skills for contract review/drafting and other legal workflows, designed to work with firm playbooks, citation rules, internal knowledge and house style.",
+      "why_it_matters_for_this_skill": "Direct evidence that house style should be encoded as explicit standards/playbooks with governance rather than vague prompts to sound like a lawyer.",
+      "verification_status": "VERIFIED_OFFICIAL"
+    },
+    {
+      "lane": "lane-05-clio-vincent",
+      "product": "Vincent Skills by Clio",
+      "release_date": "2026-07-22",
+      "official_url": "https://www.clio.com/about/press/clio-releases-vincent-skills/",
+      "source_type": "official press release",
+      "specialization": "Reusable legal AI Skills let firms encode task-specific research approaches, contract drafting standards and document-review conventions in plain language and apply them consistently.",
+      "why_it_matters_for_this_skill": "Strongly validates a portable skill model: turn firm judgment and drafting conventions into explicit reusable instructions rather than session-by-session prompt tricks.",
+      "verification_status": "VERIFIED_OFFICIAL"
+    },
+    {
+      "lane": "lane-06-legaltype",
+      "product": "LegalType AI",
+      "release_date": "2026-06-11",
+      "official_url": "https://legaltype.com/pages/press",
+      "source_type": "official press index / launch notice",
+      "specialization": "AI company focused on legal workflows and improving legal writing at every stage, especially low-risk, high-volume drafting work.",
+      "why_it_matters_for_this_skill": "A writing-specific launch that separates legal drafting quality and workflow needs from general-purpose copywriting.",
+      "verification_status": "VERIFIED_OFFICIAL"
+    },
+    {
+      "lane": "lane-07-litera",
+      "product": "Litera Connected Drafting and Negotiation",
+      "release_date": "2026-08-18",
+      "official_url": "https://www.litera.com/press",
+      "source_type": "official press index / product announcement",
+      "specialization": "Legal AI workflow connects firm-approved precedent, first-draft creation, deterministic comparison, risk understanding and proposed response language inside the negotiation workflow.",
+      "why_it_matters_for_this_skill": "Shows the value of connecting precedent selection, drafting, redline analysis, risk interpretation and response language rather than treating writing as a standalone text-generation step.",
+      "verification_status": "VERIFIED_OFFICIAL"
+    },
+    {
+      "lane": "lane-08-wordsmith",
+      "product": "Wordsmith Intake",
+      "release_date": "2026-08-14",
+      "official_url": "https://www.wordsmith.ai/blog/introducing-wordsmith-intake",
+      "source_type": "official product announcement",
+      "specialization": "Legal intake can automatically start AI-agent work; Wordsmith's legal agents can chain drafting into end-to-end workflows from request through draft, approval and delivery.",
+      "why_it_matters_for_this_skill": "Adds the operating-model insight that excellent correspondence starts with structured intake and context capture before a drafting agent is invoked.",
+      "verification_status": "VERIFIED_OFFICIAL"
+    },
+    {
+      "lane": "lane-09-spellbook",
+      "product": "Spellbook Autonomous Contract Management",
+      "release_date": "2026-06-30",
+      "official_url": "https://spellbook.com/blog/introducing-acm",
+      "source_type": "official product announcement",
+      "specialization": "AI-native contract lifecycle automation built around intake, first-pass review/redlining and ongoing contract work; Spellbook's associated June product suite also combines browser drafting/editing with tracked AI changes.",
+      "why_it_matters_for_this_skill": "Demonstrates continuous contract context plus drafting/review loops, useful for correspondence that must stay aligned with the latest negotiated paper and obligations.",
+      "verification_status": "VERIFIED_OFFICIAL"
+    },
+    {
+      "lane": "lane-10-legalon",
+      "product": "LegalOn Attorney-Built AI Workflows",
+      "release_date": "2026-07-28",
+      "official_url": "https://us-direct.legalontech.com/new-at-legalon",
+      "source_type": "official product updates page",
+      "specialization": "More than 100 attorney-built legal workflows including indemnity redlines, termination-clause structuring, negotiation-ready counterproposals and contract summaries.",
+      "why_it_matters_for_this_skill": "Validates a task-specific workflow catalog where each drafting objective has its own legal structure and quality standard instead of one universal style prompt.",
+      "verification_status": "VERIFIED_OFFICIAL"
+    }
+  ]
+}
