@@ -15,6 +15,8 @@ WORKFLOW = ROOT / "scripts/run_quality_bound_workflow.py"
 SETTINGS = REPO_ROOT / ".claude/settings.json"
 RESEARCH_PERMISSION_HOOK = REPO_ROOT / ".claude/hooks/allow-a03-web-research.py"
 RESEARCH_HOOK = REPO_ROOT / ".claude/hooks/record-web-research.py"
+RESEARCH_STOP_HOOK = REPO_ROOT / ".claude/hooks/enforce-a03-research-cycle.py"
+A03_ROLE = ROOT / "ai-system/control-plane/agents/A03-source-research.md"
 
 
 def _hook_matches(settings: dict, event: str, matcher: str, command_token: str) -> bool:
@@ -24,6 +26,22 @@ def _hook_matches(settings: dict, event: str, matcher: str, command_token: str) 
     return any(
         isinstance(row, dict)
         and row.get("matcher") == matcher
+        and any(
+            isinstance(handler, dict)
+            and handler.get("type") == "command"
+            and command_token in str(handler.get("command") or "")
+            for handler in (row.get("hooks") or [])
+        )
+        for row in rows
+    )
+
+
+def _stop_hook_matches(settings: dict, command_token: str) -> bool:
+    rows = ((settings.get("hooks") or {}).get("Stop") or [])
+    if not isinstance(rows, list):
+        return False
+    return any(
+        isinstance(row, dict)
         and any(
             isinstance(handler, dict)
             and handler.get("type") == "command"
@@ -44,6 +62,8 @@ def validate() -> list[str]:
         (SETTINGS, "claude_project_settings_missing"),
         (RESEARCH_PERMISSION_HOOK, "research_permission_hook_missing"),
         (RESEARCH_HOOK, "research_attestation_hook_missing"),
+        (RESEARCH_STOP_HOOK, "research_saturation_stop_hook_missing"),
+        (A03_ROLE, "A03_research_role_missing"),
     ]:
         if not path.is_file():
             failures.append(code)
@@ -118,6 +138,8 @@ def validate() -> list[str]:
             settings, "PostToolUse", "WebSearch|WebFetch", "record-web-research.py"
         ):
             failures.append("claude_web_research_attestation_hook_not_registered")
+        if not _stop_hook_matches(settings, "enforce-a03-research-cycle.py"):
+            failures.append("claude_research_saturation_stop_hook_not_registered")
 
     registry = REGISTRY.read_text(encoding="utf-8")
     for token, code in [
@@ -160,10 +182,16 @@ def validate() -> list[str]:
         ("CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING", "workflow_does_not_clear_adaptive_thinking_disable"),
         ("MAX_THINKING_TOKENS", "workflow_does_not_clear_zero_thinking_budget"),
         ("QUALITY_RESEARCH_AUDIT_DIR", "workflow_does_not_bind_fresh_research_audit"),
+        ("QUALITY_TASK_CLASS", "workflow_does_not_bind_task_class_for_stop_gate"),
+        ("recorded_at_ns", "workflow_does_not_require_ordered_research_receipts"),
         ("quality_evidence_accepted", "workflow_does_not_require_accepted_research_receipt"),
         ("requested_effort", "workflow_does_not_check_requested_effort"),
         ("effective_effort", "workflow_does_not_check_effective_effort"),
         ("research_receipt_not_effort_attested", "workflow_does_not_fail_closed_on_unattested_effort"),
+        ("_research_cycle_state", "workflow_does_not_revalidate_research_cycle"),
+        ("research_cycle_distinct_challenge_search_missing", "workflow_does_not_require_challenge_search"),
+        ("research_cycle_distinct_followup_inspection_missing", "workflow_does_not_require_followup_inspection"),
+        ("adaptive_research_saturation_verified", "workflow_does_not_publish_saturation_state"),
         ("successful_tool_receipt_missing", "workflow_does_not_fail_closed_on_missing_web_tool_receipt"),
         ("research_runtime_attestation", "workflow_does_not_publish_research_attestation"),
         ("effective_effort_verified_by_research_hook", "workflow_does_not_publish_effort_readback_state"),
@@ -194,6 +222,7 @@ def validate() -> list[str]:
         ("WebFetch", "hook_webfetch_missing"),
         ("post_tool_success", "hook_success_receipt_missing"),
         ("tool_response_sha256", "hook_response_hash_missing"),
+        ("recorded_at_ns", "hook_ordering_timestamp_missing"),
         ("CLAUDE_CODE_EFFORT_LEVEL", "hook_requested_effort_binding_missing"),
         ("CLAUDE_EFFORT", "hook_effective_effort_env_readback_missing"),
         ("payload.get(\"effort\")", "hook_effective_effort_payload_readback_missing"),
@@ -202,6 +231,33 @@ def validate() -> list[str]:
         ("_rejected", "hook_rejected_receipt_quarantine_missing"),
     ]:
         if token not in hook:
+            failures.append(code)
+
+    stop_hook = RESEARCH_STOP_HOOK.read_text(encoding="utf-8")
+    for token, code in [
+        ("Stop", "research_saturation_hook_not_stop_bound"),
+        ("decision", "research_saturation_hook_cannot_block_stop"),
+        ("block", "research_saturation_hook_missing_block_decision"),
+        ("QUALITY_TASK_CLASS", "research_saturation_hook_task_class_binding_missing"),
+        ("QUALITY_RESEARCH_AUDIT_DIR", "research_saturation_hook_audit_binding_missing"),
+        ("recorded_at_ns", "research_saturation_hook_ordering_missing"),
+        ("distinct challenge", "research_saturation_hook_challenge_feedback_missing"),
+        ("distinct follow-up source", "research_saturation_hook_followup_feedback_missing"),
+        ("repeating the same query", "research_saturation_hook_repeated_query_guard_missing"),
+    ]:
+        if token not in stop_hook:
+            failures.append(code)
+
+    role = A03_ROLE.read_text(encoding="utf-8")
+    for token, code in [
+        ("Discover", "A03_role_discovery_stage_missing"),
+        ("Inspect", "A03_role_inspection_stage_missing"),
+        ("Challenge", "A03_role_challenge_stage_missing"),
+        ("Reconcile", "A03_role_reconcile_stage_missing"),
+        ("minimum causal falsification structure", "A03_role_confuses_structure_with_quota"),
+        ("Rephrasing the first query is not a new route", "A03_role_does_not_require_distinct_challenge"),
+    ]:
+        if token not in role:
             failures.append(code)
     return sorted(set(failures))
 
