@@ -4,7 +4,7 @@
 PostToolUse invokes this script only after a matching tool succeeds. The audit
 location is supplied by the quality-bound workflow so receipts cannot be reused
 across runs accidentally. No page contents are persisted; only call metadata,
-effective reasoning effort, and a response hash are recorded.
+effective reasoning effort, ordering metadata, and a response hash are recorded.
 
 A web call is accepted as quality evidence only when the hook reads back the
 same effective effort that the quality workflow requested. Organization effort
@@ -19,6 +19,7 @@ import os
 import pathlib
 import re
 import sys
+import time
 
 WEB_TOOLS = {"WebSearch", "WebFetch"}
 EFFORT_LEVELS = {"low", "medium", "high", "xhigh", "max"}
@@ -84,6 +85,7 @@ def main() -> int:
         "tool_use_id": str(payload.get("tool_use_id") or ""),
         "session_id": str(payload.get("session_id") or ""),
         "duration_ms": payload.get("duration_ms"),
+        "recorded_at_ns": time.time_ns(),
         "query": str(tool_input.get("query") or "") if tool_name == "WebSearch" else "",
         "url": str(tool_input.get("url") or "") if tool_name == "WebFetch" else "",
         "tool_response_sha256": hashlib.sha256(response_bytes).hexdigest(),
