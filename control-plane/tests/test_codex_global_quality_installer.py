@@ -95,6 +95,21 @@ class CodexGlobalQualityInstallerTests(unittest.TestCase):
             self.assertEqual(agents.read_text(encoding="utf-8"), first_content)
             self.assertEqual(len(list(backup_dir.glob("AGENTS.md.*.bak"))), 1)
 
+    def test_install_preserves_windows_crlf_bytes_and_backup(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            codex_home = pathlib.Path(tmp)
+            agents = codex_home / "AGENTS.md"
+            original = b"windows rule one\r\nwindows rule two\r\n"
+            agents.write_bytes(original)
+
+            installed = self.run_cli(codex_home, "install")
+            self.assertEqual(installed.returncode, 0, installed.stderr or installed.stdout)
+            self.assertTrue(agents.read_bytes().startswith(original))
+
+            backups = list((codex_home / "quality-installer-backups").glob("AGENTS.md.*.bak"))
+            self.assertEqual(len(backups), 1)
+            self.assertEqual(backups[0].read_bytes(), original)
+
     def test_check_fails_when_only_inactive_fallback_contains_managed_block(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             codex_home = pathlib.Path(tmp)
