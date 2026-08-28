@@ -31,10 +31,35 @@ Durable task/run identity, isolated writer ownership, claims before mutation, cl
 
 ## Orchestration layer
 
-### ai-efficiency-operating-system — `0.1.0-rc1`
-Canonical efficiency orchestrator that composes the portable core with root-goal/task compilation, identity/path locking, demand-driven context/tool routing, parallel-read/serial-write execution, research saturation stopping, cross-chat convergence, runtime-performance diagnosis and high-density verified finalization. Package: `skills/ai-efficiency-operating-system/` relative to this catalog's `skills/` package root (repository path `skills/skills/ai-efficiency-operating-system/`). Machine-readable contract: `skillpack.json`.
+### ai-efficiency-operating-system — `0.2.0-rc1`
 
-This is an orchestration skill, not a renamed duplicate of the nine portable core skills. It must preserve required capabilities and quality rather than trading them away for apparent speed.
+Canonical efficiency OS at repository path `skills/skills/ai-efficiency-operating-system/`.
+
+v0.2 evolves the original orchestration index into a layered runtime contract that composes the portable core with:
+
+- immutable task/goal contracts plus correction/supersession reconciliation;
+- E0–E6 evidence gating and exact completion states;
+- progressive-disclosure context, claim-preserving compaction and lean instruction/tool loading;
+- capability truth states from discovery through verified invocation;
+- coverage-frontier research, falsification and model-delta depth tests;
+- adaptive multi-agent coalition routing, selective disagreement retention and real-agent receipt requirements;
+- parallel-read/serial-write, short critical sections, event journals, idempotency/fencing and safe resume;
+- non-disruptive background execution and capability bridging;
+- hot-path amplification, retry/cache/backpressure controls;
+- owning-runtime read-back and baseline/holdout skill evolution;
+- high-density verified finalization.
+
+This is an orchestration package, not a renamed duplicate of the nine portable core skills. It must preserve required capabilities, concurrency, deep reasoning and answer quality rather than trading them away for apparent speed.
+
+Package files:
+
+- `SKILL.md`
+- `skillpack.json`
+- `runtime-state.schema.json`
+- `SOURCE-MATRIX.md`
+- `EVALS.md`
+- `VERIFICATION.md`
+- `CHANGELOG.md`
 
 ## Candidate supporting skills
 
