@@ -6,8 +6,10 @@ import argparse
 import json
 import os
 import pathlib
+import re
 import sys
 import uuid
+from urllib.parse import urlsplit, urlunsplit
 
 try:
     from scripts.continuous_thinking_runtime_binding import bind_preparation
@@ -78,6 +80,19 @@ def _read_research_receipts(audit_dir: pathlib.Path, actor_id: str) -> list[dict
     return receipts
 
 
+def _normalize_query(value: object) -> str:
+    return re.sub(r"\s+", " ", str(value or "").strip().lower())
+
+
+def _normalize_url(value: object) -> str:
+    text = str(value or "").strip()
+    if not text.startswith(("http://", "https://")):
+        return ""
+    parts = urlsplit(text)
+    path = parts.path.rstrip("/") or "/"
+    return urlunsplit((parts.scheme.lower(), parts.netloc.lower(), path, parts.query, ""))
+
+
 def _receipt_is_accepted_for_effort(row: dict, expected_effort: str) -> bool:
     return (
         row.get("schemaVersion") == 2
@@ -88,7 +103,77 @@ def _receipt_is_accepted_for_effort(row: dict, expected_effort: str) -> bool:
         and row.get("requested_effort") == expected_effort
         and row.get("effective_effort") == expected_effort
         and row.get("effort_readback_source") in {"hook_payload", "CLAUDE_EFFORT"}
+        and isinstance(row.get("recorded_at_ns"), int)
+        and row.get("recorded_at_ns", 0) > 0
     )
+
+
+def _research_cycle_state(receipts: list[dict]) -> tuple[dict[str, object], list[str]]:
+    rows = sorted(receipts, key=lambda row: int(row["recorded_at_ns"]))
+    searches = [
+        row for row in rows
+        if row.get("tool_name") == "WebSearch" and _normalize_query(row.get("query"))
+    ]
+    fetches = [
+        row for row in rows
+        if row.get("tool_name") == "WebFetch" and _normalize_url(row.get("url"))
+    ]
+    state: dict[str, object] = {
+        "discover_search": False,
+        "initial_inspection": False,
+        "distinct_challenge_search": False,
+        "distinct_followup_inspection": False,
+        "complete": False,
+    }
+    failures: list[str] = []
+    if not searches:
+        failures.append("research_cycle_discover_search_missing:A03")
+        return state, failures
+    state["discover_search"] = True
+
+    first_search = searches[0]
+    initial_fetches = [
+        row for row in fetches
+        if int(row["recorded_at_ns"]) > int(first_search["recorded_at_ns"])
+    ]
+    if not initial_fetches:
+        failures.append("research_cycle_initial_inspection_missing:A03")
+        return state, failures
+    state["initial_inspection"] = True
+
+    first_fetch = initial_fetches[0]
+    prior_queries = {
+        _normalize_query(row.get("query"))
+        for row in searches
+        if int(row["recorded_at_ns"]) <= int(first_fetch["recorded_at_ns"])
+    }
+    challenge_searches = [
+        row for row in searches
+        if int(row["recorded_at_ns"]) > int(first_fetch["recorded_at_ns"])
+        and _normalize_query(row.get("query")) not in prior_queries
+    ]
+    if not challenge_searches:
+        failures.append("research_cycle_distinct_challenge_search_missing:A03")
+        return state, failures
+    state["distinct_challenge_search"] = True
+
+    challenge = challenge_searches[0]
+    prior_urls = {
+        _normalize_url(row.get("url"))
+        for row in fetches
+        if int(row["recorded_at_ns"]) < int(challenge["recorded_at_ns"])
+    }
+    followup_fetches = [
+        row for row in fetches
+        if int(row["recorded_at_ns"]) > int(challenge["recorded_at_ns"])
+        and _normalize_url(row.get("url")) not in prior_urls
+    ]
+    if not followup_fetches:
+        failures.append("research_cycle_distinct_followup_inspection_missing:A03")
+        return state, failures
+    state["distinct_followup_inspection"] = True
+    state["complete"] = True
+    return state, failures
 
 
 def _research_attestation(
@@ -105,8 +190,9 @@ def _research_attestation(
         str(row.get("tool_name") or "")
         for row in accepted_receipts
     }
+    cycle_state, cycle_failures = _research_cycle_state(accepted_receipts)
     attestation: dict[str, object] = {
-        "schemaVersion": 2,
+        "schemaVersion": 3,
         "required": task_class in _DEEP_TASK_CLASSES,
         "actor_id": _RESEARCH_ACTOR,
         "expected_effort": expected_effort,
@@ -117,6 +203,7 @@ def _research_attestation(
         "observed_effective_efforts": sorted({
             str(row.get("effective_effort") or "") for row in accepted_receipts
         }),
+        "falsification_cycle": cycle_state,
         "audit_dir": str(audit_dir),
         "fresh_audit_per_run": True,
         "result": "NOT_REQUIRED" if task_class not in _DEEP_TASK_CLASSES else "NOT_EVALUATED",
@@ -164,6 +251,7 @@ def _research_attestation(
         f"successful_tool_receipt_missing:{_RESEARCH_ACTOR}:{tool}"
         for tool in missing_tools
     )
+    failures.extend(cycle_failures)
 
     failures = sorted(set(failures))
     attestation["result"] = "PASS" if not failures else "FAIL"
@@ -209,11 +297,17 @@ def run_quality_bound_workflow(
     )
     audit_dir = _fresh_research_audit_dir(output)
 
-    managed_keys = ["CLAUDE_CODE_EFFORT_LEVEL", "QUALITY_RESEARCH_AUDIT_DIR", *_THINKING_DISABLE_ENV]
+    managed_keys = [
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "QUALITY_RESEARCH_AUDIT_DIR",
+        "QUALITY_TASK_CLASS",
+        *_THINKING_DISABLE_ENV,
+    ]
     previous = {key: os.environ.get(key) for key in managed_keys}
     cleared_disablers: list[str] = []
     os.environ["CLAUDE_CODE_EFFORT_LEVEL"] = effort
     os.environ["QUALITY_RESEARCH_AUDIT_DIR"] = str(audit_dir)
+    os.environ["QUALITY_TASK_CLASS"] = task_class
     if task_class in _DEEP_TASK_CLASSES:
         for key in _THINKING_DISABLE_ENV:
             value = os.environ.get(key)
@@ -251,12 +345,16 @@ def run_quality_bound_workflow(
 
     result["quality_profile_binding"] = binding
     result["reasoning_runtime"] = {
-        "schemaVersion": 2,
+        "schemaVersion": 3,
         "task_class": task_class,
         "requested_effort": effort,
         "effort_bound_via_environment": "CLAUDE_CODE_EFFORT_LEVEL",
         "effective_effort_verified_by_research_hook": (
             attestation.get("result") == "PASS" if task_class in _DEEP_TASK_CLASSES else False
+        ),
+        "adaptive_research_saturation_verified": (
+            bool((attestation.get("falsification_cycle") or {}).get("complete"))
+            if task_class in _DEEP_TASK_CLASSES else False
         ),
         "thinking_disable_overrides_cleared_for_run": sorted(cleared_disablers),
         "environment_restored_after_run": True,
