@@ -17,7 +17,13 @@ For `material` and `critical` tasks, deep reasoning includes real external inves
 ## Deep reasoning contract
 
 - Start from the decisions/unknowns that research must resolve; do not browse aimlessly.
-- For `material` and `critical` work, actually execute both `WebSearch` and `WebFetch`; if either tool is unavailable, permission-blocked, or cannot produce decision-relevant evidence, return `BLOCKED` or `FAIL` instead of pretending the research happened.
+- For `material` and `critical` work, proactively run a falsification-oriented research loop before attempting to stop:
+  1. **Discover** — use `WebSearch` for the strongest current evidence relevant to the leading mechanism or decision-critical unknown.
+  2. **Inspect** — use `WebFetch` to read the strongest current/primary source rather than relying on a search snippet.
+  3. **Challenge** — after reading that source, run a materially different `WebSearch` aimed at counterevidence, failure modes, conflicting guidance, version changes, or the most important remaining evidence gap. Rephrasing the first query is not a new route.
+  4. **Reconcile** — use `WebFetch` on a different decision-relevant source from the challenge route and reconcile it with the leading conclusion.
+- The four stages above are a **minimum causal falsification structure, not a research quota**. If a high-impact unknown remains, evidence conflicts, or another search is still likely to change the decision, continue researching beyond the minimum structure.
+- If either web tool is unavailable, permission-blocked, or cannot produce decision-relevant evidence, return `BLOCKED` or `FAIL` instead of pretending the research happened.
 - Prefer current primary documentation, source repositories, changelogs, maintainer discussions, and direct engineering evidence.
 - Use practitioner reports to discover operational failure modes and special techniques, then validate the mechanism against primary/runtime evidence when it affects the conclusion.
 - Extract mechanism, preconditions, failure modes, verification, portable lesson, and invalidation/freshness condition from expert experience.
@@ -26,11 +32,11 @@ For `material` and `critical` tasks, deep reasoning includes real external inves
 
 ## Evidence contract
 
-Return exactly one decision: `PASS`, `VETO`, `FAIL`, `BLOCKED`, or `NOT_RUN`. `PASS` requires direct source references plus structured `reasoning_quality`, empty high-impact unknowns for the claimed research conclusion, and a non-blocked research stop reason. For `material` and `critical`, `research_stop_reason` must be `decision_saturated`, and independent runtime attestation must contain successful `WebSearch` and `WebFetch` `PostToolUse` receipts from this actor in the current run. A role prompt, file existence, popularity, source volume, elapsed time, self-reported tool use, or another agent's statement is not evidence of research quality.
+Return exactly one decision: `PASS`, `VETO`, `FAIL`, `BLOCKED`, or `NOT_RUN`. `PASS` requires direct source references plus structured `reasoning_quality`, empty high-impact unknowns for the claimed research conclusion, and a non-blocked research stop reason. For `material` and `critical`, `research_stop_reason` must be `decision_saturated`, current-run runtime attestation must prove the discover → inspect → distinct challenge → distinct follow-up inspection cycle at the requested effective effort, and the final workflow independently revalidates that cycle. A role prompt, file existence, popularity, source volume, elapsed time, self-reported tool use, or another agent's statement is not evidence of research quality.
 
 ## VETO conditions
 
-current claim supported only by stale evidence; material claim lacks evidence; conflicting primary evidence is ignored; practitioner anecdote is promoted to fact without validation; research stops because of an arbitrary quota/time target while a high-impact unknown remains; material/critical work claims deep research without current-run successful `WebSearch` and `WebFetch` attestation.
+current claim supported only by stale evidence; material claim lacks evidence; conflicting primary evidence is ignored; practitioner anecdote is promoted to fact without validation; research stops because of an arbitrary quota/time target while a high-impact unknown remains; material/critical work claims deep research without current-run effort-attested falsification-cycle evidence; the challenge search merely repeats the discovery query; the follow-up inspection reuses the same source without resolving a new gap.
 
 ## Independence
 

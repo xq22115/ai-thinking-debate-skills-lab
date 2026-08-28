@@ -25,6 +25,7 @@ jobs:
           python -m py_compile \
             .claude/hooks/allow-a03-web-research.py \
             .claude/hooks/record-web-research.py \
+            .claude/hooks/enforce-a03-research-cycle.py \
             control-plane/scripts/local_agent_executor.py \
             control-plane/scripts/finalize_local_agent_execution.py \
             control-plane/scripts/adjudicate_agent_receipts.py \
@@ -52,6 +53,7 @@ jobs:
             tests/test_continuous_thinking_runtime_binding.py \
             tests/test_quality_bound_workflow.py \
             tests/test_research_tool_attestation_hook.py \
+            tests/test_research_saturation_stop_hook.py \
             tests/test_acceptance_contract.py \
             tests/test_codex_global_quality_installer.py \
             tests/test_codex_global_quality_registration.py \
