@@ -3,8 +3,13 @@
 
 PostToolUse invokes this script only after a matching tool succeeds. The audit
 location is supplied by the quality-bound workflow so receipts cannot be reused
-across runs accidentally. No page contents are persisted; only call metadata
-and a response hash are recorded.
+across runs accidentally. No page contents are persisted; only call metadata,
+effective reasoning effort, and a response hash are recorded.
+
+A web call is accepted as quality evidence only when the hook reads back the
+same effective effort that the quality workflow requested. Organization effort
+caps, model capability downgrades, unsupported effort, or detached runtime
+binding therefore produce a rejected receipt instead of false PASS evidence.
 """
 from __future__ import annotations
 
@@ -16,11 +21,32 @@ import re
 import sys
 
 WEB_TOOLS = {"WebSearch", "WebFetch"}
+EFFORT_LEVELS = {"low", "medium", "high", "xhigh", "max"}
 
 
 def _safe(value: object, fallback: str) -> str:
     text = str(value or fallback)
     return re.sub(r"[^A-Za-z0-9._-]+", "_", text)[:180] or fallback
+
+
+def _effective_effort(payload: dict) -> tuple[str, str]:
+    effort = payload.get("effort")
+    if isinstance(effort, dict):
+        level = str(effort.get("level") or "")
+        if level:
+            return level, "hook_payload"
+    inherited = str(os.environ.get("CLAUDE_EFFORT") or "")
+    if inherited:
+        return inherited, "CLAUDE_EFFORT"
+    return "", "missing"
+
+
+def _write_json(path: pathlib.Path, payload: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
 
 
 def main() -> int:
@@ -47,9 +73,11 @@ def main() -> int:
     ).encode("utf-8")
     tool_use_id = _safe(payload.get("tool_use_id"), "unknown-tool-use")
     actor = _safe(actor_id, "UNKNOWN")
+    requested_effort = str(os.environ.get("CLAUDE_CODE_EFFORT_LEVEL") or "")
+    effective_effort, effort_source = _effective_effort(payload)
 
-    receipt = {
-        "schemaVersion": 1,
+    common = {
+        "schemaVersion": 2,
         "actor_id": actor,
         "hook_event_name": str(payload.get("hook_event_name") or "PostToolUse"),
         "tool_name": tool_name,
@@ -59,14 +87,35 @@ def main() -> int:
         "query": str(tool_input.get("query") or "") if tool_name == "WebSearch" else "",
         "url": str(tool_input.get("url") or "") if tool_name == "WebFetch" else "",
         "tool_response_sha256": hashlib.sha256(response_bytes).hexdigest(),
+        "requested_effort": requested_effort,
+        "effective_effort": effective_effort,
+        "effort_readback_source": effort_source,
         "post_tool_success": True,
     }
-    target = pathlib.Path(audit_root) / actor
-    target.mkdir(parents=True, exist_ok=True)
-    path = target / f"{tool_use_id}.json"
-    path.write_text(
-        json.dumps(receipt, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
+
+    rejection_reason = ""
+    if requested_effort not in EFFORT_LEVELS:
+        rejection_reason = "requested_effort_missing_or_invalid"
+    elif effective_effort not in EFFORT_LEVELS:
+        rejection_reason = "effective_effort_missing_or_unsupported"
+    elif effective_effort != requested_effort:
+        rejection_reason = "effective_effort_mismatch"
+
+    if rejection_reason:
+        rejected = dict(common)
+        rejected["quality_evidence_accepted"] = False
+        rejected["rejection_reason"] = rejection_reason
+        _write_json(
+            pathlib.Path(audit_root) / "_rejected" / actor / f"{tool_use_id}.json",
+            rejected,
+        )
+        return 0
+
+    receipt = dict(common)
+    receipt["quality_evidence_accepted"] = True
+    _write_json(
+        pathlib.Path(audit_root) / actor / f"{tool_use_id}.json",
+        receipt,
     )
     return 0
 

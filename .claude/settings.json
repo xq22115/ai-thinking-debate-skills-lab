@@ -8,6 +8,17 @@
     ]
   },
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "WebSearch|WebFetch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/allow-a03-web-research.py\""
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "WebSearch|WebFetch",
