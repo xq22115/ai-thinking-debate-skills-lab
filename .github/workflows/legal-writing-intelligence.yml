@@ -1,0 +1,99 @@
+name: Legal Writing Intelligence
+
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+  push:
+    paths:
+      - 'skills/legal-writing-intelligence/**'
+      - '.github/workflows/legal-writing-intelligence.yml'
+  pull_request:
+    paths:
+      - 'skills/legal-writing-intelligence/**'
+      - '.github/workflows/legal-writing-intelligence.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: legal-writing-intelligence-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile scripts
+        run: |
+          python -m py_compile skills/legal-writing-intelligence/src/research.py
+          python -m py_compile skills/legal-writing-intelligence/src/writer.py
+      - name: Run regression tests
+        run: python -m unittest discover -s skills/legal-writing-intelligence/tests -p 'test_*.py'
+
+  research:
+    if: github.event_name != 'pull_request' && github.actor != 'github-actions[bot]'
+    needs: validate
+    strategy:
+      fail-fast: false
+      matrix:
+        agent:
+          - agent-01
+          - agent-02
+          - agent-03
+          - agent-04
+          - agent-05
+          - agent-06
+          - agent-07
+          - agent-08
+          - agent-09
+          - agent-10
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run independent research branch
+        run: |
+          mkdir -p out
+          python skills/legal-writing-intelligence/src/research.py \
+            --agent '${{ matrix.agent }}' \
+            --out 'out/${{ matrix.agent }}.json'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: legal-writing-${{ matrix.agent }}
+          path: out/${{ matrix.agent }}.json
+          retention-days: 30
+
+  adjudicate:
+    if: github.event_name != 'pull_request' && github.actor != 'github-actions[bot]'
+    needs: research
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: legal-writing-agent-*
+          path: agent-results
+          merge-multiple: true
+      - name: Adjudicate all ten branches
+        run: |
+          python skills/legal-writing-intelligence/src/research.py \
+            --adjudicate agent-results \
+            --out adjudicated/report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: legal-writing-adjudicated-${{ github.run_id }}
+          path: adjudicated/report.json
+          retention-days: 30
