@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "window": {
+    "start": "2026-06-01",
+    "end": "2026-08-31"
+  },
+  "lane_count": 10,
+  "policy": {
+    "primary_source_only_for_acceptance": true,
+    "cross_lane_url_duplicates_forbidden": true,
+    "cross_lane_product_duplicates_forbidden": true,
+    "network_failure_is_not_success": true,
+    "discovery_candidate_limit_per_lane": 20
+  },
+  "lanes": [
+    {
+      "id": "lane-01-harvey",
+      "product": "Harvey II",
+      "mission": "Track Harvey's legal drafting/agent capabilities and verify dated product changes from Harvey-owned sources.",
+      "official_domains": ["harvey.ai", "www.harvey.ai"],
+      "discovery_urls": ["https://www.harvey.ai/blog"],
+      "seed": {
+        "url": "https://www.harvey.ai/blog/introducing-harvey-ii",
+        "release_date": "2026-08-18",
+        "required_terms": ["Harvey II", "agents", "context"]
+      }
+    },
+    {
+      "id": "lane-02-lexis",
+      "product": "Lexis+ with Protégé",
+      "mission": "Track LexisNexis agentic legal research-to-drafting capabilities and verify official dated releases.",
+      "official_domains": ["lexisnexis.com", "www.lexisnexis.com"],
+      "discovery_urls": ["https://www.lexisnexis.com/community/pressroom/"],
+      "seed": {
+        "url": "https://www.lexisnexis.com/community/pressroom/b/news/posts/lexis-with-protege-accelerates-frictionless-agentic-productivity-from-first-idea-to-review-ready-legal-work-product",
+        "release_date": "2026-08-24",
+        "required_terms": ["Protégé", "drafting", "legal"]
+      }
+    },
+    {
+      "id": "lane-03-cocounsel",
+      "product": "CoCounsel Legal",
+      "mission": "Track Thomson Reuters CoCounsel legal work-product and drafting capabilities from official legal product sources.",
+      "official_domains": ["legal.thomsonreuters.com"],
+      "discovery_urls": ["https://legal.thomsonreuters.com/blog/"],
+      "seed": {
+        "url": "https://legal.thomsonreuters.com/blog/the-next-generation-of-cocounsel-legal/",
+        "release_date": "2026-08-21",
+        "required_terms": ["CoCounsel", "legal", "draft"]
+      }
+    },
+    {
+      "id": "lane-04-gemini-legal",
+      "product": "Gemini Enterprise for Legal",
+      "mission": "Track Google's purpose-built legal agents, drafting and house-style controls from Google-owned announcements.",
+      "official_domains": ["cloud.google.com"],
+      "discovery_urls": ["https://cloud.google.com/blog/products/ai-machine-learning"],
+      "seed": {
+        "url": "https://cloud.google.com/blog/products/ai-machine-learning/introducing-gemini-enterprise-for-legal",
+        "release_date": "2026-08-25",
+        "required_terms": ["Gemini Enterprise for Legal", "legal", "draft"]
+      }
+    },
+    {
+      "id": "lane-05-filevine",
+      "product": "Filevine LOIS Console",
+      "mission": "Track Filevine's legal operating intelligence agents and matter-context work-product capabilities from Filevine sources.",
+      "official_domains": ["filevine.com", "www.filevine.com"],
+      "discovery_urls": ["https://www.filevine.com/news/"],
+      "seed": {
+        "url": "https://www.filevine.com/news/filevine-launches-lois-console-ai-that-runs-the-firm/",
+        "release_date": "2026-06-02",
+        "required_terms": ["LOIS", "AI", "legal"]
+      }
+    },
+    {
+      "id": "lane-06-legaltype",
+      "product": "LegalType AI",
+      "mission": "Track LegalType's purpose-built legal writing AI from its own press/product pages.",
+      "official_domains": ["legaltype.com", "www.legaltype.com"],
+      "discovery_urls": ["https://legaltype.com/pages/press"],
+      "seed": {
+        "url": "https://legaltype.com/pages/press",
+        "release_date": "2026-06-11",
+        "required_terms": ["LegalType AI", "legal writing", "AI"]
+      }
+    },
+    {
+      "id": "lane-07-litera",
+      "product": "Litera Connected Drafting and Negotiation",
+      "mission": "Track Litera/Lito legal drafting, precedent, negotiation and response-language releases from Litera sources.",
+      "official_domains": ["litera.com", "www.litera.com"],
+      "discovery_urls": ["https://www.litera.com/press", "https://www.litera.com/resources"],
+      "seed": {
+        "url": "https://www.litera.com/press",
+        "release_date": "2026-08-18",
+        "required_terms": ["Contract Drafting", "Negotiation", "Legal AI"]
+      }
+    },
+    {
+      "id": "lane-08-wordsmith",
+      "product": "Wordsmith Intake",
+      "mission": "Track Wordsmith's in-house legal intake and drafting-agent workflows from Wordsmith-owned product/blog sources.",
+      "official_domains": ["wordsmith.ai", "www.wordsmith.ai"],
+      "discovery_urls": ["https://www.wordsmith.ai/blog"],
+      "seed": {
+        "url": "https://www.wordsmith.ai/blog/introducing-wordsmith-intake",
+        "release_date": "2026-08-14",
+        "required_terms": ["Intake", "legal", "Agent"]
+      }
+    },
+    {
+      "id": "lane-09-spellbook",
+      "product": "Spellbook Autonomous Contract Management",
+      "mission": "Track Spellbook's contract drafting/review lifecycle automation from Spellbook-owned announcements.",
+      "official_domains": ["spellbook.com", "www.spellbook.com"],
+      "discovery_urls": ["https://spellbook.com/blog"],
+      "seed": {
+        "url": "https://spellbook.com/blog/introducing-acm",
+        "release_date": "2026-06-30",
+        "required_terms": ["Autonomous Contract Management", "AI", "contract"]
+      }
+    },
+    {
+      "id": "lane-10-lankalaw",
+      "product": "Lanka Law AI Legal Drafting Tool",
+      "mission": "Track Lanka Law's public AI-assisted legal document drafting service and verify official release details.",
+      "official_domains": ["lankalaw.net", "www.lankalaw.net"],
+      "discovery_urls": ["https://lankalaw.net/"],
+      "seed": {
+        "url": "https://lankalaw.net/2026/06/08/lanka-law-launches-ai-legal-drafting-tool-bringing-professional-document-automation-to-lawyers-businesses-and-the-public/",
+        "release_date": "2026-06-08",
+        "required_terms": ["AI Legal Drafting Tool", "draft", "legal"]
+      }
+    }
+  ]
+}
