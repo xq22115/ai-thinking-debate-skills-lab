@@ -1,125 +1,160 @@
-# Source Matrix — AI Efficiency Operating System v0.2
+# Source Matrix — AI Efficiency Operating System v0.3
 
-Date: 2026-08-28  
+Date: 2026-08-29  
+Version: `0.3.0-rc1`  
 Canonical package: `ai-efficiency-operating-system`
 
-This file records where v0.2 mechanisms came from. It deliberately distinguishes explicit user rules, recovered account history, current repository truth, external research and new synthesis.
+This matrix records the provenance used to evolve v0.3. It deliberately separates explicit user directives, recovered account artifacts/chats, current repository truth, current official external sources and assistant synthesis.
 
 ## Provenance classes
 
-- `USER_DIRECTIVE` — explicit user instruction.
-- `ACCOUNT_CHAT_RECOVERY` — prior-account conversations/files recovered in this run; substantial but not provably exhaustive.
+- `USER_DIRECTIVE` — explicit requirement from the user.
+- `ACCOUNT_CHAT_RECOVERY` — prior-account chats or durable Library artifacts recovered in this run; substantial but not provably exhaustive.
 - `REPOSITORY_CANONICAL` — current canonical repository artifacts.
 - `EXTERNAL_RESEARCH` — current official/vendor/academic evidence.
-- `ASSISTANT_SYNTHESIS` — formalization created in this evolution pass.
+- `ASSISTANT_SYNTHESIS` — formal integration created here; never misrepresented as a direct user instruction.
 - `REQUIRES_CONFIRMATION` — insufficient evidence for promotion.
 
-## Prior-conversation clusters recovered
+## Cross-chat / durable-account recovery
 
-| Date / chat cluster | High-value rule recovered | v0.2 destination |
+| Date / artifact or chat cluster | Recovered mechanism | v0.3 destination |
 |---|---|---|
-| 2026-08-20 — `驗證能力橋接 Runtime`, `代理模式解析` | Ordinary Chat remains the control center; copying chat is not capability bridging; real execution requires an authorized runtime and owning-runtime read-back. A genuine agent needs runtime/session receipts, not a persona/read-only relay. | capability bridge, real-agent proof, completion |
-| 2026-08-21 — `全面提升內容品質` | Quality needs a closed loop rather than prompt length. Recovered failure classes include specification–behavior gap, proxy depth/breadth, premature narrative lock-in, context crowding, evaluator Goodhart/bias and local-revision regression. Depth should change the global model; breadth uses a coverage frontier. | coverage frontier, model-delta depth, skill evolution |
-| 2026-08-21–23 — `全域深度思考設定`, `全域強制深度思考設定` | Genuine depth = more analysis/evidence/falsification/verification. Fixed waits, polling, tool/network wait, streaming throttling and token-drip are not reasoning. Explicit source/agent/duration floors must be evidenced, never simulated. | depth test, research contract, stop policy |
-| 2026-08-23 — `設定背景代理操作` | Do not steal focus or surface windows. Prefer API/CLI/MCP/DOM/Accessibility; use screenshots only as needed evidence; reversible exploration first. | background-nondisruptive execution |
-| 2026-08-24–25 — `修復輸出限制與卡頓`, `深度思考與卡頓比較` | “不要秒回答” means do actual research/thinking, not make output stutter. Reasoning depth and token/render/UI latency are separate. | performance contract, hot-path control |
-| 2026-08-25–27 — multi-chat lag / 429 / performance chats | Do not fix speed by closing required chats, disabling tools/features, reducing concurrency, lowering depth/quality or shrinking workload. Prefer common-root routing/context/cache/retry/serialization/resource fixes. | no-goal-shrink, retry/cache/backpressure, lock scope |
-| 2026-08-26 — `修復主任務控制問題` | Later context/tool/agent/memory/retrieval cannot overwrite the primary task. Explicit correction has priority. Search/found repo/tool success is not task completion. | task contract, correction reconciler, drift firewall |
-| 2026-08-26–27 — queue/continuation/tool-acquisition work | Long work requires checkpoints, event-sourced state, idempotency/fencing, one owner per mutable target and resume without duplicated side effects. | durable journal, idempotent resume, target lock |
-| 2026-08-27 — `提升GPT對話效能`, `全面提升輸出效能`, `全面優化GPT對話模式` | Lean front door; demand-load context/tools; preserve all capabilities. Keep heavy evidence/history transforms off the hot path and avoid repeated full accumulated-state work. | progressive disclosure, lean dedup, demand loader, hot-path control |
-| 2026-08-28 — `鎖定主任務` and convergence work | Current owning `main`/runtime beats stale PR/chat summaries. Recheck source revision, owner/supersession and target before mutation. Repository PASS cannot replace owning-product PASS. | target identity lock, completion/read-back |
-| 2026-08-28 — current request | Continue collecting other chats, use ten-agent division, fully evolve the efficiency package, avoid naming confusion and retain one best solution. | package-wide A01–A10 review; single canonical package |
+| 2026-08-20 — ordinary Chat / runtime bridging chats | Ordinary Chat can remain the natural-language control plane, but conversation relay is not capability execution. Real action needs an authorized runtime and receipts. | capability bridge + completion truth |
+| 2026-08-21 — quality/evolution chats | Quality is a closed loop, not prompt length. Preserve global-model delta, coverage frontier, failure attribution and regression protection. | reasoning + evolution |
+| 2026-08-21–23 — deep-thinking controls | Genuine depth requires analysis/evidence/falsification; waiting, polling and token drip are not reasoning. | model-delta depth + research contract |
+| 2026-08-23 — background agent operation | Automation should avoid focus theft; prefer API/CLI/MCP/DOM/Accessibility and reversible/background paths. | background nondisruptive execution |
+| 2026-08-24–25 — output stutter vs reasoning | “Do not answer instantly” means do real work, not make output stutter. Reasoning time and UI/output cadence are different. | performance budgets |
+| 2026-08-25–28 — multi-chat / 429 / stream / history repair | Preserve many chats, tools, quality and depth; remove hot-path/history/retry/lock amplification instead of shrinking workload. | performance + no-goal-shrink |
+| 2026-08-26 — primary-task control | Later tools/agents/retrieval/memory cannot silently overwrite the root task; explicit correction wins. | task contract + goal firewall |
+| 2026-08-26–28 — queue/continuation/cross-PR work | Long work needs durable state, current owner/ref, idempotency/fencing and resume without duplicate effects. | execution + continuity |
+| 2026-08-27 — context/tool efficiency | Discover many/load few; keep heavy context/evidence off always-hot paths. | progressive disclosure + observation cache |
+| 2026-08-28 — owner/supersession/read-back convergence | Live main/runtime evidence outranks stale PR/chat prose; same-owner writes serialize; repo PASS is not product PASS. | identity lock + verification |
+| 2026-08-28 — exact-10 runtime probe | Branches/personas/audit lanes cannot count as real agents; auth/runtime blockers must produce 0 verified rather than fake completion. | agent independence proof |
+| 2026-08-28 — `ordinary-chat-global-agent-convergence-2026-08-28.md` | Ten independent target/route identity checks; protected baseline; capability/deployment state separation; diagnosis parallel/finalization single-writer. | identity lock + execution topology |
+| 2026-08-28 — `ordinary-chat-github-repair-2026-08-28-v2.md` | Five-chat scale regression, lock only admission critical section, network settlement outside global lock, stale CI-generation coalescing. | performance + concurrency |
+| 2026-08-09 — `DeepControl-v5-Research-Basis.txt` | Failed-turn quarantine; semantic compaction rollback; path/hash observation cache; changed-strategy bounded retry + circuit breaker; worker/verifier split; event-driven wait; branch-scoped degradation. | 8 new v0.3 mechanisms |
+| 2026-08-09 — `AI_Agent_Engineering_Research_2026-08-09_Run2.md` | Instruction scope/precedence is host-specific; bounded continuity checkpoints; alternate-path invariants; protocol version awareness; activation precision/recall. Shared root cause: implicit context. | instruction/protocol/skill-admission modules |
+| 2026-08-09 — `AI_Repair_Evolution_Pack_2026_v0.3.0_DELTA.md` | Track sent/delivered/acknowledged/incorporated/verified separately; no universal instruction precedence; no “more skills is always better”; no generated-skill self-approval. | delivery state + admission gate |
+| 2026-08-10 — `00-LATEST-GITHUB-SNAPSHOT.md` | Per-agent context-window lineage/checkpoints; instruction provenance across sessions; skills as discovery/config/runtime harness components, not giant prompts. | context lineage + provenance |
+| 2026-08-10 — `validation_report(20260810-113744).md` | Temporal witness detects whole-store rollback; physical-file contract and reverse coverage prevent staged/described artifacts from passing. | temporal witness + materialization |
+| 2026 — Windows AI dictation deep research artifact | Distinguish raw text accuracy, correction intent and generated writing; track proper nouns/code-switch/hallucination/deletion. | input-fidelity module |
+| 2026 — memory/agent research artifact (`Deep Research report(1)`) | Recurrence-triggered memory consolidation, intent-aware context folding and failure-aware minimal specialist routing. | memory authority + adaptive routing |
+| 2026-08-29 — current continuation | Continue cross-chat recovery, deepen the same canonical skill package and use A01–A10 without creating name collisions. | v0.3 package-wide |
 
-## Durable account artifacts surfaced during recovery
+## Root-cause synthesis
 
-Account retrieval also surfaced material including:
+The strongest cross-source common cause is **implicit context**.
 
-- `SKILL.md` — versioned user-intent contract and verifier/runtime proof.
-- `Deep Agent Orchestration` — durable task graph and verified graph-state completion.
-- `ARCHITECTURE(8).md`, `ARCHITECTURE(9).md` — invariants, anti-goal-shrink and runtime truth.
-- `AGENTS.md` — context as scarce working memory, progressive disclosure and durable external state.
-- `V6_DECISION_MATRIX.md` — artificial wait/stream throttling rejected as depth evidence.
-- `ordinary_chat_global_convergence_matrix_2026-08-28.json` and related reports — `不卡頓 != 秒回`, current-owner/runtime acceptance and hot-path findings.
-- `AI_Repair_Evolution_Pack_2026_v0.3.0_DELTA.md` — bounded state packet, live reconciliation, resume/cross-session controls.
-- `00_GLOBAL_CUSTOM_INSTRUCTIONS.txt` — Goal/Success/Constraints/Blocker/Unknown control and observable completion.
-- `Deep Research report` — execute→evaluate→attribute→modify→holdout→promote/rollback.
-- `tool-call-data.json` — transport success separated from task success; exact task/thread identity matters.
+Efficiency and correctness collapse when the system silently assumes:
 
-These are recovery anchors, not proof that every account message was enumerated.
+1. active task/goal;
+2. active instruction precedence;
+3. surviving memory/state after compaction or resume;
+4. target owner/ref/version;
+5. permission/runtime availability;
+6. protocol semantics;
+7. agent independence;
+8. handoff incorporation;
+9. skill activation;
+10. completion.
+
+v0.3 turns these into explicit state, evidence and tests.
 
 ## Canonical repository sources
 
 ### `skills/06-evaluation-suite.md`
-Adopted: goal/evidence fidelity, falsification, marginal agent gain, state durability, tool truthfulness, regression control, completion discipline, clone/minority/noise/selective-retention evals, and completion-state separation.
+Provides goal/evidence fidelity, falsification, marginal-agent gain, durability, tool truthfulness, regression and completion-state discipline.
 
 ### `skills/07-deliberation-router-spec.md`
-Adopted: smallest useful topology, escalation/de-escalation, evidence-weighted judge, selective retention, and stopping when execution/eval is more informative.
+Provides smallest useful topology, escalation/de-escalation, evidence-weighted judging and selective retention.
 
 ### `skills/11-cross-chat-convergence.md`
-Adopted: archive→evidence gap→hypotheses→deliberation→root cause→compatibility→control plane→execution→receipts/evals→completion→recovery; exact repository/runtime evidence outranks remembered summaries for mutable state.
+Provides cross-chat convergence ordering and the rule that exact current repository/runtime evidence outranks remembered summaries for mutable state.
 
 ### Portable core dependencies
 `evidence-gap-research`, `competing-hypotheses`, `root-cause-clustering`, `compatibility-audit`, `capability-challenge`, `multi-agent-deliberation`, `durable-agent-control-plane`, `recoverable-state`, `completion-gate`.
 
-## 2026 external research calibration
+## Current official external calibration
 
-External evidence strengthens mechanisms; it does not override the active user contract.
+External sources calibrate mechanisms; they do not override the active user contract.
 
-1. OpenAI — **Model guidance**  
-   https://developers.openai.com/api/docs/guides/latest-model  
-   Lean prompts, single-owner instructions and relevant-tool exposure support context/token efficiency.
+1. **Model Context Protocol — 2026-07-28 Specification**  
+   https://blog.modelcontextprotocol.io/posts/2026-07-28/  
+   Current final release: stateless protocol core, request self-description, header routing, cacheable ordered list results, MRTR, extensions including Tasks, authorization hardening and deprecation policy. Design consequence: protocol behavior must be version-aware, and tool-list caching can reduce repeated discovery work.
 
-2. OpenAI — **A practical guide to building AI agents**  
-   https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/  
-   Model + tools + instructions; use deterministic solutions where autonomy is unnecessary.
+2. **OpenAI Release Notes — Codex, 2026-08-24**  
+   https://openai.com/products/release-notes/  
+   `codex mcp-server` is deprecated; use Codex app server. Design consequence: historical architecture must not freeze a deprecated execution bridge as canonical.
 
-3. OpenAI — **The next evolution of the Agents SDK** (2026-04-15)  
-   https://openai.com/index/the-next-evolution-of-the-agents-sdk/  
-   Controlled computer/sandbox environments support long-horizon execution.
+3. **Model Context Protocol — 2026-07-28 Release Candidate / migration framing**  
+   https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate/  
+   Documents breaking changes and version migration. Design consequence: old and new MCP behavior require explicit compatibility branches.
 
-4. OpenAI — **Designing AI agents to resist prompt injection** (2026-03-11)  
-   https://openai.com/index/designing-agents-to-resist-prompt-injection/  
-   Constrain the impact/blast radius of misleading external context, not only strings.
+4. **OpenAI current agent/model guidance**  
+   Used for lean instructions, relevant-tool exposure and deterministic execution where autonomy is unnecessary.
 
-5. Anthropic — **Effective context engineering for AI agents**  
-   https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents  
-   Context is finite; compaction, structured notes and specialized subagents are complementary.
+5. **Anthropic context engineering / multi-agent research engineering**  
+   Used for context scarcity, compaction, specialized subagents and coordination cost of over-spawning.
 
-6. Anthropic — **How we built our multi-agent research system**  
-   https://www.anthropic.com/engineering/multi-agent-research-system  
-   Parallel exploration helps some complex research, but coordination/over-spawning costs require routing and distillation.
+6. **2026 context/memory/agent research recovered in account Library**  
+   Used only as research signal for recurrence-based memory consolidation, intent-aware context folding, failure-aware specialist routing and skill evolution. No single paper is treated as universal production proof.
 
-7. Anthropic — **How we contain Claude across products** (2026-05-25)  
-   https://www.anthropic.com/engineering/how-we-contain-claude  
-   More capable agents require deliberate blast-radius containment.
+## Current repository truth at start of v0.3 write
 
-8. Eslami (2026) — **Dynamic Coalition Formation and Communication Pricing in Skill-Based Agentic AI Systems**  
-   https://arxiv.org/abs/2608.07532  
-   Research signal for marginal-value agent activation and communication-edge cost; not treated as a universal production guarantee.
+Immediately before core object creation, live `main` was re-read at:
 
-9. Ye et al. (2026) — **Meta Context Engineering via Agentic Skill Evolution**  
-   https://arxiv.org/abs/2601.21557  
-   Research signal for co-evolving context-engineering skills through execution/evaluation feedback.
+`e240855c5026856ff104d8b080b09187a9e32ad6`
 
-10. Zhang et al. — **Agentic Context Engineering: Evolving Contexts for Self-Improving Language Models**  
-    https://arxiv.org/abs/2510.04618  
-    Research signal for structured incremental context evolution that avoids context collapse/brevity loss.
+Base tree:
+
+`0c3398175f9c05e273c57992730ec4c8037feed9`
+
+That head already contains concurrent repository work after the previous efficiency-package update. v0.3 therefore builds from live main and must use a non-force fast-forward update; it must not overwrite concurrent work using the older `5fe0e072...` head.
+
+The final verification file must refresh this after writes and record the actual v0.3 commit/read-back.
+
+## Input-fidelity sub-contract
+
+Cross-chat speech/dictation work adds a general efficiency lesson: preprocessing errors can masquerade as reasoning errors.
+
+Keep separate:
+
+- raw input fidelity;
+- correction intent;
+- generated rewrite quality.
+
+Do not let cleanup change technical terms, proper nouns, dates/numbers or final corrections and then blame the reasoning layer.
+
+## Memory policy
+
+Durable memory should store validated mechanisms, not every conversational event.
+
+Promote only with:
+
+- recurrence or high materiality;
+- evidence;
+- correct scope/version;
+- provenance;
+- retest trigger.
+
+Transient outages and failed turns remain quarantined/ephemeral.
 
 ## Conflict-resolution order
 
-1. current explicit user correction for the user's task;
+1. current explicit user correction;
 2. exact owning-runtime evidence for mutable runtime state;
-3. current exact repository revision for repository state;
-4. current primary/official source for product/API behavior;
-5. independent deterministic/runtime corroboration;
-6. coherent inference;
-7. popularity/majority only as weak evidence.
-
-External research cannot override hard user constraints. Assistant synthesis must remain labeled.
+3. current exact repository/object state for repository facts;
+4. current official primary source for product/protocol behavior;
+5. deterministic/independent corroboration;
+6. validated durable account artifact;
+7. coherent assistant synthesis;
+8. popularity/majority as weak evidence only.
 
 ## Coverage boundary
 
-v0.2 substantially expands cross-chat recovery versus v0.1, but the retrieval interface did not expose a complete account export/list whose cardinality could be independently verified.
+This continuation materially expands recovery beyond v0.2, including previously missed durable artifacts and cross-chat clusters.
 
-`ACCOUNT_CHAT_RECOVERY = SUBSTANTIAL`  
+`ACCOUNT_CHAT_RECOVERY = EXPANDED_SUBSTANTIAL`  
 `ACCOUNT_WIDE_EXHAUSTIVE = UNVERIFIED`
+
+The retrieval surface still does not expose a provably complete account message inventory/cardinality, so exhaustive-account coverage must not be claimed.

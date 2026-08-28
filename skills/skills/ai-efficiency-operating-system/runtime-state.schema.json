@@ -1,16 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/xq22115/ai-thinking-debate-skills-lab/skills/skills/ai-efficiency-operating-system/runtime-state.schema.json",
-  "title": "AI Efficiency Operating System Runtime State",
+  "title": "AI Efficiency Operating System Runtime State v0.3",
   "type": "object",
-  "required": [
-    "task_id",
-    "run_id",
-    "goal_hash",
-    "task_contract",
-    "completion_state",
-    "pending_obligations"
-  ],
+  "required": ["task_id", "run_id", "goal_hash", "task_contract", "completion_state", "pending_obligations"],
   "properties": {
     "task_id": {"type": "string", "minLength": 1},
     "run_id": {"type": "string", "minLength": 1},
@@ -34,19 +27,126 @@
     "identity_lock": {
       "type": ["object", "null"],
       "properties": {
-        "surface": {"type": "string"},
+        "surface": {"type": ["string", "null"]},
         "repository": {"type": ["string", "null"]},
         "ref": {"type": ["string", "null"]},
         "path": {"type": ["string", "null"]},
         "version": {"type": ["string", "null"]},
         "runtime": {"type": ["string", "null"]},
         "owner": {"type": ["string", "null"]},
+        "supersession": {"type": ["string", "null"]},
         "revision": {"type": ["string", "null"]},
-        "permission": {"type": ["string", "null"]}
+        "permission": {"type": ["string", "null"]},
+        "merge_base": {"type": ["string", "null"]},
+        "ahead_by": {"type": ["integer", "null"]},
+        "behind_by": {"type": ["integer", "null"]}
+      },
+      "additionalProperties": true
+    },
+    "instruction_scope_manifest": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_id", "surface", "status"],
+        "properties": {
+          "source_id": {"type": "string"},
+          "surface": {"type": "string"},
+          "scope": {"type": ["string", "null"]},
+          "priority_or_merge_semantics": {"type": ["string", "null"]},
+          "version": {"type": ["string", "null"]},
+          "purpose": {"type": ["string", "null"]},
+          "status": {"type": "string"}
+        },
+        "additionalProperties": true
+      }
+    },
+    "instruction_provenance_ledger": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_id", "provenance"],
+        "properties": {
+          "source_id": {"type": "string"},
+          "provenance": {"type": "string"},
+          "introduced_at": {"type": ["string", "null"]},
+          "introduced_version": {"type": ["string", "null"]},
+          "evidence": {"type": ["string", "null"]},
+          "retest_triggers": {"type": "array", "items": {"type": "string"}},
+          "status": {"type": ["string", "null"]}
+        },
+        "additionalProperties": true
       }
     },
     "context_manifest": {"type": "array", "items": {"type": "object"}},
+    "context_lineage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["context_id"],
+        "properties": {
+          "context_id": {"type": "string"},
+          "parent_context_id": {"type": ["string", "null"]},
+          "checkpoint_id": {"type": ["string", "null"]},
+          "goal_hash": {"type": ["string", "null"]},
+          "inherited_digest": {"type": ["string", "null"]},
+          "local_delta_digest": {"type": ["string", "null"]},
+          "reconciled": {"type": "boolean"}
+        },
+        "additionalProperties": true
+      }
+    },
+    "memory_authority": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["memory_id", "authority", "status"],
+        "properties": {
+          "memory_id": {"type": "string"},
+          "authority": {"type": "string"},
+          "provenance": {"type": ["string", "null"]},
+          "scope": {"type": ["string", "null"]},
+          "version": {"type": ["string", "null"]},
+          "retest_triggers": {"type": "array", "items": {"type": "string"}},
+          "recurrence_count": {"type": "integer", "minimum": 0},
+          "status": {"type": "string"}
+        },
+        "additionalProperties": true
+      }
+    },
+    "input_fidelity": {
+      "type": ["object", "null"],
+      "properties": {
+        "raw_input_ref": {"type": ["string", "null"]},
+        "corrected_intent": {"type": ["string", "null"]},
+        "generated_rewrite_ref": {"type": ["string", "null"]},
+        "proper_nouns": {"type": "array", "items": {"type": "string"}},
+        "technical_terms": {"type": "array", "items": {"type": "string"}},
+        "corrections": {"type": "array", "items": {"type": "object"}},
+        "hallucination_count": {"type": "integer", "minimum": 0},
+        "deletion_count": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": true
+    },
     "tool_route": {"type": "array", "items": {"type": "object"}},
+    "protocol_contracts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["protocol", "protocol_version"],
+        "properties": {
+          "protocol": {"type": "string"},
+          "protocol_version": {"type": "string"},
+          "transport": {"type": ["string", "null"]},
+          "client_sdk": {"type": ["string", "null"]},
+          "server_sdk": {"type": ["string", "null"]},
+          "extensions": {"type": "array", "items": {"type": "string"}},
+          "auth_mode": {"type": ["string", "null"]},
+          "negotiated_capabilities": {"type": "array", "items": {"type": "string"}},
+          "verified": {"type": "boolean"}
+        },
+        "additionalProperties": true
+      }
+    },
     "agent_receipts": {"type": "array", "items": {"type": "object"}},
     "workstream_receipts": {"type": "array", "items": {"type": "object"}},
     "hypothesis_ledger": {"type": "array", "items": {"type": "object"}},
@@ -59,13 +159,137 @@
         "properties": {
           "event": {"type": "string"},
           "status": {"type": "string"},
-          "evidence": {"type": ["string", "null"]}
-        }
+          "evidence": {"type": ["string", "null"]},
+          "timestamp": {"type": ["string", "null"]},
+          "state_digest": {"type": ["string", "null"]}
+        },
+        "additionalProperties": true
+      }
+    },
+    "failed_turn_quarantine": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["turn_id", "reason", "state"],
+        "properties": {
+          "turn_id": {"type": "string"},
+          "reason": {"type": "string"},
+          "state": {"enum": ["QUARANTINED"]},
+          "raw_receipt": {"type": ["string", "null"]},
+          "may_replay": {"type": "boolean"}
+        },
+        "additionalProperties": true
+      }
+    },
+    "delivery_ledger": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["delivery_id", "state"],
+        "properties": {
+          "delivery_id": {"type": "string"},
+          "state": {"enum": ["SENT", "DELIVERED", "ACKNOWLEDGED", "INCORPORATED", "VERIFIED"]},
+          "sender": {"type": ["string", "null"]},
+          "receiver": {"type": ["string", "null"]},
+          "content_digest": {"type": ["string", "null"]},
+          "receipt": {"type": ["string", "null"]}
+        },
+        "additionalProperties": true
+      }
+    },
+    "observation_cache_index": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["cache_key", "content_hash"],
+        "properties": {
+          "cache_key": {"type": "string"},
+          "target_identity": {"type": ["string", "null"]},
+          "path_or_query": {"type": ["string", "null"]},
+          "revision_or_version": {"type": ["string", "null"]},
+          "content_hash": {"type": "string"},
+          "valid": {"type": "boolean"},
+          "invalidation_reason": {"type": ["string", "null"]}
+        },
+        "additionalProperties": true
+      }
+    },
+    "retry_state": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["failure_class", "attempt", "strategy_delta"],
+        "properties": {
+          "failure_class": {"type": "string"},
+          "attempt": {"type": "integer", "minimum": 1},
+          "strategy_delta": {"type": "string"},
+          "result": {"type": ["string", "null"]},
+          "receipt": {"type": ["string", "null"]}
+        },
+        "additionalProperties": true
+      }
+    },
+    "circuit_breakers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["failure_class", "state"],
+        "properties": {
+          "failure_class": {"type": "string"},
+          "state": {"enum": ["CLOSED", "OPEN", "HALF_OPEN"]},
+          "reason": {"type": ["string", "null"]},
+          "opened_after_attempt": {"type": ["integer", "null"]}
+        },
+        "additionalProperties": true
       }
     },
     "writer_lease": {"type": ["object", "null"]},
     "idempotency_ledger": {"type": "array", "items": {"type": "object"}},
     "mutation_receipts": {"type": "array", "items": {"type": "object"}},
+    "verifier_receipts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["claim", "verdict"],
+        "properties": {
+          "claim": {"type": "string"},
+          "verdict": {"enum": ["PASS", "FAIL", "BLOCKED", "UNVERIFIED"]},
+          "evidence_level": {"type": ["string", "null"]},
+          "target_revision": {"type": ["string", "null"]},
+          "receipt": {"type": ["string", "null"]}
+        },
+        "additionalProperties": true
+      }
+    },
+    "alternate_path_checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["invariant", "path", "verdict"],
+        "properties": {
+          "invariant": {"type": "string"},
+          "path": {"type": "string"},
+          "verdict": {"enum": ["PASS", "FAIL", "BLOCKED", "NOT_APPLICABLE", "UNVERIFIED"]},
+          "evidence": {"type": ["string", "null"]}
+        },
+        "additionalProperties": true
+      }
+    },
+    "temporal_witnesses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["witness_id", "frontier"],
+        "properties": {
+          "witness_id": {"type": "string"},
+          "frontier": {"type": "string"},
+          "hash": {"type": ["string", "null"]},
+          "stored_separately": {"type": "boolean"},
+          "verified_at": {"type": ["string", "null"]}
+        },
+        "additionalProperties": true
+      }
+    },
     "rollback_target": {"type": ["object", "string", "null"]},
     "completion_state": {"enum": ["DRAFTED", "PACKAGED", "IMPLEMENTED", "TESTED", "VERIFIED", "HOST_LIVE", "DEPLOYED", "HEALTHY"]},
     "pending_obligations": {"type": "array", "items": {"type": "string"}}

@@ -31,25 +31,32 @@ Durable task/run identity, isolated writer ownership, claims before mutation, cl
 
 ## Orchestration layer
 
-### ai-efficiency-operating-system — `0.2.0-rc1`
+### ai-efficiency-operating-system — `0.3.0-rc1`
 
 Canonical efficiency OS at repository path `skills/skills/ai-efficiency-operating-system/`.
 
-v0.2 evolves the original orchestration index into a layered runtime contract that composes the portable core with:
+v0.3 preserves v0.2's goal/evidence/context/execution architecture but deepens the root model:
 
-- immutable task/goal contracts plus correction/supersession reconciliation;
-- E0–E6 evidence gating and exact completion states;
-- progressive-disclosure context, claim-preserving compaction and lean instruction/tool loading;
-- capability truth states from discovery through verified invocation;
-- coverage-frontier research, falsification and model-delta depth tests;
-- adaptive multi-agent coalition routing, selective disagreement retention and real-agent receipt requirements;
-- parallel-read/serial-write, short critical sections, event journals, idempotency/fencing and safe resume;
-- non-disruptive background execution and capability bridging;
-- hot-path amplification, retry/cache/backpressure controls;
-- owning-runtime read-back and baseline/holdout skill evolution;
-- high-density verified finalization.
+> **implicit context is hidden state; hidden state must be made explicit, versioned, testable and recoverable.**
 
-This is an orchestration package, not a renamed duplicate of the nine portable core skills. It must preserve required capabilities, concurrency, deep reasoning and answer quality rather than trading them away for apparent speed.
+The package now composes the portable core with **47 unique machine-readable modules**, including:
+
+- immutable task/goal contracts, corrections, ten-dimensional target identity and no-goal-shrink invariants;
+- host/surface-specific instruction-scope/precedence audits plus instruction provenance and retest triggers;
+- progressive disclosure, per-agent context lineage, semantic compaction with invariant rollback and content-addressed observation caching;
+- failed-turn quarantine and recurrence-based memory authority rather than treating chat history as canonical state;
+- raw input vs corrected intent vs generated rewrite fidelity, including proper nouns and code-switch preservation;
+- E0–E6 evidence gating, coverage frontier, competing hypotheses and model-delta depth;
+- adaptive multi-agent coalitions, selective disagreement and strict runtime-agent receipt requirements;
+- parallel-read/serial-write ownership, short critical sections, durable event journal, idempotency/fencing and safe resume;
+- changed-strategy bounded retry with circuit breaker, event-driven waiting and branch-scoped degradation;
+- delivery truth from SENT → DELIVERED → ACKNOWLEDGED → INCORPORATED → VERIFIED;
+- version-aware protocol contracts, including MCP 2026-07-28 compatibility and current deprecation signals;
+- worker/verifier separation, alternate-path invariant testing, temporal rollback witnesses and physical materialization reverse coverage;
+- activation precision/recall, paired no-skill marginal utility, holdout/regression promotion and no self-approval;
+- hot-path amplification/retry/cache/backpressure controls and high-density verified finalization.
+
+This is an orchestration package, not a renamed duplicate of the nine portable core skills. It must preserve required capabilities, concurrency, genuine reasoning and answer quality rather than trading them away for apparent speed.
 
 Package files:
 
@@ -60,6 +67,8 @@ Package files:
 - `EVALS.md`
 - `VERIFICATION.md`
 - `CHANGELOG.md`
+
+Current package gate requires **47 unique modules and T01–T50** plus exact GitHub read-back. `HOST_LIVE` still requires owning-runtime invocation/postcondition evidence.
 
 ## Candidate supporting skills
 
@@ -111,4 +120,5 @@ A skill becomes stable only after:
 - security review;
 - current compatibility matrix;
 - version/provenance recording;
+- paired marginal-utility / no-skill comparison for automatically routed skills;
 - target-host execution evidence for any host-specific claim.

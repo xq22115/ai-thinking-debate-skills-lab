@@ -1,73 +1,71 @@
 ---
 name: ai-efficiency-operating-system
-description: Canonical orchestration skill for increasing verified AI task efficiency by protecting the real goal, minimizing context/tool waste, routing deliberation adaptively, making execution recoverable, and requiring exact-target read-back without sacrificing required capabilities or quality.
+description: Canonical orchestration skill for maximizing verified AI task progress by converting implicit context into explicit contracts, protecting the real goal, demand-loading context/tools, making execution recoverable, and requiring exact-target verification without sacrificing required capabilities, concurrency, reasoning depth or answer quality.
 ---
 
 # AI Efficiency Operating System
 
-Version: `0.2.0-rc1`  
-Status: `GITHUB_PACKAGE_EVOLVED / HOST_LIVE_UNVERIFIED`
+Version: `0.3.0-rc1`  
+Status: `GITHUB_PACKAGE_EVOLVED / HOST_LIVE_UNVERIFIED`  
+Canonical owner: `xq22115/ai-thinking-debate-skills-lab/skills/skills/ai-efficiency-operating-system`
 
-## 0. What changed from v0.1
+## 0. v0.3 thesis — implicit context is hidden state
 
-v0.1 was mostly an orchestration index. v0.2 turns the package into an executable operating contract.
+v0.2 established goal control, evidence levels, demand-loaded context/tools, recoverable execution and owning-runtime completion gates. Cross-chat recovery exposed a deeper shared failure class:
 
-The package now includes:
+> **Implicit context is hidden state, and hidden state is an efficiency/reliability bug.**
 
-- a durable task-contract compiler and correction/supersession reconciliation;
-- a concrete E0–E6 evidence ladder;
-- progressive-disclosure context management and claim-preserving compaction;
-- demand-loaded tool routing and a capability truth state machine;
-- an adaptive multi-agent coalition policy with proof requirements for real agent independence;
-- lock-scope, idempotency, fencing, event-journal and resume rules;
-- explicit separation of deep reasoning, generation, UI publishing, history work and tool/network latency;
-- an owning-runtime completion state machine;
-- a skill-evolution loop using baseline, failure attribution, holdout eval, promotion and rollback;
-- cross-chat source provenance and a dedicated evaluation suite.
+Agents become slow, wrong, repetitive or falsely complete when they silently assume:
 
-This package remains one canonical orchestration owner. It does not rename or duplicate the repository's portable core skills.
+- which user instruction is currently authoritative;
+- which host/surface/version an instruction applies to;
+- whether a summary preserved every protected invariant;
+- whether a child/resumed agent inherited the latest state;
+- whether a failed turn is allowed to become durable truth;
+- whether a cached observation still matches the current revision;
+- whether another retry actually changes the strategy;
+- whether a sent handoff was incorporated;
+- whether a protocol version/transport/auth assumption is current;
+- whether a skill should activate at all;
+- whether the worker that changed the target may also self-certify completion;
+- whether a restored state store is newer than the last irreversible effect;
+- whether files described by a validator physically exist.
 
-## 1. Root objective
+v0.3 converts those assumptions into explicit, inspectable and testable contracts.
 
-Maximize **verified goal attainment per unit of context, tool use, latency, repeated work and human correction** while preserving:
+This package remains the **single canonical efficiency orchestration owner**. Do not create `efficiency-v3`, `ai-efficiency-plus`, or parallel aliases for the same responsibility.
 
-- the user's actual goal;
-- hard constraints and non-goals;
-- required features and concurrency;
-- answer/reasoning quality;
+## 1. Root objective and protected invariants
+
+Maximize:
+
+> **verified goal attainment per unit of context, tool work, latency, repeated effort and human correction**
+
+while preserving the user's actual requirements.
+
+Protected invariants unless explicitly changed by the user:
+
+- the active `ROOT_GOAL`;
+- hard constraints and negative requirements;
+- required features and tools;
+- required concurrency / number of simultaneous chats or work units;
+- genuine reasoning and research depth;
+- answer quality;
+- native Stop/control ownership;
+- required workload size;
 - evidence quality;
-- recoverability;
+- recoverability and rollback;
 - truthful completion state.
 
-Efficiency is not "answer faster at any cost."  
-The invariant is:
+The performance invariant remains:
 
 > `不卡頓 != 秒回`
 
-Deep reasoning can take real work. UI stutter, fixed waits, token-drip, unnecessary lock contention, repeated full-history processing and indiscriminate tool/context loading are different problems and must not be confused with reasoning depth.
+Do not make the system look faster by reducing protected work. Deep reasoning time, model stream cadence, UI publication cadence, history/evidence materialization and tool/network I/O are separate budgets.
 
-## 2. Activation
+## 2. Compile the task before substantive work
 
-Activate the full workflow for:
-
-- complex or long-horizon tasks;
-- multi-tool / multi-runtime work;
-- GitHub or filesystem mutation;
-- cross-chat convergence;
-- deep research;
-- debugging/performance diagnosis;
-- multi-agent work;
-- tasks at risk of goal drift, false completion, repeated retries, context bloat or unsafe resume.
-
-For simple deterministic questions, use the minimum subset needed.
-
-## 3. Layered architecture
-
-### Layer A — Intent / Goal control
-
-Owns what the task **is**.
-
-Required task contract:
+Maintain a durable task contract:
 
 - `PRIMARY_TASK`
 - `DESIRED_END_STATE`
@@ -79,7 +77,7 @@ Required task contract:
 - `NEXT_ACTION`
 - `EVIDENCE`
 
-Incoming later content is classified as:
+Classify later user content as:
 
 - `CORRECTION`
 - `ADD`
@@ -87,109 +85,286 @@ Incoming later content is classified as:
 - `EXAMPLE`
 - `DISTRACTOR`
 
-Only an explicit user correction or stronger owning-target evidence may invalidate contradicted assumptions. Tool results, memory, summaries, agents and retrieved documents may inform the task but must not silently redefine it.
+An explicit user correction outranks an older assistant assumption. Retrieval, memory, summaries, tool output and agent opinions may update evidence but may not silently rewrite the task.
 
-Every material action must map back to Goal / Success / Constraints. If there is no credible causal path, do not execute it.
+Every substantive action/tool call must have a credible causal path to the active task contract. If it does not, do not execute it.
 
-### Layer B — Context / Tool economy
+## 3. Ten-dimensional target identity lock
 
-Treat context as scarce working memory.
+Before a material mutation, re-read the exact target rather than trusting stale prose.
 
-Use:
+Check, as applicable:
 
-1. a lean front door;
-2. compact capability/skill indexes;
-3. progressive disclosure;
-4. demand-loaded schemas/instructions/assets;
-5. claim-preserving compaction;
-6. isolated subtask contexts when useful;
-7. stable caching keyed by exact identity/version.
+1. active root goal / latest correction;
+2. product or execution surface;
+3. repository / workspace identity;
+4. canonical architecture or semantic owner;
+5. branch/ref/PR;
+6. exact head/revision/version;
+7. merge-base / ahead / behind / supersession relation;
+8. exact changed paths / object identities;
+9. exact-head test/review/readiness evidence;
+10. owning-runtime/native behavioral acceptance requirement.
+
+Current structured state outranks PR descriptions, old chat summaries and historical receipts for mutable facts.
+
+Cross-chat rule:
+
+> **diagnosis may fan out; shared mutable ownership and finalization are single-writer.**
+
+## 4. Instruction scope, precedence and provenance
+
+### 4.1 No universal instruction hierarchy
+
+Portable instructions do not imply portable precedence.
+
+For each active instruction source record:
+
+- source ID and provenance;
+- host/product surface;
+- path/account/workspace scope;
+- import/merge behavior;
+- priority or observed precedence;
+- applicable model/runtime/protocol version;
+- purpose;
+- evidence;
+- introduced date/version;
+- retest triggers;
+- current status.
+
+Do not assume `AGENTS.md`, `CLAUDE.md`, account Custom Instructions, repository instructions, skill instructions and runtime policy merge the same way across products.
+
+If precedence is ambiguous, use a harmless conflict probe against the exact host/version instead of guessing.
+
+### 4.2 Retest durable rules
+
+A workaround is not eternal truth.
+
+Retest or retire a durable instruction when any material dependency changes, including:
+
+- host/client version;
+- model family;
+- protocol version;
+- repository path/owner;
+- runtime or permission surface;
+- observed behavior contradicting the workaround;
+- upstream fix/deprecation.
+
+Keep provenance with the rule so later sessions know **why it exists**.
+
+## 5. Context economy, lineage and semantic compaction
+
+Treat context as scarce working memory, not as an append-only archive.
+
+Use progressive disclosure:
+
+1. task contract + compact capability index;
+2. selected skill metadata;
+3. selected `SKILL.md`;
+4. only required references/schemas/scripts;
+5. exact source evidence when a claim becomes material.
 
 Rules:
 
 - discover many, load few;
-- state each durable instruction once;
-- keep examples only when they encode a requirement or close a measured gap;
-- summaries are indexes, not sources of truth;
-- preserve task contract, claims, evidence, decisions, contradictions, minority hypotheses, pending obligations and exact source pointers across compaction;
-- rehydrate from source evidence when a claim becomes material again.
+- keep one semantic owner for each durable rule;
+- reference unchanged large evidence instead of reinjecting it;
+- summaries are navigation/index artifacts, not final authority;
+- rehydrate exact sources when the claim matters again.
 
-Capability truth is staged:
+### 5.1 Per-agent/session context lineage
 
-`DISCOVERED → FETCHED → CONFIGURED → INSTALLED → LOADABLE → INVOKABLE → VERIFIED`
+A subagent, resumed chat or delegated runtime may not share the same context window.
 
-Never collapse these states into a binary "available."
+Record:
 
-### Layer C — Reasoning / Research
+- parent run/session;
+- checkpoint ID;
+- inherited state digest;
+- local additions/corrections;
+- evidence pointers;
+- current goal hash;
+- reconciliation result before mutation.
 
-Deep reasoning is evidenced by **model delta**, not elapsed time.
+Never infer that a child inherited a correction merely because the parent did.
 
-A research/reasoning unit counts as depth only when it produces at least one of:
+### 5.2 Semantic compaction with rollback
 
-- a new mechanism;
-- a falsified hypothesis;
+Compaction must preserve semantic units.
+
+Do not split or discard:
+
+- tool call ↔ tool response pairs;
+- current task contract;
+- protected invariants;
+- exact evidence required for material claims;
+- unresolved contradictions;
+- strong minority hypotheses;
+- pending irreversible actions;
+- ownership/revision facts;
+- rollback target.
+
+After compaction, validate invariants. If a protected item is missing or changed, roll back the compaction or rehydrate from source.
+
+### 5.3 Content-addressed observation cache
+
+Cache stable large observations by:
+
+`target identity + query/path + revision/version + content hash`
+
+Reference the cache until any identity/content component changes.
+
+A blob SHA mismatch, branch move, file update, permission change or protocol/runtime change invalidates the relevant cache entry.
+
+## 6. Failed-turn and memory hygiene
+
+### 6.1 Failed turns are transactions
+
+A blocked, malformed, empty, interrupted or invalid turn does **not** become durable truth.
+
+Turn states:
+
+`RECEIVED → VALIDATED → COMMITTED`
+
+or:
+
+`RECEIVED/VALIDATED → QUARANTINED`
+
+Only committed, evidence-backed deltas may update durable task state.
+
+Examples of quarantined material:
+
+- auth-blocked runtime probe output presented as successful execution;
+- malformed connector request;
+- empty agent response;
+- tool call interrupted before postcondition;
+- unsupported inference from an error wrapper.
+
+### 6.2 Memory authority and recurrence
+
+Do not consolidate every event into durable memory.
+
+Promote memory/rules when a mechanism is:
+
+- recurrent or materially important;
+- validated by current evidence;
+- scoped to the correct surface/version;
+- provenance-labelled;
+- equipped with a retest/expiry trigger.
+
+A one-off outage cannot become “this tool is unavailable forever.”
+
+Prefer recurrence-triggered consolidation over expensive full-memory rewriting every turn.
+
+## 7. Input fidelity before reasoning
+
+When input passes through speech/dictation/cleanup or another preprocessing stage, separate:
+
+`RAW_INPUT → CORRECTED_INTENT → GENERATED_REWRITE`
+
+Do not measure them as one “accuracy” number.
+
+Preserve, unless explicitly corrected:
+
+- proper nouns;
+- technical terms and mixed-language tokens;
+- file/repository/product names;
+- dates/times;
+- negations;
+- numbers and identifiers;
+- the user's final course correction.
+
+Useful metrics:
+
+- Proper-Noun Exact Match;
+- Code-Switch Retention;
+- Correction Intent Accuracy;
+- Hallucination Rate;
+- Deletion Rate.
+
+Example: “下午兩點——不對，三點半” should resolve intent to 3:30 while the raw provenance remains distinguishable from AI cleanup.
+
+## 8. Reasoning and research: model delta, not performance theater
+
+A unit of work counts as deeper only if it adds at least one:
+
+- new mechanism;
+- falsified hypothesis;
 - stronger causal evidence;
-- a discriminating experiment;
-- a global-model update;
-- a sharper failure boundary.
+- discriminating experiment;
+- meaningful global-model delta;
+- sharper failure boundary.
 
-Do not count as depth:
+Not depth:
 
 - fixed waiting;
-- tool/network wait;
+- slow output;
+- token drip;
+- repeated polling;
+- tool/network waiting;
 - verbosity;
-- token-drip;
+- duplicated sources;
 - raw source count;
-- agent headcount.
+- role/headcount.
 
-For broad research, maintain a coverage frontier:
+Maintain a coverage frontier:
 
-- covered;
-- partial;
-- unknown;
-- excluded.
+- `COVERED`
+- `PARTIAL`
+- `UNKNOWN`
+- `EXCLUDED`
 
-Rank missing evidence by:
+Rank gaps by:
 
 `goal impact × uncertainty × blocking power × verifiability`
 
-Maintain competing hypotheses and actively seek falsifiers. If repeated failure invalidates a mechanism, change mechanism/source/route rather than repeating the same method.
+Maintain competing hypotheses and seek falsifiers. If the same mechanism repeatedly fails, change mechanism/route/source rather than retrying cosmetically.
 
-Stop research when another source/role is less informative than a discriminating test, execution, or read-back. If the active user contract explicitly mandates a source/agent/duration floor, that remains an acceptance obligation; do not fake it with duplicate sources, waiting or role labels.
+Stop research when testing/execution/read-back has higher expected information gain.
 
-### Layer D — Multi-agent / Execution
+## 9. Adaptive multi-agent topology
 
-Use the smallest coalition that adds distinct decision value.
+Use the smallest coalition that adds distinct value.
 
-A role is justified only if it adds a distinct:
+A role is justified only by a distinct:
 
 - evidence channel;
 - method;
 - capability;
 - falsification pressure;
 - verification duty;
-- domain specialization;
-- recovery/security obligation.
+- domain specialty;
+- security/recovery obligation.
 
-Do not default to full broadcast. Always retain:
+Route and retain:
 
 - new evidence;
 - material contradiction;
-- discriminating tests;
+- falsifiers/discriminating tests;
 - blocking risks;
 - strong minority evidence;
 - confidence changes with reasons.
 
-Compress:
+Compress repeated agreement and paraphrase.
 
-- repeated agreement;
-- paraphrases;
-- style-only comments;
-- unsupported confidence.
+### 9.1 A01–A10 canonical topology
 
-#### Real-agent proof
+Reuse these names only:
 
-Do not claim "10 real agents" from 10 labels.
+- **A01 Orchestrator** — task contract, source coverage, dependency graph, acceptance ownership.
+- **A02 Architect/Claimant** — candidate architecture and causal mechanism.
+- **A03 Source Research** — original chat/library/repository/current external evidence.
+- **A04 Root Cause** — shared mechanism clustering and discriminating tests.
+- **A05 Adversarial** — omission, proxy win, regression, injection and false-completion attacks.
+- **A06 Cross Exam** — user directive vs evidence vs synthesis; naming/claim challenge.
+- **A07 Implementer** — identity-locked scoped mutation.
+- **A08 Verifier** — structure, exact revision, alternate paths, read-back and owning-runtime acceptance.
+- **A09 Risk** — rollback, permissions, blast radius, compatibility and irreversible actions.
+- **A10 Adjudicator** — best evidence-weighted solution plus unresolved minority evidence.
+
+### 9.2 Real-agent proof
+
+Do not call ten role labels “ten agents.”
 
 A genuine independent-agent claim requires:
 
@@ -198,273 +373,337 @@ A genuine independent-agent claim requires:
 - task-bound terminal receipt;
 - evidence of non-shared execution when independence matters.
 
-If these are unavailable, label the work accurately as `INDEPENDENT_REVIEW_WORKSTREAMS`.
+Without them, label the work `INDEPENDENT_REVIEW_WORKSTREAMS`.
 
-#### A01–A10 canonical review topology
+## 10. Execution, ownership and retry
 
-Use the repository's existing names only:
+### 10.1 Parallel reads, serial conflicting writes
 
-- A01 Orchestrator — task contract, dependency graph, acceptance ownership.
-- A02 Architect/Claimant — candidate architecture and causal mechanism.
-- A03 Source Research — original chat/repository/current external evidence.
-- A04 Root Cause — shared mechanisms and discriminating tests.
-- A05 Adversarial — omissions, proxy wins, regression, false completion, injection.
-- A06 Cross Exam — user directive vs evidence vs synthesis; naming and unsupported claims.
-- A07 Implementer — identity-locked scoped mutation.
-- A08 Verifier — structure, exact revision, read-back and owning-runtime acceptance.
-- A09 Risk — rollback, permissions, blast radius, compatibility, irreversible actions.
-- A10 Adjudicator — best evidence-weighted solution plus unresolved minority evidence.
+Parallelize independent research/read-only inspections.
 
-#### Concurrency rules
+For mutable targets:
 
-Parallelize independent reads/research.
+- one current writer/owner per semantic target;
+- re-read the current revision immediately before write;
+- use CAS/expected-head/version tokens where possible;
+- serialize conflicting writes;
+- read back after mutation;
+- recompute downstream topology if another chat/worker advanced the target.
 
-Serialize writes that conflict on mutable state.
+### 10.2 Short critical sections
 
-Use:
+Hold locks/leases only around the minimum state transition that truly requires mutual exclusion.
 
-- one writer/owner per target;
-- fresh revision/SHA before replacement;
-- short critical sections;
-- slow network/model I/O outside shared locks unless correctness strictly requires otherwise;
-- idempotency keys;
-- fencing/version tokens;
-- no blind replay of rejected side effects;
-- event-sourced task/run journal;
-- checkpoints after irreversible/ownership-changing actions.
+Move slow:
 
-Resume must know:
+- network I/O;
+- model calls;
+- retries/backoff;
+- long validation;
+- remote settlement
 
-- what is complete;
-- what is pending;
-- what is unsafe to repeat;
-- what exact evidence already exists;
+outside shared/global critical sections unless correctness requires otherwise.
+
+A lock should protect admission/ownership, not unnecessarily serialize the entire remote operation.
+
+### 10.3 Changed-strategy retry + circuit breaker
+
+Every retry must state what changed:
+
+- route;
+- hypothesis;
+- parameters;
+- permission/auth state;
+- version;
+- timing/backoff;
+- target identity.
+
+Default failure-class cap: **3 attempts** unless the task contract or provider semantics justify another value.
+
+After the cap:
+
+- open a circuit breaker;
+- preserve the failure receipt;
+- update the hypothesis/route;
+- surface the blocker.
+
+Never blindly replay a rejected side effect.
+
+### 10.4 Event-driven waiting
+
+If the platform provides a task/event/hook state, persist the pending obligation and resume on signal rather than repeatedly running full reasoning merely to wait.
+
+Idle waiting is not deliberation.
+
+### 10.5 Branch-scoped degradation
+
+A local outage/restriction degrades only the affected branch/tool/surface.
+
+Do not globally disable unrelated capabilities because one executor is offline.
+
+This does not bypass higher-priority safety/platform restrictions.
+
+## 11. Durable continuity and handoff truth
+
+Chat history is not the canonical task database for long work.
+
+Persist:
+
+- task/run IDs;
+- goal hash/task contract;
 - current owner/revision;
-- rollback target.
+- event journal;
+- checkpoints;
+- irreversible receipts;
+- pending obligations;
+- idempotency/fencing state;
+- rollback target;
+- protocol/runtime identity.
 
-#### Background/non-disruptive execution
+Handoff/message states:
 
-For desktop/browser automation:
+`SENT → DELIVERED → ACKNOWLEDGED → INCORPORATED → VERIFIED`
 
-1. prefer API / CLI / MCP / DOM / Accessibility;
-2. avoid stealing focus or bringing windows forward;
-3. use scoped screenshots only when visual evidence is needed;
-4. explore reversibly first;
-5. require approval for destructive, irreversible or external-impact actions when appropriate.
+Do not collapse them.
 
-#### Capability bridging
+A successful send/hook/task transport is not domain completion. Receiver read-back proves incorporation; acceptance evidence proves verification.
 
-Conversation bridging is not execution.
+On resume, reconcile live state before acting.
 
-When ordinary Chat is the control surface and real execution is required:
+## 12. Protocol/version compatibility is part of correctness
 
-`Chat task contract → verified capability route → authorized runtime/session → executor/tool loop → receipts → verifier → owning-runtime read-back`
+Before protocol-sensitive behavior, record:
 
-Do not call a read-only relay or copied prompt an agent integration.
+- protocol version;
+- transport;
+- client/server SDK versions;
+- negotiated extensions/capabilities;
+- auth mode;
+- host/runtime version.
 
-### Layer E — Performance / Verification / Evolution
+For MCP specifically, the official `2026-07-28` release changes the protocol core to stateless request/response and removes the old initialize/session pattern. Apply those semantics only when the actual peer supports/negotiates that contract.
 
-#### Performance diagnosis
+Current architecture must also honor deprecations. OpenAI's 2026-08-24 release notes deprecate `codex mcp-server` in favor of **Codex app server**; old chat history must not freeze a deprecated transport as the permanent core.
 
-Do not "fix" latency by disabling required features, reducing required chats/tools, lowering reasoning depth, shortening required work or shrinking the task.
+Protocol assumptions are versioned evidence, not memories.
 
-Investigate:
+## 13. Skill admission: precision, recall and marginal utility
 
-- context pollution;
-- repeated tool/schema discovery;
-- duplicate full-history work;
-- cache misses;
-- scheduler/queue contention;
-- retries;
-- serialization;
-- shared locks held over slow I/O;
-- resource bottlenecks;
-- O(N²)-like incremental render/history amplification;
-- transport/backpressure scope.
+A skill can be individually “correct” and still reduce system quality if it triggers too broadly or adds context without value.
+
+Before promotion evaluate:
+
+1. positive trigger recall;
+2. hard-negative trigger precision;
+3. exact host/version compatibility;
+4. behavior/constraint coverage;
+5. context/token cost;
+6. paired baseline vs skill-enabled outcome;
+7. representative holdout/regression;
+8. alternate-path invariants;
+9. no protected capability regression.
+
+A generated/modified skill may **not self-approve**.
+
+“More skills” is not inherently better. Keep the minimum semantic owners that improve verified outcomes.
+
+## 14. Worker and completion judge separation
+
+For material completion, separate execution from certification.
+
+The worker/implementer may provide:
+
+- mutation receipt;
+- claimed postcondition;
+- tests it ran.
+
+A verifier must independently check the acceptance duty appropriate to the claim.
+
+Repository write ≠ host activation.  
+CI PASS ≠ deployment.  
+Transport success ≠ task success.  
+Agent “done” ≠ verified completion.
+
+## 15. Performance engineering without goal shrink
 
 Separate budgets for:
 
-- reasoning/research;
+- genuine reasoning/research;
 - model generation;
 - UI publish/render;
 - history/evidence materialization;
 - tool/network I/O.
 
-Hot path should process deltas. Heavy full-history materialization, hashing and expensive evidence transforms belong in cold paths/checkpoints when possible.
+Investigate:
 
-#### Evidence ladder
+- context pollution;
+- repeated schema/tool discovery;
+- duplicated full-history transforms;
+- cache misses;
+- retry storms;
+- queue/scheduler contention;
+- lock scope;
+- serialization;
+- cross-tab shared failure domains;
+- resource bottlenecks;
+- incremental O(N²)-like work;
+- stale workflow generations.
 
-Use `skillpack.json` as the machine-readable canonical definition.
+Hot paths should process deltas.
 
-Summary:
+Heavy full-history normalization, hashing, evidence materialization and global scans belong in cold paths/checkpoints when possible.
+
+Do not “fix” speed by:
+
+- reducing required chat count;
+- disabling required tools/features;
+- lowering reasoning depth;
+- lowering answer quality;
+- shortening required work;
+- hiding real 429/errors;
+- artificial token/character pacing.
+
+## 16. Evidence and completion state
+
+Evidence levels:
 
 - `E0` Unsupported
 - `E1` Indirect context
-- `E2` Authoritative static evidence
+- `E2` Authoritative static
 - `E3` Deterministic check
 - `E4` Independent corroboration
 - `E5` Owning-runtime postcondition
-- `E6` Repeated reliability / regression / recovery evidence
+- `E6` Repeated reliability/regression/recovery
 
-High-confidence completion, live, stable and healthy claims must not outrun this ladder.
-
-#### Completion state machine
-
-Never equate:
+Completion states:
 
 `DRAFTED → PACKAGED → IMPLEMENTED → TESTED → VERIFIED → HOST_LIVE → DEPLOYED → HEALTHY`
 
-Advancement requires the evidence appropriate to that exact state and exact target revision/environment.
+A claim cannot advance past its evidence.
 
-A file write or commit proves repository mutation, not host activation.  
-CI green proves only the checks that actually ran.  
-A successful tool request proves transport/action success, not necessarily task success.  
-An executor saying "done" is not verification.
+### Physical materialization gate
 
-After material mutation, read back the owning target.
+A package PASS requires both:
 
-#### Evolution loop
+- **declared → actual**: every required declared artifact physically exists;
+- **actual → declared**: every core artifact is represented by the package contract/catalog.
 
-Do not improve skills by endlessly appending prompts.
+Where material, verify exact hashes/content identities.
+
+Do not validate a file merely because a plan/report says it should exist.
+
+### Temporal witness
+
+For state whose rollback would repeat irreversible work or lose authority generation, keep an independent monotonic witness/frontier when practical.
+
+On resume/startup, reject a primary store that has regressed behind the witness.
+
+## 17. Alternate-path invariant testing
+
+Correctness/security controls must be tested on every materially distinct path that can bypass them.
+
+As relevant, test:
+
+- foreground;
+- background;
+- subagent;
+- worktree/branch;
+- compaction;
+- resume/restart;
+- headless;
+- cross-session;
+- alternate transport/provider.
+
+A foreground PASS cannot certify a background path that was never exercised.
+
+## 18. Runtime state contract
+
+Long-horizon state is defined in `runtime-state.schema.json` and includes:
+
+- task/run identity and goal hash;
+- task contract + target identity lock;
+- instruction scope/provenance;
+- context lineage;
+- memory authority;
+- input fidelity;
+- tool/protocol route;
+- agents/workstreams;
+- hypothesis/evidence ledgers;
+- event journal + failed-turn quarantine;
+- delivery ledger;
+- observation cache;
+- retry/circuit breaker state;
+- writer lease + idempotency;
+- mutation/verifier receipts;
+- alternate-path checks;
+- temporal witnesses;
+- rollback target;
+- completion state + pending obligations.
+
+## 19. Evolution loop
+
+Do not evolve by unbounded prompt accretion.
 
 Use:
 
-`freeze baseline → execute → evaluate → attribute failure → minimal causal change → representative/adversarial holdout → promote or rollback`
+`freeze baseline → execute → evaluate → attribute earliest causal failure → minimal causal patch → target set → protection set → hard negatives → holdout/regression → adjudicate → promote/hold/reject → rollback reference`
 
-Failure attribution should identify the layer:
+Record why a patch was added and what evidence would remove it later.
 
-- goal;
-- context;
-- tool/capability;
-- reasoning;
-- agent topology;
-- execution/concurrency;
-- performance;
-- verification;
-- output.
+Prefer deleting redundant instructions when a leaner contract performs equal or better.
 
-Promotion requires measurable improvement without regression of protected capabilities.
+## 20. Output contract
 
-## 4. Canonical composed skills
-
-This orchestrator composes, rather than duplicates:
-
-- `evidence-gap-research`
-- `competing-hypotheses`
-- `root-cause-clustering`
-- `compatibility-audit`
-- `capability-challenge`
-- `multi-agent-deliberation`
-- `durable-agent-control-plane`
-- `recoverable-state`
-- `completion-gate`
-
-The detailed v0.2 modules are machine-readable in `skillpack.json`.
-
-## 5. Runtime state
-
-A long task should be able to persist:
-
-- task/run IDs;
-- goal hash and task contract;
-- target identity lock;
-- context manifest;
-- tool route;
-- agent/workstream receipts;
-- hypothesis and evidence ledgers;
-- event journal;
-- writer lease;
-- idempotency ledger;
-- mutation/read-back receipts;
-- rollback target;
-- completion state;
-- pending obligations.
-
-See `runtime-state.schema.json`.
-
-## 6. Quality / efficiency metrics
-
-Measure the whole system, not just speed:
-
-- goal fidelity;
-- hard-constraint violations;
-- human correction count;
-- critical evidence coverage;
-- unsupported-claim / false-completion rate;
-- contradiction detection;
-- recovery success;
-- duplicated side effects;
-- regression escape;
-- context tokens per verified outcome;
-- tool calls per verified outcome;
-- duplicate-context ratio;
-- cache hit rate;
-- retry waste;
-- hot-path work per increment;
-- shared-lock external-I/O time;
-- marginal gain per added role;
-- minority-evidence retention;
-- time to owning-runtime read-back.
-
-A shorter answer may be better or worse. A longer answer may be better or worse. The metric is verified goal achievement under preserved constraints.
-
-## 7. Non-goals / rejected proxies
-
-Do not:
-
-- replace the current task with an easier neighboring task;
-- use later context or tool output to silently rewrite the goal;
-- disable required functionality to claim performance improvement;
-- reduce required concurrency as a workaround;
-- use fixed waiting, slow typing or token-drip as "deep thinking";
-- use raw source count or role count as a proxy for epistemic diversity;
-- broadcast every agent message;
-- keep retrying a falsified mechanism;
-- hold shared/global locks over slow external I/O without necessity;
-- replay side effects without idempotency proof;
-- treat summaries as source truth;
-- claim real agents without runtime receipts;
-- claim host-live from GitHub presence;
-- call CI PASS or process exit 0 "done" unless it proves the acceptance contract.
-
-## 8. Output contract
-
-For a substantive run, persist or return:
+For a substantive run, persist or report as applicable:
 
 1. task contract / goal hash;
-2. target identity lock;
-3. activated modules and why;
-4. context/tool route;
-5. evidence ladder and decisive evidence;
-6. hypothesis/falsifier state where relevant;
-7. agent topology plus independence status;
-8. execution plan / writer ownership / idempotency;
-9. mutation and read-back receipts;
-10. completion state;
-11. rollback target;
-12. unresolved obligations;
-13. concise final result.
+2. exact target identity;
+3. active instruction scope/provenance;
+4. activated modules and why;
+5. context/tool route;
+6. evidence/hypothesis state;
+7. agent topology + independence status;
+8. execution ownership/idempotency/retry state;
+9. mutation/read-back receipts;
+10. verifier/alternate-path evidence;
+11. completion state;
+12. rollback target;
+13. unresolved obligations/blockers;
+14. concise decision-focused final result.
 
-## 9. Package files
+## 21. Package files
 
-- `SKILL.md` — canonical human-readable operating contract.
-- `skillpack.json` — complete machine-readable v0.2 contract.
-- `runtime-state.schema.json` — durable state schema.
-- `SOURCE-MATRIX.md` — recovered cross-chat/repository/external provenance.
-- `EVALS.md` — behavioral, adversarial, performance and completion tests.
-- `VERIFICATION.md` — current repository verification and known limits.
-- `CHANGELOG.md` — version deltas.
+Required canonical files:
 
-## 10. Completion gate for this package
+- `SKILL.md`
+- `skillpack.json`
+- `runtime-state.schema.json`
+- `SOURCE-MATRIX.md`
+- `EVALS.md`
+- `VERIFICATION.md`
+- `CHANGELOG.md`
 
-`PACKAGED` requires all required package files, parseable JSON, unique module IDs and canonical naming.
+The catalog entry remains `skills/02-skills-catalog.md`.
 
-`GITHUB_COMMITTED` requires an exact GitHub commit/ref receipt.
+## 22. v0.3 completion gate
 
-`GITHUB_READ_BACK_VERIFIED` requires reading the files back from the updated target ref and verifying version/content/uniqueness.
+`PACKAGED` requires:
 
-`HOST_LIVE` requires a target-host invocation showing v0.2 is actually loaded and affects behavior.
+- all seven required package files physically present;
+- parseable JSON / JSON Schema;
+- **47 unique module IDs**;
+- A01–A10 exact unique role identities;
+- E0–E6 exactly once;
+- T01–T50 eval contract present;
+- catalog points to this same canonical package/version;
+- no competing efficiency alias.
 
-`HEALTHY` requires repeated/regression/recovery evidence.
+`GITHUB_COMMITTED` requires an exact commit/ref receipt.
+
+`GITHUB_READ_BACK_VERIFIED` requires exact-ref read-back of the committed artifacts and version/identity/count checks.
+
+`HOST_LIVE` requires the target host/runtime to load/invoke **this exact version** and an owning-runtime postcondition.
+
+`HEALTHY` requires repeated regression/recovery evidence.
 
 Never promote beyond the strongest observed evidence.
