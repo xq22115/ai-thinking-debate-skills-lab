@@ -10,7 +10,7 @@
     {"id":"agent-06","vendor":"Spellbook","query":"Spellbook Autonomous Contract Management drafting 2026","official_domains":["spellbook.com"],"watch_urls":["https://spellbook.com/blog/introducing-acm"]},
     {"id":"agent-07","vendor":"LegalOn","query":"LegalOn attorney built prompt workflows drafting 2026","official_domains":["legalontech.com"],"watch_urls":["https://www.legalontech.com/press-releases/legalon-launches-100-attorney-built-prompt-workflows-for-in-house-legal"]},
     {"id":"agent-08","vendor":"Juro","query":"Juro AI Review redline contracts 2026","official_domains":["juro.com","intercom.help"],"watch_urls":["https://intercom.help/juro/en/articles/12691465-ai-review-in-juro"]},
-    {"id":"agent-09","vendor":"Clio","query":"Clio Vincent Skills contract drafting standards legal AI 2026","official_domains":["clio.com"],"watch_urls":["https://www.clio.com/about/press/clio-releases-vincent-skills/"]},
+    {"id":"agent-09","vendor":"Wordsmith","query":"Wordsmith Intake legal AI agents drafting August 2026","official_domains":["wordsmith.ai"],"watch_urls":["https://www.wordsmith.ai/blog/introducing-wordsmith-intake"]},
     {"id":"agent-10","vendor":"Google Cloud","query":"Gemini Enterprise for Legal contract drafting house style 2026","official_domains":["cloud.google.com"],"watch_urls":["https://cloud.google.com/blog/products/ai-machine-learning/introducing-gemini-enterprise-for-legal"]}
   ]
 }
