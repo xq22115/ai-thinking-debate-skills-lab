@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "window": {"start": "2026-06-01", "end": "2026-08-31"},
+  "verified_at": "2026-08-28",
+  "verification_policy": "Admit only a distinct vendor/product with an official vendor page (or official hosted help center), an in-window release/update date, and an explicit legal drafting/writing/redlining/work-product capability.",
+  "reports": [
+    {
+      "agent_id":"agent-01","vendor":"Thomson Reuters","tool":"Next Generation CoCounsel Legal","release_date":"2026-08-20","date_precision":"day","source_kind":"official_press_release","official_url":"https://www.thomsonreuters.com/en/press-releases/2026/august/thomson-reuters-launches-next-generation-of-cocounsel-legal-the-ai-ecosystem-built-for-legal-professionals","writing_relevance":"Westlaw Brief Builder creates first-draft briefs; CoCounsel for Word includes a Drafting Agent for agreements; outputs are grounded in Westlaw/Practical Law.","adversarial_check":"Pass: purpose-built legal product, not a generic model; launch date is stated by Thomson Reuters.","status":"verified"
+    },
+    {
+      "agent_id":"agent-02","vendor":"LexisNexis","tool":"Lexis+ with Protégé — expanded agentic work-product capabilities","release_date":"2026-08-24","date_precision":"day","source_kind":"official_press_release","official_url":"https://www.lexisnexis.com/community/pressroom/b/news/posts/lexis-with-protege-accelerates-frictionless-agentic-productivity-from-first-idea-to-review-ready-legal-work-product","writing_relevance":"Designed to move legal professionals from first idea to review-ready work product using agents, skills, sources and model orchestration; drafting is a core legal workflow.","adversarial_check":"Pass: this is an in-window capability release, not merely an article describing an old product.","status":"verified"
+    },
+    {
+      "agent_id":"agent-03","vendor":"Harvey","tool":"Harvey for Word — June 2026 drafting update","release_date":"2026-06-11","date_precision":"day","source_kind":"official_product_update","official_url":"https://www.harvey.ai/blog/the-brief-june-2026","writing_relevance":"June release added improved legal redlining/context, agentic Word formatting, footnote editing, Writing Styles and model selection inside Word.","adversarial_check":"Pass: official product update with concrete drafting features and an in-window date.","status":"verified"
+    },
+    {
+      "agent_id":"agent-04","vendor":"Litera","tool":"Lito / Litera Legal AI Platform — June 2026 release","release_date":"2026-07-01","date_precision":"day","release_period":"June 2026","source_kind":"official_product_update","official_url":"https://www.litera.com/blog/whats-new-literas-legal-ai-platform-and-legal-ai-agent-june-2026-release","writing_relevance":"Lito exports AI artifacts to Word/PDF, adds legal skills/playbooks, and sits inside a platform focused on high-stakes legal work and document workflows.","adversarial_check":"Pass with note: page was published July 1 and labels the shipped bundle as the June 2026 release.","status":"verified"
+    },
+    {
+      "agent_id":"agent-05","vendor":"Legora","tool":"Legora Agent","release_date":"2026-06-04","date_precision":"day","source_kind":"official_product_update","official_url":"https://legora.com/blog/introducing-the-agent","writing_relevance":"Agent plans, executes, reviews and delivers legal work product; examples include house-style diligence reports and drafting redlines against new regulation.","adversarial_check":"Pass: vendor states general availability to all customers and provides drafting/redline examples.","status":"verified"
+    },
+    {
+      "agent_id":"agent-06","vendor":"Spellbook","tool":"Autonomous Contract Management (ACM)","release_date":"2026-06-30","date_precision":"day","source_kind":"official_product_launch","official_url":"https://spellbook.com/blog/introducing-acm","writing_relevance":"Contract-specific AI handles intake, first-pass review, negotiation workflow and end-to-end contract work while lawyers retain decision points.","adversarial_check":"Pass: official launch announcement; specialized commercial-contract AI rather than general writing.","status":"verified"
+    },
+    {
+      "agent_id":"agent-07","vendor":"LegalOn","tool":"Prompt Workflows — 100+ attorney-built workflows","release_date":"2026-07-28","date_precision":"day","source_kind":"official_press_release","official_url":"https://www.legalontech.com/press-releases/legalon-launches-100-attorney-built-prompt-workflows-for-in-house-legal","writing_relevance":"Attorney-built workflows span contracts, M&A, litigation and legal research; LegalOn states its Assistant can research, answer and draft, with workflows designed toward finished legal work product.","adversarial_check":"Pass: release is specific, in-window, available to existing customers, and created for in-house legal.","status":"verified"
+    },
+    {
+      "agent_id":"agent-08","vendor":"Juro","tool":"AI Review","release_date":"2026-07-22","date_precision":"day","source_kind":"official_help_center","official_url":"https://intercom.help/juro/en/articles/12691465-ai-review-in-juro","writing_relevance":"Agentic contract review/redlining uses playbooks and deal context to propose or assess contract changes inside Juro.","adversarial_check":"Pass with note: source is Juro's hosted official Help Center rather than its marketing domain.","status":"verified"
+    },
+    {
+      "agent_id":"agent-09","vendor":"top.legal","tool":"Summer 2026 Release — Bulk Drafting","release_date":"2026-06-24","date_precision":"day","source_kind":"official_changelog","official_url":"https://www.top.legal/en/changelog","writing_relevance":"Bulk drafting creates hundreds of contracts from one spreadsheet/playbook with clauses, party details and conditional text assembled automatically.","adversarial_check":"Pass: official changelog gives an exact release date and drafting behavior.","status":"verified"
+    },
+    {
+      "agent_id":"agent-10","vendor":"Junior.Law","tool":"JR3 Office Action Builder","release_date":"2026-07","date_precision":"month","source_kind":"official_product_release","official_url":"https://docs.junior.law/releases/office-action-builder","writing_relevance":"Builds an attorney-ready, 37 C.F.R. §1.121-compliant Office Action response .docx using live USPTO records, examiner analytics, templates and section-level instructions.","adversarial_check":"Pass with limitation: official release archive identifies July 2026 but does not expose an exact day on the public release page.","status":"verified_with_date_precision_limit"
+    }
+  ]
+}
