@@ -6,16 +6,16 @@ Use this protocol only when the user explicitly requires ten independent agents 
 
 Plugin: `ai-efficiency-operating-system`
 
-Expected package: `1.1.0-rc1`
+Expected package: `1.1.0-rc2`
 
-Pinned repository merge commit: `5c2b940c06c97c3ee48e9cdb8e66617032bb1ad2`
+Immutable plugin content identity: use the `plugin_tree_sha` recorded by `control-plane/ai-system/configs/ten-way-unanimity-mode.json` for the validation run. Do not pin a repository commit from inside the package; repository commits change when control-plane metadata changes even when plugin content does not.
 
 Required owning surfaces:
 
 - **ChatGPT Web**
 - **ChatGPT Desktop**
 
-Both surfaces must expose and exercise the same plugin revision. Repository presence, CI success, a marketplace manifest, or a plugin listing alone is not HOST_LIVE evidence.
+Both surfaces must expose and exercise the same plugin package identity. Repository presence, CI success, a marketplace manifest, or a plugin listing alone is not HOST_LIVE evidence.
 
 ## Install / sync boundary
 
@@ -31,7 +31,7 @@ Capture current evidence for each surface:
 
 - target account/workspace identity;
 - plugin visible/installed state;
-- observed plugin name/version/revision when exposed;
+- observed plugin name/version/revision or package identity when exposed;
 - fresh-session registration state;
 - one positive routing probe;
 - one simple-task hard negative;
@@ -45,7 +45,7 @@ The Web packet and Desktop packet must be current for the same validation run.
 
 The flat local executor launches A01–A10 with `max_parallel=10` and `require_all_concurrent=True`. Each lane must produce its own process/session/receipt and reach its decision without consuming another lane's verdict.
 
-1. **A01 — exact package identity**: verify package name/version/pinned revision and reject stale/superseded routes.
+1. **A01 — exact package identity**: verify package name/version/plugin tree identity and reject stale/superseded routes.
 2. **A02 — ChatGPT Web**: verify Web discovery, fresh-session availability and required behavior evidence.
 3. **A03 — ChatGPT Desktop**: verify Desktop discovery, fresh-session availability and required behavior evidence.
 4. **A04 — default routing**: positive plan/research/completion routing cases.
@@ -87,13 +87,13 @@ A release may report `PASS` only when all of the following are true in one run:
 - common runtime overlap is proven;
 - ChatGPT Web HOST_LIVE evidence is current;
 - ChatGPT Desktop HOST_LIVE evidence is current;
-- both surfaces correspond to the same exact plugin revision.
+- both surfaces correspond to the same exact `1.1.0-rc2` plugin tree identity.
 
 `9/10 PASS` is FAIL. Majority voting is not accepted.
 
 ## Completion states
 
-- `PASS` — dual-surface evidence current, exact revision matched, 10/10 PASS, common runtime overlap proven.
+- `PASS` — dual-surface evidence current, exact package identity matched, 10/10 PASS, common runtime overlap proven.
 - `FAIL` — a verifier disproves an acceptance condition or strict concurrency/unanimity fails.
 - `BLOCKED` — an external dependency prevents execution, including unavailable owning surface or unauthenticated real agent backend.
 - `HOST_IMPORT_BLOCKED` — ChatGPT workspace does not expose/permit the required plugin import/install route.
