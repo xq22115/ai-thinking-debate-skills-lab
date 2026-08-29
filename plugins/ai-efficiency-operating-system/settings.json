@@ -1,6 +1,6 @@
 {
-  "schema": 2,
-  "version": "1.0.0-rc1",
+  "schema": 3,
+  "version": "1.1.0-rc1",
   "mode": "executive-chief-of-staff",
   "status": "PACKAGE_CANDIDATE_HOST_LIVE_UNVERIFIED",
   "default_implicit_skills": [
@@ -15,12 +15,20 @@
     "autonomy-contract",
     "persistent-work-ledger"
   ],
+  "control_plane_contracts": [
+    "contracts/research-integrity.json",
+    "contracts/evaluator-governance.json",
+    "contracts/skill-composition.json",
+    "contracts/replay-checkpoints.json",
+    "contracts/validation-policy.json"
+  ],
   "routing": {
     "one_primary_phase_owner": true,
     "max_implicit_skills": 3,
     "precedence": ["user_correction", "authority", "host_capability", "task_phase", "semantic_similarity"],
     "phase_before_keyword_similarity": true,
-    "negative_routing_is_a_regression_gate": true
+    "negative_routing_is_a_regression_gate": true,
+    "task_relevant_skill_subgraph_only": true
   },
   "task_contract": {
     "required_fields": ["objective", "deliverables", "acceptance", "constraints", "authority_ceiling", "stop_conditions"],
@@ -39,7 +47,8 @@
       "high_impact_claim_target_independent_source_families": 3,
       "search_modes": ["NO_SEARCH", "TARGETED", "BROAD", "FORENSIC"],
       "preserve_conflicting_evidence": true,
-      "search_snippets_are_discovery_only_when_source_can_be_opened": true
+      "search_snippets_are_discovery_only_when_source_can_be_opened": true,
+      "query_novelty_and_citation_release": "contracts/research-integrity.json"
     },
     "STRICT_DEEPLOCK": {
       "explicit_only": true,
@@ -62,7 +71,10 @@
     "command_success_is_not_state_success": true,
     "executor_self_report_is_not_independent_proof": true,
     "unknown_is_first_class": true,
-    "state_sensitive_evidence_requires_current_epoch": true
+    "state_sensitive_evidence_requires_current_epoch": true,
+    "validation_layers": ["STRUCTURAL", "INSTALLED_TEMPLATE", "EXECUTABLE", "BEHAVIORAL_TARGET"],
+    "evaluator_governance": "contracts/evaluator-governance.json",
+    "validation_policy": "contracts/validation-policy.json"
   },
   "convergence": {
     "default_max_review_rounds": 3,
@@ -70,7 +82,9 @@
     "same_progress_fingerprint_stall_limit": 2,
     "skill_change_requires_target_protection_holdout": true,
     "whole_skill_folder_change_allowed": true,
-    "self_approval_forbidden": true
+    "self_approval_forbidden": true,
+    "coverage_aware_stop": "contracts/research-integrity.json",
+    "skill_promotion_policy": "contracts/validation-policy.json"
   },
   "memory": {
     "durable_classes": ["decision", "preference", "commitment", "verified_durable_fact"],
@@ -83,6 +97,7 @@
     "ordinary_skill_does_not_imply_background_polling": true,
     "ordinary_skill_does_not_imply_subagents": true,
     "installed_does_not_imply_invokable": true,
-    "plugin_package_does_not_imply_host_live": true
+    "plugin_package_does_not_imply_host_live": true,
+    "durable_replay_contract_is_capability_gated": true
   }
 }
