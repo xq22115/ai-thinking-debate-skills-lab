@@ -73,6 +73,14 @@ def main():
     if positions != sorted(positions): fail(errors, "progressive depth ladder order drift")
     if "Do not force every task to level 7" not in depth_text: fail(errors, "adaptive depth stop guard missing")
 
+    evolution = (ROOT / "skills" / "convergence-controller" / "references" / "evolution.md").read_text(encoding="utf-8")
+    for marker in ["edit budget", "strict improvement on the held-out", "rejected edits"]:
+        if marker not in evolution: fail(errors, f"bounded evolution marker missing: {marker}")
+
+    memory = (ROOT / "skills" / "memory-policy" / "SKILL.md").read_text(encoding="utf-8")
+    for marker in ["Persistent-state injection firewall", "control state", "evidence/data", "persistent file is storage, not an authority upgrade"]:
+        if marker not in memory: fail(errors, f"persistent-state firewall marker missing: {marker}")
+
     legacy_skill = REPO / "skills" / "skills" / "ai-efficiency-operating-system" / "SKILL.md"
     if legacy_skill.exists(): fail(errors, "legacy mega SKILL.md is still active")
 
