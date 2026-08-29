@@ -30,4 +30,4 @@ Use current primary sources for volatile claims when available. Community materi
 
 For evolving systems, distinguish event, publication, effective, observed and version time. Search origin → transition → current rather than only newest-first.
 
-Read `references/deep-task-integrity.md` for the full search map and research audit. Read `references/strict-deeplock-profile.md` only when the user explicitly selects the strict profile.
+Read `references/deep-task-integrity.md` for the full search map and research audit. For AI models, agent harnesses, plugins, MCP/tooling, desktop AI clients, skills or eval systems, read `references/ai-ecosystem-recon.md`. Read `references/strict-deeplock-profile.md` only when the user explicitly selects the strict profile.
