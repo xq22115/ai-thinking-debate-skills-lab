@@ -2,12 +2,15 @@
 
 This file is the short, stable entry point for every agent working anywhere in this repository. More-specific nested `AGENTS.md` files add local constraints; they do not cancel this quality contract unless a higher-priority instruction explicitly requires it.
 
+Global policy kernel: `docs/GLOBAL_POLICY_KERNEL.md`.
+Global policy manifest: `control-plane/ai-system/configs/global-policy-manifest.json`.
 Canonical operating model: `docs/CONTINUOUS_THINKING_QUALITY_OS.md`.
 Machine-enforced deep-thinking profile: `control-plane/ai-system/configs/continuous-thinking-global.json`.
 Capability interpretation layer: `docs/CAPABILITY_ACCESS_AND_FLEXIBILITY_POLICY.md`.
 Machine-enforced capability routing: `control-plane/ai-system/configs/context-first-capability-routing.json`.
 Desktop execution policy: `docs/DESKTOP_AGENT_EXECUTION_POLICY.md`.
 Machine-enforced desktop execution profile: `control-plane/ai-system/configs/desktop-agent-execution-global.json`.
+Cross-chat hidden-state / orchestration owner: `skills/skills/ai-efficiency-operating-system/SKILL.md`.
 
 ## Primary objective
 
@@ -16,6 +19,24 @@ Optimize for first-pass correctness, complete task closure, and fewer user corre
 Continuous thinking means **adaptive convergence**: understand → reconstruct state → define evidence → model causality → investigate → compare distinct routes → execute → verify → challenge → learn → release. Never simulate depth by waiting, promising a fixed number of minutes, collecting an arbitrary number of sources, spawning a ritual number of agents, or producing extra prose.
 
 For complex work, do not release the first plausible answer. A plausible answer is a hypothesis until it survives the acceptance and evidence gates below.
+
+## Global policy bootstrap and rehydration
+
+Treat `docs/GLOBAL_POLICY_KERNEL.md` as the durable small bootstrap and `control-plane/ai-system/configs/global-policy-manifest.json` as the canonical inventory of active global policy owners.
+
+Repository presence is not proof that an instruction was loaded. Before material action, if instruction state is unknown, stale, compacted, contradictory, or changed by cwd/repository/workspace/surface transition, rehydrate the active stack:
+
+1. identify the host/surface, cwd/repository/workspace, and active instruction sources;
+2. resolve provenance, scope, and precedence instead of assuming one universal hierarchy;
+3. load the kernel and only the task-relevant manifest entries;
+4. restore the current goal contract, unresolved gates, failed routes, contradictions, protected capabilities, and evidence index from durable state;
+5. quarantine failed-turn, partial-stream, stale-summary, and unverified tool material;
+6. record which sources/revisions were actually loaded;
+7. do not claim policy compliance from file existence alone.
+
+Rehydrate after context compaction/summary replacement, instruction or policy revision change, material scope change, failed-turn contamination, or before a material write when the active rules cannot be proven loaded.
+
+Keep broad-scope instructions bounded. Do not solve persistence by growing one monolithic root prompt. Use progressive disclosure: kernel always, policy/skill bodies on demand, references/evidence only when needed. The `ai-efficiency-operating-system` package remains the canonical cross-chat hidden-state and execution-orchestration owner; extend it rather than creating semantic duplicates.
 
 ## Before changing anything
 
@@ -159,4 +180,4 @@ After a successful repair or informative failure, keep only durable lessons that
 
 Use the maximum **useful** reasoning and verification effort, not maximum ceremony. Simple tasks should stay simple. Increase decomposition, research, independent evaluation, testing, and continuity scaffolding only as task uncertainty, impact, novelty, or failure history increases.
 
-The machine-readable invariants for this contract are in `control-plane/ai-system/configs/continuous-thinking-global.json` and are validated by `control-plane/scripts/validate_continuous_thinking_global.py`. Desktop automation invariants are in `control-plane/ai-system/configs/desktop-agent-execution-global.json` and are validated by `control-plane/scripts/validate_desktop_agent_execution_global.py`.
+The machine-readable invariants for this contract are in `control-plane/ai-system/configs/continuous-thinking-global.json` and are validated by `control-plane/scripts/validate_continuous_thinking_global.py`. Capability routing invariants are in `control-plane/ai-system/configs/context-first-capability-routing.json` and are validated by `control-plane/scripts/validate_context_first_capability_router.py`. Desktop automation invariants are in `control-plane/ai-system/configs/desktop-agent-execution-global.json` and are validated by `control-plane/scripts/validate_desktop_agent_execution_global.py`. Global policy durability and rehydration are registered in `control-plane/ai-system/configs/global-policy-manifest.json` and validated by `control-plane/scripts/validate_global_policy_durability.py`.
