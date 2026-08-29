@@ -16,6 +16,12 @@ EXPERT = [
 EXPECTED = CORE + EXPERT
 EXPLICIT = {"autonomy-contract", "persistent-work-ledger", *EXPERT}
 DEPTH_LEVELS = ["SURFACE", "MECHANISM", "CODE_PATH", "DETERMINISTIC_REPRO", "COUNTEREXAMPLE", "FIX_STATUS", "REGRESSION", "GENERALIZATION"]
+EXPERT_REFS = {
+    "capability-forensics": ("references/capability-fingerprinting.md", ["DECLARED / VISIBLE / AUTHORIZED / LOADABLE / INVOKABLE / EFFECTIVE / VERIFIED", "Environment engineering before prompt inflation", "Differential probe"]),
+    "mcp-surface-engineering": ("references/mcp-surface-contract.md", ["Dynamic discovery", "Tool-poisoning", "Minimal Capability Frontier"]),
+    "authorized-reverse-engineering": ("references/reverse-engineering-playbook.md", ["Static-first", "Cross-binary transfer", "Hard stop conditions"]),
+    "agent-runtime-forensics": ("references/runtime-provenance.md", ["Evidence planes", "Causal edges", "Replay"]),
+}
 
 
 def fail(errors, message):
@@ -34,6 +40,18 @@ def frontmatter(text):
     return out
 
 
+def load_jsonl(path):
+    rows = []
+    ids = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        obj = json.loads(line)
+        rows.append(obj)
+        ids.append(obj["id"])
+    return rows, ids
+
+
 def main():
     errors = []
     plugin = json.loads((ROOT / ".codex-plugin" / "plugin.json").read_text())
@@ -42,6 +60,7 @@ def main():
 
     if plugin.get("name") != "ai-efficiency-operating-system": fail(errors, "wrong plugin name")
     if plugin.get("skills") != "./skills/": fail(errors, "plugin skills path must be ./skills/")
+    if plugin.get("version") != settings.get("version"): fail(errors, "plugin/settings version drift")
     if settings.get("default_implicit_skills", []) + settings.get("explicit_only_skills", []) != EXPECTED:
         fail(errors, "settings skill inventory/order drift")
     names = [p.get("name") for p in marketplace.get("plugins", [])]
@@ -50,6 +69,9 @@ def main():
     labs = settings.get("expert_labs", {})
     if labs.get("explicit_only") is not True: fail(errors, "expert labs must be explicit-only")
     if labs.get("default_enabled") is not False: fail(errors, "expert labs must not be default-enabled")
+    if labs.get("load_only_on_material_need") is not True: fail(errors, "expert labs must be demand-loaded")
+    if labs.get("no_skill_counterfactual_required_for_promotion") is not True: fail(errors, "expert labs require no-skill counterfactual")
+    if labs.get("host_version_capability_probe_required") is not True: fail(errors, "expert labs require host/version probe")
     if labs.get("labs") != EXPERT: fail(errors, "expert labs inventory drift")
     if "do not bypass" not in labs.get("safety_boundary", "").lower(): fail(errors, "expert labs authorization boundary missing")
 
@@ -69,6 +91,16 @@ def main():
             agent = ROOT / "skills" / name / "agents" / "openai.yaml"
             if not agent.exists() or "allow_implicit_invocation: false" not in agent.read_text():
                 fail(errors, f"explicit-only policy missing: {name}")
+
+    for name, (rel, markers) in EXPERT_REFS.items():
+        path = ROOT / "skills" / name / rel
+        if not path.exists():
+            fail(errors, f"missing expert reference: {name}/{rel}")
+            continue
+        text = path.read_text(encoding="utf-8")
+        for marker in markers:
+            if marker.lower() not in text.lower():
+                fail(errors, f"expert reference marker missing: {name}: {marker}")
 
     adaptive = settings["research_profiles"]["ADAPTIVE"]
     strict = settings["research_profiles"]["STRICT_DEEPLOCK"]
@@ -95,16 +127,25 @@ def main():
     legacy_skill = REPO / "skills" / "skills" / "ai-efficiency-operating-system" / "SKILL.md"
     if legacy_skill.exists(): fail(errors, "legacy mega SKILL.md is still active")
 
-    for rel in ["evals/routing-cases.jsonl", "evals/behavior-cases.jsonl", "references/2026-baseline.md", "MIGRATION.md"]:
+    required = [
+        "evals/routing-cases.jsonl", "evals/behavior-cases.jsonl", "evals/expert-labs-cases.jsonl",
+        "scripts/expert_labs_oracle.py", "references/2026-baseline.md", "MIGRATION.md"
+    ]
+    for rel in required:
         if not (ROOT / rel).exists(): fail(errors, f"missing {rel}")
 
-    for fn in [ROOT / "evals" / "routing-cases.jsonl", ROOT / "evals" / "behavior-cases.jsonl"]:
-        ids = []
-        for line in fn.read_text(encoding="utf-8").splitlines():
-            if not line.strip(): continue
-            obj = json.loads(line)
-            ids.append(obj["id"])
-        if len(ids) != len(set(ids)): fail(errors, f"duplicate IDs in {fn.name}")
+    minimums = {
+        "routing-cases.jsonl": 32,
+        "behavior-cases.jsonl": 50,
+        "expert-labs-cases.jsonl": 25,
+    }
+    for name, minimum in minimums.items():
+        path = ROOT / "evals" / name
+        if not path.exists():
+            continue
+        rows, ids = load_jsonl(path)
+        if len(ids) != len(set(ids)): fail(errors, f"duplicate IDs in {name}")
+        if len(rows) < minimum: fail(errors, f"insufficient {name}: {len(rows)} < {minimum}")
 
     if errors:
         print("PLUGIN VALIDATION FAILED")
