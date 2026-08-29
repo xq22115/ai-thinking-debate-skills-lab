@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "owners": ["evidence-watchdog", "convergence-controller"],
+  "purpose": "Separate structural/package truth from executable and behavioral target truth, and prevent simulated or stale evidence from promoting a skill or release.",
+  "validation_layers": [
+    "STRUCTURAL",
+    "INSTALLED_TEMPLATE",
+    "EXECUTABLE",
+    "BEHAVIORAL_TARGET"
+  ],
+  "layer_rules": {
+    "STRUCTURAL": "Schema, paths, manifests, hashes and static contracts are valid.",
+    "INSTALLED_TEMPLATE": "The intended installed/imported artifact exists in the target installation surface or extracted package.",
+    "EXECUTABLE": "The relevant validator, script, route or capability was actually executed in the tested environment.",
+    "BEHAVIORAL_TARGET": "The owning product/runtime/user path produced the required externally meaningful postcondition."
+  },
+  "invariants": {
+    "lower_layer_pass_never_implies_higher_layer_pass": true,
+    "archived_or_prior_release_pass_is_not_current_release_evidence": true,
+    "current_release_requires_fresh_receipt_bound_to_exact_artifact": true,
+    "declared_gate_requires_executable_owner_or_is_descriptive_only": true,
+    "descriptive_yaml_or_markdown_is_not_enforcement": true,
+    "behavioral_target_requires_owning_runtime_or_external_readback": true,
+    "integration_or_multiprocess_trials_may_require_process_isolation_to_prevent_cross_trial_contamination": true,
+    "validator_itself_requires_negative_mutation_or_known_outcome_tests_before_stable_promotion": true
+  },
+  "receipt_binding": [
+    "artifact_hash_or_revision",
+    "target_identity",
+    "validator_or_observer_identity",
+    "observed_at_or_authority_order",
+    "scope",
+    "validation_layer"
+  ],
+  "telemetry_evidence_classes": ["SIMULATED_CONTROL", "OBSERVED_TARGET"],
+  "promotion": {
+    "simulated_control_max_state": "SHADOW_ONLY",
+    "observed_target_required_for": "PROMOTED",
+    "quality_non_regression": ["quality_success_rate", "false_completion_rate", "source_violation_rate"],
+    "efficiency_candidates": ["tool_calls_per_decision", "context_units_per_decision", "duplicate_lineage_rate", "full_research_ratio", "accepted_result_per_cost"],
+    "requires_at_least_one_measured_efficiency_or_cost_gain": true,
+    "hard_negative_regression": "REJECT",
+    "host_model_version_incompatibility": "REJECT",
+    "no_measured_gain": "HOLD"
+  },
+  "review": {
+    "critics_are_triggered_by_relevant_risk_not_enabled_globally": true,
+    "critic_findings_add_zero_consensus_votes": true,
+    "support_and_refute_remain_distinct": true,
+    "majority_vote_cannot_override_direct_deterministic_veto": true
+  }
+}
