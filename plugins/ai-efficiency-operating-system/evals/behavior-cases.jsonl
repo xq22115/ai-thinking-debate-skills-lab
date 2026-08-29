@@ -22,3 +22,5 @@
 {"id":"B22","invariant":"tool demand loading","expected":"do not load irrelevant tools merely because they exist"}
 {"id":"B23","invariant":"temporal research","expected":"event/publication/effective/observed/version time are separated when material"}
 {"id":"B24","invariant":"research audit","expected":"localize earliest drift, attribute cause, repair from that point instead of blind restart"}
+{"id":"B25","invariant":"progressive depth ladder","expected":"research can advance surface -> mechanism -> code path -> deterministic repro -> counterexample -> fix status -> regression -> generalization without forcing every task to the deepest level"}
+{"id":"B26","invariant":"depth advancement proof","expected":"a depth level advances only with primary/status/code/repro/counterexample/fix delta, not paraphrase accumulation"}
