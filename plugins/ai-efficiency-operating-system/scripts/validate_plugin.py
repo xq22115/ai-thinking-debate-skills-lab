@@ -154,7 +154,7 @@ def main():
 
     minimums = {
         "routing-cases.jsonl": 35,
-        "behavior-cases.jsonl": 50,
+        "behavior-cases.jsonl": 55,
         "expert-labs-cases.jsonl": 25,
     }
     for name, minimum in minimums.items():
