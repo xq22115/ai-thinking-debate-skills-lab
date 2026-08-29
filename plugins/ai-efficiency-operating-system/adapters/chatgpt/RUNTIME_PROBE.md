@@ -14,7 +14,7 @@ The plugin remains skills-only. Expert Labs describe workflows but do not manufa
 
 1. Import/sync the repository marketplace through the actual workspace/admin plugin control available to the target account.
 2. Confirm `AI Efficiency Operating System` is listed and installable.
-3. Confirm the plugin reports the expected `1.1.0-rc1` package/revision if the UI exposes it.
+3. Confirm the plugin reports the expected `1.1.0-rc2` package/revision if the UI exposes it; otherwise bind the validation run to the plugin subtree identity from the strict validation config/evidence packet.
 4. Run the default positive/negative routing set:
    - plan comparison containing the word `verify` → planning behavior;
    - completion claim such as "agent says migration completed" → postcondition verification;
@@ -47,4 +47,4 @@ If the UI/workspace does not expose import/install for this repository, report `
 
 When the user explicitly requires ten independent agents and 10/10 unanimous approval across both ChatGPT Web and ChatGPT Desktop, use `HOST_LIVE_10WAY.md` together with `control-plane/ai-system/configs/ten-way-unanimity-mode.json`.
 
-That strict profile is not the default. It additionally requires ten distinct process/session receipts, `require_all_concurrent=True`, provable common runtime overlap, 10/10 PASS, current Web HOST_LIVE evidence, current Desktop HOST_LIVE evidence, and the same exact plugin revision on both surfaces.
+That strict profile is not the default. It additionally requires ten distinct process/session receipts, `require_all_concurrent=True`, provable common runtime overlap, 10/10 PASS, current Web HOST_LIVE evidence, current Desktop HOST_LIVE evidence, and the same exact plugin package identity on both surfaces.
