@@ -41,7 +41,9 @@ def route(prompt, explicit=None, host_capabilities=None):
     if any(k in text for k in memory):
         return "memory-policy"
 
-    research = ["研究", "查 ", "最新", "根因", "root cause", "交叉比對", "證據", "evidence", "深入", "來源", "counterevidence", "版本", "why", "逆向", "reverse engineer", "mcp", "能力限制"]
+    # Topic nouns such as MCP, reverse engineering, or capability limits are not
+    # sufficient to trigger heavy research. The user's research intent must be present.
+    research = ["研究", "查 ", "最新", "根因", "root cause", "交叉比對", "證據", "evidence", "深入", "來源", "counterevidence", "版本", "why"]
     if any(k in text for k in research):
         return "executive-research"
 
