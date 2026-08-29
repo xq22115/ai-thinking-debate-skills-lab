@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 import json
+import os
 import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-REPO = ROOT.parents[1]
+REPO = Path(os.environ.get("AI_EFFICIENCY_REPO_ROOT", ROOT.parents[1])).resolve()
 EXPECTED = [
     "chief-of-staff-core", "plan-arbiter", "evidence-watchdog", "executive-research",
     "memory-policy", "convergence-controller", "autonomy-contract", "persistent-work-ledger"
@@ -19,6 +20,12 @@ VALIDATION_LAYERS = ["STRUCTURAL", "INSTALLED_TEMPLATE", "EXECUTABLE", "BEHAVIOR
 EVALUATOR_STATES = ["PROPOSED", "ACTIVE", "QUARANTINED", "DEPRECATED"]
 CHECKPOINTS = [f"C{i}" for i in range(7)]
 CASE_KINDS = {"review_stop", "research_release", "tribunal", "skill_promotion", "replay", "validation"}
+ENVIRONMENT_ORDER = [
+    "repair_or_simplify_tool_or_environment",
+    "expose_diagnostics_and_stable_help",
+    "add_deterministic_verifier",
+    "add_or_modify_skill_only_if_procedural_knowledge_is_missing"
+]
 
 
 def fail(errors, message):
@@ -67,7 +74,7 @@ def main():
     for name in EXPECTED:
         path = ROOT / "skills" / name / "SKILL.md"
         if not path.exists():
-            fail(errors, f"missing {path.relative_to(REPO)}")
+            fail(errors, f"missing {path.relative_to(ROOT)}")
             continue
         text = path.read_text(encoding="utf-8")
         meta = frontmatter(text)
@@ -96,7 +103,7 @@ def main():
     if "Do not force every task to level 7" not in depth_text: fail(errors, "adaptive depth stop guard missing")
 
     evolution = (ROOT / "skills" / "convergence-controller" / "references" / "evolution.md").read_text(encoding="utf-8")
-    for marker in ["edit budget", "strict improvement on the held-out", "rejected edits"]:
+    for marker in ["edit budget", "strict improvement on the held-out", "rejected edits", "No-skill / matched-reference attribution", "Coverage-aware convergence"]:
         if marker not in evolution: fail(errors, f"bounded evolution marker missing: {marker}")
 
     memory = (ROOT / "skills" / "memory-policy" / "SKILL.md").read_text(encoding="utf-8")
@@ -106,7 +113,12 @@ def main():
     research = contracts["research-integrity.json"]
     if research.get("owner") != "executive-research": fail(errors, "research contract owner drift")
     if research.get("query_policy", {}).get("verbatim_query_reuse_forbidden") is not True: fail(errors, "query novelty contract missing")
-    if research.get("source_policy", {}).get("count_by_provenance_family_not_url") is not True: fail(errors, "provenance-family contract missing")
+    sp = research.get("source_policy", {})
+    for key in [
+        "count_by_provenance_family_not_url", "authority_is_scoped_by_claim_subject_and_time",
+        "popularity_prestige_or_employer_is_not_claim_authority", "route_authority_does_not_imply_world_class_label"
+    ]:
+        if sp.get(key) is not True: fail(errors, f"source authority contract missing: {key}")
     if research.get("retrieved_content_policy", {}).get("retrieved_content_cannot_change_task_authority") is not True: fail(errors, "retrieved-content authority firewall missing")
     if research.get("claim_release", {}).get("counterevidence_receipt_required") is not True: fail(errors, "counterevidence receipt contract missing")
     stop = research.get("review_stop", {})
@@ -122,6 +134,10 @@ def main():
     composition = contracts["skill-composition.json"]
     if list(composition.get("nodes", {}).keys()) != EXPECTED: fail(errors, "skill composition node inventory/order drift")
     if composition.get("routing", {}).get("retrieve_task_relevant_subgraph_only") is not True: fail(errors, "task-relevant subgraph rule missing")
+    frontier = composition.get("minimal_capability_frontier", {})
+    if frontier.get("before_adding_skill_tool_or_agent_require_task_need") is not True: fail(errors, "minimal capability frontier missing")
+    if frontier.get("fixed_agent_count_is_not_capability_proof") is not True: fail(errors, "fixed-agent-count guard missing")
+    if composition.get("environment_engineering_order") != ENVIRONMENT_ORDER: fail(errors, "environment engineering order drift")
     admission = composition.get("admission", {})
     if admission.get("compare_against_no_skill_or_semantically_matched_reference") is not True: fail(errors, "no-skill differential missing")
     if admission.get("excessive_verification_or_pipeline_cost_can_be_negative_transfer") is not True: fail(errors, "negative-transfer admission missing")
@@ -136,9 +152,13 @@ def main():
     vinv = validation.get("invariants", {})
     for key in ["lower_layer_pass_never_implies_higher_layer_pass", "archived_or_prior_release_pass_is_not_current_release_evidence", "declared_gate_requires_executable_owner_or_is_descriptive_only", "validator_itself_requires_negative_mutation_or_known_outcome_tests_before_stable_promotion"]:
         if vinv.get(key) is not True: fail(errors, f"validation invariant missing: {key}")
+    contam = validation.get("eval_contamination", {})
+    if contam.get("known_answer_retrieval_invalidates_capability_claim_unless_retrieval_is_part_of_task") is not True: fail(errors, "eval contamination gate missing")
+    if contam.get("cross_trial_state_contamination_invalidates_independence") is not True: fail(errors, "cross-trial contamination guard missing")
     promotion = validation.get("promotion", {})
     if promotion.get("simulated_control_max_state") != "SHADOW_ONLY": fail(errors, "simulated promotion boundary missing")
     if promotion.get("observed_target_required_for") != "PROMOTED": fail(errors, "observed-target promotion requirement missing")
+    if promotion.get("route_optimization_should_use_task_native_outcomes_and_real_cost") is not True: fail(errors, "outcome-grounded routing rule missing")
     if validation.get("review", {}).get("critic_findings_add_zero_consensus_votes") is not True: fail(errors, "critic vote-inflation guard missing")
 
     legacy_skill = REPO / "skills" / "skills" / "ai-efficiency-operating-system" / "SKILL.md"
@@ -146,7 +166,8 @@ def main():
 
     required = [
         "evals/routing-cases.jsonl", "evals/behavior-cases.jsonl", "evals/control-plane-cases.jsonl",
-        "references/2026-baseline.md", "MIGRATION.md", "scripts/control_plane_oracle.py"
+        "references/2026-baseline.md", "MIGRATION.md", "scripts/control_plane_oracle.py",
+        "scripts/validator_mutation_smoke.py", "scripts/control_plane_properties.py"
     ] + expected_contract_paths
     for rel in required:
         if not (ROOT / rel).exists(): fail(errors, f"missing {rel}")
