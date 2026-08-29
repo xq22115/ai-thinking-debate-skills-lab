@@ -5,11 +5,16 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 REPO = ROOT.parents[1]
-EXPECTED = [
+CORE = [
     "chief-of-staff-core", "plan-arbiter", "evidence-watchdog", "executive-research",
     "memory-policy", "convergence-controller", "autonomy-contract", "persistent-work-ledger"
 ]
-EXPLICIT = {"autonomy-contract", "persistent-work-ledger"}
+EXPERT = [
+    "capability-forensics", "mcp-surface-engineering",
+    "authorized-reverse-engineering", "agent-runtime-forensics"
+]
+EXPECTED = CORE + EXPERT
+EXPLICIT = {"autonomy-contract", "persistent-work-ledger", *EXPERT}
 DEPTH_LEVELS = ["SURFACE", "MECHANISM", "CODE_PATH", "DETERMINISTIC_REPRO", "COUNTEREXAMPLE", "FIX_STATUS", "REGRESSION", "GENERALIZATION"]
 
 
@@ -41,6 +46,12 @@ def main():
         fail(errors, "settings skill inventory/order drift")
     names = [p.get("name") for p in marketplace.get("plugins", [])]
     if names.count("ai-efficiency-operating-system") != 1: fail(errors, "marketplace canonical plugin count != 1")
+
+    labs = settings.get("expert_labs", {})
+    if labs.get("explicit_only") is not True: fail(errors, "expert labs must be explicit-only")
+    if labs.get("default_enabled") is not False: fail(errors, "expert labs must not be default-enabled")
+    if labs.get("labs") != EXPERT: fail(errors, "expert labs inventory drift")
+    if "do not bypass" not in labs.get("safety_boundary", "").lower(): fail(errors, "expert labs authorization boundary missing")
 
     for name in EXPECTED:
         path = ROOT / "skills" / name / "SKILL.md"
@@ -100,7 +111,7 @@ def main():
         for e in errors: print("-", e)
         return 1
     print("PLUGIN VALIDATION PASS")
-    print(f"skills={len(EXPECTED)} implicit={len(settings['default_implicit_skills'])} explicit={len(settings['explicit_only_skills'])} depth_levels={len(DEPTH_LEVELS)}")
+    print(f"skills={len(EXPECTED)} implicit={len(settings['default_implicit_skills'])} explicit={len(settings['explicit_only_skills'])} expert={len(EXPERT)} depth_levels={len(DEPTH_LEVELS)}")
     return 0
 
 
