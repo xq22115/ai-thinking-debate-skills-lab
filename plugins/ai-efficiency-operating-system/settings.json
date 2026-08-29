@@ -1,6 +1,6 @@
 {
-  "schema": 2,
-  "version": "1.0.0-rc1",
+  "schema": 3,
+  "version": "1.1.0-rc1",
   "mode": "executive-chief-of-staff",
   "status": "PACKAGE_CANDIDATE_HOST_LIVE_UNVERIFIED",
   "default_implicit_skills": [
@@ -13,7 +13,11 @@
   ],
   "explicit_only_skills": [
     "autonomy-contract",
-    "persistent-work-ledger"
+    "persistent-work-ledger",
+    "capability-forensics",
+    "mcp-surface-engineering",
+    "authorized-reverse-engineering",
+    "agent-runtime-forensics"
   ],
   "routing": {
     "one_primary_phase_owner": true,
@@ -21,6 +25,20 @@
     "precedence": ["user_correction", "authority", "host_capability", "task_phase", "semantic_similarity"],
     "phase_before_keyword_similarity": true,
     "negative_routing_is_a_regression_gate": true
+  },
+  "expert_labs": {
+    "explicit_only": true,
+    "default_enabled": false,
+    "load_only_on_material_need": true,
+    "no_skill_counterfactual_required_for_promotion": true,
+    "host_version_capability_probe_required": true,
+    "safety_boundary": "Maximize authorized capability and observability; do not bypass provider safety controls, access controls, licensing/DRM, or authorization boundaries.",
+    "labs": [
+      "capability-forensics",
+      "mcp-surface-engineering",
+      "authorized-reverse-engineering",
+      "agent-runtime-forensics"
+    ]
   },
   "task_contract": {
     "required_fields": ["objective", "deliverables", "acceptance", "constraints", "authority_ceiling", "stop_conditions"],
