@@ -58,6 +58,7 @@ jobs:
             tests/test_codex_global_quality_installer.py \
             tests/test_codex_global_quality_registration.py \
             tests/test_local_agent_executor.py \
+            tests/test_ten_way_concurrency.py \
             tests/test_finalize_local_agent_execution.py \
             tests/test_adjudicate_agent_receipts.py \
             tests/test_snapshot_bound_execution.py \
