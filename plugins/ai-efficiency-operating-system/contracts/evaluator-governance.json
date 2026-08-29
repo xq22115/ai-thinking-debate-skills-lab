@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "owner": "evidence-watchdog",
+  "purpose": "Prevent a convenient judge from becoming unquestioned completion authority.",
+  "states": ["PROPOSED", "ACTIVE", "QUARANTINED", "DEPRECATED"],
+  "identity": ["name", "version", "configuration", "method_family"],
+  "admission_evidence": [
+    "golden_or_known_outcome_cases",
+    "false_accept_observations",
+    "false_reject_observations",
+    "disagreement_observations",
+    "known_failure_codes",
+    "scope_and_version"
+  ],
+  "rules": {
+    "newer_or_larger_is_not_automatic_authority": true,
+    "evaluator_cannot_self_admit": true,
+    "known_material_mismatch_can_quarantine": true,
+    "known_systematic_grading_failure_can_deprecate": true,
+    "single_semantic_judge_cannot_certify_high_impact_pass": true,
+    "deterministic_failure_vetoes_semantic_pass": true,
+    "material_method_disagreement_returns": "REVIEW",
+    "high_impact_pass_requires": ["ACTIVE_DETERMINISTIC_OR_DIRECT_METHOD", "INDEPENDENT_METHOD_CORROBORATION"]
+  },
+  "tribunal_outcomes": ["PASS", "FAIL", "REVIEW", "INSUFFICIENT_EVIDENCE"],
+  "bias_diagnostics": ["position_order", "surface_format", "language", "shared_prompt_lineage", "shared_evidence_route"]
+}
