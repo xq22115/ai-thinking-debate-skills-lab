@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "owner": "persistent-work-ledger",
+  "capability_gate": "HOST_MUST_EXPOSE_REAL_DURABLE_STATE_AND_EFFECT_PRIMITIVES",
+  "checkpoints": [
+    {"id": "C0", "meaning": "goal_policy_authority"},
+    {"id": "C1", "meaning": "candidate_plan_or_task_graph"},
+    {"id": "C2", "meaning": "target_identity_compatibility_authority"},
+    {"id": "C3", "meaning": "evidence_cache_lineage_and_research_state"},
+    {"id": "C4", "meaning": "mechanism_verdict_and_accepted_change"},
+    {"id": "C5", "meaning": "evaluator_and_regression_state"},
+    {"id": "C6", "meaning": "accepted_completion_promotion_delivery"}
+  ],
+  "failure_restart": {
+    "GOAL_OR_POLICY_CHANGED": "C0",
+    "PLAN_OR_DEPENDENCY_INVALID": "C1",
+    "TARGET_IDENTITY_OR_AUTHORITY_STALE": "C2",
+    "EVIDENCE_OR_SOURCE_STALE": "C3",
+    "MECHANISM_OR_CHANGE_INVALID": "C4",
+    "VERIFIER_OR_REGRESSION_INVALID": "C5",
+    "DELIVERY_OR_PROMOTION_ONLY": "C6"
+  },
+  "task_graph": {
+    "node_types": ["AND", "OR", "PARALLEL", "HYPOTHESIS", "RECURSIVE_CALL_RETURN"],
+    "atomic_nodes_required_for_effect_or_verification": true,
+    "verified_state_only_committed_by_verifier_or_owning_runtime": true,
+    "branch_scratch_never_auto_promotes_to_verified_state": true,
+    "resume_from_checkpoint_not_transcript": true,
+    "rerun_only_invalidated_downstream_nodes": true
+  },
+  "effect_replay": {
+    "semantic_action_identity_required": true,
+    "non_idempotent_unknown_without_reconciliation": "BLOCK_REPLAY",
+    "unknown_with_reconciliation": "RECONCILE_FIRST",
+    "verified_prior_semantic_effect": "RETURN_PRIOR_RECEIPT",
+    "divergent_irreversible_history": "REQUIRE_EXPLICIT_FORK"
+  },
+  "event_integrity": {
+    "duplicate_event_id_rejected": true,
+    "deterministic_event_digest": true,
+    "large_payloads_may_use_content_addressed_indirection": true,
+    "missing_referenced_artifact": "UNAVAILABLE_ARTIFACT",
+    "missing_artifact_never_counts_as_pass": true
+  }
+}
