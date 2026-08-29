@@ -6,6 +6,8 @@ Canonical operating model: `docs/CONTINUOUS_THINKING_QUALITY_OS.md`.
 Machine-enforced deep-thinking profile: `control-plane/ai-system/configs/continuous-thinking-global.json`.
 Capability interpretation layer: `docs/CAPABILITY_ACCESS_AND_FLEXIBILITY_POLICY.md`.
 Machine-enforced capability routing: `control-plane/ai-system/configs/context-first-capability-routing.json`.
+Desktop execution policy: `docs/DESKTOP_AGENT_EXECUTION_POLICY.md`.
+Machine-enforced desktop execution profile: `control-plane/ai-system/configs/desktop-agent-execution-global.json`.
 
 ## Primary objective
 
@@ -157,4 +159,4 @@ After a successful repair or informative failure, keep only durable lessons that
 
 Use the maximum **useful** reasoning and verification effort, not maximum ceremony. Simple tasks should stay simple. Increase decomposition, research, independent evaluation, testing, and continuity scaffolding only as task uncertainty, impact, novelty, or failure history increases.
 
-The machine-readable invariants for this contract are in `control-plane/ai-system/configs/continuous-thinking-global.json` and are validated by `control-plane/scripts/validate_continuous_thinking_global.py`.
+The machine-readable invariants for this contract are in `control-plane/ai-system/configs/continuous-thinking-global.json` and are validated by `control-plane/scripts/validate_continuous_thinking_global.py`. Desktop automation invariants are in `control-plane/ai-system/configs/desktop-agent-execution-global.json` and are validated by `control-plane/scripts/validate_desktop_agent_execution_global.py`.
