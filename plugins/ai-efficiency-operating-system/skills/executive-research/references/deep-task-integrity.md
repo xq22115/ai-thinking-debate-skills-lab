@@ -21,6 +21,23 @@ Every HARD/IMPORTANT source requirement maps to at least one obligation. Every d
 
 Prefer shared upstream causes only when mechanism and recovery boundary genuinely match.
 
+## Progressive depth ladder
+
+Depth is a direction of investigation, not a request to generate more prose. Advance only when the next level can change a gate, hypothesis or action:
+
+0. `SURFACE` — what changed or visibly fails?
+1. `MECHANISM` — which invariant or subsystem can produce the symptom?
+2. `CODE_PATH` — which exact implementation/configuration path creates it?
+3. `DETERMINISTIC_REPRO` — can the behavior be reproduced without relying on model randomness?
+4. `COUNTEREXAMPLE` — when does the leading explanation/fix fail or become unnecessary?
+5. `FIX_STATUS` — does a real fix/PR/release/workaround exist, and is it actually published/current?
+6. `REGRESSION` — which executable invariant/test prevents recurrence across versions?
+7. `GENERALIZATION` — which broader root cause or control should absorb this finding?
+
+A lane advances depth only when it adds a new primary-source identity/status delta, code-path proof, deterministic reproduction/test, counterexample/ablation, or fix/release delta. Rewording a query, rereading the same source family or adding another summary does not advance depth.
+
+Do not force every task to level 7. Stop at the shallowest level that resolves the active acceptance-critical uncertainty; escalate when the current level cannot discriminate the remaining hypotheses.
+
 ## Temporal breadth
 
 Track where relevant:
