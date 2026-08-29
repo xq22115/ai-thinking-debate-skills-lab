@@ -1,6 +1,6 @@
 {
   "name": "ai-efficiency-operating-system",
-  "version": "1.1.0-rc1",
+  "version": "1.1.0-rc2",
   "description": "Goal-first planning, deep research, verification, memory, convergence, capability forensics, MCP surface engineering, authorized reverse engineering, runtime provenance, autonomy and durable-state workflows for complex ChatGPT and Codex tasks.",
   "repository": "https://github.com/xq22115/ai-thinking-debate-skills-lab",
   "skills": "./skills/",
