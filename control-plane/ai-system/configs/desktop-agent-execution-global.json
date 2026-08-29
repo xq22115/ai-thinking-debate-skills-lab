@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "profile_id": "desktop-agent-execution-v1",
+  "scope": "cross-client-desktop-automation",
+  "default_enabled": true,
+  "primary_objective": "Complete the requested task on the correct real machine, account, application, profile, window, and path while preserving the user's foreground workflow and existing capability envelope.",
+  "foreground_non_interference": {
+    "default": true,
+    "control_plane_order": [
+      "application_or_native_api",
+      "background_ipc_or_native_messaging",
+      "window_scoped_accessibility_or_scripting",
+      "window_specific_capture_and_control",
+      "virtual_pointer_or_keyboard_last_resort"
+    ],
+    "forbid_focus_steal_for_inspection": true,
+    "forbid_user_pointer_takeover_when_background_path_exists": true,
+    "prefer_target_window_capture_over_full_screen": true,
+    "agent_owned_overlays_should_not_interrupt_user": true
+  },
+  "local_browser": {
+    "default_target": "existing_local_chrome",
+    "preserve_authenticated_profile": true,
+    "forbidden_silent_substitutions": [
+      "sandbox_browser",
+      "chrome_for_testing",
+      "temporary_profile",
+      "different_profile_or_account",
+      "ai_internal_browser_without_user_session"
+    ],
+    "target_identity_signals": [
+      "local_private_profile_alias",
+      "account_identity",
+      "window_title",
+      "tab_url_or_title",
+      "runtime_page_state"
+    ],
+    "chrome_136_plus": {
+      "default_data_dir_remote_debugging_assumed_supported": false,
+      "do_not_relaunch_real_profile_with_debug_port_as_default": true,
+      "preferred_existing_profile_control": [
+        "browser_extension_native_messaging",
+        "supported_os_scripting_or_accessibility",
+        "preexisting_authorized_browser_control_integration",
+        "cdp_only_when_browser_was_intentionally_started_compatible"
+      ]
+    },
+    "private_aliases_must_be_local_untracked": true
+  },
+  "target_identity_gate": {
+    "required_signal_families": [
+      "requested_identity",
+      "process_identity",
+      "filesystem_or_install_identity",
+      "session_or_ui_identity",
+      "runtime_functional_identity"
+    ],
+    "conflict_behavior": "fail_closed_before_write",
+    "name_match_alone_sufficient": false,
+    "antigravity": {
+      "material_edit_requires_five_signal_gate": true,
+      "unavailable_signal_must_be_replaced_or_explained": true
+    }
+  },
+  "multi_device_isolation": {
+    "simultaneous_online_allowed": true,
+    "separate_namespaces": [
+      "device_identity",
+      "working_directory",
+      "process_and_search_sessions",
+      "ports_and_sockets",
+      "logs_and_evidence_receipts",
+      "temporary_files_and_caches",
+      "local_target_alias_map",
+      "long_lived_automation_sessions"
+    ],
+    "device_id_alone_is_proof": false,
+    "prewrite_fingerprint_required": true,
+    "fingerprint_fields": [
+      "expected_device_identifier_or_alias",
+      "hostname",
+      "operating_system",
+      "home_or_user_root_path",
+      "device_specific_read_only_sentinel"
+    ],
+    "fingerprint_mismatch_behavior": "abort_write",
+    "stateful_session_affinity": {
+      "persist_device_fingerprint_with_session_id": true,
+      "verify_before_follow_up": true,
+      "fallback_when_affinity_is_unreliable": "separate_connector_or_authentication_lane"
+    }
+  },
+  "parallel_work": {
+    "maximum_default_distinct_lanes": 5,
+    "fixed_agent_count_is_not_quality_metric": true,
+    "require_causal_distinction": true,
+    "example_lanes": [
+      "root_cause_runtime_state",
+      "official_current_constraints",
+      "source_repo_or_maintainer_evidence",
+      "alternate_mechanism_or_architecture",
+      "independent_verification_or_red_team"
+    ],
+    "shared_evidence_ledger_required": true,
+    "lane_may_not_silently_redefine_target": true
+  },
+  "failure_learning": {
+    "record_fields": [
+      "attempted_route",
+      "observed_failure",
+      "evidence_delta",
+      "disproved_or_weakened_hypothesis",
+      "next_route",
+      "changed_dimension"
+    ],
+    "materially_similar_failure_limit": 2,
+    "repeat_same_mechanism_after_limit": false,
+    "automate_stable_recovery_only_after_verification": true
+  },
+  "research": {
+    "trigger_conditions": [
+      "current_or_version_sensitive",
+      "high_impact",
+      "repeated_failure",
+      "explicit_user_research_request",
+      "operational_behavior_not_explained_by_docs"
+    ],
+    "evidence_layers": [
+      "current_primary_or_official_documentation",
+      "source_repository_or_maintainer_evidence",
+      "high_signal_practitioner_evidence_when_relevant",
+      "target_runtime_verification"
+    ],
+    "conversation_memory_alone_is_authority": false,
+    "fixed_source_quota_required": false,
+    "independent_corroboration_required_when_material": true
+  },
+  "capability_preservation": {
+    "obvious_degradation_is_default_fix": false,
+    "degradation_examples": [
+      "close_tabs",
+      "delete_data",
+      "disable_features",
+      "reduce_workload",
+      "switch_to_clean_profile",
+      "turn_off_integration"
+    ],
+    "degradation_allowed_when": [
+      "explicitly_requested",
+      "proven_root_cause_repair",
+      "reversible_diagnostic",
+      "only_remaining_safe_path_after_capability_preserving_routes"
+    ]
+  },
+  "authorization_and_integrity": {
+    "optimize_for_task_completion_within_authorized_boundaries": true,
+    "disable_authentication_or_integrity_controls_as_generic_fix": false,
+    "bypass_platform_safeguards_as_generic_fix": false,
+    "research_expansion_order": [
+      "official_docs",
+      "source_code",
+      "maintainer_issues",
+      "engineering_writeups",
+      "public_osint",
+      "authorized_test_environment"
+    ]
+  },
+  "release": {
+    "statuses": [
+      "PASS",
+      "FAIL",
+      "BLOCKED",
+      "NOT_RUN"
+    ],
+    "pass_requires": [
+      "target_identity_verified",
+      "correct_device_profile_application_and_path",
+      "protected_capabilities_preserved",
+      "runtime_or_user_path_verification"
+    ],
+    "no_connected_real_machine_is_blocked": true,
+    "blocked_or_not_run_must_not_be_relabelled_pass": true
+  },
+  "research_basis": {
+    "chrome_remote_debugging_change_last_verified": "2026-08-29",
+    "screen_capture_window_filtering_last_verified": "2026-08-29",
+    "remote_desktop_multi_device_behavior_last_verified": "2026-08-29",
+    "revalidate_on_version_change": true
+  }
+}

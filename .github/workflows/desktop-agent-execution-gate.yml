@@ -1,0 +1,32 @@
+name: Desktop Agent Execution Gate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'AGENTS.md'
+      - 'docs/DESKTOP_AGENT_EXECUTION_POLICY.md'
+      - 'control-plane/ai-system/configs/desktop-agent-execution-global.json'
+      - 'control-plane/scripts/validate_desktop_agent_execution_global.py'
+      - '.github/workflows/desktop-agent-execution-gate.yml'
+  pull_request:
+    paths:
+      - 'AGENTS.md'
+      - 'docs/DESKTOP_AGENT_EXECUTION_POLICY.md'
+      - 'control-plane/ai-system/configs/desktop-agent-execution-global.json'
+      - 'control-plane/scripts/validate_desktop_agent_execution_global.py'
+      - '.github/workflows/desktop-agent-execution-gate.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate desktop agent execution invariants
+        run: python control-plane/scripts/validate_desktop_agent_execution_global.py
