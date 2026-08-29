@@ -29,6 +29,18 @@
     "skill_switches_are_explicit_state_transitions_for_long_horizon_work": true,
     "aggregate_benchmark_gain_never_implies_universal_activation": true
   },
+  "minimal_capability_frontier": {
+    "before_adding_skill_tool_or_agent_require_task_need": true,
+    "prove_current_selection_cannot_satisfy_requirement_or_new_capability_has_positive_marginal_value": true,
+    "extra_capability_without_decision_or_execution_value": "DO_NOT_LOAD",
+    "fixed_agent_count_is_not_capability_proof": true
+  },
+  "environment_engineering_order": [
+    "repair_or_simplify_tool_or_environment",
+    "expose_diagnostics_and_stable_help",
+    "add_deterministic_verifier",
+    "add_or_modify_skill_only_if_procedural_knowledge_is_missing"
+  ],
   "admission": {
     "compare_against_no_skill_or_semantically_matched_reference": true,
     "host_model_version_compatibility_required": true,
