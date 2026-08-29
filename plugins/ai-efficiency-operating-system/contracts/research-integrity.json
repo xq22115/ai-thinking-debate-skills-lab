@@ -19,7 +19,12 @@
     "unknown_date_cannot_prove_current_behavior": true,
     "authority_identity_lifecycle_or_provenance_change": "FULL_REAUDIT",
     "content_revision_change": "REFRESH_CONTENT",
-    "new_counterevidence_benchmark_security_or_adoption_signal": "REFRESH_CLAIM"
+    "new_counterevidence_benchmark_security_or_adoption_signal": "REFRESH_CLAIM",
+    "authority_is_scoped_by_claim_subject_and_time": true,
+    "popularity_prestige_or_employer_is_not_claim_authority": true,
+    "route_authority_does_not_imply_world_class_label": true,
+    "world_class_label_requires_separate_current_evidence": true,
+    "source_casebook_fields": ["mechanism", "preconditions", "failure_modes", "transfer_targets", "anti_transfer_conditions", "proves", "do_not_infer"]
   },
   "retrieved_content_policy": {
     "instruction_like_retrieved_content": "QUARANTINE_AS_DATA",
@@ -47,6 +52,7 @@
     "ELAPSED_TIME_AS_DEPTH",
     "ROLE_COUNT_AS_INDEPENDENCE",
     "CITATION_PRESENCE_AS_FACT_SUPPORT",
-    "SEARCH_SNIPPET_AS_PRIMARY_PROOF"
+    "SEARCH_SNIPPET_AS_PRIMARY_PROOF",
+    "PRESTIGE_AS_CLAIM_AUTHORITY"
   ]
 }
