@@ -1,0 +1,35 @@
+name: Global Policy Durability Gate
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  global-policy-durability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact revision
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate syntax
+        run: |
+          python -m json.tool control-plane/ai-system/configs/global-policy-manifest.json >/dev/null
+          python -m py_compile control-plane/scripts/validate_global_policy_durability.py
+          python -m py_compile control-plane/scripts/install_codex_global_quality.py
+      - name: Validate global policy durability and rehydration contract
+        run: |
+          python control-plane/scripts/validate_global_policy_durability.py \
+            control-plane/ai-system/configs/global-policy-manifest.json
+      - name: Verify Codex global installer regressions
+        working-directory: control-plane
+        run: |
+          python -m unittest \
+            tests/test_codex_global_quality_installer.py \
+            tests/test_codex_global_quality_registration.py
