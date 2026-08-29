@@ -1,5 +1,41 @@
 # Changelog — AI Efficiency Operating System
 
+## 0.4.1-rc1 — 2026-08-29
+
+Integrated the prior search-depth / reasoning-depth research into the existing canonical owner without creating a competing top-level alias.
+
+### Added — canonical research/reasoning depth subsystem
+
+New package file:
+
+- `RESEARCH-REASONING-DEPTH.md`
+
+It adds:
+
+- decision-relevant information gain as the definition of real depth;
+- a research contract bound to the active task contract;
+- eight query lanes covering direct answer, mechanism, primary source, freshness, failure, counterevidence, alternative path and runtime proof;
+- a four-pass research loop: broad map → blind-spot expansion → falsification/adversarial → cross-verification;
+- freshness/name/path lifecycle labels (`CURRENT / CURRENT_WITH_COMPAT / STALE_REFERENCE_ONLY / SUPERSEDED / INVALID`);
+- evidence-family clustering so reposts and shared reporting lineages do not inflate independent support;
+- `INCOMPLETE_EVIDENCE` for unresolved material claims;
+- source-class priority with owning-runtime/direct evidence above summaries;
+- claim ledger, competing-hypothesis status, adaptive stop rules and P0–P3 depth budgeting;
+- explicit retirement of fixed-time pseudo-depth, duplicate-source vote inflation, stale route retention, ornamental research and post-decisive over-searching.
+
+### Integration policy
+
+The subsystem is owned by `ai-efficiency-operating-system`. Existing specialist skills remain authoritative for their narrow responsibilities: `evidence-gap-research`, `competing-hypotheses`, `root-cause-clustering`, `compatibility-audit`, `multi-agent-deliberation`, `completion-gate`, and `recoverable-state`.
+
+The catalog now registers this routing and adds shared invariants:
+
+- `SOURCE_COUNT != EVIDENCE_INDEPENDENCE`
+- `ELAPSED_TIME != REASONING_DEPTH`
+- `NEWER != MORE_AUTHORITATIVE`
+- `STALE_NAME_OR_PATH != CURRENT_ROUTE`
+
+Host/runtime activation remains unverified until an owning runtime loads and exercises this exact package revision.
+
 ## 0.4.0-rc1 — 2026-08-29
 
 Major evolution from v0.3's explicit hidden-state model into **authority-separated, calibrated-action orchestration**.
