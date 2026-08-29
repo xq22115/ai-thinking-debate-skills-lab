@@ -30,3 +30,6 @@
 {"id":"R30","prompt":"查最新 MCP dynamic discovery 和 schema drift 的做法。","expected":"executive-research"}
 {"id":"R31","prompt":"我的 AI 能力限制到底卡在哪一層？先深入找資料。","expected":"executive-research"}
 {"id":"R32","prompt":"@not-a-real-expert-skill 做特殊能力分析。","expected":"invalid-explicit-skill","explicit":"not-a-real-expert-skill"}
+{"id":"R33","prompt":"MCP 是什麼？","expected":"none"}
+{"id":"R34","prompt":"reverse engineering 是什麼？","expected":"none"}
+{"id":"R35","prompt":"Ghidra 是做什麼的？","expected":"none"}
