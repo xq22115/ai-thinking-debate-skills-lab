@@ -31,7 +31,7 @@ Never collapse adjacent states. `installed != invokable`; `tool call returned !=
 5. Read back the effective state or postcondition.
 6. Classify the bottleneck and recommend the smallest reversible change that preserves the goal.
 
-**REQUIRED REFERENCE:** read `references/capability-fingerprinting.md` for material investigations.
+**REQUIRED REFERENCE:** read `references/capability-fingerprinting.md` for material investigations. When the bottleneck may be ChatGPT/Codex plan, workspace, role, plugin/app, provider account, surface, session registration, or Desktop runtime, also read `references/capability-boundary-recon.md`.
 
 ## Output
 
