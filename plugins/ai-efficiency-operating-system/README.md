@@ -32,7 +32,7 @@ The first six may be selected implicitly. `autonomy-contract` and `persistent-wo
 
 ## Expert Labs — explicit-only
 
-Version `1.1.0-rc1` adds four **opt-in** expert skills. They do not increase the default implicit skill pool.
+Version `1.1.0-rc2` retains the four **opt-in** expert skills from 1.1 and adds the stricter dual-surface 10-agent HOST_LIVE validation contract. Expert Labs do not increase the default implicit skill pool.
 
 | Expert Lab | Use |
 |---|---|
@@ -53,7 +53,7 @@ The rule remains: deeper search must produce a MATERIAL DELTA, not merely more l
 
 The repository contains `.agents/plugins/marketplace.json`, following OpenAI's current GitHub marketplace import shape. The plugin itself is skill-only and declares no MCP server; local tools/runtimes remain owned by the actual host/app.
 
-A repository package is not proof of activation. `HOST_LIVE` requires the actual ChatGPT/Codex surface to import/install this exact revision and pass the live probe in `adapters/chatgpt/RUNTIME_PROBE.md`.
+A repository package is not proof of activation. `HOST_LIVE` requires the actual ChatGPT/Codex surface to import/install this exact package content and pass the live probe in `adapters/chatgpt/RUNTIME_PROBE.md`. When strict ten-agent unanimity is explicitly requested, also use `adapters/chatgpt/HOST_LIVE_10WAY.md`.
 
 ## Research depth
 
