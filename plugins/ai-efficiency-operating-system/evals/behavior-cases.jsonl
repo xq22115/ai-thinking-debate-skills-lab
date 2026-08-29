@@ -48,3 +48,8 @@
 {"id":"B48","invariant":"runtime scope isolation","expected":"events outside the bound run session target and time scope are not silently imported as support"}
 {"id":"B49","invariant":"expert no-skill counterfactual","expected":"expert lab promotion requires evidence of marginal value against no-skill or lighter baseline"}
 {"id":"B50","invariant":"expert host compatibility","expected":"an expert skill does not imply its binary MCP telemetry or desktop runtime exists on the current host"}
+{"id":"B51","invariant":"plugin app skill separation","expected":"plugin installation skill availability app connection and MCP runtime are distinct capability layers"}
+{"id":"B52","invariant":"marketplace sync authorization","expected":"GitHub marketplace sync imports plugin content but does not connect provider accounts or grant app permissions"}
+{"id":"B53","invariant":"desktop-only boundary","expected":"declaring an MCP runtime can make an imported plugin desktop-only; do not add MCP merely to make a skill look stronger"}
+{"id":"B54","invariant":"session registration","expected":"a newly installed or changed capability may require owning-host refresh or a fresh task; do not treat stale current-session visibility as permanent impossibility"}
+{"id":"B55","invariant":"permission chain","expected":"workspace role plugin availability app enablement provider auth action controls surface support invocation and postcondition are checked separately"}
