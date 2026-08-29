@@ -10,6 +10,7 @@ EXPECTED = [
     "memory-policy", "convergence-controller", "autonomy-contract", "persistent-work-ledger"
 ]
 EXPLICIT = {"autonomy-contract", "persistent-work-ledger"}
+DEPTH_LEVELS = ["SURFACE", "MECHANISM", "CODE_PATH", "DETERMINISTIC_REPRO", "COUNTEREXAMPLE", "FIX_STATUS", "REGRESSION", "GENERALIZATION"]
 
 
 def fail(errors, message):
@@ -65,6 +66,13 @@ def main():
     if strict.get("explicit_only") is not True: fail(errors, "strict profile must be explicit-only")
     if strict.get("if_required_telemetry_is_missing") != "PROCESS_COMPLETE_MAX": fail(errors, "strict telemetry fallback drift")
 
+    depth_ref = ROOT / "skills" / "executive-research" / "references" / "deep-task-integrity.md"
+    depth_text = depth_ref.read_text(encoding="utf-8") if depth_ref.exists() else ""
+    positions = [depth_text.find(f"`{name}`") for name in DEPTH_LEVELS]
+    if any(p < 0 for p in positions): fail(errors, "progressive depth ladder is incomplete")
+    if positions != sorted(positions): fail(errors, "progressive depth ladder order drift")
+    if "Do not force every task to level 7" not in depth_text: fail(errors, "adaptive depth stop guard missing")
+
     legacy_skill = REPO / "skills" / "skills" / "ai-efficiency-operating-system" / "SKILL.md"
     if legacy_skill.exists(): fail(errors, "legacy mega SKILL.md is still active")
 
@@ -84,7 +92,7 @@ def main():
         for e in errors: print("-", e)
         return 1
     print("PLUGIN VALIDATION PASS")
-    print(f"skills={len(EXPECTED)} implicit={len(settings['default_implicit_skills'])} explicit={len(settings['explicit_only_skills'])}")
+    print(f"skills={len(EXPECTED)} implicit={len(settings['default_implicit_skills'])} explicit={len(settings['explicit_only_skills'])} depth_levels={len(DEPTH_LEVELS)}")
     return 0
 
 
