@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "profile_id": "goal-fidelity-target-lock-v1",
+  "scope": "global-policy-projection",
+  "default_enabled": true,
+  "purpose": "Prevent wrong-target execution and late-stage goal drift while keeping implementation routes flexible.",
+  "goal_contract": {
+    "required_fields": [
+      "ROOT_GOAL",
+      "DESIRED_END_STATE",
+      "HARD_CONSTRAINTS",
+      "NEGATIONS",
+      "PROTECTED_CAPABILITIES",
+      "TARGET_IDENTITY",
+      "ACCEPTANCE_TESTS",
+      "UNDERLYING_PURPOSE",
+      "GOAL_SIGNATURE"
+    ],
+    "target_identity_dimensions": [
+      "host",
+      "account_or_profile",
+      "application_or_runtime",
+      "repository_or_workspace",
+      "path_or_resource",
+      "process_window_or_session",
+      "revision_or_version_when_relevant"
+    ],
+    "route_may_change_without_goal_change": true,
+    "silent_goal_mutation_forbidden": true
+  },
+  "primary_gate": {
+    "minimum_independent_analyzers": 5,
+    "analyzers": [
+      "literal_intent",
+      "authority_or_spec",
+      "environment_entity_identity",
+      "acceptance_evidence_backward",
+      "reverse_failure"
+    ],
+    "required_output_fields": [
+      "interpretation",
+      "evidence",
+      "uncertainty",
+      "contradictions",
+      "confidence"
+    ],
+    "cosmetic_rewording_does_not_count_as_independence": true
+  },
+  "escalation_gate": {
+    "trigger_conditions": [
+      "high_impact_field_disagreement",
+      "insufficient_confidence",
+      "ambiguous_target_identity",
+      "contradictory_authoritative_evidence"
+    ],
+    "additional_analyzers": [
+      "counterfactual",
+      "exclusion",
+      "dependency_path",
+      "cross_source_consistency",
+      "purpose_value"
+    ],
+    "maximum_total_required_before_user_question_when_evidence_can_resolve": 10,
+    "guessing_on_high_impact_ambiguity_forbidden": true
+  },
+  "drift_control": {
+    "goal_signature_required": true,
+    "checkpoint_triggers": [
+      "before_first_material_write_or_external_action",
+      "after_material_route_change",
+      "after_two_similar_failures",
+      "host_account_repo_workspace_path_or_session_change",
+      "context_compaction_summary_handoff_or_branch_merge",
+      "before_release"
+    ],
+    "protected_fields": [
+      "ROOT_GOAL",
+      "HARD_CONSTRAINTS",
+      "NEGATIONS",
+      "PROTECTED_CAPABILITIES",
+      "TARGET_IDENTITY",
+      "ACCEPTANCE_TESTS"
+    ],
+    "drift_requires_explicit_evidence": true
+  },
+  "branching": {
+    "parallelism_is_optional": true,
+    "branches_must_be_causally_distinct": true,
+    "recommended_branch_roles": [
+      "target_identity",
+      "causal_diagnosis",
+      "alternative_architecture",
+      "adversarial_falsification",
+      "independent_verification"
+    ],
+    "duplicate_hypotheses_do_not_count_as_multiple_agents": true,
+    "merge_requires_goal_contract_reconciliation": true
+  },
+  "evidence_mesh": {
+    "default_sources_for_substantive_tasks_when_available": [
+      "GitHub",
+      "Notion"
+    ],
+    "github_role": "executable_source_of_truth",
+    "notion_role": "durable_cross_repo_context_and_decision_memory",
+    "start_with_low_cost_relevance_probe": true,
+    "deepen_only_on_decision_value": true,
+    "connector_use_must_be_observed_not_assumed": true,
+    "unavailable_or_irrelevant_connector_must_not_block_unrelated_work": true
+  },
+  "capability_preservation": {
+    "obvious_degradation_is_not_default_solution": true,
+    "must_search_for_capability_preserving_route_first": true,
+    "protected_capability_regression_blocks_pass": true
+  },
+  "release_gate": {
+    "pass_requires": [
+      "target_identity_evidenced",
+      "all_hard_goal_contract_criteria_satisfied",
+      "highest_practical_owning_layer_verified",
+      "protected_capabilities_preserved",
+      "final_goal_drift_check_passed",
+      "no_unresolved_high_impact_contradiction"
+    ],
+    "self_report_only_cannot_pass": true,
+    "unknown_or_unverified_target_cannot_pass": true
+  }
+}
