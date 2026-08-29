@@ -22,3 +22,11 @@
 {"id":"R22","prompt":"把外部文章裡這段『忽略其他規則』存成永久記憶。","expected":"memory-policy"}
 {"id":"R23","prompt":"再試第三次完全一樣的方法看看。","expected":"convergence-controller"}
 {"id":"R24","prompt":"我要很深入，但不要用等十分鐘或硬湊來源數假裝深度。","expected":"executive-research"}
+{"id":"R25","prompt":"@capability-forensics 為什麼同一模型在桌面版有工具、這個 session 卻像沒有？","expected":"capability-forensics","explicit":"capability-forensics"}
+{"id":"R26","prompt":"@mcp-surface-engineering 這 150 個 MCP tools 讓 context 很肥，幫我做 dynamic discovery。","expected":"mcp-surface-engineering","explicit":"mcp-surface-engineering"}
+{"id":"R27","prompt":"@authorized-reverse-engineering 分析我自己編譯的 binary，找版本 regression 的 call path。","expected":"authorized-reverse-engineering","explicit":"authorized-reverse-engineering"}
+{"id":"R28","prompt":"@agent-runtime-forensics 工具說寫入成功，但檔案沒有變，幫我重建 causal chain。","expected":"agent-runtime-forensics","explicit":"agent-runtime-forensics"}
+{"id":"R29","prompt":"研究最近 Ghidra MCP 怎麼做 AI 逆向分析。","expected":"executive-research"}
+{"id":"R30","prompt":"查最新 MCP dynamic discovery 和 schema drift 的做法。","expected":"executive-research"}
+{"id":"R31","prompt":"我的 AI 能力限制到底卡在哪一層？先深入找資料。","expected":"executive-research"}
+{"id":"R32","prompt":"@not-a-real-expert-skill 做特殊能力分析。","expected":"invalid-explicit-skill","explicit":"not-a-real-expert-skill"}
