@@ -18,9 +18,17 @@ EXPLICIT = {"autonomy-contract", "persistent-work-ledger", *EXPERT}
 DEPTH_LEVELS = ["SURFACE", "MECHANISM", "CODE_PATH", "DETERMINISTIC_REPRO", "COUNTEREXAMPLE", "FIX_STATUS", "REGRESSION", "GENERALIZATION"]
 EXPERT_REFS = {
     "capability-forensics": ("references/capability-fingerprinting.md", ["DECLARED / VISIBLE / AUTHORIZED / LOADABLE / INVOKABLE / EFFECTIVE / VERIFIED", "Environment engineering before prompt inflation", "Differential probe"]),
-    "mcp-surface-engineering": ("references/mcp-surface-contract.md", ["Dynamic discovery", "Tool-poisoning", "Minimal Capability Frontier"]),
+    "mcp-surface-engineering": ("references/mcp-surface-contract.md", ["Dynamic discovery", "Tool-poisoning", "Minimal Capability Frontier", "pre-execution boundary"]),
     "authorized-reverse-engineering": ("references/reverse-engineering-playbook.md", ["Static-first", "Cross-binary transfer", "Hard stop conditions"]),
     "agent-runtime-forensics": ("references/runtime-provenance.md", ["Evidence planes", "Causal edges", "Replay"]),
+}
+EXTRA_REFS = {
+    "skills/capability-forensics/references/capability-boundary-recon.md": [
+        "PLAN/ROLLOUT", "WORKSPACE POLICY", "PLUGIN INSTALL", "SESSION REGISTRATION", "Desktop-only", "MODEL_OR_REASONING_LIMIT"
+    ],
+    "skills/executive-research/references/ai-ecosystem-recon.md": [
+        "change archaeology", "Harness differential", "Citation-chain audit", "Retrieved-content injection firewall"
+    ],
 }
 
 
@@ -101,6 +109,16 @@ def main():
         for marker in markers:
             if marker.lower() not in text.lower():
                 fail(errors, f"expert reference marker missing: {name}: {marker}")
+
+    for rel, markers in EXTRA_REFS.items():
+        path = ROOT / rel
+        if not path.exists():
+            fail(errors, f"missing reference: {rel}")
+            continue
+        text = path.read_text(encoding="utf-8")
+        for marker in markers:
+            if marker.lower() not in text.lower():
+                fail(errors, f"reference marker missing: {rel}: {marker}")
 
     adaptive = settings["research_profiles"]["ADAPTIVE"]
     strict = settings["research_profiles"]["STRICT_DEEPLOCK"]
