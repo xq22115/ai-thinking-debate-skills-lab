@@ -1,0 +1,3 @@
+interface:
+  display_name: "Memory Policy"
+  short_description: "Govern durable memory and rehydration"

@@ -68,7 +68,7 @@
     },
     {
       "id": "ai-efficiency-operating-system",
-      "path": "skills/skills/ai-efficiency-operating-system/SKILL.md",
+      "path": "plugins/ai-efficiency-operating-system/skills/chief-of-staff-core/SKILL.md",
       "semantic_owner": "cross_chat_hidden_state_and_execution_orchestration",
       "load_mode": "progressive_disclosure_for_complex_or_cross_chat_work"
     }
@@ -151,7 +151,7 @@
   "platform_truth": {
     "codex_repo_agents": "can be auto-discovered by Codex within its documented scope but must still be verified as loaded for material compliance claims",
     "codex_user_global": "managed through the repository installer into the active CODEX_HOME instruction file when explicitly installed",
-    "ordinary_chat": "repository files are not inherently global instructions; persistence requires a host-supported memory/project instruction mechanism or explicit connector retrieval",
+    "ordinary_chat": "repository files are not inherently global instructions; current ChatGPT plugin use still requires the plugin/marketplace to be imported or installed on the owning workspace/surface, or another host-supported memory/project instruction mechanism",
     "skills": "progressive disclosure; a skill existing on disk or in a repository does not prove its body was loaded"
   },
   "drift_gate": {

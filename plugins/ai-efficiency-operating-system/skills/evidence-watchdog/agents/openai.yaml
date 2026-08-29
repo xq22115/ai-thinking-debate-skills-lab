@@ -1,0 +1,3 @@
+interface:
+  display_name: "Evidence Watchdog"
+  short_description: "Verify state and completion claims"

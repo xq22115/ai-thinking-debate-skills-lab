@@ -1,0 +1,19 @@
+{
+  "name": "ai-thinking-debate-skills-lab",
+  "interface": {
+    "displayName": "AI Thinking & Reliability Skills"
+  },
+  "plugins": [
+    {
+      "name": "ai-efficiency-operating-system",
+      "source": {
+        "source": "local",
+        "path": "./plugins/ai-efficiency-operating-system"
+      },
+      "policy": {
+        "installation": "AVAILABLE"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

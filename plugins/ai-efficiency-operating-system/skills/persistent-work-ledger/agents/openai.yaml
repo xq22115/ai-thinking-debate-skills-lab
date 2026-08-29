@@ -1,0 +1,5 @@
+interface:
+  display_name: "Persistent Work Ledger"
+  short_description: "Durable runtime state for capable hosts"
+policy:
+  allow_implicit_invocation: false

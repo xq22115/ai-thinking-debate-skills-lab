@@ -1,0 +1,53 @@
+name: AI Efficiency Plugin Gate
+
+on:
+  push:
+    paths:
+      - 'plugins/ai-efficiency-operating-system/**'
+      - '.agents/plugins/marketplace.json'
+      - 'skills/02-skills-catalog.md'
+      - 'skills/skills/ai-efficiency-operating-system/**'
+      - '.github/workflows/ai-efficiency-plugin-gate.yml'
+  pull_request:
+    paths:
+      - 'plugins/ai-efficiency-operating-system/**'
+      - '.agents/plugins/marketplace.json'
+      - 'skills/02-skills-catalog.md'
+      - 'skills/skills/ai-efficiency-operating-system/**'
+      - '.github/workflows/ai-efficiency-plugin-gate.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  plugin-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile helpers
+        run: |
+          python -m py_compile \
+            plugins/ai-efficiency-operating-system/scripts/validate_plugin.py \
+            plugins/ai-efficiency-operating-system/scripts/route_oracle.py
+      - name: Validate package and migration
+        run: python plugins/ai-efficiency-operating-system/scripts/validate_plugin.py
+      - name: Run deterministic routing oracle against regression corpus
+        run: python plugins/ai-efficiency-operating-system/scripts/route_oracle.py plugins/ai-efficiency-operating-system/evals/routing-cases.jsonl
+      - name: Parse JSON/JSONL artifacts
+        run: |
+          python -m json.tool plugins/ai-efficiency-operating-system/.codex-plugin/plugin.json >/dev/null
+          python -m json.tool plugins/ai-efficiency-operating-system/settings.json >/dev/null
+          python -m json.tool .agents/plugins/marketplace.json >/dev/null
+          python - <<'PY'
+          import json, pathlib
+          for path in [
+              pathlib.Path('plugins/ai-efficiency-operating-system/evals/routing-cases.jsonl'),
+              pathlib.Path('plugins/ai-efficiency-operating-system/evals/behavior-cases.jsonl')]:
+              for i, line in enumerate(path.read_text().splitlines(), 1):
+                  if line.strip(): json.loads(line)
+          print('jsonl parse pass')
+          PY

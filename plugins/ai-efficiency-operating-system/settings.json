@@ -1,0 +1,88 @@
+{
+  "schema": 2,
+  "version": "1.0.0-rc1",
+  "mode": "executive-chief-of-staff",
+  "status": "PACKAGE_CANDIDATE_HOST_LIVE_UNVERIFIED",
+  "default_implicit_skills": [
+    "chief-of-staff-core",
+    "plan-arbiter",
+    "evidence-watchdog",
+    "executive-research",
+    "memory-policy",
+    "convergence-controller"
+  ],
+  "explicit_only_skills": [
+    "autonomy-contract",
+    "persistent-work-ledger"
+  ],
+  "routing": {
+    "one_primary_phase_owner": true,
+    "max_implicit_skills": 3,
+    "precedence": ["user_correction", "authority", "host_capability", "task_phase", "semantic_similarity"],
+    "phase_before_keyword_similarity": true,
+    "negative_routing_is_a_regression_gate": true
+  },
+  "task_contract": {
+    "required_fields": ["objective", "deliverables", "acceptance", "constraints", "authority_ceiling", "stop_conditions"],
+    "freeze_before_effectful_execution": true,
+    "derived_rules_cannot_weaken_source_requirements": true,
+    "reviewer_cannot_add_gate_without_controller": true
+  },
+  "research_profiles": {
+    "ADAPTIVE": {
+      "default": true,
+      "fixed_elapsed_time_is_depth": false,
+      "fixed_source_count_is_quality": false,
+      "round_requires_material_delta": true,
+      "same_class_no_delta_pivot_after": 2,
+      "load_bearing_claim_min_independent_source_families": 2,
+      "high_impact_claim_target_independent_source_families": 3,
+      "search_modes": ["NO_SEARCH", "TARGETED", "BROAD", "FORENSIC"],
+      "preserve_conflicting_evidence": true,
+      "search_snippets_are_discovery_only_when_source_can_be_opened": true
+    },
+    "STRICT_DEEPLOCK": {
+      "explicit_only": true,
+      "purpose": "User-selected acceptance profile for unusually strict long-horizon research; thresholds are acceptance gates, not a universal measure of reasoning quality.",
+      "requires_trusted_runtime_telemetry": true,
+      "minimum_productive_active_seconds": 600,
+      "minimum_aggregate_worker_execution_seconds": 600,
+      "minimum_qualified_evidence_families": 50,
+      "minimum_independent_domains": 10,
+      "minimum_distinct_first_pass_worker_identities": 10,
+      "minimum_research_passes": 4,
+      "required_passes": ["broad_scan", "gap_expansion", "adversarial_counterevidence", "cross_validation"],
+      "if_required_telemetry_is_missing": "PROCESS_COMPLETE_MAX",
+      "time_padding_forbidden": true,
+      "majority_vote_is_not_completion_proof": true
+    }
+  },
+  "verification": {
+    "postcondition_required_for_stateful_change": true,
+    "command_success_is_not_state_success": true,
+    "executor_self_report_is_not_independent_proof": true,
+    "unknown_is_first_class": true,
+    "state_sensitive_evidence_requires_current_epoch": true
+  },
+  "convergence": {
+    "default_max_review_rounds": 3,
+    "max_new_gates_after_freeze_without_controller": 0,
+    "same_progress_fingerprint_stall_limit": 2,
+    "skill_change_requires_target_protection_holdout": true,
+    "whole_skill_folder_change_allowed": true,
+    "self_approval_forbidden": true
+  },
+  "memory": {
+    "durable_classes": ["decision", "preference", "commitment", "verified_durable_fact"],
+    "raw_external_evidence_is_durable": false,
+    "instruction_like_external_content": "QUARANTINE",
+    "transformation_cannot_raise_authority": true
+  },
+  "capability_truth": {
+    "ordinary_skill_does_not_imply_filesystem_hooks": true,
+    "ordinary_skill_does_not_imply_background_polling": true,
+    "ordinary_skill_does_not_imply_subagents": true,
+    "installed_does_not_imply_invokable": true,
+    "plugin_package_does_not_imply_host_live": true
+  }
+}
