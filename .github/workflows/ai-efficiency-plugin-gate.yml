@@ -32,22 +32,27 @@ jobs:
         run: |
           python -m py_compile \
             plugins/ai-efficiency-operating-system/scripts/validate_plugin.py \
-            plugins/ai-efficiency-operating-system/scripts/route_oracle.py
-      - name: Validate package and migration
+            plugins/ai-efficiency-operating-system/scripts/route_oracle.py \
+            plugins/ai-efficiency-operating-system/scripts/control_plane_oracle.py
+      - name: Validate package, migration and control-plane contracts
         run: python plugins/ai-efficiency-operating-system/scripts/validate_plugin.py
       - name: Run deterministic routing oracle against regression corpus
         run: python plugins/ai-efficiency-operating-system/scripts/route_oracle.py plugins/ai-efficiency-operating-system/evals/routing-cases.jsonl
+      - name: Run provider-free known-outcome control-plane oracle
+        run: python plugins/ai-efficiency-operating-system/scripts/control_plane_oracle.py plugins/ai-efficiency-operating-system/evals/control-plane-cases.jsonl
       - name: Parse JSON/JSONL artifacts
         run: |
           python -m json.tool plugins/ai-efficiency-operating-system/.codex-plugin/plugin.json >/dev/null
           python -m json.tool plugins/ai-efficiency-operating-system/settings.json >/dev/null
           python -m json.tool .agents/plugins/marketplace.json >/dev/null
+          for f in plugins/ai-efficiency-operating-system/contracts/*.json; do python -m json.tool "$f" >/dev/null; done
           python - <<'PY'
           import json, pathlib
           for path in [
               pathlib.Path('plugins/ai-efficiency-operating-system/evals/routing-cases.jsonl'),
-              pathlib.Path('plugins/ai-efficiency-operating-system/evals/behavior-cases.jsonl')]:
+              pathlib.Path('plugins/ai-efficiency-operating-system/evals/behavior-cases.jsonl'),
+              pathlib.Path('plugins/ai-efficiency-operating-system/evals/control-plane-cases.jsonl')]:
               for i, line in enumerate(path.read_text().splitlines(), 1):
                   if line.strip(): json.loads(line)
-          print('jsonl parse pass')
+          print('json/jsonl parse pass')
           PY
