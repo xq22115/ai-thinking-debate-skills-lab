@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "owners": ["evidence-watchdog", "convergence-controller"],
-  "purpose": "Separate structural/package truth from executable and behavioral target truth, and prevent simulated or stale evidence from promoting a skill or release.",
+  "purpose": "Separate structural/package truth from executable and behavioral target truth, and prevent simulated, contaminated or stale evidence from promoting a skill or release.",
   "validation_layers": [
     "STRUCTURAL",
     "INSTALLED_TEMPLATE",
@@ -32,13 +32,21 @@
     "scope",
     "validation_layer"
   ],
+  "eval_contamination": {
+    "record": ["history_access", "network_access", "benchmark_answer_exposure", "hidden_test_exposure", "contamination_audit"],
+    "known_answer_retrieval_invalidates_capability_claim_unless_retrieval_is_part_of_task": true,
+    "cross_trial_state_contamination_invalidates_independence": true,
+    "gold_or_holdout_answer_should_not_be_model_facing_when_not_required": true
+  },
   "telemetry_evidence_classes": ["SIMULATED_CONTROL", "OBSERVED_TARGET"],
   "promotion": {
     "simulated_control_max_state": "SHADOW_ONLY",
     "observed_target_required_for": "PROMOTED",
     "quality_non_regression": ["quality_success_rate", "false_completion_rate", "source_violation_rate"],
-    "efficiency_candidates": ["tool_calls_per_decision", "context_units_per_decision", "duplicate_lineage_rate", "full_research_ratio", "accepted_result_per_cost"],
+    "efficiency_candidates": ["tool_calls_per_decision", "context_units_per_decision", "duplicate_lineage_rate", "full_research_ratio", "accepted_result_per_cost", "correction_or_rework_rate"],
     "requires_at_least_one_measured_efficiency_or_cost_gain": true,
+    "route_optimization_should_use_task_native_outcomes_and_real_cost": true,
+    "model_prestige_or_static_rank_is_not_route_reward": true,
     "hard_negative_regression": "REJECT",
     "host_model_version_incompatibility": "REJECT",
     "no_measured_gain": "HOLD"
