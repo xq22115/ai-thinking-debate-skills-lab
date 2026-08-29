@@ -1,0 +1,30 @@
+{
+  "name": "ai-efficiency-operating-system",
+  "version": "1.0.0-rc1",
+  "description": "Goal-first planning, research, verification, memory, convergence, autonomy and durable-state workflows for complex ChatGPT and Codex tasks.",
+  "repository": "https://github.com/xq22115/ai-thinking-debate-skills-lab",
+  "skills": "./skills/",
+  "license": "MIT",
+  "keywords": [
+    "deep-research",
+    "reasoning",
+    "verification",
+    "goal-integrity",
+    "planning",
+    "long-horizon",
+    "chatgpt-desktop",
+    "codex"
+  ],
+  "interface": {
+    "displayName": "AI Efficiency Operating System",
+    "developerName": "xq22115",
+    "category": "Productivity",
+    "shortDescription": "Deep research and verified task execution",
+    "longDescription": "Eight focused skills derived from the validated Executive Harness, Deep Task Integrity, DeepLock V2.1 and ARR v1.3, adapted to the 2026 OpenAI plugin and Agent Skills model.",
+    "capabilities": ["Interactive", "Read"],
+    "defaultPrompt": [
+      "Research this deeply, preserve my exact goal, and verify the conclusion.",
+      "Compare the best implementation routes and do not claim completion without read-back evidence."
+    ]
+  }
+}

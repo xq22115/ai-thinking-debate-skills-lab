@@ -1,0 +1,5 @@
+interface:
+  display_name: "Autonomy Contract"
+  short_description: "Bound explicit effect-bearing delegation and authority"
+policy:
+  allow_implicit_invocation: false

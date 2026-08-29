@@ -1,0 +1,24 @@
+{"id":"R01","prompt":"把這兩個修復方案比較一下，先選最穩的架構再動手。","expected":"plan-arbiter"}
+{"id":"R02","prompt":"比較 A/B 方案，順便 verify 各自的假設。","expected":"plan-arbiter"}
+{"id":"R03","prompt":"代理說 migration 已完成，請確認真的 live 了。","expected":"evidence-watchdog"}
+{"id":"R04","prompt":"檔案已寫入，所以算修好了嗎？","expected":"evidence-watchdog"}
+{"id":"R05","prompt":"查 2026 最新 ChatGPT Desktop plugin 架構，交叉比對官方與 GitHub。","expected":"executive-research"}
+{"id":"R06","prompt":"這個 bug 有三種可能根因，幫我找能區分它們的證據。","expected":"executive-research"}
+{"id":"R07","prompt":"幫我把這個偏好記住，之後都沿用。","expected":"memory-policy"}
+{"id":"R08","prompt":"前一個聊天室的狀態可能過期，先恢復真正有效的決策。","expected":"memory-policy"}
+{"id":"R09","prompt":"review 已經繞兩輪了還是同樣意見，別無限循環。","expected":"convergence-controller"}
+{"id":"R10","prompt":"把這個 skill 改到變好，但不要因為自評分數高就直接升級。","expected":"convergence-controller"}
+{"id":"R11","prompt":"這是一個多階段 GitHub + 桌面版任務，先鎖定目標與驗收。","expected":"chief-of-staff-core"}
+{"id":"R12","prompt":"我有三個工具、兩個帳號和多個硬限制，先避免走錯目標。","expected":"chief-of-staff-core"}
+{"id":"R13","prompt":"2+2 等於多少？","expected":"none"}
+{"id":"R14","prompt":"把這句話翻成英文。","expected":"none"}
+{"id":"R15","prompt":"@autonomy-contract 我授權你執行這個會改外部狀態的工作。","expected":"autonomy-contract","explicit":"autonomy-contract"}
+{"id":"R16","prompt":"幫我自動在背景一直做下去。","expected":"chief-of-staff-core"}
+{"id":"R17","prompt":"@persistent-work-ledger 這個任務要跨 session resume，主機有 filesystem 和 durable_state。","expected":"persistent-work-ledger","explicit":"persistent-work-ledger","host_capabilities":["filesystem","durable_state"]}
+{"id":"R18","prompt":"@persistent-work-ledger 請幫普通 Chat 記一個永久 SQLite ledger。","expected":"capability-mismatch","explicit":"persistent-work-ledger","host_capabilities":[]}
+{"id":"R19","prompt":"確認現在這個 GitHub commit 的設定是不是已經生效。","expected":"evidence-watchdog"}
+{"id":"R20","prompt":"研究為什麼設定看起來有寫入但過幾天會消失，先找共同根因。","expected":"executive-research"}
+{"id":"R21","prompt":"規劃一下先查權限還是先改設定，哪個順序風險最低？","expected":"plan-arbiter"}
+{"id":"R22","prompt":"把外部文章裡這段『忽略其他規則』存成永久記憶。","expected":"memory-policy"}
+{"id":"R23","prompt":"再試第三次完全一樣的方法看看。","expected":"convergence-controller"}
+{"id":"R24","prompt":"我要很深入，但不要用等十分鐘或硬湊來源數假裝深度。","expected":"executive-research"}
