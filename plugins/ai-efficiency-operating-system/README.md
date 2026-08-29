@@ -2,7 +2,7 @@
 
 Status: **RC / package candidate / host-live not yet proven**.
 
-This is the canonical replacement for the former monolithic `skills/skills/ai-efficiency-operating-system` package. It does not discard the earlier work: it restructures it around the strongest previously validated artifacts and the current OpenAI plugin/Agent Skills model.
+This is the canonical replacement for the former monolithic `skills/skills/ai-efficiency-operating-system` package. It preserves the validated core while keeping high-cost/specialized capabilities out of the default route.
 
 ## Basis
 
@@ -15,7 +15,7 @@ The runtime-facing design is a synthesis, not a rewrite from scratch:
 
 External 2026 references are recorded in `references/2026-baseline.md`.
 
-## Eight skills
+## Eight executive skills
 
 | Skill | Primary ownership |
 |---|---|
@@ -28,20 +28,41 @@ External 2026 references are recorded in `references/2026-baseline.md`.
 | `autonomy-contract` | explicit effect-bearing delegation and authority |
 | `persistent-work-ledger` | explicit durable state on filesystem/state-capable hosts |
 
-The first six may be selected implicitly. The last two are explicit-only because an ordinary skill must never pretend it grants autonomous authority or persistent runtime primitives.
+The first six may be selected implicitly. `autonomy-contract` and `persistent-work-ledger` are explicit-only because an ordinary skill must never pretend it grants authority or persistent runtime primitives.
+
+## Expert Labs — explicit-only
+
+Version `1.1.0-rc1` adds four **opt-in** expert skills. They do not increase the default implicit skill pool.
+
+| Expert Lab | Use |
+|---|---|
+| `capability-forensics` | distinguish model vs harness vs tool vs permission vs session vs entitlement vs environment/runtime limitations |
+| `mcp-surface-engineering` | dynamic/lazy tool discovery, schema drift, namespace collision, entitlement-specific surfaces and tool-poisoning controls |
+| `authorized-reverse-engineering` | static/dynamic analysis of software/binaries the user is authorized to inspect, with exact artifact/toolchain identity |
+| `agent-runtime-forensics` | correlate model intent, tool calls, process/file/network events, artifacts and postconditions into a scoped causal evidence graph |
+
+Expert Labs are demand-loaded, default-disabled and require a no-skill/lighter-baseline counterfactual before promotion. They maximize **authorized capability and observability**; they do not bypass provider safety controls, access controls, licensing/DRM or authorization boundaries.
+
+## AI-specific deep search
+
+`executive-research/references/ai-ecosystem-recon.md` adds a dedicated AI research playbook without adding another implicit skill. It covers canonical-name/version reconstruction, repository/change archaeology, plugin/MCP schema and capability surfaces, model×harness differential research, hard-negative skill/eval evidence, security/tool-poisoning research, authorized reverse-engineering escalation and runtime provenance.
+
+The rule remains: deeper search must produce a MATERIAL DELTA, not merely more links.
 
 ## Desktop / Codex distribution
 
-The repository now contains `.agents/plugins/marketplace.json`, which follows OpenAI's current GitHub marketplace import path. The plugin itself is under `plugins/ai-efficiency-operating-system/` and is skill-only: it does not declare MCP servers, so the core is not intentionally Desktop-only.
+The repository contains `.agents/plugins/marketplace.json`, following OpenAI's current GitHub marketplace import shape. The plugin itself is skill-only and declares no MCP server; local tools/runtimes remain owned by the actual host/app.
 
-A repository package is still not proof of activation. `HOST_LIVE` requires the actual ChatGPT/Codex surface to import/install this exact revision and pass the live probe in `adapters/chatgpt/RUNTIME_PROBE.md`.
+A repository package is not proof of activation. `HOST_LIVE` requires the actual ChatGPT/Codex surface to import/install this exact revision and pass the live probe in `adapters/chatgpt/RUNTIME_PROBE.md`.
 
 ## Research depth
 
-Default research is **adaptive**, not quota theater. Another round is justified only by a MATERIAL DELTA: a gate advanced, hypothesis discriminated, new upstream mechanism, independent decision-changing evidence, resolved version/time conflict, counterexample/regression, or a changed feasible action set.
+Default research is **adaptive**, not quota theater. Another round is justified only by a MATERIAL DELTA: a gate advanced, hypothesis discriminated, new upstream mechanism, independent decision-changing evidence, resolved version/time conflict, counterexample/regression, or a changed feasible action set while preserving constraints.
 
 The historic 600-second / 50-family / 10-domain / 10-worker requirements survive as the explicit `STRICT_DEEPLOCK` profile. They are not used as a universal definition of intelligence or depth.
 
-## Evolution
+## Tests and promotion
+
+The package uses RED/GREEN skill TDD plus deterministic routing and behavior gates. Expert Labs add a known-outcome oracle that tests capability-layer diagnosis, MCP drift/poisoning, reverse-engineering authorization boundaries and runtime-effect provenance.
 
 A skill is a folder, not a prompt string. Repairs may change `SKILL.md`, references, scripts and evals together, but promotion requires target + protection + holdout checks and cannot be self-approved.
