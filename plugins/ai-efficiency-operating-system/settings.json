@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "1.1.0-rc1",
+  "version": "1.1.0-rc2",
   "mode": "executive-chief-of-staff",
   "status": "PACKAGE_CANDIDATE_HOST_LIVE_UNVERIFIED",
   "default_implicit_skills": ["chief-of-staff-core","plan-arbiter","evidence-watchdog","executive-research","memory-policy","convergence-controller"],
