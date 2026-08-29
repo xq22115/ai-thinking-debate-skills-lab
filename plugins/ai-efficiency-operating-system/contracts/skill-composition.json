@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "purpose": "Compose the smallest task-relevant skill subgraph and make negative transfer observable.",
+  "nodes": {
+    "chief-of-staff-core": {"implicit": true, "phase": "control"},
+    "plan-arbiter": {"implicit": true, "phase": "planning"},
+    "evidence-watchdog": {"implicit": true, "phase": "verification"},
+    "executive-research": {"implicit": true, "phase": "research"},
+    "memory-policy": {"implicit": true, "phase": "memory"},
+    "convergence-controller": {"implicit": true, "phase": "evolution"},
+    "autonomy-contract": {"implicit": false, "phase": "effect_authority"},
+    "persistent-work-ledger": {"implicit": false, "phase": "durable_runtime"}
+  },
+  "edge_types": ["DECOMPOSES_TO", "REQUIRES_BEFORE", "SUPPORTS", "VERIFIES_WITH", "RECOVERS_WITH", "COMPATIBLE_WITH", "EXPLICIT_ONLY_WITH"],
+  "edges": [
+    {"from": "chief-of-staff-core", "to": "plan-arbiter", "type": "DECOMPOSES_TO"},
+    {"from": "chief-of-staff-core", "to": "executive-research", "type": "DECOMPOSES_TO"},
+    {"from": "executive-research", "to": "evidence-watchdog", "type": "VERIFIES_WITH"},
+    {"from": "plan-arbiter", "to": "evidence-watchdog", "type": "VERIFIES_WITH"},
+    {"from": "convergence-controller", "to": "evidence-watchdog", "type": "VERIFIES_WITH"},
+    {"from": "persistent-work-ledger", "to": "evidence-watchdog", "type": "VERIFIES_WITH"},
+    {"from": "persistent-work-ledger", "to": "memory-policy", "type": "SUPPORTS"},
+    {"from": "autonomy-contract", "to": "persistent-work-ledger", "type": "SUPPORTS"}
+  ],
+  "routing": {
+    "one_primary_phase_owner": true,
+    "max_implicit_skills": 3,
+    "retrieve_task_relevant_subgraph_only": true,
+    "skill_switches_are_explicit_state_transitions_for_long_horizon_work": true,
+    "aggregate_benchmark_gain_never_implies_universal_activation": true
+  },
+  "admission": {
+    "compare_against_no_skill_or_semantically_matched_reference": true,
+    "host_model_version_compatibility_required": true,
+    "measure_functional_and_efficiency_delta": true,
+    "excessive_verification_or_pipeline_cost_can_be_negative_transfer": true,
+    "generated_or_modified_skill_cannot_self_approve": true,
+    "outcomes": ["RETAIN", "ADAPT", "HOLD", "RETIRE"]
+  }
+}
