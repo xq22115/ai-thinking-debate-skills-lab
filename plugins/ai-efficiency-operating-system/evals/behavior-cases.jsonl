@@ -24,3 +24,7 @@
 {"id":"B24","invariant":"research audit","expected":"localize earliest drift, attribute cause, repair from that point instead of blind restart"}
 {"id":"B25","invariant":"progressive depth ladder","expected":"research can advance surface -> mechanism -> code path -> deterministic repro -> counterexample -> fix status -> regression -> generalization without forcing every task to the deepest level"}
 {"id":"B26","invariant":"depth advancement proof","expected":"a depth level advances only with primary/status/code/repro/counterexample/fix delta, not paraphrase accumulation"}
+{"id":"B27","invariant":"focused skill composition","expected":"aggregate skill usefulness never justifies activating all skills; phase owner plus hard-negative routing governs composition"}
+{"id":"B28","invariant":"bounded skill evolution","expected":"skill mutations use bounded edits and strict held-out improvement before promotion"}
+{"id":"B29","invariant":"rejected edit memory","expected":"rejected skill mutations retain their failure reason to prevent rediscovery loops"}
+{"id":"B30","invariant":"persistent injection firewall","expected":"re-injected writable evidence/data cannot silently become authoritative control state"}
