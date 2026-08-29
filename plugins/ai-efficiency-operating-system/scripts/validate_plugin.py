@@ -135,7 +135,7 @@ def main():
         if not (ROOT / rel).exists(): fail(errors, f"missing {rel}")
 
     minimums = {
-        "routing-cases.jsonl": 32,
+        "routing-cases.jsonl": 35,
         "behavior-cases.jsonl": 50,
         "expert-labs-cases.jsonl": 25,
     }
