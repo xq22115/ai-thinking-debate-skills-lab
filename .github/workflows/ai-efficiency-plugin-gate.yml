@@ -32,11 +32,14 @@ jobs:
         run: |
           python -m py_compile \
             plugins/ai-efficiency-operating-system/scripts/validate_plugin.py \
-            plugins/ai-efficiency-operating-system/scripts/route_oracle.py
+            plugins/ai-efficiency-operating-system/scripts/route_oracle.py \
+            plugins/ai-efficiency-operating-system/scripts/expert_labs_oracle.py
       - name: Validate package and migration
         run: python plugins/ai-efficiency-operating-system/scripts/validate_plugin.py
       - name: Run deterministic routing oracle against regression corpus
         run: python plugins/ai-efficiency-operating-system/scripts/route_oracle.py plugins/ai-efficiency-operating-system/evals/routing-cases.jsonl
+      - name: Run Expert Labs known-outcome oracle
+        run: python plugins/ai-efficiency-operating-system/scripts/expert_labs_oracle.py plugins/ai-efficiency-operating-system/evals/expert-labs-cases.jsonl
       - name: Parse JSON/JSONL artifacts
         run: |
           python -m json.tool plugins/ai-efficiency-operating-system/.codex-plugin/plugin.json >/dev/null
@@ -46,7 +49,8 @@ jobs:
           import json, pathlib
           for path in [
               pathlib.Path('plugins/ai-efficiency-operating-system/evals/routing-cases.jsonl'),
-              pathlib.Path('plugins/ai-efficiency-operating-system/evals/behavior-cases.jsonl')]:
+              pathlib.Path('plugins/ai-efficiency-operating-system/evals/behavior-cases.jsonl'),
+              pathlib.Path('plugins/ai-efficiency-operating-system/evals/expert-labs-cases.jsonl')]:
               for i, line in enumerate(path.read_text().splitlines(), 1):
                   if line.strip(): json.loads(line)
           print('jsonl parse pass')

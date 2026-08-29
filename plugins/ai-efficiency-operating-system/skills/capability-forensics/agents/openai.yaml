@@ -1,0 +1,5 @@
+interface:
+  display_name: "Capability Forensics"
+  short_description: "Diagnose the real AI capability bottleneck before changing the system"
+policy:
+  allow_implicit_invocation: false

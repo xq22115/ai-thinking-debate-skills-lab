@@ -1,7 +1,7 @@
 {
   "name": "ai-efficiency-operating-system",
-  "version": "1.0.0-rc1",
-  "description": "Goal-first planning, research, verification, memory, convergence, autonomy and durable-state workflows for complex ChatGPT and Codex tasks.",
+  "version": "1.1.0-rc1",
+  "description": "Goal-first planning, deep research, verification, memory, convergence, capability forensics, MCP surface engineering, authorized reverse engineering, runtime provenance, autonomy and durable-state workflows for complex ChatGPT and Codex tasks.",
   "repository": "https://github.com/xq22115/ai-thinking-debate-skills-lab",
   "skills": "./skills/",
   "license": "MIT",
@@ -9,8 +9,11 @@
     "deep-research",
     "reasoning",
     "verification",
+    "capability-forensics",
+    "mcp",
+    "reverse-engineering",
+    "runtime-forensics",
     "goal-integrity",
-    "planning",
     "long-horizon",
     "chatgpt-desktop",
     "codex"
@@ -19,11 +22,12 @@
     "displayName": "AI Efficiency Operating System",
     "developerName": "xq22115",
     "category": "Productivity",
-    "shortDescription": "Deep research and verified task execution",
-    "longDescription": "Eight focused skills derived from the validated Executive Harness, Deep Task Integrity, DeepLock V2.1 and ARR v1.3, adapted to the 2026 OpenAI plugin and Agent Skills model.",
+    "shortDescription": "Deep research, capability forensics and verified execution",
+    "longDescription": "Eight focused executive skills plus four explicit-only Expert Labs for authorized capability diagnosis, dynamic MCP/tool-surface engineering, authorized software reverse engineering and runtime provenance, adapted to current OpenAI plugin and Agent Skills patterns.",
     "capabilities": ["Interactive", "Read"],
     "defaultPrompt": [
       "Research this deeply, preserve my exact goal, and verify the conclusion.",
+      "Diagnose the actual capability bottleneck before changing the model, prompt, tools, permissions, or environment.",
       "Compare the best implementation routes and do not claim completion without read-back evidence."
     ]
   }

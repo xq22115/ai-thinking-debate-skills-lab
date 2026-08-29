@@ -4,7 +4,11 @@ import re
 import sys
 from pathlib import Path
 
-EXPLICIT = {"autonomy-contract", "persistent-work-ledger"}
+EXPLICIT = {
+    "autonomy-contract", "persistent-work-ledger",
+    "capability-forensics", "mcp-surface-engineering",
+    "authorized-reverse-engineering", "agent-runtime-forensics",
+}
 
 
 def route(prompt, explicit=None, host_capabilities=None):
@@ -25,8 +29,6 @@ def route(prompt, explicit=None, host_capabilities=None):
     if any(k in text for k in convergence):
         return "convergence-controller"
 
-    # Phase/decision intent beats keyword overlap. A document or subject merely
-    # mentioning an architecture is not automatically a planning task.
     plan = ["方案", "plan", "順序", "sequence", "tradeoff", "trade-off", "哪個路線", "哪個方法", "先查", "規劃", "選架構", "choose architecture", "architecture option"]
     if any(k in text for k in plan):
         return "plan-arbiter"
@@ -39,6 +41,8 @@ def route(prompt, explicit=None, host_capabilities=None):
     if any(k in text for k in memory):
         return "memory-policy"
 
+    # Topic nouns such as MCP, reverse engineering, or capability limits are not
+    # sufficient to trigger heavy research. The user's research intent must be present.
     research = ["研究", "查 ", "最新", "根因", "root cause", "交叉比對", "證據", "evidence", "深入", "來源", "counterevidence", "版本", "why"]
     if any(k in text for k in research):
         return "executive-research"
