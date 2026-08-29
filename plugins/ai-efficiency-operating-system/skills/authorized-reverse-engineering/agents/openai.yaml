@@ -1,0 +1,5 @@
+interface:
+  display_name: "Authorized Reverse Engineering"
+  short_description: "Analyze authorized binaries with static and dynamic evidence"
+policy:
+  allow_implicit_invocation: false
