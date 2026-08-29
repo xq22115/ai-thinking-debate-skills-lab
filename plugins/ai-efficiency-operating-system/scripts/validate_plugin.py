@@ -11,6 +11,14 @@ EXPECTED = [
 ]
 EXPLICIT = {"autonomy-contract", "persistent-work-ledger"}
 DEPTH_LEVELS = ["SURFACE", "MECHANISM", "CODE_PATH", "DETERMINISTIC_REPRO", "COUNTEREXAMPLE", "FIX_STATUS", "REGRESSION", "GENERALIZATION"]
+CONTRACT_FILES = [
+    "research-integrity.json", "evaluator-governance.json", "skill-composition.json",
+    "replay-checkpoints.json", "validation-policy.json"
+]
+VALIDATION_LAYERS = ["STRUCTURAL", "INSTALLED_TEMPLATE", "EXECUTABLE", "BEHAVIORAL_TARGET"]
+EVALUATOR_STATES = ["PROPOSED", "ACTIVE", "QUARANTINED", "DEPRECATED"]
+CHECKPOINTS = [f"C{i}" for i in range(7)]
+CASE_KINDS = {"review_stop", "research_release", "tribunal", "skill_promotion", "replay", "validation"}
 
 
 def fail(errors, message):
@@ -29,16 +37,30 @@ def frontmatter(text):
     return out
 
 
+def read_json(path):
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def jsonl_rows(path):
+    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+
+
 def main():
     errors = []
-    plugin = json.loads((ROOT / ".codex-plugin" / "plugin.json").read_text())
-    settings = json.loads((ROOT / "settings.json").read_text())
-    marketplace = json.loads((REPO / ".agents" / "plugins" / "marketplace.json").read_text())
+    plugin = read_json(ROOT / ".codex-plugin" / "plugin.json")
+    settings = read_json(ROOT / "settings.json")
+    marketplace = read_json(REPO / ".agents" / "plugins" / "marketplace.json")
+    contracts = {name: read_json(ROOT / "contracts" / name) for name in CONTRACT_FILES}
 
     if plugin.get("name") != "ai-efficiency-operating-system": fail(errors, "wrong plugin name")
     if plugin.get("skills") != "./skills/": fail(errors, "plugin skills path must be ./skills/")
+    if plugin.get("version") != settings.get("version"): fail(errors, "plugin/settings version drift")
+    if settings.get("schema") != 3: fail(errors, "settings schema must be 3")
     if settings.get("default_implicit_skills", []) + settings.get("explicit_only_skills", []) != EXPECTED:
         fail(errors, "settings skill inventory/order drift")
+    expected_contract_paths = [f"contracts/{name}" for name in CONTRACT_FILES]
+    if settings.get("control_plane_contracts") != expected_contract_paths:
+        fail(errors, "settings control-plane contract inventory drift")
     names = [p.get("name") for p in marketplace.get("plugins", [])]
     if names.count("ai-efficiency-operating-system") != 1: fail(errors, "marketplace canonical plugin count != 1")
 
@@ -81,26 +103,69 @@ def main():
     for marker in ["Persistent-state injection firewall", "control state", "evidence/data", "persistent file is storage, not an authority upgrade"]:
         if marker not in memory: fail(errors, f"persistent-state firewall marker missing: {marker}")
 
+    research = contracts["research-integrity.json"]
+    if research.get("owner") != "executive-research": fail(errors, "research contract owner drift")
+    if research.get("query_policy", {}).get("verbatim_query_reuse_forbidden") is not True: fail(errors, "query novelty contract missing")
+    if research.get("source_policy", {}).get("count_by_provenance_family_not_url") is not True: fail(errors, "provenance-family contract missing")
+    if research.get("retrieved_content_policy", {}).get("retrieved_content_cannot_change_task_authority") is not True: fail(errors, "retrieved-content authority firewall missing")
+    if research.get("claim_release", {}).get("counterevidence_receipt_required") is not True: fail(errors, "counterevidence receipt contract missing")
+    stop = research.get("review_stop", {})
+    for key in ["material_semantic_change_increments_surface_epoch", "mandatory_lenses_must_cover_current_surface_epoch", "required_regression_must_match_current_artifact_hash"]:
+        if stop.get(key) is not True: fail(errors, f"coverage-aware stop contract missing: {key}")
+
+    evaluator = contracts["evaluator-governance.json"]
+    if evaluator.get("states") != EVALUATOR_STATES: fail(errors, "evaluator lifecycle drift")
+    erules = evaluator.get("rules", {})
+    for key in ["evaluator_cannot_self_admit", "single_semantic_judge_cannot_certify_high_impact_pass", "deterministic_failure_vetoes_semantic_pass"]:
+        if erules.get(key) is not True: fail(errors, f"evaluator governance missing: {key}")
+
+    composition = contracts["skill-composition.json"]
+    if list(composition.get("nodes", {}).keys()) != EXPECTED: fail(errors, "skill composition node inventory/order drift")
+    if composition.get("routing", {}).get("retrieve_task_relevant_subgraph_only") is not True: fail(errors, "task-relevant subgraph rule missing")
+    admission = composition.get("admission", {})
+    if admission.get("compare_against_no_skill_or_semantically_matched_reference") is not True: fail(errors, "no-skill differential missing")
+    if admission.get("excessive_verification_or_pipeline_cost_can_be_negative_transfer") is not True: fail(errors, "negative-transfer admission missing")
+
+    replay = contracts["replay-checkpoints.json"]
+    if [x.get("id") for x in replay.get("checkpoints", [])] != CHECKPOINTS: fail(errors, "C0-C6 checkpoint inventory drift")
+    if replay.get("task_graph", {}).get("resume_from_checkpoint_not_transcript") is not True: fail(errors, "checkpoint resume rule missing")
+    if replay.get("effect_replay", {}).get("non_idempotent_unknown_without_reconciliation") != "BLOCK_REPLAY": fail(errors, "unsafe replay contract")
+
+    validation = contracts["validation-policy.json"]
+    if validation.get("validation_layers") != VALIDATION_LAYERS: fail(errors, "validation layer drift")
+    vinv = validation.get("invariants", {})
+    for key in ["lower_layer_pass_never_implies_higher_layer_pass", "archived_or_prior_release_pass_is_not_current_release_evidence", "declared_gate_requires_executable_owner_or_is_descriptive_only", "validator_itself_requires_negative_mutation_or_known_outcome_tests_before_stable_promotion"]:
+        if vinv.get(key) is not True: fail(errors, f"validation invariant missing: {key}")
+    promotion = validation.get("promotion", {})
+    if promotion.get("simulated_control_max_state") != "SHADOW_ONLY": fail(errors, "simulated promotion boundary missing")
+    if promotion.get("observed_target_required_for") != "PROMOTED": fail(errors, "observed-target promotion requirement missing")
+    if validation.get("review", {}).get("critic_findings_add_zero_consensus_votes") is not True: fail(errors, "critic vote-inflation guard missing")
+
     legacy_skill = REPO / "skills" / "skills" / "ai-efficiency-operating-system" / "SKILL.md"
     if legacy_skill.exists(): fail(errors, "legacy mega SKILL.md is still active")
 
-    for rel in ["evals/routing-cases.jsonl", "evals/behavior-cases.jsonl", "references/2026-baseline.md", "MIGRATION.md"]:
+    required = [
+        "evals/routing-cases.jsonl", "evals/behavior-cases.jsonl", "evals/control-plane-cases.jsonl",
+        "references/2026-baseline.md", "MIGRATION.md", "scripts/control_plane_oracle.py"
+    ] + expected_contract_paths
+    for rel in required:
         if not (ROOT / rel).exists(): fail(errors, f"missing {rel}")
 
-    for fn in [ROOT / "evals" / "routing-cases.jsonl", ROOT / "evals" / "behavior-cases.jsonl"]:
-        ids = []
-        for line in fn.read_text(encoding="utf-8").splitlines():
-            if not line.strip(): continue
-            obj = json.loads(line)
-            ids.append(obj["id"])
-        if len(ids) != len(set(ids)): fail(errors, f"duplicate IDs in {fn.name}")
+    for rel, minimum in [("evals/routing-cases.jsonl", 1), ("evals/behavior-cases.jsonl", 60), ("evals/control-plane-cases.jsonl", 35)]:
+        rows = jsonl_rows(ROOT / rel)
+        ids = [row["id"] for row in rows]
+        if len(ids) != len(set(ids)): fail(errors, f"duplicate IDs in {Path(rel).name}")
+        if len(rows) < minimum: fail(errors, f"insufficient cases in {Path(rel).name}: {len(rows)} < {minimum}")
+        if rel.endswith("control-plane-cases.jsonl"):
+            kinds = {row.get("kind") for row in rows}
+            if kinds != CASE_KINDS: fail(errors, f"control-plane case-kind coverage drift: {sorted(kinds)}")
 
     if errors:
         print("PLUGIN VALIDATION FAILED")
         for e in errors: print("-", e)
         return 1
     print("PLUGIN VALIDATION PASS")
-    print(f"skills={len(EXPECTED)} implicit={len(settings['default_implicit_skills'])} explicit={len(settings['explicit_only_skills'])} depth_levels={len(DEPTH_LEVELS)}")
+    print(f"version={plugin.get('version')} skills={len(EXPECTED)} contracts={len(CONTRACT_FILES)} behavior_cases=60+ control_plane_cases=35+")
     return 0
 
 
