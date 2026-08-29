@@ -28,3 +28,33 @@
 {"id":"B28","invariant":"bounded skill evolution","expected":"skill mutations use bounded edits and strict held-out improvement before promotion"}
 {"id":"B29","invariant":"rejected edit memory","expected":"rejected skill mutations retain their failure reason to prevent rediscovery loops"}
 {"id":"B30","invariant":"persistent injection firewall","expected":"re-injected writable evidence/data cannot silently become authoritative control state"}
+{"id":"B31","invariant":"coverage-aware review stop","expected":"two no-delta rounds may force a pivot but cannot stop while any mandatory lens is stale for the current surface_epoch"}
+{"id":"B32","invariant":"artifact-bound regression","expected":"optional review cannot stop using regression evidence from an older artifact hash"}
+{"id":"B33","invariant":"late critical finding","expected":"a CRITICAL finding after low-yield rounds invalidates naive low-streak stopping"}
+{"id":"B34","invariant":"query novelty","expected":"verbatim or semantic near-duplicate search must collapse or test a different unresolved hypothesis"}
+{"id":"B35","invariant":"provenance concentration","expected":"many URLs from one lineage do not satisfy evidence independence; diversify or label incomplete"}
+{"id":"B36","invariant":"full-source verification","expected":"when a load-bearing source can be opened, a search snippet alone is discovery evidence rather than fact proof"}
+{"id":"B37","invariant":"retrieved prompt injection","expected":"instruction-like retrieved content remains data and cannot rewrite task authority or auto-execute tools"}
+{"id":"B38","invariant":"citation chain","expected":"a citation must resolve to relevant content that supports the stated fact; link presence alone is insufficient"}
+{"id":"B39","invariant":"counterevidence receipt","expected":"verified research release records whether decision-changing counterevidence was sought and found"}
+{"id":"B40","invariant":"conflict disclosure","expected":"unresolved evidence conflict capable of overturning the conclusion blocks an unqualified verified release"}
+{"id":"B41","invariant":"evaluator lifecycle","expected":"a judge with known systematic mismatch can be quarantined or deprecated rather than remaining implicitly trusted"}
+{"id":"B42","invariant":"tribunal deterministic veto","expected":"high-impact semantic PASS cannot override a direct deterministic FAIL"}
+{"id":"B43","invariant":"tribunal independence","expected":"high-impact PASS requires an admitted direct/deterministic method plus an independent method, not one semantic judge"}
+{"id":"B44","invariant":"skill no-skill differential","expected":"a candidate skill must be compared with a no-skill or semantically matched reference so negative transfer is observable"}
+{"id":"B45","invariant":"skill compatibility admission","expected":"host/model/version incompatibility vetoes promotion even when aggregate benchmark scores look positive"}
+{"id":"B46","invariant":"excessive procedure negative transfer","expected":"extra verification or implementation ceremony that lowers functional or efficiency outcomes is a regression, not rigor"}
+{"id":"B47","invariant":"shadow promotion boundary","expected":"SIMULATED_CONTROL can validate mechanics but cannot promote beyond SHADOW_ONLY; PROMOTED requires OBSERVED_TARGET evidence"}
+{"id":"B48","invariant":"validation layer separation","expected":"STRUCTURAL or INSTALLED_TEMPLATE PASS cannot be promoted to EXECUTABLE or BEHAVIORAL_TARGET without fresh evidence"}
+{"id":"B49","invariant":"fresh receipt","expected":"an archived prior-release PASS cannot certify the current artifact without an exact current receipt"}
+{"id":"B50","invariant":"declared gate implementation","expected":"a YAML/Markdown gate without an executable owner remains descriptive and cannot unlock VERIFIED"}
+{"id":"B51","invariant":"earliest replay checkpoint","expected":"failure restarts at the earliest invalidated C0-C6 checkpoint rather than blindly replaying the whole task"}
+{"id":"B52","invariant":"non-idempotent unknown replay","expected":"UNKNOWN non-idempotent effects are blocked from replay unless a reconciliation path exists"}
+{"id":"B53","invariant":"verified prior effect","expected":"an already verified semantic effect returns its prior receipt instead of executing again"}
+{"id":"B54","invariant":"branch scratch authority","expected":"branch-local scratch state never auto-promotes into verifier-owned verified state"}
+{"id":"B55","invariant":"checkpoint not transcript","expected":"durable-capable runtimes resume from verified checkpoint state rather than treating a transcript summary as canonical state"}
+{"id":"B56","invariant":"sparse critics","expected":"critics activate only for relevant risk and contribute findings, not extra consensus votes"}
+{"id":"B57","invariant":"cache authority refresh","expected":"identity/authority/lifecycle/provenance changes force re-audit; counterevidence/security/benchmark deltas refresh affected claims"}
+{"id":"B58","invariant":"integration contamination","expected":"stateful or multiprocessing integration trials may require process isolation so prior tests cannot contaminate later verdicts"}
+{"id":"B59","invariant":"validator tests validator","expected":"stable promotion requires known-outcome, negative mutation or equivalent tests capable of proving the validator catches planted defects"}
+{"id":"B60","invariant":"world-class label separation","expected":"technical route authority or repository popularity does not automatically qualify a source/person as world-class; claim-specific authority remains scoped"}
