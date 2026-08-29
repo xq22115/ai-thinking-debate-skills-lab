@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "profile_id": "ten-way-concurrent-unanimity-v1",
+  "default_enabled": false,
+  "activation": "explicit_user_request",
+  "purpose": "Prove a high-impact validation result with ten independently attributable agents that all PASS and share a provable common runtime overlap interval.",
+  "executor": "control-plane/scripts/local_agent_executor.py",
+  "required_actor_count": 10,
+  "max_parallel": 10,
+  "require_all_concurrent": true,
+  "common_runtime_overlap_required": true,
+  "all_agents_must_pass": true,
+  "veto_tolerance": 0,
+  "missing_actor_tolerance": 0,
+  "identity_requirements": {
+    "distinct_process_instance_ids": true,
+    "distinct_execution_ids": true,
+    "distinct_backend_session_ids": true,
+    "distinct_workspaces": true,
+    "model_self_asserted_independence_is_not_evidence": true
+  },
+  "temporal_proof": {
+    "per_actor_start_field": "spawn_monotonic_ns",
+    "per_actor_finish_field": "finish_monotonic_ns",
+    "common_overlap_formula": "max(spawn_monotonic_ns) < min(finish_monotonic_ns)",
+    "aggregate_field": "concurrency.common_overlap_proven",
+    "strict_failure_code": "ten_way_common_overlap_missing"
+  },
+  "chatgpt_host_live": {
+    "target_surfaces": ["chatgpt_web", "chatgpt_desktop"],
+    "same_plugin_revision_required": true,
+    "plugin_name": "ai-efficiency-operating-system",
+    "plugin_version": "1.1.0-rc1",
+    "repository_merge_commit": "5c2b940c06c97c3ee48e9cdb8e66617032bb1ad2",
+    "surface_evidence_required_before_agent_pass": true,
+    "repository_or_ci_success_alone_is_host_live": false,
+    "web_and_desktop_both_required": true
+  },
+  "ten_validation_lanes": [
+    "plugin_identity_and_exact_revision",
+    "chatgpt_web_discovery_and_behavior",
+    "chatgpt_desktop_discovery_and_behavior",
+    "default_routing_positive_cases",
+    "simple_task_and_keyword_hard_negatives",
+    "explicit_only_expert_lab_non_leakage",
+    "capability_boundary_and_session_registration",
+    "mcp_tool_surface_truth_and_schema_freshness",
+    "authorized_reverse_engineering_boundary",
+    "runtime_postcondition_and_final_unanimity"
+  ],
+  "release": {
+    "pass_requires": [
+      "ten_distinct_actor_receipts",
+      "ten_PASS_decisions",
+      "common_runtime_overlap_proven",
+      "chatgpt_web_host_live_evidence",
+      "chatgpt_desktop_host_live_evidence",
+      "same_exact_plugin_revision_on_both_surfaces"
+    ],
+    "blocked_or_not_run_must_not_be_relabelled_pass": true,
+    "host_import_blocked_is_PASS": false
+  }
+}

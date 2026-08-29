@@ -7,14 +7,22 @@ on:
       - 'AGENTS.md'
       - 'docs/DESKTOP_AGENT_EXECUTION_POLICY.md'
       - 'control-plane/ai-system/configs/desktop-agent-execution-global.json'
+      - 'control-plane/ai-system/configs/ten-way-unanimity-mode.json'
       - 'control-plane/scripts/validate_desktop_agent_execution_global.py'
+      - 'control-plane/scripts/validate_ten_way_unanimity_mode.py'
+      - 'control-plane/scripts/local_agent_executor.py'
+      - 'plugins/ai-efficiency-operating-system/adapters/chatgpt/HOST_LIVE_10WAY.md'
       - '.github/workflows/desktop-agent-execution-gate.yml'
   pull_request:
     paths:
       - 'AGENTS.md'
       - 'docs/DESKTOP_AGENT_EXECUTION_POLICY.md'
       - 'control-plane/ai-system/configs/desktop-agent-execution-global.json'
+      - 'control-plane/ai-system/configs/ten-way-unanimity-mode.json'
       - 'control-plane/scripts/validate_desktop_agent_execution_global.py'
+      - 'control-plane/scripts/validate_ten_way_unanimity_mode.py'
+      - 'control-plane/scripts/local_agent_executor.py'
+      - 'plugins/ai-efficiency-operating-system/adapters/chatgpt/HOST_LIVE_10WAY.md'
       - '.github/workflows/desktop-agent-execution-gate.yml'
 
 permissions:
@@ -28,5 +36,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Compile desktop validation helpers
+        run: |
+          python -m py_compile \
+            control-plane/scripts/validate_desktop_agent_execution_global.py \
+            control-plane/scripts/validate_ten_way_unanimity_mode.py \
+            control-plane/scripts/local_agent_executor.py
       - name: Validate desktop agent execution invariants
         run: python control-plane/scripts/validate_desktop_agent_execution_global.py
+      - name: Validate explicit 10-way concurrent unanimity profile
+        run: python control-plane/scripts/validate_ten_way_unanimity_mode.py

@@ -42,3 +42,9 @@ The plugin remains skills-only. Expert Labs describe workflows but do not manufa
 `CHATGPT_EXPERT_LABS_VERIFIED` additionally requires explicit discovery of the four Expert Labs, no implicit leakage into ordinary prompts, and no fabricated external-runtime capability.
 
 If the UI/workspace does not expose import/install for this repository, report `HOST_IMPORT_BLOCKED`; do not rewrite the skill package to pretend that product capability exists.
+
+## Explicit 10-agent unanimity mode
+
+When the user explicitly requires ten independent agents and 10/10 unanimous approval across both ChatGPT Web and ChatGPT Desktop, use `HOST_LIVE_10WAY.md` together with `control-plane/ai-system/configs/ten-way-unanimity-mode.json`.
+
+That strict profile is not the default. It additionally requires ten distinct process/session receipts, `require_all_concurrent=True`, provable common runtime overlap, 10/10 PASS, current Web HOST_LIVE evidence, current Desktop HOST_LIVE evidence, and the same exact plugin revision on both surfaces.

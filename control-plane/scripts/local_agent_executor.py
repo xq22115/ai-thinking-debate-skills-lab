@@ -347,6 +347,7 @@ def _run_actor(
         timed_out = True
         process.kill()
         stdout, stderr = process.communicate()
+    finish_monotonic_ns = time.monotonic_ns()
     exit_code = process.returncode if process.returncode is not None else -1
     failures: list[str] = []
     if timed_out:
@@ -383,6 +384,8 @@ def _run_actor(
         "pid": pid,
         "process_instance_id": process_instance_id,
         "spawn_monotonic_ns": spawn_monotonic_ns,
+        "finish_monotonic_ns": finish_monotonic_ns,
+        "runtime_duration_ns": max(0, finish_monotonic_ns - spawn_monotonic_ns),
         "exit_code": exit_code,
         "session_id": session_id,
         "decision": decision,
@@ -403,6 +406,44 @@ def _duplicates(values: list[object]) -> bool:
     return len(filtered) != len(set(filtered))
 
 
+def _concurrency_summary(rows: dict[str, dict], *, require_all_concurrent: bool) -> dict[str, object]:
+    required_count = len(EXPECTED_ACTORS)
+    observed_count = len(rows)
+    starts: list[int] = []
+    finishes: list[int] = []
+    timing_complete = observed_count == required_count
+    if timing_complete:
+        for row in rows.values():
+            start = row.get("spawn_monotonic_ns")
+            finish = row.get("finish_monotonic_ns")
+            if not isinstance(start, int) or not isinstance(finish, int) or finish <= start:
+                timing_complete = False
+                break
+            starts.append(start)
+            finishes.append(finish)
+    if timing_complete:
+        overlap_start = max(starts)
+        overlap_end = min(finishes)
+        common_overlap_ns = max(0, overlap_end - overlap_start)
+    else:
+        overlap_start = None
+        overlap_end = None
+        common_overlap_ns = 0
+    common_overlap_proven = bool(
+        observed_count == required_count and timing_complete and common_overlap_ns > 0
+    )
+    return {
+        "require_all_concurrent": require_all_concurrent,
+        "required_count": required_count,
+        "observed_count": observed_count,
+        "timing_complete": timing_complete,
+        "common_overlap_start_monotonic_ns": overlap_start,
+        "common_overlap_end_monotonic_ns": overlap_end,
+        "common_overlap_ns": common_overlap_ns,
+        "common_overlap_proven": common_overlap_proven,
+    }
+
+
 def execute_agents(
     assignments: list[dict],
     claude_path: pathlib.Path | str,
@@ -412,14 +453,17 @@ def execute_agents(
     timeout_seconds: float = 180.0,
     max_budget_usd: float = 0.05,
     model: str | None = None,
+    require_all_concurrent: bool = False,
 ) -> dict[str, object]:
     probe = probe_claude(claude_path)
+    empty_concurrency = _concurrency_summary({}, require_all_concurrent=require_all_concurrent)
     if probe.get("result") != "PASS":
         return {
             "schemaVersion": 1,
             "backend_probe": probe,
             "failures": ["backend_not_authenticated"],
             "executions": [],
+            "concurrency": empty_concurrency,
             "result": "BLOCKED",
         }
     failures = _assignment_failures(assignments)
@@ -429,6 +473,7 @@ def execute_agents(
             "backend_probe": probe,
             "failures": sorted(set(failures)),
             "executions": [],
+            "concurrency": empty_concurrency,
             "result": "VETO",
         }
     out = pathlib.Path(output_dir)
@@ -470,6 +515,10 @@ def execute_agents(
     if _duplicates([row.get("session_id") for row in rows.values()]):
         aggregate_failures.append("duplicate_session_id")
 
+    concurrency = _concurrency_summary(rows, require_all_concurrent=require_all_concurrent)
+    if require_all_concurrent and not concurrency["common_overlap_proven"]:
+        aggregate_failures.append("ten_way_common_overlap_missing")
+
     decisions = {
         actor: ((row.get("decision") or {}).get("decision"))
         for actor, row in rows.items()
@@ -493,6 +542,7 @@ def execute_agents(
         "backend_probe": probe,
         "failures": sorted(set(aggregate_failures)),
         "executions": dict(sorted(rows.items())),
+        "concurrency": concurrency,
         "result": aggregate,
     }
     out.mkdir(parents=True, exist_ok=True)
@@ -513,6 +563,7 @@ def main(argv=None) -> int:
     parser.add_argument("--timeout-seconds", type=float, default=180.0)
     parser.add_argument("--max-budget-usd", type=float, default=0.05)
     parser.add_argument("--model")
+    parser.add_argument("--require-all-concurrent", action="store_true")
     args = parser.parse_args(argv)
 
     if args.probe_only:
@@ -534,6 +585,7 @@ def main(argv=None) -> int:
         timeout_seconds=args.timeout_seconds,
         max_budget_usd=args.max_budget_usd,
         model=args.model,
+        require_all_concurrent=args.require_all_concurrent,
     )
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0 if result["result"] == "PASS" else 1
