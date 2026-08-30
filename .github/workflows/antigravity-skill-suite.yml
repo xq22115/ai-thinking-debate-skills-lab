@@ -1,0 +1,25 @@
+name: Antigravity Skill Suite Gate
+
+on:
+  push:
+    branches:
+      - agent/antigravity-skill-suite-v1
+  pull_request:
+    paths:
+      - '.agents/**'
+      - 'scripts/validate_antigravity_skill_suite.py'
+      - '.github/workflows/antigravity-skill-suite.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate 66-to-33 migration and canonical skills
+        run: python3 scripts/validate_antigravity_skill_suite.py
