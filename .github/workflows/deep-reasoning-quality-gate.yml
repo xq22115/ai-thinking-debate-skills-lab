@@ -33,6 +33,7 @@ jobs:
             control-plane/scripts/verify_snapshot_bound_execution.py \
             control-plane/scripts/validate_continuous_thinking_global.py \
             control-plane/scripts/validate_goal_fidelity_global.py \
+            control-plane/scripts/validate_global_policy_durability.py \
             control-plane/scripts/validate_acceptance_contract.py \
             control-plane/scripts/continuous_thinking_runtime_binding.py \
             control-plane/scripts/run_quality_bound_workflow.py \
@@ -48,8 +49,10 @@ jobs:
           python -m json.tool control-plane/ai-system/control-plane/acceptance-contract.schema.json >/dev/null
           python -m json.tool control-plane/ai-system/configs/continuous-thinking-global.json >/dev/null
           python -m json.tool control-plane/ai-system/configs/goal-fidelity-global.json >/dev/null
+          python -m json.tool control-plane/ai-system/configs/global-policy-manifest.json >/dev/null
           python control-plane/scripts/validate_continuous_thinking_global.py
           python control-plane/scripts/validate_goal_fidelity_global.py
+          python control-plane/scripts/validate_global_policy_durability.py
           python control-plane/scripts/validate_quality_runtime_binding.py
       - name: Run deep-reasoning and lifecycle regression tests
         working-directory: control-plane
