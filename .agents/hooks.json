@@ -1,0 +1,11 @@
+{
+  "goal-fidelity-anti-evasion": {
+    "PreInvocation": [
+      {
+        "type": "command",
+        "command": "python .agents/hooks/goal-fidelity-preinvocation.py",
+        "timeout": 5
+      }
+    ]
+  }
+}
