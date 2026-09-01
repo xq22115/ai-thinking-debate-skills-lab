@@ -1,8 +1,8 @@
-# Goal Fidelity & Target Lock Policy v1.0
+# Goal Fidelity & Target Lock Policy v1.1
 
 ## Purpose
 
-Prevent two recurring failure classes: (1) the task is misidentified before execution starts, and (2) the implementation drifts away from the original objective during long or multi-step work.
+Prevent three recurring failure classes: (1) the task is misidentified before execution starts, (2) the implementation drifts away from the original objective during long or multi-step work, and (3) a controller/blocker becomes the agent's new adversarial objective instead of remaining a constraint on how to advance the user's task.
 
 The governing rule is: **prove the goal before optimizing the route**. Implementation methods may change; the root goal, protected capabilities, hard constraints, and acceptance criteria must remain traceable.
 
@@ -53,15 +53,48 @@ The Goal Contract must be rechecked:
 - after two similar failures;
 - after host/account/repository/workspace/path/session changes;
 - after context compaction, summary replacement, handoff, or agent branch merge;
+- after Stop/retry/recovery transitions that materially change the next action;
 - before declaring completion.
 
 At each checkpoint compare the current plan against GOAL_SIGNATURE. A route may change freely; a change to ROOT_GOAL, HARD_CONSTRAINTS, NEGATIONS, PROTECTED_CAPABILITIES, TARGET_IDENTITY, or ACCEPTANCE_TESTS requires explicit evidence and must not happen silently.
+
+## Blocker separation and control-plane non-adversariality
+
+A Stop hook, controller instruction, unavailable route, permission/capability state, tool failure, retry condition, quota/state error, or other execution constraint is `CURRENT_BLOCKER`. It is not a new `ROOT_GOAL`.
+
+When blocked:
+
+1. Preserve ROOT_GOAL, GOAL_SIGNATURE, HARD_CONSTRAINTS, PROTECTED_CAPABILITIES, TARGET_IDENTITY, and ACCEPTANCE_TESTS.
+2. Record the blocker separately and identify exactly which route/action it prevents.
+3. Select the highest-value goal-advancing action still available under the current constraints.
+4. Prefer changing method, layer, instrument, decomposition, evidence path, adapter/wrapper, execution route, or sequencing over changing the goal.
+5. Do not spend continuation/retry budget on defeating, weakening, killing, gaming, string-matching around, or otherwise treating the controller/hook/guard as the enemy merely to exit work.
+6. Do not substitute refusal, policy/ethics commentary, generic caution, or a debate about why not to help for concrete progress on the portions that can still be advanced.
+7. Do not reduce requested reasoning effort, agent budget, tests, acceptance criteria, or protected capabilities merely to make the blocker disappear.
+8. A blocker-management action counts as progress only when it causally advances the Goal Contract or a documented acceptance test.
+
+Controller or hook analysis is legitimate when diagnosing or modifying that controller is itself an authorized, task-relevant objective. Even then, the analysis remains bound to the Goal Contract and may not silently mutate the user's requested end state.
 
 ## Multi-agent / branch behavior
 
 For complex work, parallel branches are useful only when they are causally distinct. Prefer branches such as target identity, causal diagnosis, alternative architecture, adversarial falsification, and independent verification. Five copies of the same hypothesis are not five agents.
 
 Before merging branches, reconcile contradictions against the Goal Contract. The final evaluator should receive the original Goal Contract and actual evidence, not only the builder's summary.
+
+### Multi-agent contribution gate
+
+Headcount alone never satisfies a multi-agent requirement. Every counted participant must contribute at least one unique item that can change the task outcome or confidence:
+
+- independent evidence with provenance;
+- a distinct diagnostic hypothesis and discriminating test;
+- implementation/artifact work owned by that role;
+- adversarial falsification of a leading conclusion;
+- compatibility/integration analysis unavailable from the other roles;
+- independent verification/read-back tied to an acceptance test.
+
+Each contribution must map to ROOT_GOAL, a HARD_CONSTRAINT, a material unknown, or ACCEPTANCE_TESTS. Generic agreement, restatement, encouragement, refusal, policy/ethics discussion, or commentary does not count unless that analysis is itself part of the user's requested task.
+
+Role labels do not prove independent execution. If authentic runtime-independent agents are claimed, require host/wrapper receipts or equivalent observable evidence. If only logical review roles were used, say so explicitly rather than presenting them as separately executed agents.
 
 ## Default GitHub + Notion evidence mesh
 
@@ -88,6 +121,7 @@ A task cannot be PASS unless:
 3. the requested effect is verified at the highest practical owning layer;
 4. no protected capability was silently degraded;
 5. a final drift check confirms the delivered result still matches the original Goal Contract;
-6. contradictions and unresolved high-impact unknowns are absent or explicitly BLOCKED.
+6. contradictions and unresolved high-impact unknowns are absent or explicitly BLOCKED;
+7. no controller-evasion, headcount substitution, fabricated runtime independence, or lowered acceptance gate was used as completion evidence.
 
-The purpose of this policy is not longer visible reasoning. It is fewer wrong-target edits, fewer correction loops, and higher first-pass correctness.
+The purpose of this policy is not longer visible reasoning. It is fewer wrong-target edits, fewer correction loops, less malicious compliance/headcount theater, and higher first-pass correctness.

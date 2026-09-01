@@ -96,6 +96,14 @@ class ResearchSaturationStopHookTests(unittest.TestCase):
         self.assertTrue(cp.stdout.strip(), "expected Stop hook to block")
         return json.loads(cp.stdout)
 
+    def _assert_goal_bound_block(self, decision: dict) -> None:
+        reason = decision["reason"]
+        self.assertIn("Preserve ROOT_GOAL and GOAL_SIGNATURE", reason)
+        self.assertIn("blocker signal, not a new task target", reason)
+        self.assertIn("Do not inspect, exploit, bypass, kill, weaken, or game", reason)
+        self.assertIn("Do not substitute agent headcount", reason)
+        self.assertIn("highest-value goal-advancing action", reason)
+
     def test_nonresearch_actor_is_not_blocked(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             cp = self._run(pathlib.Path(td), actor="A04")
@@ -113,6 +121,13 @@ class ResearchSaturationStopHookTests(unittest.TestCase):
             decision = self._decision(self._run(pathlib.Path(td)))
             self.assertEqual(decision["decision"], "block")
             self.assertIn("no accepted WebSearch", decision["reason"])
+            self._assert_goal_bound_block(decision)
+
+    def test_block_reason_forbids_controller_evasion_and_headcount_substitution(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            decision = self._decision(self._run(pathlib.Path(td)))
+            self._assert_goal_bound_block(decision)
+            self.assertNotIn("reduce effort", decision["reason"].lower())
 
     def test_discovery_search_without_inspection_blocks_stop(self) -> None:
         with tempfile.TemporaryDirectory() as td:
@@ -120,6 +135,7 @@ class ResearchSaturationStopHookTests(unittest.TestCase):
             _write_receipt(audit, sequence=1, tool="WebSearch", query="primary docs")
             decision = self._decision(self._run(audit))
             self.assertIn("not followed by inspection", decision["reason"])
+            self._assert_goal_bound_block(decision)
 
     def test_one_search_fetch_pass_still_blocks_for_challenge_search(self) -> None:
         with tempfile.TemporaryDirectory() as td:
@@ -131,6 +147,7 @@ class ResearchSaturationStopHookTests(unittest.TestCase):
             )
             decision = self._decision(self._run(audit))
             self.assertIn("materially different WebSearch", decision["reason"])
+            self._assert_goal_bound_block(decision)
 
     def test_repeated_query_after_fetch_does_not_count_as_challenge(self) -> None:
         with tempfile.TemporaryDirectory() as td:
@@ -144,6 +161,7 @@ class ResearchSaturationStopHookTests(unittest.TestCase):
             _write_receipt(audit, sequence=3, tool="WebSearch", query="  PRIMARY   docs ")
             decision = self._decision(self._run(audit, stop_hook_active=True))
             self.assertIn("repeating the same query does not count", decision["reason"])
+            self._assert_goal_bound_block(decision)
 
     def test_challenge_without_distinct_followup_source_blocks_stop(self) -> None:
         with tempfile.TemporaryDirectory() as td:
@@ -155,6 +173,7 @@ class ResearchSaturationStopHookTests(unittest.TestCase):
             _write_receipt(audit, sequence=4, tool="WebFetch", url=same_url + "#section")
             decision = self._decision(self._run(audit))
             self.assertIn("distinct follow-up source", decision["reason"])
+            self._assert_goal_bound_block(decision)
 
     def test_complete_falsification_cycle_allows_stop(self) -> None:
         with tempfile.TemporaryDirectory() as td:
@@ -170,6 +189,7 @@ class ResearchSaturationStopHookTests(unittest.TestCase):
             _full_cycle(audit, effort="high")
             decision = self._decision(self._run(audit, effort="xhigh"))
             self.assertIn("no accepted WebSearch", decision["reason"])
+            self._assert_goal_bound_block(decision)
 
 
 if __name__ == "__main__":

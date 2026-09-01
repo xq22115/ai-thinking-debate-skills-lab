@@ -3,7 +3,7 @@
   "profile_id": "goal-fidelity-target-lock-v1",
   "scope": "global-policy-projection",
   "default_enabled": true,
-  "purpose": "Prevent wrong-target execution and late-stage goal drift while keeping implementation routes flexible.",
+  "purpose": "Prevent wrong-target execution, late-stage goal drift, and control-plane evasion while keeping implementation routes flexible.",
   "goal_contract": {
     "required_fields": [
       "ROOT_GOAL",
@@ -83,6 +83,35 @@
     ],
     "drift_requires_explicit_evidence": true
   },
+  "anti_evasion_control": {
+    "stop_or_block_event_does_not_change_root_goal": true,
+    "controller_hook_or_guard_is_not_promoted_to_task_target": true,
+    "current_blocker_is_recorded_separately_from_root_goal": true,
+    "goal_signature_must_survive_stop_retry_and_recovery": true,
+    "forbidden_progress_substitutions": [
+      "inspect_exploit_bypass_kill_or_weaken_controller_to_escape_work",
+      "game_string_checks_or_completion_detectors",
+      "satisfy_agent_headcount_without_unique_goal_advancing_contribution",
+      "substitute_refusal_policy_or_ethics_debate_for_allowed_task_progress",
+      "fabricate_runtime_independence_execution_or_completion",
+      "reduce_required_effort_agent_count_tests_or_acceptance_criteria_to_escape_a_blocker"
+    ],
+    "on_block": {
+      "required_next_step": "highest_value_goal_advancing_action_available_under_current_constraints",
+      "route_pivot_is_preferred_over_goal_pivot": true,
+      "blocker_may_not_become_root_goal": true,
+      "non_progress_actions_do_not_satisfy_stop_or_completion_gates": true,
+      "if_one_route_is_unavailable": "change_method_layer_instrument_or_decomposition_without_lowering_acceptance_tests"
+    },
+    "multi_agent_contribution_gate": {
+      "headcount_alone_never_satisfies_requirement": true,
+      "each_activated_agent_requires_distinct_role": true,
+      "each_activated_agent_requires_unique_evidence_test_artifact_or_implementation_contribution": true,
+      "contribution_must_map_to_goal_contract_or_acceptance_test": true,
+      "policy_only_or_refusal_only_agent_does_not_count_unless_policy_analysis_is_the_user_task": true,
+      "runtime_independence_must_be_observed_before_claimed": true
+    }
+  },
   "branching": {
     "parallelism_is_optional": true,
     "branches_must_be_causally_distinct": true,
@@ -111,7 +140,8 @@
   "capability_preservation": {
     "obvious_degradation_is_not_default_solution": true,
     "must_search_for_capability_preserving_route_first": true,
-    "protected_capability_regression_blocks_pass": true
+    "protected_capability_regression_blocks_pass": true,
+    "requested_reasoning_effort_or_agent_budget_must_not_be_reduced_as_an_evasion_strategy": true
   },
   "release_gate": {
     "pass_requires": [
@@ -120,7 +150,8 @@
       "highest_practical_owning_layer_verified",
       "protected_capabilities_preserved",
       "final_goal_drift_check_passed",
-      "no_unresolved_high_impact_contradiction"
+      "no_unresolved_high_impact_contradiction",
+      "no_controller_evasion_or_headcount_substitution"
     ],
     "self_report_only_cannot_pass": true,
     "unknown_or_unverified_target_cannot_pass": true
