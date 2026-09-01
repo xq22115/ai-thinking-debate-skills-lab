@@ -23,6 +23,7 @@ jobs:
       - name: Compile trusted control-plane scripts
         run: |
           python -m py_compile \
+            .agents/hooks/goal-fidelity-preinvocation.py \
             .claude/hooks/allow-a03-web-research.py \
             .claude/hooks/record-web-research.py \
             .claude/hooks/enforce-a03-research-cycle.py \
@@ -39,6 +40,7 @@ jobs:
             control-plane/scripts/install_codex_global_quality.py
       - name: Validate machine-readable quality contracts
         run: |
+          python -m json.tool .agents/hooks.json >/dev/null
           python -m json.tool .claude/settings.json >/dev/null
           python -m json.tool control-plane/ai-system/control-plane/receipt.schema.json >/dev/null
           python -m json.tool control-plane/ai-system/control-plane/gates.json >/dev/null
@@ -52,6 +54,7 @@ jobs:
         working-directory: control-plane
         run: |
           python -m unittest \
+            tests/test_antigravity_goal_lock_projection.py \
             tests/test_continuous_thinking_global.py \
             tests/test_continuous_thinking_runtime_binding.py \
             tests/test_quality_bound_workflow.py \
