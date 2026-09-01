@@ -55,7 +55,7 @@ class AntigravityGoalLockProjectionTests(unittest.TestCase):
 
     def test_each_subagent_has_unique_goal_advancing_or_verification_duty(self) -> None:
         expected_markers = {
-            "goal-contract-auditor": ["Goal Contract", "detect drift", "Route Recovery Engineer"],
+            "goal-contract-auditor": ["Goal Contract", "drift between that contract", "Route Recovery Engineer"],
             "route-recovery-engineer": ["materially different route", "Goal Contract Auditor", "observable test/read-back"],
             "anti-evasion-red-team": ["controller/hook", "headcount theater", "Contribution/Evidence Auditor"],
             "contribution-evidence-auditor": ["numeric agent count", "runtime independence", "Anti-Evasion Red Team"],
