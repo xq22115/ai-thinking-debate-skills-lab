@@ -5,11 +5,11 @@ description: Route complex tasks through a small active set of genuinely differe
 
 # Multi-Agent Deliberation
 
-Version: `0.1.1-rc1`
+Version: `0.1.2-rc1`
 
 ## Objective
 
-Use multiple agents to increase epistemic and capability diversity, not to manufacture agreement or simulate independent execution.
+Use multiple agents to increase epistemic and capability diversity, not to manufacture agreement, satisfy a numeric headcount, or simulate independent execution.
 
 ## Role Pool vs Active Set
 
@@ -44,6 +44,38 @@ De-escalate when:
 - execution/testing has higher expected information gain than discussion;
 - merge/synthesis overhead exceeds expected insight;
 - acceptance criteria are already directly testable.
+
+Do not de-escalate merely to escape a blocker, reduce requested reasoning effort, or make an unmet acceptance gate easier to pass.
+
+## Contribution Gate
+
+A numeric agent count is never sufficient evidence that multi-agent deliberation occurred or helped the task.
+
+Every activated agent that is counted toward a requested or configured council must have:
+
+- a distinct assigned causal role;
+- a unique evidence, test, artifact, implementation, diagnosis, falsification, or verification contribution;
+- an explicit mapping from that contribution to ROOT_GOAL, HARD_CONSTRAINTS, a material unknown, or ACCEPTANCE_TESTS;
+- a result that can affect the plan, verdict, implementation, or confidence.
+
+An agent whose only output is generic refusal, policy/ethics discussion, agreement, encouragement, restatement, or commentary does **not** count unless that analysis is itself part of the user's requested task.
+
+The coordinator/judge must reject zero-information-gain participants rather than using them to satisfy headcount. If five roles are requested, five logically distinct review duties may be defined, but **five independent runtime agents may be claimed only when the host exposes actual independent executions and receipts prove them**. Never convert logical roles into a false runtime-independence claim.
+
+## Blocker / Goal Separation
+
+A Stop hook, controller response, unavailable route, permission/capability state, tool failure, or retry condition is `CURRENT_BLOCKER`, not a replacement for `ROOT_GOAL`.
+
+When a participant is blocked:
+
+- preserve ROOT_GOAL and GOAL_SIGNATURE;
+- choose the highest-value goal-advancing action still available;
+- change method, layer, instrument, decomposition, evidence path, or execution route before changing the goal;
+- do not spend the council on defeating, weakening, killing, gaming, or string-matching around the controller merely to exit work;
+- do not substitute a council about why the task cannot be done for concrete progress on the portions that can be advanced;
+- do not lower the requested agent budget, reasoning effort, tests, or acceptance criteria merely to make the blocker disappear.
+
+Controller analysis counts only when diagnosing or modifying that controller is itself an authorized, task-relevant objective; even then, it remains bound to the original Goal Contract and observable acceptance tests.
 
 ## Message Policy
 
@@ -82,7 +114,7 @@ Majority count is a weak signal and must not erase a better-evidenced minority p
 
 ## Stop Rule
 
-Stop debate when execution, measurement, read-back, or targeted testing is more informative than another discussion round, or when marginal information gain collapses.
+Stop debate when execution, measurement, read-back, or targeted testing is more informative than another discussion round, or when marginal information gain collapses. A controller block does not authorize goal substitution: continuation remains bound to the Goal Contract.
 
 ## Output Contract
 
@@ -90,6 +122,7 @@ Return:
 - activated roles and why each was necessary;
 - key competing hypotheses;
 - unique evidence/findings per role;
+- each counted role's mapping to a Goal Contract field, material unknown, or acceptance test;
 - contradictions and discriminating tests;
 - minority findings retained;
 - synthesis/judgment with evidence basis;
@@ -102,6 +135,10 @@ Return:
 - majority vote without provenance;
 - 29 approvers after one author;
 - all roles sharing the same evidence path and calling that independent corroboration;
+- counting generic refusal/policy debate as task progress;
+- using agents to satisfy headcount while producing no unique contribution;
+- treating the Stop hook/controller as the new enemy or mission;
+- lowering effort, agent count, tests, or acceptance criteria to escape a blocker;
 - endless critique without tests;
 - escalating role count after information gain has collapsed;
 - treating verbosity, time spent, or role labels as depth/execution evidence.
