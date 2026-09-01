@@ -57,7 +57,7 @@ class AntigravityGoalLockProjectionTests(unittest.TestCase):
         expected_markers = {
             "goal-contract-auditor": ["Goal Contract", "drift between that contract", "Route Recovery Engineer"],
             "route-recovery-engineer": ["materially different route", "Goal Contract Auditor", "observable test/read-back"],
-            "anti-evasion-red-team": ["controller/hook", "headcount theater", "Contribution/Evidence Auditor"],
+            "anti-evasion-red-team": ["hook/controller", "headcount theater", "Contribution/Evidence Auditor"],
             "contribution-evidence-auditor": ["numeric agent count", "runtime independence", "Anti-Evasion Red Team"],
             "owning-runtime-verifier": ["highest practical layer", "PASS / FAIL / BLOCKED / NOT_RUN", "Goal Contract Auditor"],
         }
