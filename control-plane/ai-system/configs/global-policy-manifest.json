@@ -29,6 +29,15 @@
       ]
     },
     {
+      "path": "control-plane/scripts/install_antigravity_global_goal_lock.py",
+      "role": "antigravity_user_level_global_projection",
+      "required_markers": [
+        ".gemini/GEMINI.md",
+        "ANTIGRAVITY-GOAL-LOCK",
+        "goal-fidelity-anti-evasion.md"
+      ]
+    },
+    {
       "path": "control-plane/scripts/validate_goal_fidelity_global.py",
       "role": "goal_fidelity_machine_validator",
       "required_markers": [
@@ -175,6 +184,8 @@
   "platform_truth": {
     "codex_repo_agents": "can be auto-discovered by Codex within its documented scope but must still be verified as loaded for material compliance claims",
     "codex_user_global": "managed through the repository installer into the active CODEX_HOME instruction file when explicitly installed",
+    "antigravity_workspace": "workspace rules and hooks are projected through .agents/rules and .agents/hooks.json; repository presence still requires Antigravity to open or mount the owning workspace before claiming them loaded",
+    "antigravity_user_global": "machine-wide rule content lives in ~/.gemini/GEMINI.md and is projected additively through control-plane/scripts/install_antigravity_global_goal_lock.py; the projector must be executed and the target read back before claiming global load",
     "ordinary_chat": "repository files are not inherently global instructions; current ChatGPT plugin use still requires the plugin/marketplace to be imported or installed on the owning workspace/surface, or another host-supported memory/project instruction mechanism",
     "skills": "progressive disclosure; a skill existing on disk or in a repository does not prove its body was loaded"
   },
