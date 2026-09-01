@@ -9,8 +9,11 @@ critical research it requires a minimal falsification loop:
 
 The Stop hook re-evaluates fresh accepted PostToolUse receipts each time Claude
 tries to finish. It blocks only while one of those causal stages is missing.
-Claude Code itself caps repeated Stop-hook continuations, so this cannot create
-an unbounded synthetic delay loop.
+A block is a continuation signal, never a replacement task: the agent must keep
+ROOT_GOAL/GOAL_SIGNATURE stable and spend the continuation on the highest-value
+goal-advancing action rather than attempting to bypass, kill, weaken, or game
+the hook/controller. Claude Code itself caps repeated Stop-hook continuations,
+so this cannot create an unbounded synthetic delay loop.
 """
 from __future__ import annotations
 
@@ -72,9 +75,16 @@ def _receipts(audit_root: pathlib.Path, expected_effort: str) -> list[dict]:
 
 
 def _block(reason: str) -> int:
+    continuation = (
+        "Preserve ROOT_GOAL and GOAL_SIGNATURE. This Stop hook is a blocker signal, not a new task target. "
+        "Do not inspect, exploit, bypass, kill, weaken, or game the hook/controller to escape the work. "
+        "Do not substitute agent headcount, refusal/policy/ethics debate, or lower effort/tests for task progress. "
+        "Continue with the highest-value goal-advancing action available under the current constraints. "
+        + reason
+    )
     print(json.dumps({
         "decision": "block",
-        "reason": reason,
+        "reason": continuation,
     }))
     return 0
 
