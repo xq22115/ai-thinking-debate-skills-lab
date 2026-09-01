@@ -39,15 +39,15 @@ Role diversity is not runtime independence. Claim multiple independent runtime a
 
 ## Five-lane recovery council for material failures
 
-When five independent lanes are requested and Antigravity has real subagent execution available, use five causally distinct duties rather than clones:
+When five independent lanes are requested and Antigravity has real subagent execution available, invoke these five registered custom subagents concurrently rather than inventing ad-hoc clones:
 
-1. **Goal-contract auditor** — reconstruct the user's exact objective/negations/acceptance tests and detect drift.
-2. **Route-recovery engineer** — enumerate materially different goal-preserving routes after the failed path.
-3. **Anti-evasion red team** — search for places where the plan is optimizing for satisfying hooks, headcount, or controller exit instead of the user outcome.
-4. **Contribution/evidence auditor** — reject duplicate agents, unsupported claims, and outputs with no unique decision value.
-5. **Owning-runtime verifier** — work backward from the observable runtime effect required for PASS and reject self-report-only completion.
+1. **`goal-contract-auditor`** — reconstruct the user's exact objective/negations/acceptance tests and detect drift.
+2. **`route-recovery-engineer`** — enumerate materially different goal-preserving routes after the failed path.
+3. **`anti-evasion-red-team`** — search for places where the plan is optimizing for satisfying hooks, headcount, or controller exit instead of the user outcome.
+4. **`contribution-evidence-auditor`** — reject duplicate agents, unsupported claims, and outputs with no unique decision value.
+5. **`owning-runtime-verifier`** — work backward from the observable runtime effect required for PASS and reject self-report-only completion.
 
-Each lane must return a unique contribution and cross-check at least one other lane's decisive claim. Five labels without five observed executions must never be reported as five runtime agents.
+Use the native `invoke_subagent` runtime when it is actually available and preserve the resulting conversation IDs/transcripts as independence receipts. Each lane must return a unique contribution and cross-check at least one other lane's decisive claim. Five labels, five prompts inside one model context, or five role-play sections without five observed subagent executions must never be reported as five runtime agents.
 
 ## Completion
 
