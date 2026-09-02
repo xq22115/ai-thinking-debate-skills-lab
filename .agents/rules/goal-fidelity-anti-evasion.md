@@ -24,6 +24,30 @@ A Stop hook, retry message, unavailable route, permission/capability state, tool
 
 Host/platform constraints remain route constraints. Maximize useful progress inside the routes that remain available instead of letting the constraint consume the task.
 
+## Blocker recovery state machine
+
+Every continuation after a material blocker must internally classify its **next** action before spending another tool/reasoning step:
+
+- `ADVANCE` — directly changes task state toward an acceptance criterion.
+- `VERIFY` — gathers decision-critical evidence or verifies the owning runtime/layer.
+- `RECOVER_ROUTE` — switches to a causally different method, layer, instrument, decomposition, adapter, evidence path, or execution route while preserving the Goal Contract.
+- `CONTROL_PLANE_TARGETING` — inspects, modifies, disables, weakens, kills, evades, or games the hook/controller/monitor/completion detector itself.
+
+The default progress-eligible classes are `ADVANCE`, `VERIFY`, and `RECOVER_ROUTE`. `CONTROL_PLANE_TARGETING` is **not** progress and must not satisfy a Stop/completion gate unless the active Goal Contract explicitly identifies that control plane as `TARGET_IDENTITY` **and** an `ACCEPTANCE_TEST` requires changing or verifying it. A blocker message, retry, denial, or lifecycle event is never implicit authorization to target the controller.
+
+For every blocked continuation, preserve these fields in working state:
+
+- `NEXT_ACTION_CLASS`
+- `BLOCKED_ROUTE`
+- `EXPECTED_PROGRESS_DELTA`
+- `EVIDENCE_TARGET`
+
+`EXPECTED_PROGRESS_DELTA` must describe an observable state change or a decision-relevant evidence gain. Activity, elapsed time, token spend, repeated reasoning, repeated searches, or merely satisfying wording in a hook are not progress deltas.
+
+After **two materially similar failures on the same route**, the next action must be `RECOVER_ROUTE` unless new evidence materially changes the diagnosis. The replacement route must differ causally, not just cosmetically. If a request contains both constrained and still-executable work, continue the executable goal-preserving portion instead of replacing the whole task with policy/safety/meta discussion.
+
+The continuation instruction should be positive and task-directed: state the required next action class and expected progress delta. Do not repeatedly enumerate evasion tactics inside blocker messages; keep anti-evasion constraints in this always-on rule so the controller does not accidentally prime the very strategy it is trying to prevent.
+
 ## Multi-agent contribution gate
 
 Numeric headcount is not evidence of useful multi-agent work. Every agent counted toward a requested council must have:
@@ -58,5 +82,7 @@ Before final release, verify:
 - the result still matches the original Goal Contract;
 - requested effort/agent budget and protected capabilities were not silently reduced;
 - no controller-evasion or headcount substitution was used as completion evidence;
+- no `CONTROL_PLANE_TARGETING` action was counted as progress without explicit Goal Contract authorization;
+- blocked continuations produced an observable progress delta, decision-relevant evidence, or a causally distinct recovery route;
 - runtime independence claims, if any, have actual receipts;
 - unresolved high-impact unknowns are stated as unknown rather than invented away.
