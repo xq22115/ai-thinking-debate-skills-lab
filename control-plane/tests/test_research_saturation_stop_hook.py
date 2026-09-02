@@ -96,13 +96,16 @@ class ResearchSaturationStopHookTests(unittest.TestCase):
         self.assertTrue(cp.stdout.strip(), "expected Stop hook to block")
         return json.loads(cp.stdout)
 
-    def _assert_goal_bound_block(self, decision: dict) -> None:
+    def _assert_goal_bound_block(self, decision: dict, *, action_class: str = "VERIFY") -> None:
         reason = decision["reason"]
         self.assertIn("Preserve ROOT_GOAL and GOAL_SIGNATURE", reason)
-        self.assertIn("blocker signal, not a new task target", reason)
-        self.assertIn("Do not inspect, exploit, bypass, kill, weaken, or game", reason)
-        self.assertIn("Do not substitute agent headcount", reason)
-        self.assertIn("highest-value goal-advancing action", reason)
+        self.assertIn("CURRENT_BLOCKER", reason)
+        self.assertIn(f"NEXT_ACTION_CLASS={action_class}", reason)
+        self.assertIn("EVIDENCE_TARGET=", reason)
+        self.assertIn("EXPECTED_PROGRESS_DELTA=", reason)
+        self.assertIn("original acceptance criteria", reason)
+        self.assertNotIn("exploit, bypass, kill", reason.lower())
+        self.assertNotIn("agent headcount", reason.lower())
 
     def test_nonresearch_actor_is_not_blocked(self) -> None:
         with tempfile.TemporaryDirectory() as td:
@@ -116,25 +119,36 @@ class ResearchSaturationStopHookTests(unittest.TestCase):
             self.assertEqual(cp.returncode, 0, cp.stderr)
             self.assertEqual(cp.stdout.strip(), "")
 
-    def test_no_search_blocks_stop(self) -> None:
+    def test_no_search_blocks_stop_with_typed_verify_action(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             decision = self._decision(self._run(pathlib.Path(td)))
             self.assertEqual(decision["decision"], "block")
-            self.assertIn("no accepted WebSearch", decision["reason"])
+            self.assertIn("accepted_discovery_search_receipt", decision["reason"])
+            self.assertIn("one accepted discovery search", decision["reason"])
             self._assert_goal_bound_block(decision)
 
-    def test_block_reason_forbids_controller_evasion_and_headcount_substitution(self) -> None:
+    def test_block_reason_is_positive_task_directed_not_evasion_priming(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             decision = self._decision(self._run(pathlib.Path(td)))
             self._assert_goal_bound_block(decision)
-            self.assertNotIn("reduce effort", decision["reason"].lower())
+            reason = decision["reason"].lower()
+            for priming_phrase in (
+                "do not inspect",
+                "do not exploit",
+                "do not bypass",
+                "do not kill",
+                "do not weaken",
+                "game the hook",
+            ):
+                self.assertNotIn(priming_phrase, reason)
 
     def test_discovery_search_without_inspection_blocks_stop(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             audit = pathlib.Path(td)
             _write_receipt(audit, sequence=1, tool="WebSearch", query="primary docs")
             decision = self._decision(self._run(audit))
-            self.assertIn("not followed by inspection", decision["reason"])
+            self.assertIn("accepted_primary_source_fetch_receipt", decision["reason"])
+            self.assertIn("inspect the strongest current or primary source", decision["reason"])
             self._assert_goal_bound_block(decision)
 
     def test_one_search_fetch_pass_still_blocks_for_challenge_search(self) -> None:
@@ -146,7 +160,8 @@ class ResearchSaturationStopHookTests(unittest.TestCase):
                 url="https://code.claude.com/docs/en/model-config",
             )
             decision = self._decision(self._run(audit))
-            self.assertIn("materially different WebSearch", decision["reason"])
+            self.assertIn("accepted_counterevidence_or_gap_search_receipt", decision["reason"])
+            self.assertIn("materially different search", decision["reason"])
             self._assert_goal_bound_block(decision)
 
     def test_repeated_query_after_fetch_does_not_count_as_challenge(self) -> None:
@@ -160,7 +175,7 @@ class ResearchSaturationStopHookTests(unittest.TestCase):
             )
             _write_receipt(audit, sequence=3, tool="WebSearch", query="  PRIMARY   docs ")
             decision = self._decision(self._run(audit, stop_hook_active=True))
-            self.assertIn("repeating the same query does not count", decision["reason"])
+            self.assertIn("accepted_counterevidence_or_gap_search_receipt", decision["reason"])
             self._assert_goal_bound_block(decision)
 
     def test_challenge_without_distinct_followup_source_blocks_stop(self) -> None:
@@ -172,8 +187,15 @@ class ResearchSaturationStopHookTests(unittest.TestCase):
             _write_receipt(audit, sequence=3, tool="WebSearch", query="counterevidence failure modes")
             _write_receipt(audit, sequence=4, tool="WebFetch", url=same_url + "#section")
             decision = self._decision(self._run(audit))
-            self.assertIn("distinct follow-up source", decision["reason"])
+            self.assertIn("accepted_distinct_followup_fetch_receipt", decision["reason"])
+            self.assertIn("inspect a distinct source", decision["reason"])
             self._assert_goal_bound_block(decision)
+
+    def test_missing_runtime_effort_uses_recover_route_class(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            decision = self._decision(self._run(pathlib.Path(td), effort="invalid"))
+            self._assert_goal_bound_block(decision, action_class="RECOVER_ROUTE")
+            self.assertIn("quality_runtime_binding", decision["reason"])
 
     def test_complete_falsification_cycle_allows_stop(self) -> None:
         with tempfile.TemporaryDirectory() as td:
@@ -188,7 +210,7 @@ class ResearchSaturationStopHookTests(unittest.TestCase):
             audit = pathlib.Path(td)
             _full_cycle(audit, effort="high")
             decision = self._decision(self._run(audit, effort="xhigh"))
-            self.assertIn("no accepted WebSearch", decision["reason"])
+            self.assertIn("accepted_discovery_search_receipt", decision["reason"])
             self._assert_goal_bound_block(decision)
 
 
