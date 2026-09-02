@@ -32,6 +32,26 @@ REQUIRED_ANTI_EVASION_SUBSTITUTIONS = {
     "reduce_required_effort_agent_count_tests_or_acceptance_criteria_to_escape_a_blocker",
 }
 
+REQUIRED_ACTION_CLASSES = {
+    "ADVANCE",
+    "VERIFY",
+    "RECOVER_ROUTE",
+    "CONTROL_PLANE_TARGETING",
+}
+
+REQUIRED_PROGRESS_CLASSES = {
+    "ADVANCE",
+    "VERIFY",
+    "RECOVER_ROUTE",
+}
+
+REQUIRED_BLOCKER_STATE_FIELDS = {
+    "NEXT_ACTION_CLASS",
+    "BLOCKED_ROUTE",
+    "EXPECTED_PROGRESS_DELTA",
+    "EVIDENCE_TARGET",
+}
+
 
 def main() -> int:
     root = Path(__file__).resolve().parents[2]
@@ -100,6 +120,30 @@ def main() -> int:
         if on_block.get(key) is not True:
             errors.append(f"blocked-continuation invariant missing: {key}")
 
+    recovery = anti.get("blocker_recovery_state_machine") or {}
+    action_classes = set(recovery.get("action_classes") or [])
+    if action_classes != REQUIRED_ACTION_CLASSES:
+        errors.append("blocker recovery action classes must match the canonical four-class state machine")
+    progress_classes = set(recovery.get("default_progress_classes") or [])
+    if progress_classes != REQUIRED_PROGRESS_CLASSES:
+        errors.append("default blocker progress classes must be ADVANCE/VERIFY/RECOVER_ROUTE only")
+    state_fields = set(recovery.get("required_working_state_fields") or [])
+    if not REQUIRED_BLOCKER_STATE_FIELDS.issubset(state_fields):
+        errors.append("blocker recovery state is missing required typed working fields")
+    for key in (
+        "control_plane_targeting_requires_explicit_goal_contract_target",
+        "blocker_event_is_not_authorization_to_target_controller",
+        "control_plane_targeting_never_counts_as_progress_by_default",
+        "progress_requires_observable_delta_or_decision_relevant_evidence",
+        "mixed_task_still_executable_scope_must_continue",
+        "generic_policy_ethics_or_meta_discussion_is_not_progress",
+        "blocker_messages_should_be_positive_task_directed_not_evasion_priming",
+    ):
+        if recovery.get(key) is not True:
+            errors.append(f"blocker recovery invariant missing: {key}")
+    if int(recovery.get("same_route_failure_limit_before_causal_pivot", 0)) != 2:
+        errors.append("same-route failure limit must be exactly 2 before a causal route pivot")
+
     contribution = anti.get("multi_agent_contribution_gate") or {}
     for key in (
         "headcount_alone_never_satisfies_requirement",
@@ -129,6 +173,8 @@ def main() -> int:
         "target_identity_evidenced",
         "final_goal_drift_check_passed",
         "no_controller_evasion_or_headcount_substitution",
+        "no_unauthorized_control_plane_targeting",
+        "blocked_continuation_has_progress_delta_evidence_or_causal_route_pivot",
     ):
         if item not in required_pass:
             errors.append(f"release gate missing: {item}")
