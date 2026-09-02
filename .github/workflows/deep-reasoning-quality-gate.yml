@@ -58,6 +58,7 @@ jobs:
         working-directory: control-plane
         run: |
           python -m unittest \
+            tests/test_goal_fidelity_preinvocation.py \
             tests/test_antigravity_goal_lock_projection.py \
             tests/test_antigravity_global_goal_lock_installer.py \
             tests/test_continuous_thinking_global.py \
