@@ -96,9 +96,13 @@ class AntigravityGoalLockProjectionTests(unittest.TestCase):
         self.assertEqual(cp.returncode, 0, cp.stderr)
         return json.loads(cp.stdout)
 
-    def test_first_invocation_does_not_duplicate_always_on_rule(self) -> None:
+    def test_first_invocation_is_reanchored_even_with_always_on_rule(self) -> None:
         result = self._run(0)
-        self.assertEqual(result, {"injectSteps": []})
+        self.assertEqual(len(result["injectSteps"]), 1)
+        message = result["injectSteps"][0]["ephemeralMessage"]
+        self.assertIn("ROOT_GOAL", message)
+        self.assertIn("CURRENT_BLOCKER", message)
+        self.assertIn("reject the action as non-progress", message)
 
     def test_continuation_reanchors_goal_and_rejects_evasion(self) -> None:
         result = self._run(1)
