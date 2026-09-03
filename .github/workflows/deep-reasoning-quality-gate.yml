@@ -33,6 +33,10 @@ jobs:
             control-plane/scripts/verify_snapshot_bound_execution.py \
             control-plane/scripts/validate_continuous_thinking_global.py \
             control-plane/scripts/validate_goal_fidelity_global.py \
+            control-plane/scripts/validate_goal_intelligence_extension.py \
+            control-plane/scripts/validate_task_goal_intelligence_v22.py \
+            control-plane/scripts/task_goal_state_engine.py \
+            control-plane/scripts/validate_task_goal_intelligence_v23.py \
             control-plane/scripts/validate_global_policy_durability.py \
             control-plane/scripts/validate_acceptance_contract.py \
             control-plane/scripts/continuous_thinking_runtime_binding.py \
@@ -49,15 +53,20 @@ jobs:
           python -m json.tool control-plane/ai-system/control-plane/acceptance-contract.schema.json >/dev/null
           python -m json.tool control-plane/ai-system/configs/continuous-thinking-global.json >/dev/null
           python -m json.tool control-plane/ai-system/configs/goal-fidelity-global.json >/dev/null
+          python -m json.tool control-plane/ai-system/configs/task-goal-intelligence-v23.json >/dev/null
           python -m json.tool control-plane/ai-system/configs/global-policy-manifest.json >/dev/null
           python control-plane/scripts/validate_continuous_thinking_global.py
           python control-plane/scripts/validate_goal_fidelity_global.py
+          python control-plane/scripts/validate_goal_intelligence_extension.py
+          python control-plane/scripts/validate_task_goal_intelligence_v22.py
+          python control-plane/scripts/validate_task_goal_intelligence_v23.py
           python control-plane/scripts/validate_global_policy_durability.py
           python control-plane/scripts/validate_quality_runtime_binding.py
       - name: Run deep-reasoning and lifecycle regression tests
         working-directory: control-plane
         run: |
           python -m unittest \
+            tests/test_task_goal_state_engine.py \
             tests/test_goal_fidelity_preinvocation.py \
             tests/test_antigravity_goal_lock_projection.py \
             tests/test_antigravity_global_goal_lock_installer.py \
