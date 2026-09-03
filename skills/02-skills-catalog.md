@@ -6,13 +6,27 @@
 
 Canonical path: `plugins/ai-efficiency-operating-system/`.
 
-Version 1.2 connects Goal Intelligence v2 to actual skill routing. The package now uses a lightweight goal gate, phase ownership, conditional specialist auto-invocation, bounded composition, fallback/self-repair and postcondition verification. It explicitly rejects the assumption that package presence or connector visibility proves effective use.
+Version 1.2 now routes through **Task Goal Intelligence v3** while preserving the canonical v2/v2.2 goal-understanding invariants. The package uses an implicit goal gate, event-sourced goal state, anti-minimization checks, evidence-bound progress, phase ownership, conditional specialist auto-invocation, bounded composition, fallback/self-repair and postcondition verification. It explicitly rejects the assumptions that fluent prior prose is current evidence, that activity volume is progress, or that package/connector presence proves effective use.
+
+### Task Goal Intelligence v3 durability contract
+
+The runtime projection must preserve these behaviors across summaries, routing changes and future refactors:
+
+- current owning-system evidence outranks stale historical completion claims;
+- corrections invalidate dependent downstream conclusions without discarding unaffected evidence;
+- imperfect wording, examples, named tools and route-local blockers cannot silently reduce the desired end state, capability, scope, target identity, verification or acceptance criteria;
+- a blocked slice is isolated while separable goal-advancing work continues;
+- long trajectories re-anchor a compact Goal Capsule after corrections, compaction/handoffs, route changes, repeated failures, target/session changes and before final acceptance;
+- material progress requires an acceptance, evidence, decision-critical uncertainty or observable state delta; repeated no-delta steps force a causally different route;
+- anonymous/opaque/underground/onion threat-intelligence signals start as leads with provenance and corroboration state rather than becoming facts because they are rare;
+- completion is reverse-walked from claim to acceptance test, owning evidence, current goal version and causal path;
+- real user corrections and false-completion traces become protected regression cases rather than only prose reminders.
 
 ### Default implicit skills
 
 | Skill | Trigger owner |
 |---|---|
-| `task-goal-intelligence` | latent task goal, target identity, semantic delta, information-gain routing |
+| `task-goal-intelligence` | latent task goal, target identity, semantic delta, historical-claim revalidation, anti-minimization, Goal Capsule, progress evidence and information-gain routing |
 | `chief-of-staff-core` | complex task contract and phase routing |
 | `plan-arbiter` | plan/architecture/sequence choice |
 | `evidence-watchdog` | state and completion verification |
