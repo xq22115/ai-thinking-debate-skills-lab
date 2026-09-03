@@ -1,0 +1,50 @@
+name: Task Goal Intelligence v2.2 Gate
+
+on:
+  push:
+    paths:
+      - 'skills/skills/task-goal-intelligence/SKILL.md'
+      - 'control-plane/ai-system/configs/goal-fidelity-global.json'
+      - 'control-plane/scripts/validate_goal_fidelity_global.py'
+      - 'control-plane/scripts/validate_goal_intelligence_extension.py'
+      - 'control-plane/scripts/validate_task_goal_intelligence_v22.py'
+      - '.agents/hooks/goal-fidelity-preinvocation.py'
+      - '.github/workflows/task-goal-intelligence-v22-gate.yml'
+  pull_request:
+    paths:
+      - 'skills/skills/task-goal-intelligence/SKILL.md'
+      - 'control-plane/ai-system/configs/goal-fidelity-global.json'
+      - 'control-plane/scripts/validate_goal_fidelity_global.py'
+      - 'control-plane/scripts/validate_goal_intelligence_extension.py'
+      - 'control-plane/scripts/validate_task_goal_intelligence_v22.py'
+      - '.agents/hooks/goal-fidelity-preinvocation.py'
+      - '.github/workflows/task-goal-intelligence-v22-gate.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  goal-intelligence-v22:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Parse and compile
+        run: |
+          python -m json.tool control-plane/ai-system/configs/goal-fidelity-global.json >/dev/null
+          python -m py_compile \
+            .agents/hooks/goal-fidelity-preinvocation.py \
+            control-plane/scripts/validate_goal_fidelity_global.py \
+            control-plane/scripts/validate_goal_intelligence_extension.py \
+            control-plane/scripts/validate_task_goal_intelligence_v22.py
+      - name: Validate canonical goal engine
+        run: |
+          python control-plane/scripts/validate_goal_fidelity_global.py
+          python control-plane/scripts/validate_goal_intelligence_extension.py
+      - name: Validate v2.2 decision-value skill
+        run: python control-plane/scripts/validate_task_goal_intelligence_v22.py
