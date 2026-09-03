@@ -20,7 +20,9 @@
       "ACTION_DIVERGENCE_MAP",
       "SOURCE_PRIORITY",
       "COMPLETION_EVIDENCE_PLAN",
-      "GOAL_SIGNATURE"
+      "GOAL_SIGNATURE",
+      "PREFERENCE_PROFILE",
+      "ASSUMPTION_LEDGER"
     ],
     "target_identity_dimensions": [
       "host",
@@ -95,7 +97,9 @@
     ],
     "prefer_tool_or_runtime_evidence_before_user_question": true,
     "prefer_one_discriminating_question_over_many_low_value_questions": true,
-    "needless_clarification_for_shared_next_action_forbidden": true
+    "needless_clarification_for_shared_next_action_forbidden": true,
+    "clarification_allowed_anytime": true,
+    "never_ask_user_to_repeat_known_information": true
   },
   "architect_executor_evaluator": {
     "separation_required_for_complex_tasks": true,
@@ -222,9 +226,10 @@
     }
   },
   "evidence_mesh": {
-    "default_sources_for_substantive_tasks_when_available": ["GitHub", "Notion"],
+    "default_sources_for_substantive_tasks_when_available": ["GitHub", "Notion", "Hugging Face"],
     "github_role": "executable_truth_and_implementation_archaeology",
     "notion_role": "durable_user_specific_context_corrections_and_decision_memory",
+    "hugging_face_role": "model_dataset_benchmark_and_research_evidence_when_connector_is_available",
     "practical_source_priority": [
       "respected_maintainers_researchers_and_engineers",
       "reproducible_code_benchmark_harnesses_and_raw_methods",
@@ -281,7 +286,8 @@
       "correction_loop_count",
       "semantic_drift_rate",
       "false_completion_rate",
-      "protected_capability_regression_rate"
+      "protected_capability_regression_rate",
+      "stale_constraint_violation_rate"
     ],
     "candidate_optimization_patterns": [
       "GEPA_reflective_trajectory_optimization",
@@ -330,7 +336,8 @@
       "final_semantic_goal_diff_passed",
       "no_hidden_material_contradiction",
       "actual_readback_or_test_evidence",
-      "no_neighboring_task_or_proxy_substitution"
+      "no_neighboring_task_or_proxy_substitution",
+      "no_stale_constraint_violation"
     ],
     "self_report_only_cannot_pass": true,
     "unknown_or_unverified_target_cannot_pass": true
@@ -341,6 +348,84 @@
     "GEPA_reflective_Pareto_trajectory_learning",
     "TextGrad_textual_feedback_optimization",
     "Promptfoo_adversarial_and_regression_evaluation",
-    "uncertainty_aware_information_gain_clarification_research"
-  ]
+    "uncertainty_aware_information_gain_clarification_research",
+    "UserIntentBench_latent_shifting_intent_and_belief_graphs"
+  ],
+  "intent_belief_graph": {
+    "required_for_substantive_tasks": true,
+    "node_types": [
+      "desired_outcome",
+      "explicit_requirement",
+      "inferred_preference",
+      "negative_constraint",
+      "target_entity",
+      "dependency",
+      "causal_owner",
+      "acceptance_evidence",
+      "open_unknown",
+      "assumption",
+      "obsolete_constraint",
+      "evidence_provenance"
+    ],
+    "edge_types": [
+      "requires",
+      "supports",
+      "contradicts",
+      "depends_on",
+      "owned_by",
+      "verified_by",
+      "supersedes",
+      "derived_from"
+    ],
+    "inferred_nodes_require_confidence_and_provenance": true,
+    "low_confidence_hidden_intent_may_not_become_hard_requirement": true
+  },
+  "semantic_delta_tracker": {
+    "required_on_each_substantive_user_turn": true,
+    "classes": [
+      "refinement",
+      "new_constraint",
+      "correction",
+      "priority_change",
+      "target_entity_change",
+      "route_preference_change",
+      "acceptance_test_change",
+      "related_goal_pivot",
+      "full_task_switch",
+      "non_substantive_restatement"
+    ],
+    "superseded_constraints_marked_obsolete": true,
+    "stale_constraints_may_not_silently_survive_intent_shift": true
+  },
+  "research_evidence_mesh": {
+    "distinct_lane_target": 20,
+    "do_not_pad_with_duplicate_or_derivative_sources": true,
+    "lanes": [
+      "canonical_spec",
+      "repository_source",
+      "config_schema_defaults",
+      "release_notes_changelogs",
+      "commit_archaeology",
+      "issue_history",
+      "pull_request_discussions",
+      "regression_tests_fixtures",
+      "benchmark_methodology_raw_metrics",
+      "dataset_cards_eval_sets",
+      "paper_citation_chaining",
+      "maintainer_design_proposals",
+      "respected_practitioner_implementations",
+      "postmortems_incident_reports",
+      "negative_evidence_failure_reports",
+      "abandoned_reverted_approaches",
+      "version_incompatibility_migration_reports",
+      "competing_implementations",
+      "reverse_search_errors_symbols_files",
+      "long_term_reproducible_user_reports",
+      "prompt_config_archaeology",
+      "package_release_metadata",
+      "benchmark_counterexamples_hidden_test_style_evals",
+      "niche_citation_maintainer_commit_linkage"
+    ],
+    "rare_signal_value_requires_decision_discrimination": true
+  }
 }
