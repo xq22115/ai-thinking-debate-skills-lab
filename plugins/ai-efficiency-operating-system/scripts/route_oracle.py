@@ -55,10 +55,6 @@ PRIORITY = [
 ]
 
 
-def _has(text, phrases):
-    return any(p in text for p in phrases)
-
-
 def _count(text, phrases):
     return sum(1 for p in phrases if p in text)
 
@@ -73,6 +69,15 @@ def _is_simple(text):
         r"rewrite this sentence",
     ]
     return any(re.search(p, text) for p in patterns)
+
+
+def _is_explanation_only(text):
+    explain = any(p in text for p in ["是什麼", "what is", "請解釋", "解釋一下", "explain "])
+    operational = any(p in text for p in [
+        "幫我", "請查", "研究", "修", "設定", "配置", "診斷", "debug", "fix", "比較", "設計", "做 ",
+        "怎麼做", "怎麼修", "why", "為什麼", "生效", "invoke", "dynamic discovery", "schema drift",
+    ])
+    return explain and not operational
 
 
 def analyze(prompt):
@@ -176,7 +181,7 @@ def analyze(prompt):
 
 def score_routes(prompt):
     text, s = analyze(prompt)
-    if _is_simple(text):
+    if _is_simple(text) or _is_explanation_only(text):
         return {"none": 100}, s
 
     scores = {name: 0 for name in PRIORITY}
@@ -200,10 +205,6 @@ def score_routes(prompt):
         scores["mcp-surface-engineering"] += 3
     if s["research"] and s["runtime_mismatch"]:
         scores["agent-runtime-forensics"] += 3
-
-    # Generic explanation-only mentions should not wake heavy specialists.
-    if text.strip() in {"mcp 是什麼？", "mcp 是什麼?", "reverse engineering 是什麼？", "reverse engineering 是什麼?", "ghidra 是做什麼的？", "ghidra 是做什麼的?"}:
-        return {"none": 100}, s
 
     return scores, s
 
@@ -246,7 +247,13 @@ def route_bundle(prompt, explicit=None, host_capabilities=None):
     needs_verifier = (
         s["completion"] > 0
         or s["runtime_mismatch"]
-        or primary in {"capability-forensics", "mcp-surface-engineering", "agent-runtime-forensics", "convergence-controller"}
+        or primary in {
+            "capability-forensics",
+            "mcp-surface-engineering",
+            "agent-runtime-forensics",
+            "convergence-controller",
+            "chief-of-staff-core",
+        }
         or (primary == "executive-research" and s["complex"] > 0)
     )
     if needs_verifier and "evidence-watchdog" not in bundle:
