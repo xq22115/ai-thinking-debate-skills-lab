@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "profile_id": "task-goal-intelligence-v3-source-ledger",
+  "revision": "2026-09-04",
+  "principle": "Adopt mechanisms only when they improve a live goal-fidelity failure mode; source prestige, popularity, novelty, and obscurity are evidence attributes, not automatic authority.",
+  "sources": [
+    {
+      "id": "recap-eacl-2026",
+      "class": "peer_reviewed_research_plus_code",
+      "title": "RECAP: REwriting Conversations for Intent Understanding in Agentic Planning",
+      "url": "https://aclanthology.org/2026.findings-eacl.105/",
+      "code": "https://github.com/megagonlabs/recap",
+      "adopted_mechanism": "Evaluate intent representations by downstream planning utility under ambiguity, drift, vagueness, and mixed goals rather than paraphrase similarity.",
+      "limitations": "Small public repository adoption; use as a targeted research mechanism, not a scale signal."
+    },
+    {
+      "id": "hamel-shankar-agent-evals",
+      "class": "practitioner_methodology",
+      "title": "AI evals and agentic workflow evaluation",
+      "url": "https://hamel.dev/blog/posts/evals-faq/how-do-i-evaluate-agentic-workflows.html",
+      "adopted_mechanism": "Judge end-to-end task success first, then identify the first upstream failure and use step diagnostics only after the user-goal verdict.",
+      "limitations": "Methodology guidance rather than a formal benchmark."
+    },
+    {
+      "id": "hamel-shankar-error-analysis",
+      "class": "practitioner_methodology",
+      "title": "Error analysis for LLM evals",
+      "url": "https://hamel.dev/blog/posts/evals-faq/why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed.html",
+      "adopted_mechanism": "Build eval taxonomies from representative real traces through open/axial coding before adding more rules or judges.",
+      "limitations": "Human review remains important; taxonomy quality depends on representative traces."
+    },
+    {
+      "id": "dspy-gepa",
+      "class": "large_open_source_optimizer",
+      "title": "DSPy GEPA reflective optimization",
+      "url": "https://github.com/stanfordnlp/dspy",
+      "adopted_mechanism": "Optimize prompts/program artifacts from execution traces and rich textual feedback; require holdout improvement and protect hard slices against aggregate-score masking.",
+      "limitations": "Optimizer quality is bounded by metric, feedback, and evaluation-set quality."
+    },
+    {
+      "id": "manus-context-engineering",
+      "class": "production_practitioner_design",
+      "title": "Context Engineering for AI Agents: Lessons from Building Manus",
+      "url": "https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus",
+      "adopted_mechanism": "Use recurring compact goal/todo recitation near the recent context boundary to fight long-trajectory goal drift while keeping durable state outside prompt prose.",
+      "limitations": "Production design report rather than independent controlled benchmark."
+    },
+    {
+      "id": "magentic-one",
+      "class": "open_agent_architecture",
+      "title": "Magentic-One task/progress ledger architecture",
+      "url": "https://github.com/microsoft/autogen",
+      "adopted_mechanism": "Separate durable task facts/plan from short-horizon progress, detect loops/stalls, and replan only when progress evidence warrants it.",
+      "limitations": "Architecture pattern; not evidence that every task benefits from multi-agent orchestration."
+    },
+    {
+      "id": "opencti",
+      "class": "large_open_source_cti_graph",
+      "title": "OpenCTI",
+      "url": "https://github.com/OpenCTI-Platform/opencti",
+      "adopted_mechanism": "Model evidence as a provenance/confidence graph with source linkage, first/last-seen timing, relationships, and explicit confidence instead of flattening threat-intelligence claims into text.",
+      "limitations": "Cyber-threat-intelligence domain pattern; imported only for opaque-source provenance mechanics."
+    },
+    {
+      "id": "misp",
+      "class": "large_open_source_threat_intelligence_platform",
+      "title": "MISP",
+      "url": "https://github.com/MISP/MISP",
+      "adopted_mechanism": "Keep atomic indicators/claims linked to structured objects, reports, provenance, and cross-references so anonymous or underground-source leads remain distinguishable from corroborated evidence.",
+      "limitations": "Cybersecurity evidence-sharing pattern; does not make dark-web or anonymous claims inherently reliable."
+    }
+  ]
+}

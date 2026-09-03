@@ -1,0 +1,18 @@
+{"id":"C01","prompt":"為什麼同一模型 Desktop 有工具，這個 session 卻沒有？幫我查卡在哪一層。","expected_primary":"capability-forensics","expected_bundle":["task-goal-intelligence","capability-forensics","evidence-watchdog"],"expected_fallback":["executive-research","evidence-watchdog"]}
+{"id":"C02","prompt":"我有 150 個 MCP tools，schema 把 context 塞爆，幫我做 dynamic discovery。","expected_primary":"mcp-surface-engineering","expected_bundle":["task-goal-intelligence","mcp-surface-engineering","evidence-watchdog"],"expected_fallback":["capability-forensics","executive-research","evidence-watchdog"]}
+{"id":"C03","prompt":"tool call 說寫入成功，但檔案沒變，請重建 runtime causal chain。","expected_primary":"agent-runtime-forensics","expected_bundle":["task-goal-intelligence","agent-runtime-forensics","evidence-watchdog"],"expected_fallback":["capability-forensics","evidence-watchdog"]}
+{"id":"C04","prompt":"比較兩個 architecture，先選能保留能力的方案。","expected_primary":"plan-arbiter","expected_bundle":["task-goal-intelligence","plan-arbiter"],"expected_fallback":["chief-of-staff-core"]}
+{"id":"C05","prompt":"這是多階段長流程，幫我深入研究最新 issue、PR、benchmark 和 regression。","expected_primary":"executive-research","expected_bundle":["task-goal-intelligence","executive-research","evidence-watchdog"],"expected_fallback":["task-goal-intelligence","evidence-watchdog"]}
+{"id":"C06","prompt":"同一條修法已經失敗三次，別再原路重試，換一條真正不同的路。","expected_primary":"convergence-controller","expected_bundle":["task-goal-intelligence","convergence-controller","evidence-watchdog"],"expected_fallback":["chief-of-staff-core","evidence-watchdog"]}
+{"id":"C07","prompt":"前一個聊天室有最新修正，先恢復有效決策再繼續。","expected_primary":"memory-policy","expected_bundle":["task-goal-intelligence","memory-policy"]}
+{"id":"C08","prompt":"這是一個多階段、多工具、兩個帳號的端到端任務，先統一 phase owner。","expected_primary":"chief-of-staff-core","expected_bundle":["task-goal-intelligence","chief-of-staff-core","evidence-watchdog"]}
+{"id":"C09","prompt":"repo 已經寫入，現在驗收是不是真的 live，不要只相信 commit。","expected_primary":"evidence-watchdog","expected_bundle":["task-goal-intelligence","evidence-watchdog"]}
+{"id":"C10","prompt":"@autonomy-contract 我授權你做這個外部變更。","explicit":"autonomy-contract","expected_primary":"autonomy-contract","expected_bundle":["autonomy-contract"]}
+{"id":"C11","prompt":"@authorized-reverse-engineering 檢查我有權分析的自有 binary。","explicit":"authorized-reverse-engineering","expected_primary":"authorized-reverse-engineering","expected_bundle":["authorized-reverse-engineering"]}
+{"id":"C12","prompt":"@persistent-work-ledger 普通 Chat 幫我建立 durable SQLite ledger。","explicit":"persistent-work-ledger","host_capabilities":[],"expected_primary":"capability-mismatch","expected_bundle":["capability-mismatch"]}
+{"id":"C13","prompt":"2+2 等於多少？","expected_primary":"none","expected_bundle":[]}
+{"id":"C14","prompt":"不同理解會改變 target identity 和 acceptance criteria，先把真正任務目標分清楚。","expected_primary":"task-goal-intelligence","expected_bundle":["task-goal-intelligence"]}
+{"id":"C15","prompt":"plugin 連上但 session 不能 invoke，找出真正 capability bottleneck。","expected_primary":"capability-forensics","expected_fallback":["executive-research","evidence-watchdog"]}
+{"id":"C16","prompt":"MCP schema drift 加 namespace collision，工具面要怎麼修？","expected_primary":"mcp-surface-engineering","expected_fallback":["capability-forensics","executive-research","evidence-watchdog"]}
+{"id":"C17","prompt":"工具回 success，但 postcondition missing、artifact 沒更新。","expected_primary":"agent-runtime-forensics","expected_fallback":["capability-forensics","evidence-watchdog"]}
+{"id":"C18","prompt":"review 一直同樣循環，換 route 並保留驗收標準。","expected_primary":"convergence-controller","expected_fallback":["chief-of-staff-core","evidence-watchdog"]}

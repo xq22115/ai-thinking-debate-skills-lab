@@ -2,4 +2,4 @@ interface:
   display_name: "MCP Surface Engineering"
   short_description: "Engineer dynamic, versioned, trustworthy MCP and tool surfaces"
 policy:
-  allow_implicit_invocation: false
+  allow_implicit_invocation: true

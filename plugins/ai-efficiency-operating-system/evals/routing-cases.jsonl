@@ -27,9 +27,29 @@
 {"id":"R27","prompt":"@authorized-reverse-engineering 分析我自己編譯的 binary，找版本 regression 的 call path。","expected":"authorized-reverse-engineering","explicit":"authorized-reverse-engineering"}
 {"id":"R28","prompt":"@agent-runtime-forensics 工具說寫入成功，但檔案沒有變，幫我重建 causal chain。","expected":"agent-runtime-forensics","explicit":"agent-runtime-forensics"}
 {"id":"R29","prompt":"研究最近 Ghidra MCP 怎麼做 AI 逆向分析。","expected":"executive-research"}
-{"id":"R30","prompt":"查最新 MCP dynamic discovery 和 schema drift 的做法。","expected":"executive-research"}
-{"id":"R31","prompt":"我的 AI 能力限制到底卡在哪一層？先深入找資料。","expected":"executive-research"}
+{"id":"R30","prompt":"查最新 MCP dynamic discovery 和 schema drift 的做法。","expected":"mcp-surface-engineering"}
+{"id":"R31","prompt":"我的 AI 能力限制到底卡在哪一層？先深入找資料。","expected":"capability-forensics"}
 {"id":"R32","prompt":"@not-a-real-expert-skill 做特殊能力分析。","expected":"invalid-explicit-skill","explicit":"not-a-real-expert-skill"}
 {"id":"R33","prompt":"MCP 是什麼？","expected":"none"}
 {"id":"R34","prompt":"reverse engineering 是什麼？","expected":"none"}
 {"id":"R35","prompt":"Ghidra 是做什麼的？","expected":"none"}
+{"id":"R36","prompt":"為什麼同一個模型在 Desktop 看得到工具，這個 session 卻沒有？先找是哪一層卡住。","expected":"capability-forensics"}
+{"id":"R37","prompt":"plugin 已安裝但普通聊天裡不能用，幫我判斷是 workspace、session、permission 還是 surface 問題。","expected":"capability-forensics"}
+{"id":"R38","prompt":"我有 150 個 MCP tools，context window 被 schema 塞爆了，幫我做 dynamic tool discovery。","expected":"mcp-surface-engineering"}
+{"id":"R39","prompt":"兩個 MCP server tool 名稱衝突，而且 schema version 漂移，該怎麼收斂工具面？","expected":"mcp-surface-engineering"}
+{"id":"R40","prompt":"工具回傳寫入成功，但實際檔案沒有變，請查真正的 causal chain。","expected":"agent-runtime-forensics"}
+{"id":"R41","prompt":"agent 說 configured done，可是 process state 沒變，幫我重建 runtime trace。","expected":"agent-runtime-forensics"}
+{"id":"R42","prompt":"先別急著動手，我怕你又理解錯任務目標；把真正目標、成功條件和排除項先鎖定。","expected":"task-goal-intelligence"}
+{"id":"R43","prompt":"這個需求有歧義，不同理解會改變 target identity 和驗收條件，先把 interpretation 分清楚。","expected":"task-goal-intelligence"}
+{"id":"R44","prompt":"幫我找世界級 AI 工程師和 maintainer 的最新實戰，連 issue、PR、benchmark、失敗案例一起交叉驗證。","expected":"executive-research"}
+{"id":"R45","prompt":"這個長流程有多個工具、多階段和兩個帳號，請先統一 phase owner。","expected":"chief-of-staff-core"}
+{"id":"R46","prompt":"設定已經寫進 repo，現在請驗收是不是真的生效，不要只看 commit。","expected":"evidence-watchdog"}
+{"id":"R47","prompt":"同一條修法已經失敗三次，不要再試原路，換 materially different route。","expected":"convergence-controller"}
+{"id":"R48","prompt":"前一個聊天室有最新修正，先恢復那個有效決策，不要沿用 stale summary。","expected":"memory-policy"}
+{"id":"R49","prompt":"幫我比較兩個 architecture，先判斷哪個保留能力又比較容易驗證。","expected":"plan-arbiter"}
+{"id":"R50","prompt":"connector 連上了但我不知道到底能不能 invoke，請診斷 visible、authorized、invokable、effective 的差別。","expected":"capability-forensics"}
+{"id":"R51","prompt":"工具 registry 最近一直變，還有 namespace collision 和 entitlement-specific tools。","expected":"mcp-surface-engineering"}
+{"id":"R52","prompt":"tool call 回成功，但 postcondition missing，而且 artifact 沒更新。","expected":"agent-runtime-forensics"}
+{"id":"R53","prompt":"這件事很複雜，我只要你先理解我真正要達成什麼，不要先選工具。","expected":"task-goal-intelligence"}
+{"id":"R54","prompt":"請研究這個問題的最新版本、maintainer 討論和 regression。","expected":"executive-research"}
+{"id":"R55","prompt":"請解釋 MCP。","expected":"none"}

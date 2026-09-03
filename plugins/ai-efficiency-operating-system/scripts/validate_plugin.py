@@ -5,16 +5,33 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 REPO = ROOT.parents[1]
-CORE = [
-    "chief-of-staff-core", "plan-arbiter", "evidence-watchdog", "executive-research",
-    "memory-policy", "convergence-controller", "autonomy-contract", "persistent-work-ledger"
+
+DEFAULT_IMPLICIT = [
+    "task-goal-intelligence",
+    "chief-of-staff-core",
+    "plan-arbiter",
+    "evidence-watchdog",
+    "executive-research",
+    "memory-policy",
+    "convergence-controller",
+]
+CONDITIONAL_IMPLICIT = [
+    "capability-forensics",
+    "mcp-surface-engineering",
+    "agent-runtime-forensics",
+]
+EXPLICIT_ONLY = [
+    "autonomy-contract",
+    "persistent-work-ledger",
+    "authorized-reverse-engineering",
 ]
 EXPERT = [
-    "capability-forensics", "mcp-surface-engineering",
-    "authorized-reverse-engineering", "agent-runtime-forensics"
+    "capability-forensics",
+    "mcp-surface-engineering",
+    "authorized-reverse-engineering",
+    "agent-runtime-forensics",
 ]
-EXPECTED = CORE + EXPERT
-EXPLICIT = {"autonomy-contract", "persistent-work-ledger", *EXPERT}
+EXPECTED = DEFAULT_IMPLICIT + CONDITIONAL_IMPLICIT + EXPLICIT_ONLY
 DEPTH_LEVELS = ["SURFACE", "MECHANISM", "CODE_PATH", "DETERMINISTIC_REPRO", "COUNTEREXAMPLE", "FIX_STATUS", "REGRESSION", "GENERALIZATION"]
 EXPERT_REFS = {
     "capability-forensics": ("references/capability-fingerprinting.md", ["DECLARED / VISIBLE / AUTHORIZED / LOADABLE / INVOKABLE / EFFECTIVE / VERIFIED", "Environment engineering before prompt inflation", "Differential probe"]),
@@ -69,14 +86,63 @@ def main():
     if plugin.get("name") != "ai-efficiency-operating-system": fail(errors, "wrong plugin name")
     if plugin.get("skills") != "./skills/": fail(errors, "plugin skills path must be ./skills/")
     if plugin.get("version") != settings.get("version"): fail(errors, "plugin/settings version drift")
-    if settings.get("default_implicit_skills", []) + settings.get("explicit_only_skills", []) != EXPECTED:
-        fail(errors, "settings skill inventory/order drift")
+    if settings.get("schema") != 4: fail(errors, "settings schema must be 4")
+    if settings.get("default_implicit_skills") != DEFAULT_IMPLICIT: fail(errors, "default implicit skill inventory/order drift")
+    if settings.get("conditional_implicit_skills") != CONDITIONAL_IMPLICIT: fail(errors, "conditional implicit skill inventory/order drift")
+    if settings.get("explicit_only_skills") != EXPLICIT_ONLY: fail(errors, "explicit-only skill inventory/order drift")
+    if set(DEFAULT_IMPLICIT + CONDITIONAL_IMPLICIT + EXPLICIT_ONLY) != set(EXPECTED): fail(errors, "skill inventory classification drift")
+
     names = [p.get("name") for p in marketplace.get("plugins", [])]
     if names.count("ai-efficiency-operating-system") != 1: fail(errors, "marketplace canonical plugin count != 1")
 
+    routing = settings.get("routing", {})
+    if routing.get("router_version") != 2: fail(errors, "router_version must be 2")
+    if routing.get("goal_gate_skill") != "task-goal-intelligence": fail(errors, "task-goal-intelligence must own the goal gate")
+    if routing.get("max_implicit_skills") != 3: fail(errors, "implicit composition must be bounded to three skills")
+    if routing.get("deterministic_baseline_required") is not True: fail(errors, "deterministic routing baseline is required")
+    if routing.get("semantic_rerank_optional_after_eligibility_filter") is not True: fail(errors, "semantic rerank must stay behind eligibility filter")
+    if routing.get("route_bundle_enabled") is not True: fail(errors, "route bundles must be enabled")
+    for name in CONDITIONAL_IMPLICIT:
+        if name not in (routing.get("conditional_specialists") or {}):
+            fail(errors, f"missing conditional specialist contract: {name}")
+
+    composition = settings.get("composition") or {}
+    required_compositions = {
+        "complex_research",
+        "capability_bottleneck",
+        "many_tool_or_mcp_surface",
+        "runtime_effect_mismatch",
+        "architecture_choice",
+        "repeated_failure",
+        "cross_session_context",
+        "complex_multi_stage",
+    }
+    if not required_compositions.issubset(set(composition)):
+        fail(errors, "composition contract missing required route bundle")
+    for key, bundle in composition.items():
+        if not isinstance(bundle, list) or not bundle or len(bundle) > 3:
+            fail(errors, f"invalid bounded composition: {key}")
+        elif bundle[0] != "task-goal-intelligence":
+            fail(errors, f"composition must start from task-goal-intelligence: {key}")
+
+    fallback_rules = settings.get("fallback_rules") or {}
+    for key in (
+        "route_failure_does_not_change_root_goal",
+        "after_repeated_failure_choose_materially_different_route",
+        "unavailable_specialist_must_fall_back_to_goal_advancing_base_skill",
+        "host_capability_mismatch_must_be_reported_not_fabricated",
+        "completion_requires_postcondition_evidence",
+    ):
+        if fallback_rules.get(key) is not True:
+            fail(errors, f"fallback invariant missing: {key}")
+    if int(fallback_rules.get("retry_same_route_without_new_evidence_limit", -1)) > 1:
+        fail(errors, "same-route retry limit must be <= 1 without new evidence")
+
     labs = settings.get("expert_labs", {})
-    if labs.get("explicit_only") is not True: fail(errors, "expert labs must be explicit-only")
-    if labs.get("default_enabled") is not False: fail(errors, "expert labs must not be default-enabled")
+    if labs.get("activation") != "conditional-demand-loaded": fail(errors, "expert labs activation must be conditional-demand-loaded")
+    if labs.get("default_enabled") is not False: fail(errors, "expert labs must not be globally default-enabled")
+    if labs.get("implicit_eligible") != CONDITIONAL_IMPLICIT: fail(errors, "expert lab implicit-eligible inventory drift")
+    if labs.get("explicit_only") != ["authorized-reverse-engineering"]: fail(errors, "authorized reverse engineering must remain expert explicit-only")
     if labs.get("load_only_on_material_need") is not True: fail(errors, "expert labs must be demand-loaded")
     if labs.get("no_skill_counterfactual_required_for_promotion") is not True: fail(errors, "expert labs require no-skill counterfactual")
     if labs.get("host_version_capability_probe_required") is not True: fail(errors, "expert labs require host/version probe")
@@ -95,10 +161,22 @@ def main():
         if not desc.startswith("Use when"): fail(errors, f"description must start with 'Use when': {name}")
         if len(desc) > 1024: fail(errors, f"description too long: {name}")
         if len(text.splitlines()) > 500: fail(errors, f"SKILL.md over 500 lines: {name}")
-        if name in EXPLICIT:
-            agent = ROOT / "skills" / name / "agents" / "openai.yaml"
-            if not agent.exists() or "allow_implicit_invocation: false" not in agent.read_text():
+
+        agent = ROOT / "skills" / name / "agents" / "openai.yaml"
+        if not agent.exists():
+            fail(errors, f"missing OpenAI skill policy: {name}")
+            continue
+        agent_text = agent.read_text(encoding="utf-8")
+        if name in DEFAULT_IMPLICIT or name in CONDITIONAL_IMPLICIT:
+            if "allow_implicit_invocation: true" not in agent_text:
+                fail(errors, f"implicit invocation policy missing: {name}")
+        elif name in EXPLICIT_ONLY:
+            if "allow_implicit_invocation: false" not in agent_text:
                 fail(errors, f"explicit-only policy missing: {name}")
+
+    task_goal = (ROOT / "skills" / "task-goal-intelligence" / "SKILL.md").read_text(encoding="utf-8")
+    for marker in ["Interpretation", "Semantic delta", "Active routing handoffs", "Fallback/self-repair", "at most three implicit skills"]:
+        if marker.lower() not in task_goal.lower(): fail(errors, f"task-goal routing marker missing: {marker}")
 
     for name, (rel, markers) in EXPERT_REFS.items():
         path = ROOT / "skills" / name / rel
@@ -146,14 +224,22 @@ def main():
     if legacy_skill.exists(): fail(errors, "legacy mega SKILL.md is still active")
 
     required = [
-        "evals/routing-cases.jsonl", "evals/behavior-cases.jsonl", "evals/expert-labs-cases.jsonl",
-        "scripts/expert_labs_oracle.py", "references/2026-baseline.md", "MIGRATION.md"
+        "evals/routing-cases.jsonl",
+        "evals/composition-cases.jsonl",
+        "evals/behavior-cases.jsonl",
+        "evals/expert-labs-cases.jsonl",
+        "scripts/route_oracle.py",
+        "scripts/composition_oracle.py",
+        "scripts/expert_labs_oracle.py",
+        "references/2026-baseline.md",
+        "MIGRATION.md",
     ]
     for rel in required:
         if not (ROOT / rel).exists(): fail(errors, f"missing {rel}")
 
     minimums = {
-        "routing-cases.jsonl": 35,
+        "routing-cases.jsonl": 55,
+        "composition-cases.jsonl": 15,
         "behavior-cases.jsonl": 55,
         "expert-labs-cases.jsonl": 25,
     }
@@ -165,12 +251,25 @@ def main():
         if len(ids) != len(set(ids)): fail(errors, f"duplicate IDs in {name}")
         if len(rows) < minimum: fail(errors, f"insufficient {name}: {len(rows)} < {minimum}")
 
+    route_oracle = (ROOT / "scripts" / "route_oracle.py").read_text(encoding="utf-8")
+    for marker in ["CONDITIONAL_IMPLICIT", "route_bundle", "fallback_chain", "deterministic baseline", "_is_explanation_only"]:
+        if marker.lower() not in route_oracle.lower(): fail(errors, f"routing oracle marker missing: {marker}")
+
+    composition_oracle = (ROOT / "scripts" / "composition_oracle.py").read_text(encoding="utf-8")
+    for marker in ["route_bundle", "fallback_chain", "expected_bundle"]:
+        if marker not in composition_oracle: fail(errors, f"composition oracle marker missing: {marker}")
+
     if errors:
         print("PLUGIN VALIDATION FAILED")
-        for e in errors: print("-", e)
+        for e in errors:
+            print("-", e)
         return 1
     print("PLUGIN VALIDATION PASS")
-    print(f"skills={len(EXPECTED)} implicit={len(settings['default_implicit_skills'])} explicit={len(settings['explicit_only_skills'])} expert={len(EXPERT)} depth_levels={len(DEPTH_LEVELS)}")
+    print(
+        f"skills={len(EXPECTED)} default_implicit={len(DEFAULT_IMPLICIT)} "
+        f"conditional_implicit={len(CONDITIONAL_IMPLICIT)} explicit={len(EXPLICIT_ONLY)} "
+        f"expert={len(EXPERT)} depth_levels={len(DEPTH_LEVELS)}"
+    )
     return 0
 
 

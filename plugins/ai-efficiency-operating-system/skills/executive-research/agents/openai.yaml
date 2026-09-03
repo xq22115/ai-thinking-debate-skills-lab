@@ -1,3 +1,5 @@
 interface:
   display_name: "Executive Research"
   short_description: "Deep current research and root-cause analysis"
+policy:
+  allow_implicit_invocation: true

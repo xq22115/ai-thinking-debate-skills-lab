@@ -1,3 +1,5 @@
 interface:
   display_name: "Chief of Staff Core"
   short_description: "Preserve task contract and route complex work"
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "profile_id": "task-goal-intelligence-v3-extension",
+  "revision": "3.0.0",
+  "extends": "goal-fidelity-task-understanding-v2",
+  "purpose": "Harden task-goal understanding against wording loopholes, stale historical completion claims, long-context drift, route-local blockers, progress theater, and weak provenance while preserving the user's actual desired end state.",
+  "event_sourced_goal_state": {
+    "required": true,
+    "identity_fields": ["GOAL_VERSION", "GOAL_FINGERPRINT"],
+    "event_types": ["USER_REQUEST", "ADD", "UPDATE", "OVERRIDE", "RETRACT", "CORRECTION", "EVIDENCE", "BLOCKER", "ROUTE_CHANGE", "ACCEPTANCE_RESULT"],
+    "event_required_fields": ["event_id", "goal_version", "source", "semantic_effect", "affected_nodes", "invalidated_nodes", "evidence_refs", "order"],
+    "semantic_change_increments_goal_version": true,
+    "cosmetic_restatement_does_not_increment_goal_version": true,
+    "correction_invalidates_dependent_downstream_conclusions": true,
+    "unaffected_evidence_survives_rebuild": true
+  },
+  "historical_claim_revalidation": {
+    "prior_prose_is_not_current_evidence": true,
+    "historical_success_without_current_binding_state": "HISTORICAL_CLAIM",
+    "fresh_owning_system_readback_outranks_historical_claim": true,
+    "fresh_contradiction_invalidates_historical_claim_immediately": true,
+    "completion_claim_requires_target_and_revision_binding_when_relevant": true
+  },
+  "anti_loophole_semantic_minimization": {
+    "enabled": true,
+    "do_not_reduce_end_state_from_imperfect_wording": true,
+    "examples_and_named_tools_are_not_hard_constraints_by_default": true,
+    "method_suggestion_is_not_end_state_by_default": true,
+    "nearest_easier_task_probe_required_before_material_scope_reduction": true,
+    "route_convenience_cannot_lower_scope_capability_verification_or_acceptance": true,
+    "blocked_route_does_not_prove_task_impossible": true,
+    "constraint_or_route_boundary_does_not_rewrite_root_goal": true
+  },
+  "blocked_slice_isolation": {
+    "current_blocker_is_separate_from_root_goal": true,
+    "localize_unavailable_or_constrained_slice": true,
+    "continue_all_separable_goal_advancing_work": true,
+    "whole_task_abandonment_for_local_blocker_forbidden_when_progress_is_separable": true,
+    "generic_process_policy_safety_ethics_or_tool_compliance_discussion_is_not_progress_unless_it_is_the_user_task": true,
+    "route_pivot_preferred_over_goal_pivot": true
+  },
+  "goal_capsule_recitation": {
+    "enabled": true,
+    "triggers": ["after_user_correction", "after_context_compaction_summary_or_handoff", "after_material_route_or_specialist_change", "after_repeated_failure_or_recovery", "after_target_repo_runtime_or_session_change", "after_decision_changing_evidence", "before_irreversible_external_action", "before_final_acceptance"],
+    "fields": ["goal_version", "root_goal", "desired_end_state", "hard_constraints_and_negations", "target_identity", "top_acceptance_debt", "current_blocker", "next_evidence_bearing_action"],
+    "capsule_is_recency_anchor_not_source_of_truth": true
+  },
+  "progress_ledger": {
+    "required_for_material_steps": true,
+    "fields": ["step_id", "goal_node", "action", "acceptance_delta", "evidence_delta", "uncertainty_delta", "state_delta", "failure_fingerprint", "next_best_action"],
+    "material_progress_requires_any": ["acceptance_delta", "evidence_delta", "decision_critical_uncertainty_reduction", "observable_state_delta"],
+    "non_progress_examples": ["tool_count", "agent_count", "elapsed_time", "file_exists_only", "source_count", "pr_exists_only", "apology_or_acknowledgement", "compliance_prose", "same_retry_without_new_evidence"],
+    "two_consecutive_no_delta_steps_force_causal_pivot": true,
+    "lowering_target_to_manufacture_progress_forbidden": true
+  },
+  "planning_utility_intent_ir": {
+    "optimize_for_downstream_plan_and_acceptance_utility": true,
+    "paraphrase_similarity_is_not_primary_metric": true,
+    "candidate_interpretations_are_material_only_if_downstream_plan_or_acceptance_differs": true,
+    "shared_reversible_next_action_allows_progress": true
+  },
+  "opaque_source_provenance": {
+    "applies_when_task_relevant": true,
+    "source_classes": ["anonymous", "opaque", "underground", "onion", "closed_community", "leak_claim", "archived_or_mirrored"],
+    "initial_state": "LEAD",
+    "promotion_states": ["LEAD", "CORROBORATED", "REPRODUCIBLE", "OWNING_SOURCE_VERIFIED"],
+    "required_metadata": ["origin_class", "stable_identifier_or_hash_when_available", "first_seen", "last_seen_when_available", "actor_or_source_history", "independent_corroboration", "contradiction_status", "confidence", "decision_impact"],
+    "rarity_or_anonymity_is_not_credibility": true,
+    "high_discrimination_evidence_may_outrank_popularity_when_reproducible": true
+  },
+  "end_to_end_evaluation": {
+    "black_box_goal_success_precedes_step_scoring": true,
+    "first_upstream_failure_required_on_failure": true,
+    "downstream_polish_cannot_hide_upstream_failure": true,
+    "completion_reverse_walk": ["claim", "acceptance_test", "owning_evidence", "current_goal_version", "causal_path"],
+    "missing_or_stale_link_blocks_pass": true
+  },
+  "failure_driven_optimization": {
+    "corpus_sources": ["real_user_corrections", "false_completion_traces", "historical_claim_contradictions", "unnecessary_clarifications", "neighboring_task_substitutions", "blocked_route_abandonments", "capability_regressions"],
+    "error_taxonomy_before_new_rules": true,
+    "textual_failure_feedback_preferred_over_scalar_only_feedback": true,
+    "candidate_changes_require_representative_and_adversarial_holdout_evaluation": true,
+    "aggregate_gain_cannot_hide_hard_slice_regression": true,
+    "protected_metrics": ["root_goal_accuracy", "target_identity_precision", "hard_constraint_recall", "negation_recall", "stale_constraint_survival_rate", "neighboring_task_substitution_rate", "unnecessary_clarification_rate", "blocked_slice_abandonment_rate", "historical_claim_false_positive_rate", "decision_changing_evidence_yield", "false_completion_rate", "protected_capability_regression_rate"]
+  }
+}

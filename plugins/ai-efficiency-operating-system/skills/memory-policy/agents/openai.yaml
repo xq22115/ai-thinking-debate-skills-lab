@@ -1,3 +1,5 @@
 interface:
   display_name: "Memory Policy"
   short_description: "Govern durable memory and rehydration"
+policy:
+  allow_implicit_invocation: true

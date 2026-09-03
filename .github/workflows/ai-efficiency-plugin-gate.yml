@@ -33,11 +33,14 @@ jobs:
           python -m py_compile \
             plugins/ai-efficiency-operating-system/scripts/validate_plugin.py \
             plugins/ai-efficiency-operating-system/scripts/route_oracle.py \
+            plugins/ai-efficiency-operating-system/scripts/composition_oracle.py \
             plugins/ai-efficiency-operating-system/scripts/expert_labs_oracle.py
-      - name: Validate package and migration
+      - name: Validate package, routing and migration contracts
         run: python plugins/ai-efficiency-operating-system/scripts/validate_plugin.py
-      - name: Run deterministic routing oracle against regression corpus
+      - name: Run primary auto-invoke routing oracle
         run: python plugins/ai-efficiency-operating-system/scripts/route_oracle.py plugins/ai-efficiency-operating-system/evals/routing-cases.jsonl
+      - name: Run composition and fallback oracle
+        run: python plugins/ai-efficiency-operating-system/scripts/composition_oracle.py plugins/ai-efficiency-operating-system/evals/composition-cases.jsonl
       - name: Run Expert Labs known-outcome oracle
         run: python plugins/ai-efficiency-operating-system/scripts/expert_labs_oracle.py plugins/ai-efficiency-operating-system/evals/expert-labs-cases.jsonl
       - name: Parse JSON/JSONL artifacts
@@ -49,9 +52,10 @@ jobs:
           import json, pathlib
           for path in [
               pathlib.Path('plugins/ai-efficiency-operating-system/evals/routing-cases.jsonl'),
+              pathlib.Path('plugins/ai-efficiency-operating-system/evals/composition-cases.jsonl'),
               pathlib.Path('plugins/ai-efficiency-operating-system/evals/behavior-cases.jsonl'),
               pathlib.Path('plugins/ai-efficiency-operating-system/evals/expert-labs-cases.jsonl')]:
-              for i, line in enumerate(path.read_text().splitlines(), 1):
+              for i, line in enumerate(path.read_text(encoding='utf-8').splitlines(), 1):
                   if line.strip(): json.loads(line)
           print('jsonl parse pass')
           PY

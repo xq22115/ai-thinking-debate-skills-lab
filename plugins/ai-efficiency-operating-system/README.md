@@ -1,68 +1,96 @@
 # AI Efficiency Operating System — 2026 Native Plugin
 
-Status: **RC / package candidate / host-live not yet proven**.
+Status: **v1.2 package candidate / host-live auto-invocation not yet proven on every owning surface**.
 
-This is the canonical replacement for the former monolithic `skills/skills/ai-efficiency-operating-system` package. It preserves the validated core while keeping high-cost/specialized capabilities out of the default route.
+This is the canonical orchestration plugin for goal-aware routing, deep research, capability diagnosis and verified execution. It does not treat `installed`, `connected`, `invokable`, `effective`, and `verified` as the same state.
 
-## Basis
+## v1.2 routing architecture
 
-The runtime-facing design is a synthesis, not a rewrite from scratch:
+The runtime-facing design combines a deterministic eligibility baseline with demand-loaded specialist routing:
 
-- **Executive Harness v1.0.0** supplies the validated eight-skill topology, phase ownership, negative routing, context budget and host-capability boundaries.
-- **Deep Task Integrity** supplies the adaptive depth governor, temporal breadth, 12-route search map, evidence lineage and MATERIAL DELTA stop/pivot rule.
-- **DeepLock V2.1** supplies authority separation, isolated-first-pass review, strict evidence-family accounting and the optional strict acceptance profile.
-- **ARR v1.3** supplies durable runtime concepts such as goal CAS, first-class UNKNOWN effects, fencing, receiver read-back and semantic replay. These stay behind the persistent-runtime boundary rather than being pretended into ordinary ChatGPT.
+1. **Task Goal Intelligence gate** — recover the active goal, target identity, hard constraints, acceptance tests and decision-critical unknowns before material work.
+2. **Phase owner** — choose the smallest executive skill that owns the current phase.
+3. **Conditional specialist escalation** — capability, MCP/tool-surface and runtime-effect specialists may be invoked implicitly only when their diagnostic signals are materially present.
+4. **Bounded composition** — at most three implicit skills per phase; discover many, load few.
+5. **Fallback/self-repair** — a failed route does not change the root goal; retry once without new evidence, then change method/specialist and preserve acceptance criteria.
+6. **Postcondition proof** — a returned tool success or written config is not completion without the intended state/read-back.
 
-External 2026 references are recorded in `references/2026-baseline.md`.
+A host may add semantic/learned reranking after the deterministic eligibility filter. The deterministic layer stays canonical for regression tests, hard negatives and rollback.
 
-## Eight executive skills
+## Default implicit skills
 
 | Skill | Primary ownership |
 |---|---|
-| `chief-of-staff-core` | task contract, phase routing, capability truth |
-| `plan-arbiter` | plan choice, architecture tradeoffs, sequencing |
-| `evidence-watchdog` | completion claims, postconditions, read-back |
-| `executive-research` | current research, root cause, temporal/version analysis |
-| `memory-policy` | durable memory, provenance, rehydration |
-| `convergence-controller` | review loops, no-progress pivots, skill evolution |
-| `autonomy-contract` | explicit effect-bearing delegation and authority |
-| `persistent-work-ledger` | explicit durable state on filesystem/state-capable hosts |
+| `task-goal-intelligence` | goal interpretation, semantic delta, information-gain routing |
+| `chief-of-staff-core` | complex task contract and phase ownership |
+| `plan-arbiter` | plan/architecture/sequence choice |
+| `evidence-watchdog` | completion claims, postconditions and read-back |
+| `executive-research` | current/deep/root-cause research and evidence archaeology |
+| `memory-policy` | durable context and rehydration |
+| `convergence-controller` | repeated failure/review loops and materially different route selection |
 
-The first six may be selected implicitly. `autonomy-contract` and `persistent-work-ledger` are explicit-only because an ordinary skill must never pretend it grants authority or persistent runtime primitives.
+## Conditional implicit specialists
 
-## Expert Labs — explicit-only
+These are **not globally always-on**. They are demand-loaded when multiple task signals pass the eligibility gate.
 
-Version `1.1.0-rc1` adds four **opt-in** expert skills. They do not increase the default implicit skill pool.
-
-| Expert Lab | Use |
+| Skill | Auto-invoke trigger |
 |---|---|
-| `capability-forensics` | distinguish model vs harness vs tool vs permission vs session vs entitlement vs environment/runtime limitations |
-| `mcp-surface-engineering` | dynamic/lazy tool discovery, schema drift, namespace collision, entitlement-specific surfaces and tool-poisoning controls |
-| `authorized-reverse-engineering` | static/dynamic analysis of software/binaries the user is authorized to inspect, with exact artifact/toolchain identity |
-| `agent-runtime-forensics` | correlate model intent, tool calls, process/file/network events, artifacts and postconditions into a scoped causal evidence graph |
+| `capability-forensics` | capability differs by model/harness/session/account/surface, or the limiting layer is unclear |
+| `mcp-surface-engineering` | many/changing/conflicting tools, MCP schema drift, dynamic discovery, entitlement/context/namespace pressure |
+| `agent-runtime-forensics` | a tool/process claims success while file/process/network/artifact/postcondition state is missing or causally unclear |
 
-Expert Labs are demand-loaded, default-disabled and require a no-skill/lighter-baseline counterfactual before promotion. They maximize **authorized capability and observability**; they do not bypass provider safety controls, access controls, licensing/DRM or authorization boundaries.
+This directly implements the rule **connected ≠ invokable ≠ effective ≠ verified**.
 
-## AI-specific deep search
+## Explicit-only skills
 
-`executive-research/references/ai-ecosystem-recon.md` adds a dedicated AI research playbook without adding another implicit skill. It covers canonical-name/version reconstruction, repository/change archaeology, plugin/MCP schema and capability surfaces, model×harness differential research, hard-negative skill/eval evidence, security/tool-poisoning research, authorized reverse-engineering escalation and runtime provenance.
+| Skill | Why explicit |
+|---|---|
+| `autonomy-contract` | records authority for effect-bearing delegation; skill text cannot create authority |
+| `persistent-work-ledger` | requires actual filesystem/durable-state primitives |
+| `authorized-reverse-engineering` | specialist analysis must remain intentionally scoped to authorized artifacts |
 
-The rule remains: deeper search must produce a MATERIAL DELTA, not merely more links.
+## High-value combinations
+
+- complex research → `task-goal-intelligence` + `executive-research` + `evidence-watchdog`
+- capability bottleneck → `task-goal-intelligence` + `capability-forensics` + `evidence-watchdog`
+- large MCP/tool surface → `task-goal-intelligence` + `mcp-surface-engineering` + `evidence-watchdog`
+- runtime effect mismatch → `task-goal-intelligence` + `agent-runtime-forensics` + `evidence-watchdog`
+- architecture choice → `task-goal-intelligence` + `plan-arbiter`
+- repeated no-progress route → `task-goal-intelligence` + `convergence-controller` + `evidence-watchdog`
+- cross-session context → `task-goal-intelligence` + `memory-policy`
+- complex multi-stage task → `task-goal-intelligence` + `chief-of-staff-core` + `evidence-watchdog`
+
+## Deep-use rule
+
+A skill activation is not success. For material investigations, the specialist must read its required references and use its mechanism-specific workflow:
+
+- capability-forensics uses the `DECLARED → VISIBLE → AUTHORIZED → LOADABLE → INVOKABLE → EFFECTIVE → VERIFIED` truth ladder and differential probes;
+- MCP surface engineering fingerprints live namespace/schema/entitlement/session state and prefers lazy/dynamic discovery when eager schemas create cost or collisions;
+- runtime forensics reconstructs causal evidence from intent/tool/process/file/network/artifact/postcondition planes;
+- executive research must produce material decision delta, not merely more links.
+
+## Research and world-class patterns
+
+The architecture follows a synthesis rather than one framework copy: constrained candidate selection/hand-off patterns, conditional tool nodes, dynamic tool discovery, semantic routing after eligibility filtering, negative-routing tests, fallback graphs, held-out promotion gates and postcondition verification. External 2026 references remain in `references/2026-baseline.md`.
+
+Default research is adaptive and MATERIAL-DELTA driven. Historic numeric/time/worker thresholds survive only under explicit `STRICT_DEEPLOCK`; they are not a universal definition of depth.
 
 ## Desktop / Codex distribution
 
-The repository contains `.agents/plugins/marketplace.json`, following OpenAI's current GitHub marketplace import shape. The plugin itself is skill-only and declares no MCP server; local tools/runtimes remain owned by the actual host/app.
+The repository contains `.agents/plugins/marketplace.json`. The package is skill-only and does not itself grant filesystem, terminal, MCP server, background daemon, browser-control or other host primitives.
 
-A repository package is not proof of activation. `HOST_LIVE` requires the actual ChatGPT/Codex surface to import/install this exact revision and pass the live probe in `adapters/chatgpt/RUNTIME_PROBE.md`.
-
-## Research depth
-
-Default research is **adaptive**, not quota theater. Another round is justified only by a MATERIAL DELTA: a gate advanced, hypothesis discriminated, new upstream mechanism, independent decision-changing evidence, resolved version/time conflict, counterexample/regression, or a changed feasible action set while preserving constraints.
-
-The historic 600-second / 50-family / 10-domain / 10-worker requirements survive as the explicit `STRICT_DEEPLOCK` profile. They are not used as a universal definition of intelligence or depth.
+`PACKAGED != HOST_LIVE`. An owning ChatGPT/Codex surface must import/sync this exact revision and demonstrate fresh-session discovery, positive implicit routing, hard-negative routing, conditional specialist activation, fallback behavior and postcondition evidence before that surface is called `HOST_LIVE`.
 
 ## Tests and promotion
 
-The package uses RED/GREEN skill TDD plus deterministic routing and behavior gates. Expert Labs add a known-outcome oracle that tests capability-layer diagnosis, MCP drift/poisoning, reverse-engineering authorization boundaries and runtime-effect provenance.
+The package uses deterministic routing, behavior, specialist and composition/fallback regression corpora. A v1.2 promotion requires:
 
-A skill is a folder, not a prompt string. Repairs may change `SKILL.md`, references, scripts and evals together, but promotion requires target + protection + holdout checks and cannot be self-approved.
+- package/metadata/schema validation;
+- primary routing corpus PASS;
+- composition + fallback corpus PASS;
+- Expert Labs known-outcome oracle PASS;
+- simple-task and specialist-noun hard negatives PASS;
+- JSON/JSONL parse PASS;
+- no protected capability or authorization-boundary regression.
+
+A skill is a folder, not a prompt string. Repairs may change `SKILL.md`, references, policy metadata, scripts and evals together; promotion cannot rely on self-report.

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Task Goal Intelligence"
+  short_description: "Recover the real task goal and route to the smallest useful specialist set"
+policy:
+  allow_implicit_invocation: true
