@@ -1,18 +1,22 @@
 {
   "name": "ai-efficiency-operating-system",
-  "version": "1.1.0-rc1",
-  "description": "Goal-first planning, deep research, verification, memory, convergence, capability forensics, MCP surface engineering, authorized reverse engineering, runtime provenance, autonomy and durable-state workflows for complex ChatGPT and Codex tasks.",
+  "version": "1.2.0",
+  "description": "Goal-first semantic skill routing, deep research, conditional capability/MCP/runtime forensics, verification, memory, convergence, authorized reverse engineering, autonomy and durable-state workflows for complex ChatGPT and Codex tasks.",
   "repository": "https://github.com/xq22115/ai-thinking-debate-skills-lab",
   "skills": "./skills/",
   "license": "MIT",
   "keywords": [
+    "task-goal-intelligence",
+    "semantic-routing",
+    "auto-invoke",
     "deep-research",
     "reasoning",
     "verification",
     "capability-forensics",
     "mcp",
-    "reverse-engineering",
+    "dynamic-tool-discovery",
     "runtime-forensics",
+    "reverse-engineering",
     "goal-integrity",
     "long-horizon",
     "chatgpt-desktop",
@@ -22,13 +26,14 @@
     "displayName": "AI Efficiency Operating System",
     "developerName": "xq22115",
     "category": "Productivity",
-    "shortDescription": "Deep research, capability forensics and verified execution",
-    "longDescription": "Eight focused executive skills plus four explicit-only Expert Labs for authorized capability diagnosis, dynamic MCP/tool-surface engineering, authorized software reverse engineering and runtime provenance, adapted to current OpenAI plugin and Agent Skills patterns.",
+    "shortDescription": "Goal-aware auto-routing, deep research and verified execution",
+    "longDescription": "A lightweight task-goal intelligence gate plus six executive implicit skills, three conditionally auto-invoked specialist skills for capability, MCP/tool-surface and runtime-effect diagnosis, and three explicit-only authority/specialist skills. Uses bounded skill bundles, dynamic/demand loading, deterministic regression routing, fallback graphs and postcondition verification rather than treating installed or connected capabilities as proven usable.",
     "capabilities": ["Interactive", "Read"],
     "defaultPrompt": [
-      "Research this deeply, preserve my exact goal, and verify the conclusion.",
-      "Diagnose the actual capability bottleneck before changing the model, prompt, tools, permissions, or environment.",
-      "Compare the best implementation routes and do not claim completion without read-back evidence."
+      "Recover my actual goal, select only the skills and tools that materially help, and verify the result.",
+      "Diagnose whether the bottleneck is the model, harness, tool surface, permission, session, entitlement, environment or runtime before changing the system.",
+      "When many tools or MCP schemas are present, discover and load the smallest relevant capability set instead of inflating context.",
+      "If a route fails, preserve the goal, switch to a materially different fallback, and do not claim completion without read-back evidence."
     ]
   }
 }
