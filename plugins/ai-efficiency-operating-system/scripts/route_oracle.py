@@ -1,57 +1,279 @@
 #!/usr/bin/env python3
+"""Deterministic baseline for semantic auto-invoke routing.
+
+The host may add a learned/semantic reranker after this eligibility layer, but the
+baseline remains deterministic so routing regressions, hard negatives, fallback
+behavior and specialist leakage are measurable in CI.
+"""
+
 import json
 import re
 import sys
 from pathlib import Path
 
-EXPLICIT = {
-    "autonomy-contract", "persistent-work-ledger",
-    "capability-forensics", "mcp-surface-engineering",
-    "authorized-reverse-engineering", "agent-runtime-forensics",
+DEFAULT_IMPLICIT = {
+    "task-goal-intelligence",
+    "chief-of-staff-core",
+    "plan-arbiter",
+    "evidence-watchdog",
+    "executive-research",
+    "memory-policy",
+    "convergence-controller",
 }
+CONDITIONAL_IMPLICIT = {
+    "capability-forensics",
+    "mcp-surface-engineering",
+    "agent-runtime-forensics",
+}
+EXPLICIT_ONLY = {
+    "autonomy-contract",
+    "persistent-work-ledger",
+    "authorized-reverse-engineering",
+}
+ALL_SKILLS = DEFAULT_IMPLICIT | CONDITIONAL_IMPLICIT | EXPLICIT_ONLY
+
+FALLBACKS = {
+    "capability-forensics": ["executive-research", "evidence-watchdog"],
+    "mcp-surface-engineering": ["capability-forensics", "executive-research", "evidence-watchdog"],
+    "agent-runtime-forensics": ["capability-forensics", "evidence-watchdog"],
+    "executive-research": ["task-goal-intelligence", "evidence-watchdog"],
+    "plan-arbiter": ["chief-of-staff-core"],
+    "convergence-controller": ["chief-of-staff-core", "evidence-watchdog"],
+}
+
+PRIORITY = [
+    "agent-runtime-forensics",
+    "mcp-surface-engineering",
+    "capability-forensics",
+    "evidence-watchdog",
+    "convergence-controller",
+    "plan-arbiter",
+    "memory-policy",
+    "executive-research",
+    "chief-of-staff-core",
+    "task-goal-intelligence",
+]
+
+
+def _has(text, phrases):
+    return any(p in text for p in phrases)
+
+
+def _count(text, phrases):
+    return sum(1 for p in phrases if p in text)
+
+
+def _is_simple(text):
+    patterns = [
+        r"^\s*2\s*\+\s*2",
+        r"^\s*\d+\s*[+\-*/]\s*\d+\s*[?？]?\s*$",
+        r"翻成英文",
+        r"translate this",
+        r"改寫這句",
+        r"rewrite this sentence",
+    ]
+    return any(re.search(p, text) for p in patterns)
+
+
+def analyze(prompt):
+    text = " ".join(prompt.lower().split())
+
+    plan_terms = [
+        "方案", "plan", "順序", "sequence", "tradeoff", "trade-off", "哪個路線", "哪個方法",
+        "先查", "規劃", "選架構", "choose architecture", "architecture option", "比較 a/b", "比較 a / b",
+    ]
+    completion_terms = [
+        "已完成", "完成了", "算修好了", "真的 live", "已經生效", "是不是已經生效", "deployed",
+        "installed", "configured", "done", "postcondition", "read-back", "read back", "驗收", "verify",
+    ]
+    memory_terms = [
+        "記住", "永久記憶", "memory", "前一個聊天室", "跨 session", "cross-session", "恢復真正有效",
+        "rehydrat", "stale memory", "先前決策", "previous chat",
+    ]
+    convergence_terms = [
+        "無限循環", "review 已經", "review again", "keep improving", "再試第三次", "同樣的方法", "重複失敗",
+        "一直失敗", "skill 改到變好", "regression", "別停下來", "修到 pass", "fix until pass",
+    ]
+    research_terms = [
+        "研究", "查 ", "查找", "最新", "根因", "root cause", "交叉比對", "證據", "evidence", "深入",
+        "來源", "counterevidence", "版本", "why", "為什麼", "issue", "pr", "commit", "benchmark", "大神",
+    ]
+    complex_terms = [
+        "多階段", "multi-stage", "多個硬限制", "多個工具", "兩個帳號", "複雜任務", "背景一直做",
+        "長流程", "long-horizon", "multi-tool", "多步", "端到端", "end-to-end",
+    ]
+    goal_terms = [
+        "真正目標", "原始目標", "理解任務", "任務目標", "別搞錯目標", "目標漂移", "goal drift",
+        "latent intent", "underlying purpose", "target identity", "歧義", "ambigu", "到底要做什麼",
+        "不要曲解", "成功條件", "驗收條件", "acceptance criteria",
+    ]
+
+    capability_problem_terms = [
+        "能力限制", "capability limit", "capability bottleneck", "卡在哪一層", "卡在哪", "不能用", "用不了",
+        "沒有工具", "工具不見", "missing tool", "permission", "權限", "entitlement", "session", "surface",
+        "同一模型", "same model", "桌面版", "desktop", "web 版", "網頁版", "登入", "帳號", "profile",
+        "plugin", "connector", "model vs", "harness", "為什麼這邊沒有", "why is it unavailable",
+    ]
+    capability_diagnosis_terms = [
+        "為什麼", "why", "診斷", "diagnose", "到底", "差異", "不同", "bottleneck", "限制", "卡",
+        "哪一層", "layer", "能不能", "可不可以", "是否真的", "真正原因",
+    ]
+
+    mcp_terms = [
+        "mcp", "tool surface", "工具面", "tool schema", "schema drift", "dynamic discovery", "tool discovery",
+        "動態工具", "動態載入", "lazy loading", "deferred tool", "namespace collision", "tool poisoning",
+        "context 很肥", "context 太肥", "context window", "100+ tools", "150 個", "很多 tools", "很多工具",
+        "多個 mcp", "tool registry", "工具 registry", "工具清單太多", "schema version",
+    ]
+    mcp_pressure_terms = [
+        "很多", "100+", "150", "動態", "dynamic", "schema", "drift", "context", "collision", "namespace",
+        "poison", "registry", "entitlement", "lazy", "deferred", "discover", "discovery", "版本",
+    ]
+
+    runtime_effect_terms = [
+        "工具說", "tool said", "寫入成功", "write succeeded", "success but", "檔案沒有變", "file did not change",
+        "state 沒變", "state didn't change", "沒有生效", "not effective", "process", "程序", "network", "artifact",
+        "causal chain", "因果鏈", "runtime provenance", "runtime trace", "工具回傳成功", "實際沒變", "postcondition missing",
+    ]
+    runtime_mismatch_pairs = [
+        ("成功", "沒"), ("success", "not"), ("寫入", "沒有變"), ("tool", "state"), ("configured", "not effective"),
+    ]
+
+    signals = {
+        "plan": _count(text, plan_terms),
+        "completion": _count(text, completion_terms),
+        "memory": _count(text, memory_terms),
+        "convergence": _count(text, convergence_terms),
+        "research": _count(text, research_terms),
+        "complex": _count(text, complex_terms),
+        "goal_ambiguity": _count(text, goal_terms),
+        "capability_problem": _count(text, capability_problem_terms),
+        "capability_diagnosis": _count(text, capability_diagnosis_terms),
+        "mcp_surface": _count(text, mcp_terms),
+        "mcp_pressure": _count(text, mcp_pressure_terms),
+        "runtime_effect": _count(text, runtime_effect_terms),
+    }
+    signals["runtime_mismatch"] = int(
+        signals["runtime_effect"] >= 2
+        or any(a in text and b in text for a, b in runtime_mismatch_pairs)
+    )
+    signals["capability_gap"] = int(
+        signals["capability_problem"] >= 2
+        or (signals["capability_problem"] >= 1 and signals["capability_diagnosis"] >= 1)
+    )
+    signals["tool_surface_pressure"] = int(
+        signals["mcp_surface"] >= 2
+        or (signals["mcp_surface"] >= 1 and signals["mcp_pressure"] >= 1)
+    )
+    signals["substantive"] = int(
+        sum(signals[k] for k in [
+            "plan", "completion", "memory", "convergence", "research", "complex", "goal_ambiguity",
+            "capability_problem", "mcp_surface", "runtime_effect"
+        ]) > 0
+    )
+    return text, signals
+
+
+def score_routes(prompt):
+    text, s = analyze(prompt)
+    if _is_simple(text):
+        return {"none": 100}, s
+
+    scores = {name: 0 for name in PRIORITY}
+
+    scores["agent-runtime-forensics"] += 8 * s["runtime_mismatch"] + 2 * s["runtime_effect"]
+    scores["mcp-surface-engineering"] += 8 * s["tool_surface_pressure"] + 2 * s["mcp_surface"]
+    scores["capability-forensics"] += 8 * s["capability_gap"] + 2 * s["capability_problem"]
+    scores["evidence-watchdog"] += 5 * s["completion"]
+    scores["convergence-controller"] += 5 * s["convergence"]
+    scores["plan-arbiter"] += 5 * s["plan"]
+    scores["memory-policy"] += 5 * s["memory"]
+    scores["executive-research"] += 4 * s["research"]
+    scores["chief-of-staff-core"] += 4 * s["complex"]
+    scores["task-goal-intelligence"] += 5 * s["goal_ambiguity"] + 2 * s["complex"]
+
+    # Research is supporting evidence for specialist diagnosis rather than a reason
+    # to suppress the specialist when a more diagnostic signal is present.
+    if s["research"] and s["capability_gap"]:
+        scores["capability-forensics"] += 3
+    if s["research"] and s["tool_surface_pressure"]:
+        scores["mcp-surface-engineering"] += 3
+    if s["research"] and s["runtime_mismatch"]:
+        scores["agent-runtime-forensics"] += 3
+
+    # Generic explanation-only mentions should not wake heavy specialists.
+    if text.strip() in {"mcp 是什麼？", "mcp 是什麼?", "reverse engineering 是什麼？", "reverse engineering 是什麼?", "ghidra 是做什麼的？", "ghidra 是做什麼的?"}:
+        return {"none": 100}, s
+
+    return scores, s
 
 
 def route(prompt, explicit=None, host_capabilities=None):
     caps = set(host_capabilities or [])
-    text = prompt.lower()
     if explicit:
-        if explicit not in EXPLICIT:
+        if explicit not in ALL_SKILLS:
             return "invalid-explicit-skill"
         if explicit == "persistent-work-ledger" and not {"filesystem", "durable_state"}.issubset(caps):
             return "capability-mismatch"
         return explicit
 
-    simple = [r"^\s*2\s*\+\s*2", r"翻成英文", r"translate this", r"改寫這句", r"rewrite this sentence"]
-    if any(re.search(p, text) for p in simple):
+    scores, _ = score_routes(prompt)
+    if "none" in scores:
         return "none"
-
-    convergence = ["無限循環", "review 已經", "review again", "keep improving", "再試第三次", "同樣的方法", "skill 改到變好", "regression"]
-    if any(k in text for k in convergence):
-        return "convergence-controller"
-
-    plan = ["方案", "plan", "順序", "sequence", "tradeoff", "trade-off", "哪個路線", "哪個方法", "先查", "規劃", "選架構", "choose architecture", "architecture option"]
-    if any(k in text for k in plan):
-        return "plan-arbiter"
-
-    completion = ["已完成", "完成了", "算修好了", "真的 live", "已經生效", "是不是已經生效", "deployed", "installed", "configured", "done", "postcondition"]
-    if any(k in text for k in completion):
-        return "evidence-watchdog"
-
-    memory = ["記住", "永久記憶", "memory", "前一個聊天室", "恢復真正有效", "rehydrat", "stale memory"]
-    if any(k in text for k in memory):
-        return "memory-policy"
-
-    # Topic nouns such as MCP, reverse engineering, or capability limits are not
-    # sufficient to trigger heavy research. The user's research intent must be present.
-    research = ["研究", "查 ", "最新", "根因", "root cause", "交叉比對", "證據", "evidence", "深入", "來源", "counterevidence", "版本", "why"]
-    if any(k in text for k in research):
-        return "executive-research"
-
-    complex_terms = ["多階段", "multi-stage", "多個硬限制", "多個工具", "兩個帳號", "複雜任務", "背景一直做"]
-    if any(k in text for k in complex_terms):
-        return "chief-of-staff-core"
-
+    best = max(scores.values()) if scores else 0
+    if best <= 0:
+        return "none"
+    winners = {name for name, score in scores.items() if score == best}
+    for name in PRIORITY:
+        if name in winners:
+            return name
     return "none"
+
+
+def route_bundle(prompt, explicit=None, host_capabilities=None):
+    primary = route(prompt, explicit, host_capabilities)
+    if primary in {"none", "invalid-explicit-skill", "capability-mismatch"}:
+        return [] if primary == "none" else [primary]
+    if explicit:
+        return [primary]
+
+    _, s = analyze(prompt)
+    bundle = []
+    if s["substantive"] and primary != "task-goal-intelligence":
+        bundle.append("task-goal-intelligence")
+    bundle.append(primary)
+
+    needs_verifier = (
+        s["completion"] > 0
+        or s["runtime_mismatch"]
+        or primary in {"capability-forensics", "mcp-surface-engineering", "agent-runtime-forensics", "convergence-controller"}
+        or (primary == "executive-research" and s["complex"] > 0)
+    )
+    if needs_verifier and "evidence-watchdog" not in bundle:
+        bundle.append("evidence-watchdog")
+
+    # One primary phase owner, bounded specialist composition.
+    deduped = []
+    for item in bundle:
+        if item not in deduped:
+            deduped.append(item)
+    return deduped[:3]
+
+
+def fallback_chain(primary):
+    return FALLBACKS.get(primary, [])
+
+
+def decision(prompt, explicit=None, host_capabilities=None):
+    scores, signals = score_routes(prompt)
+    primary = route(prompt, explicit, host_capabilities)
+    return {
+        "primary": primary,
+        "bundle": route_bundle(prompt, explicit, host_capabilities),
+        "fallback": fallback_chain(primary),
+        "signals": signals,
+        "scores": scores,
+    }
 
 
 def main(path):
