@@ -1,9 +1,10 @@
 {
   "schema_version": 1,
-  "profile_id": "goal-fidelity-target-lock-v1",
+  "profile_id": "goal-fidelity-task-understanding-v2",
+  "revision": "2.0",
   "scope": "global-policy-projection",
   "default_enabled": true,
-  "purpose": "Prevent wrong-target execution, late-stage goal drift, and control-plane evasion while keeping implementation routes flexible.",
+  "purpose": "Infer and prove the user's real task goal before execution, prevent semantic drift, and make goal understanding evaluable and optimizable while keeping implementation routes flexible.",
   "goal_contract": {
     "required_fields": [
       "ROOT_GOAL",
@@ -14,6 +15,11 @@
       "TARGET_IDENTITY",
       "ACCEPTANCE_TESTS",
       "UNDERLYING_PURPOSE",
+      "DECISION_CRITICAL_UNKNOWNS",
+      "INTERPRETATION_SET",
+      "ACTION_DIVERGENCE_MAP",
+      "SOURCE_PRIORITY",
+      "COMPLETION_EVIDENCE_PLAN",
       "GOAL_SIGNATURE"
     ],
     "target_identity_dimensions": [
@@ -26,16 +32,106 @@
       "revision_or_version_when_relevant"
     ],
     "route_may_change_without_goal_change": true,
-    "silent_goal_mutation_forbidden": true
+    "silent_goal_mutation_forbidden": true,
+    "fluent_paraphrase_is_not_proof_of_understanding": true
+  },
+  "signal_harvest": {
+    "required_signal_classes": [
+      "exact_wording_and_corrections",
+      "negations_and_rejected_substitutes",
+      "underlying_workflow_purpose",
+      "recent_same_or_near_duplicate_work",
+      "target_identity",
+      "acceptance_evidence",
+      "runtime_or_tool_evidence",
+      "dependency_and_ownership_path",
+      "failure_and_false_positive_patterns",
+      "protected_capabilities"
+    ],
+    "recent_context_is_evidence_not_authority": true,
+    "fresh_direct_evidence_overrides_stale_summary": true
+  },
+  "interpretation_tournament": {
+    "enabled_for_substantive_or_ambiguous_tasks": true,
+    "preferred_candidate_count": {"min": 3, "max": 5},
+    "do_not_manufacture_fake_ambiguity_for_trivial_tasks": true,
+    "candidate_required_fields": [
+      "candidate_root_goal",
+      "supporting_evidence",
+      "disconfirming_evidence",
+      "required_assumptions",
+      "action_if_true",
+      "consequence_if_wrong",
+      "predicted_user_correction_if_wrong",
+      "confidence"
+    ],
+    "independence_requires_consequential_difference": true,
+    "consequential_difference_fields": [
+      "TARGET_IDENTITY",
+      "DESIRED_END_STATE",
+      "PROTECTED_CAPABILITIES",
+      "route_ownership",
+      "ACCEPTANCE_TESTS",
+      "UNDERLYING_PURPOSE"
+    ],
+    "elimination_methods": [
+      "exclusion",
+      "counterfactual",
+      "dependency_trace",
+      "historical_correction",
+      "cross_source_contradiction",
+      "live_runtime_evidence"
+    ],
+    "same_reversible_next_action_allows_progress_without_question": true,
+    "high_impact_action_divergence_becomes_decision_critical_unknown": true
+  },
+  "clarification_gate": {
+    "principle": "maximize_information_gain_per_user_interruption",
+    "ask_only_if_all": [
+      "decision_critical_ambiguity_remains_after_available_evidence",
+      "plausible_interpretations_diverge_on_material_action_or_target",
+      "question_expected_to_sharply_reduce_interpretation_uncertainty",
+      "ambiguity_cannot_be_safely_deferred_while_progressing_reversibly"
+    ],
+    "prefer_tool_or_runtime_evidence_before_user_question": true,
+    "prefer_one_discriminating_question_over_many_low_value_questions": true,
+    "needless_clarification_for_shared_next_action_forbidden": true
+  },
+  "architect_executor_evaluator": {
+    "separation_required_for_complex_tasks": true,
+    "goal_architect_owns": [
+      "interpretation",
+      "goal_contract",
+      "source_weighting",
+      "acceptance_tests",
+      "route_neutral_success_criteria"
+    ],
+    "executor_may_change": [
+      "method",
+      "tool",
+      "layer",
+      "architecture",
+      "decomposition",
+      "sequencing",
+      "implementation_route"
+    ],
+    "executor_may_not_silently_change_protected_goal_fields": true,
+    "evaluator_receives_original_goal_contract_and_raw_evidence": true,
+    "role_labels_do_not_prove_runtime_independence": true
   },
   "primary_gate": {
     "minimum_independent_analyzers": 5,
     "analyzers": [
       "literal_intent",
-      "authority_or_spec",
+      "purpose_value",
       "environment_entity_identity",
       "acceptance_evidence_backward",
-      "reverse_failure"
+      "reverse_failure",
+      "counterfactual",
+      "exclusion",
+      "dependency_path",
+      "historical_correction",
+      "cross_source_contradiction"
     ],
     "required_output_fields": [
       "interpretation",
@@ -51,7 +147,8 @@
       "high_impact_field_disagreement",
       "insufficient_confidence",
       "ambiguous_target_identity",
-      "contradictory_authoritative_evidence"
+      "contradictory_high_signal_evidence",
+      "material_action_divergence"
     ],
     "additional_analyzers": [
       "counterfactual",
@@ -63,14 +160,16 @@
     "maximum_total_required_before_user_question_when_evidence_can_resolve": 10,
     "guessing_on_high_impact_ambiguity_forbidden": true
   },
-  "drift_control": {
+  "semantic_goal_diff": {
     "goal_signature_required": true,
     "checkpoint_triggers": [
       "before_first_material_write_or_external_action",
-      "after_material_route_change",
+      "after_material_route_or_architecture_change",
       "after_two_similar_failures",
       "host_account_repo_workspace_path_or_session_change",
       "context_compaction_summary_handoff_or_branch_merge",
+      "after_new_user_correction",
+      "after_new_decision_changing_evidence",
       "before_release"
     ],
     "protected_fields": [
@@ -79,7 +178,17 @@
       "NEGATIONS",
       "PROTECTED_CAPABILITIES",
       "TARGET_IDENTITY",
-      "ACCEPTANCE_TESTS"
+      "ACCEPTANCE_TESTS",
+      "UNDERLYING_PURPOSE"
+    ],
+    "required_checks": [
+      "root_goal_unchanged_without_evidence",
+      "negation_not_became_deliverable",
+      "protected_capability_not_traded_away",
+      "target_identity_not_shifted",
+      "proxy_not_replacing_end_state",
+      "acceptance_tests_still_valid",
+      "blocker_or_side_problem_not_promoted_to_task"
     ],
     "drift_requires_explicit_evidence": true
   },
@@ -101,7 +210,7 @@
       "route_pivot_is_preferred_over_goal_pivot": true,
       "blocker_may_not_become_root_goal": true,
       "non_progress_actions_do_not_satisfy_stop_or_completion_gates": true,
-      "if_one_route_is_unavailable": "change_method_layer_instrument_or_decomposition_without_lowering_acceptance_tests"
+      "if_one_route_is_unavailable": "change_method_layer_instrument_architecture_or_decomposition_without_lowering_acceptance_tests"
     },
     "multi_agent_contribution_gate": {
       "headcount_alone_never_satisfies_requirement": true,
@@ -112,30 +221,97 @@
       "runtime_independence_must_be_observed_before_claimed": true
     }
   },
-  "branching": {
-    "parallelism_is_optional": true,
-    "branches_must_be_causally_distinct": true,
-    "recommended_branch_roles": [
-      "target_identity",
-      "causal_diagnosis",
-      "alternative_architecture",
-      "adversarial_falsification",
-      "independent_verification"
-    ],
-    "duplicate_hypotheses_do_not_count_as_multiple_agents": true,
-    "merge_requires_goal_contract_reconciliation": true
-  },
   "evidence_mesh": {
-    "default_sources_for_substantive_tasks_when_available": [
-      "GitHub",
-      "Notion"
+    "default_sources_for_substantive_tasks_when_available": ["GitHub", "Notion"],
+    "github_role": "executable_truth_and_implementation_archaeology",
+    "notion_role": "durable_user_specific_context_corrections_and_decision_memory",
+    "practical_source_priority": [
+      "respected_maintainers_researchers_and_engineers",
+      "reproducible_code_benchmark_harnesses_and_raw_methods",
+      "issue_pr_commit_and_discussion_archaeology",
+      "long_term_production_users_and_independent_postmortems",
+      "peer_reviewed_research_or_strong_reproducible_preprints",
+      "cross_project_comparison_and_negative_evidence",
+      "official_docs_for_hard_contract_api_schema_version_facts"
     ],
-    "github_role": "executable_source_of_truth",
-    "notion_role": "durable_cross_repo_context_and_decision_memory",
+    "official_docs_are_not_sole_basis_for_practical_superiority": true,
+    "popularity_is_scale_signal_not_quality_proof": true,
     "start_with_low_cost_relevance_probe": true,
     "deepen_only_on_decision_value": true,
     "connector_use_must_be_observed_not_assumed": true,
     "unavailable_or_irrelevant_connector_must_not_block_unrelated_work": true
+  },
+  "rare_signal_discovery": {
+    "enabled_when_research_heavy_and_decision_relevant": true,
+    "lanes": [
+      "closed_or_rejected_prs",
+      "long_maintainer_issue_threads",
+      "regressions_and_release_diffs",
+      "maintained_forks_with_missing_upstream_fixes",
+      "benchmark_implementation_details",
+      "eval_datasets_and_failure_fixtures",
+      "contributor_overlap_graphs",
+      "paper_to_code_to_issue_citation_chains",
+      "archived_or_abandoned_approaches",
+      "independent_reproductions_disagreeing_with_headline_results"
+    ],
+    "hidden_or_rare_does_not_imply_credible": true,
+    "quality_gate_applies_to_novelty_lane": true
+  },
+  "optimization_loop": {
+    "goal_understanding_is_evaluable_and_optimizable": true,
+    "eval_corpus_priority_cases": [
+      "user_corrected_target",
+      "neighboring_problem_solved_instead",
+      "strong_negations_or_rejected_substitutes",
+      "cross_chat_continuation",
+      "target_identity_error",
+      "over_or_under_clarification",
+      "false_completion",
+      "capability_degraded_to_simplify_task"
+    ],
+    "metrics": [
+      "root_goal_accuracy",
+      "hard_constraint_recall",
+      "negation_recall",
+      "target_identity_precision",
+      "underlying_purpose_fidelity",
+      "clarification_information_gain",
+      "acceptance_test_coverage",
+      "correction_loop_count",
+      "semantic_drift_rate",
+      "false_completion_rate",
+      "protected_capability_regression_rate"
+    ],
+    "candidate_optimization_patterns": [
+      "GEPA_reflective_trajectory_optimization",
+      "MIPROv2_data_aware_instruction_and_demo_optimization",
+      "TextGrad_textual_feedback_optimization_experimental"
+    ],
+    "promotion_requires_holdout_improvement": true,
+    "promotion_forbidden_if_protected_metric_regresses": true,
+    "manual_rule_accretion_is_not_default_when_eval_data_exists": true
+  },
+  "adversarial_misread_test": {
+    "required_for_high_impact_release": true,
+    "attack_classes": [
+      "hidden_substitute_goal",
+      "accidental_capability_tradeoff",
+      "entity_profile_path_confusion",
+      "proxy_optimization",
+      "ignored_negation",
+      "stale_context_overriding_new_correction",
+      "official_or_marketing_overweight",
+      "popularity_bias",
+      "overconfident_inference_when_discriminating_question_needed",
+      "needless_clarification_when_next_action_is_shared"
+    ],
+    "criticism_counts_only_with_concrete_contradiction_missing_evidence_or_discriminating_test": true
+  },
+  "anti_sycophancy": {
+    "leading_user_assumption_is_not_automatically_causal_truth": true,
+    "preserve_desired_end_state_when_correcting_wrong_causal_model": true,
+    "evidence_beats_agreement_on_intermediate_assumptions": true
   },
   "capability_preservation": {
     "obvious_degradation_is_not_default_solution": true,
@@ -145,15 +321,26 @@
   },
   "release_gate": {
     "pass_requires": [
+      "winning_interpretation_evidence_sufficient_for_task_impact",
+      "decision_critical_ambiguity_resolved_or_explicitly_blocked",
       "target_identity_evidenced",
       "all_hard_goal_contract_criteria_satisfied",
       "highest_practical_owning_layer_verified",
       "protected_capabilities_preserved",
-      "final_goal_drift_check_passed",
-      "no_unresolved_high_impact_contradiction",
-      "no_controller_evasion_or_headcount_substitution"
+      "final_semantic_goal_diff_passed",
+      "no_hidden_material_contradiction",
+      "actual_readback_or_test_evidence",
+      "no_neighboring_task_or_proxy_substitution"
     ],
     "self_report_only_cannot_pass": true,
     "unknown_or_unverified_target_cannot_pass": true
-  }
+  },
+  "design_provenance": [
+    "Aider_architect_editor_separation",
+    "DSPy_MIPROv2_and_GEPA_optimization",
+    "GEPA_reflective_Pareto_trajectory_learning",
+    "TextGrad_textual_feedback_optimization",
+    "Promptfoo_adversarial_and_regression_evaluation",
+    "uncertainty_aware_information_gain_clarification_research"
+  ]
 }
