@@ -1,3 +1,5 @@
 interface:
   display_name: "Evidence Watchdog"
   short_description: "Verify state and completion claims"
+policy:
+  allow_implicit_invocation: true
