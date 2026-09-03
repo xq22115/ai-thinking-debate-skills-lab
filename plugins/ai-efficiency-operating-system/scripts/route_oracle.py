@@ -86,6 +86,7 @@ def analyze(prompt):
     plan_terms = [
         "方案", "plan", "順序", "sequence", "tradeoff", "trade-off", "哪個路線", "哪個方法",
         "先查", "規劃", "選架構", "choose architecture", "architecture option", "比較 a/b", "比較 a / b",
+        "比較兩個", "比較兩種", "兩個 architecture", "保留能力",
     ]
     completion_terms = [
         "已完成", "完成了", "算修好了", "真的 live", "已經生效", "是不是已經生效", "deployed",
@@ -97,20 +98,23 @@ def analyze(prompt):
     ]
     convergence_terms = [
         "無限循環", "review 已經", "review again", "keep improving", "再試第三次", "同樣的方法", "重複失敗",
-        "一直失敗", "skill 改到變好", "regression", "別停下來", "修到 pass", "fix until pass",
+        "一直失敗", "失敗三次", "原路重試", "同樣循環", "換 route", "materially different route",
+        "skill 改到變好", "regression", "別停下來", "修到 pass", "fix until pass",
     ]
     research_terms = [
         "研究", "查 ", "查找", "最新", "根因", "root cause", "交叉比對", "證據", "evidence", "深入",
         "來源", "counterevidence", "版本", "why", "為什麼", "issue", "pr", "commit", "benchmark", "大神",
+        "maintainer", "失敗案例",
     ]
     complex_terms = [
         "多階段", "multi-stage", "多個硬限制", "多個工具", "兩個帳號", "複雜任務", "背景一直做",
         "長流程", "long-horizon", "multi-tool", "多步", "端到端", "end-to-end",
     ]
     goal_terms = [
-        "真正目標", "原始目標", "理解任務", "任務目標", "別搞錯目標", "目標漂移", "goal drift",
-        "latent intent", "underlying purpose", "target identity", "歧義", "ambigu", "到底要做什麼",
-        "不要曲解", "成功條件", "驗收條件", "acceptance criteria",
+        "真正目標", "原始目標", "理解任務", "任務目標", "真正任務", "別搞錯目標", "走錯目標",
+        "鎖定目標", "目標漂移", "goal drift", "latent intent", "underlying purpose", "target identity",
+        "歧義", "ambigu", "到底要做什麼", "不要曲解", "成功條件", "驗收條件", "acceptance criteria",
+        "真正要達成", "先理解",
     ]
 
     capability_problem_terms = [
@@ -120,8 +124,9 @@ def analyze(prompt):
         "plugin", "connector", "model vs", "harness", "為什麼這邊沒有", "why is it unavailable",
     ]
     capability_diagnosis_terms = [
-        "為什麼", "why", "診斷", "diagnose", "到底", "差異", "不同", "bottleneck", "限制", "卡",
-        "哪一層", "layer", "能不能", "可不可以", "是否真的", "真正原因",
+        "為什麼", "why", "診斷", "diagnose", "判斷", "到底", "差異", "差別", "不同", "bottleneck",
+        "限制", "卡", "哪一層", "layer", "能不能", "可不可以", "是否真的", "真正原因", "invokable",
+        "effective", "visible", "authorized",
     ]
 
     mcp_terms = [
@@ -141,7 +146,8 @@ def analyze(prompt):
         "causal chain", "因果鏈", "runtime provenance", "runtime trace", "工具回傳成功", "實際沒變", "postcondition missing",
     ]
     runtime_mismatch_pairs = [
-        ("成功", "沒"), ("success", "not"), ("寫入", "沒有變"), ("tool", "state"), ("configured", "not effective"),
+        ("成功", "沒"), ("success", "not"), ("寫入", "沒有變"), ("tool", "state"), ("configured", "state"),
+        ("configured", "not effective"),
     ]
 
     signals = {
@@ -162,9 +168,11 @@ def analyze(prompt):
         signals["runtime_effect"] >= 2
         or any(a in text and b in text for a, b in runtime_mismatch_pairs)
     )
+    # Capability nouns are not enough. Conditional activation requires an actual
+    # diagnostic question/contrast, preventing generic Desktop/plugin research from
+    # being hijacked by capability-forensics.
     signals["capability_gap"] = int(
-        signals["capability_problem"] >= 2
-        or (signals["capability_problem"] >= 1 and signals["capability_diagnosis"] >= 1)
+        signals["capability_problem"] >= 1 and signals["capability_diagnosis"] >= 1
     )
     signals["tool_surface_pressure"] = int(
         signals["mcp_surface"] >= 2
@@ -188,17 +196,21 @@ def score_routes(prompt):
 
     scores["agent-runtime-forensics"] += 8 * s["runtime_mismatch"] + 2 * s["runtime_effect"]
     scores["mcp-surface-engineering"] += 8 * s["tool_surface_pressure"] + 2 * s["mcp_surface"]
-    scores["capability-forensics"] += 8 * s["capability_gap"] + 2 * s["capability_problem"]
+    # Raw capability nouns are weak evidence; the large bonus only applies after
+    # a diagnostic-intent gate.
+    scores["capability-forensics"] += 8 * s["capability_gap"] + s["capability_problem"]
     scores["evidence-watchdog"] += 5 * s["completion"]
-    scores["convergence-controller"] += 5 * s["convergence"]
+    scores["convergence-controller"] += 6 * s["convergence"]
     scores["plan-arbiter"] += 5 * s["plan"]
     scores["memory-policy"] += 5 * s["memory"]
     scores["executive-research"] += 4 * s["research"]
-    scores["chief-of-staff-core"] += 4 * s["complex"]
+    # Complex phase ownership should not be stolen by one incidental word such as
+    # "驗收" or "帳號" in a multi-stage contract.
+    scores["chief-of-staff-core"] += 6 * s["complex"]
     scores["task-goal-intelligence"] += 5 * s["goal_ambiguity"] + 2 * s["complex"]
 
-    # Research is supporting evidence for specialist diagnosis rather than a reason
-    # to suppress the specialist when a more diagnostic signal is present.
+    # Research supports a specialist only after the specialist's discriminating
+    # eligibility signal is present.
     if s["research"] and s["capability_gap"]:
         scores["capability-forensics"] += 3
     if s["research"] and s["tool_surface_pressure"]:
@@ -259,7 +271,6 @@ def route_bundle(prompt, explicit=None, host_capabilities=None):
     if needs_verifier and "evidence-watchdog" not in bundle:
         bundle.append("evidence-watchdog")
 
-    # One primary phase owner, bounded specialist composition.
     deduped = []
     for item in bundle:
         if item not in deduped:
