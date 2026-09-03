@@ -2,4 +2,4 @@ interface:
   display_name: "Agent Runtime Forensics"
   short_description: "Reconstruct model-to-tool-to-runtime causal evidence"
 policy:
-  allow_implicit_invocation: false
+  allow_implicit_invocation: true
