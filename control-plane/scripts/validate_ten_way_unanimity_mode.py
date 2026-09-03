@@ -9,6 +9,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 CONFIG = ROOT / "control-plane/ai-system/configs/ten-way-unanimity-mode.json"
 EXECUTOR = ROOT / "control-plane/scripts/local_agent_executor.py"
 HOST_DOC = ROOT / "plugins/ai-efficiency-operating-system/adapters/chatgpt/HOST_LIVE_10WAY.md"
+RUNTIME_DOC = ROOT / "plugins/ai-efficiency-operating-system/adapters/chatgpt/RUNTIME_PROBE.md"
 
 
 def require(condition: bool, code: str, failures: list[str]) -> None:
@@ -53,15 +54,31 @@ def main() -> int:
     require(host.get("target_surfaces") == ["chatgpt_web", "chatgpt_desktop"], "ten_way_surface_set_drift", failures)
     require(host.get("same_plugin_revision_required") is True, "ten_way_same_revision_not_required", failures)
     require(host.get("plugin_name") == "ai-efficiency-operating-system", "ten_way_plugin_name_drift", failures)
-    require(host.get("plugin_version") == "1.1.0-rc1", "ten_way_plugin_version_drift", failures)
-    require(host.get("repository_merge_commit") == "5c2b940c06c97c3ee48e9cdb8e66617032bb1ad2", "ten_way_plugin_commit_drift", failures)
-    require(host.get("surface_evidence_required_before_agent_pass") is True, "ten_way_surface_evidence_not_required", failures)
+    require(host.get("plugin_version") == "1.2.0", "ten_way_plugin_version_drift", failures)
+    require(host.get("repository_revision_mode") == "observed_exact_installed_revision", "ten_way_revision_mode_drift", failures)
+    require(host.get("static_merge_sha_forbidden") is True, "ten_way_static_sha_not_forbidden", failures)
+    require("repository_merge_commit" not in host, "ten_way_stale_static_commit_present", failures)
+    for key in [
+        "surface_evidence_required_before_agent_pass",
+        "web_and_desktop_both_required",
+        "implicit_routing_required",
+        "conditional_specialist_activation_required",
+        "bounded_composition_required",
+        "fallback_behavior_required",
+        "postcondition_evidence_required",
+    ]:
+        require(host.get(key) is True, f"ten_way_host_requirement_missing:{key}", failures)
     require(host.get("repository_or_ci_success_alone_is_host_live") is False, "ten_way_repo_can_fake_host_live", failures)
-    require(host.get("web_and_desktop_both_required") is True, "ten_way_dual_surface_not_required", failures)
 
     lanes = cfg.get("ten_validation_lanes") or []
     require(len(lanes) == 10, "ten_way_lane_count_drift", failures)
     require(len(set(lanes)) == 10, "ten_way_lane_duplicate", failures)
+    for marker in [
+        "conditional_specialist_implicit_activation_and_explicit_only_non_leakage",
+        "bounded_composition_and_fallback_self_repair",
+        "runtime_postcondition_and_final_unanimity",
+    ]:
+        require(marker in lanes, f"ten_way_lane_missing:{marker}", failures)
 
     release = cfg.get("release") or {}
     required = set(release.get("pass_requires") or [])
@@ -71,7 +88,12 @@ def main() -> int:
         "common_runtime_overlap_proven",
         "chatgpt_web_host_live_evidence",
         "chatgpt_desktop_host_live_evidence",
-        "same_exact_plugin_revision_on_both_surfaces",
+        "same_exact_observed_plugin_revision_on_both_surfaces",
+        "implicit_routing_verified",
+        "conditional_specialist_activation_verified",
+        "bounded_composition_verified",
+        "fallback_self_repair_verified",
+        "postcondition_evidence_verified",
     ]:
         require(item in required, f"ten_way_release_requirement_missing:{item}", failures)
     require(release.get("blocked_or_not_run_must_not_be_relabelled_pass") is True, "ten_way_blocked_can_fake_pass", failures)
@@ -85,14 +107,28 @@ def main() -> int:
         failures.append("ten_way_host_doc_missing")
     else:
         doc = HOST_DOC.read_text(encoding="utf-8")
-        for marker in ["ChatGPT Web", "ChatGPT Desktop", "10/10", "common runtime overlap", "HOST_IMPORT_BLOCKED"]:
-            require(marker in doc, f"ten_way_host_doc_marker_missing:{marker}", failures)
+        for marker in [
+            "ChatGPT Web",
+            "ChatGPT Desktop",
+            "conditional specialist implicit activation",
+            "bounded composition",
+            "fallback/self-repair",
+            "HOST_IMPORT_BLOCKED",
+        ]:
+            require(marker.lower() in doc.lower(), f"ten_way_host_doc_marker_missing:{marker}", failures)
+
+    if not RUNTIME_DOC.is_file():
+        failures.append("ten_way_runtime_doc_missing")
+    else:
+        runtime = RUNTIME_DOC.read_text(encoding="utf-8")
+        for marker in ["1.2.0", "without explicit skill names", "deep-use markers", "fallback/self-repair"]:
+            require(marker.lower() in runtime.lower(), f"ten_way_runtime_doc_marker_missing:{marker}", failures)
 
     if failures:
         for failure in failures:
             print("FAIL", failure)
         return 1
-    print("PASS ten-way-concurrent-unanimity-v1")
+    print("PASS ten-way-concurrent-unanimity-v1 semantic-routing-v1.2")
     return 0
 
 
