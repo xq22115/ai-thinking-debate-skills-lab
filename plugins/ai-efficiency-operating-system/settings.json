@@ -1,16 +1,185 @@
 {
-  "schema": 3,
-  "version": "1.1.0-rc1",
-  "mode": "executive-chief-of-staff",
+  "schema": 4,
+  "version": "1.2.0",
+  "mode": "executive-chief-of-staff-semantic-routing",
   "status": "PACKAGE_CANDIDATE_HOST_LIVE_UNVERIFIED",
-  "default_implicit_skills": ["chief-of-staff-core","plan-arbiter","evidence-watchdog","executive-research","memory-policy","convergence-controller"],
-  "explicit_only_skills": ["autonomy-contract","persistent-work-ledger","capability-forensics","mcp-surface-engineering","authorized-reverse-engineering","agent-runtime-forensics"],
-  "routing": {"one_primary_phase_owner": true,"max_implicit_skills": 3,"precedence": ["user_correction","authority","host_capability","task_phase","semantic_similarity"],"phase_before_keyword_similarity": true,"negative_routing_is_a_regression_gate": true},
-  "expert_labs": {"explicit_only": true,"default_enabled": false,"load_only_on_material_need": true,"no_skill_counterfactual_required_for_promotion": true,"host_version_capability_probe_required": true,"safety_boundary": "Maximize authorized capability and observability; do not bypass provider safety controls, access controls, licensing/DRM, or authorization boundaries.","labs": ["capability-forensics","mcp-surface-engineering","authorized-reverse-engineering","agent-runtime-forensics"]},
-  "task_contract": {"required_fields": ["objective","deliverables","acceptance","constraints","authority_ceiling","stop_conditions"],"freeze_before_effectful_execution": true,"derived_rules_cannot_weaken_source_requirements": true,"reviewer_cannot_add_gate_without_controller": true},
-  "research_profiles": {"ADAPTIVE": {"default": true,"fixed_elapsed_time_is_depth": false,"fixed_source_count_is_quality": false,"round_requires_material_delta": true,"same_class_no_delta_pivot_after": 2,"load_bearing_claim_min_independent_source_families": 2,"high_impact_claim_target_independent_source_families": 3,"search_modes": ["NO_SEARCH","TARGETED","BROAD","FORENSIC"],"preserve_conflicting_evidence": true,"search_snippets_are_discovery_only_when_source_can_be_opened": true},"STRICT_DEEPLOCK": {"explicit_only": true,"purpose": "User-selected acceptance profile for unusually strict long-horizon research; thresholds are acceptance gates, not a universal measure of reasoning quality.","requires_trusted_runtime_telemetry": true,"minimum_productive_active_seconds": 600,"minimum_aggregate_worker_execution_seconds": 600,"minimum_qualified_evidence_families": 50,"minimum_independent_domains": 10,"minimum_distinct_first_pass_worker_identities": 10,"minimum_research_passes": 4,"required_passes": ["broad_scan","gap_expansion","adversarial_counterevidence","cross_validation"],"if_required_telemetry_is_missing": "PROCESS_COMPLETE_MAX","time_padding_forbidden": true,"majority_vote_is_not_completion_proof": true}},
-  "verification": {"postcondition_required_for_stateful_change": true,"command_success_is_not_state_success": true,"executor_self_report_is_not_independent_proof": true,"unknown_is_first_class": true,"state_sensitive_evidence_requires_current_epoch": true},
-  "convergence": {"default_max_review_rounds": 3,"max_new_gates_after_freeze_without_controller": 0,"same_progress_fingerprint_stall_limit": 2,"skill_change_requires_target_protection_holdout": true,"whole_skill_folder_change_allowed": true,"self_approval_forbidden": true},
-  "memory": {"durable_classes": ["decision","preference","commitment","verified_durable_fact"],"raw_external_evidence_is_durable": false,"instruction_like_external_content": "QUARANTINE","transformation_cannot_raise_authority": true},
-  "capability_truth": {"ordinary_skill_does_not_imply_filesystem_hooks": true,"ordinary_skill_does_not_imply_background_polling": true,"ordinary_skill_does_not_imply_subagents": true,"installed_does_not_imply_invokable": true,"plugin_package_does_not_imply_host_live": true}
+  "default_implicit_skills": [
+    "task-goal-intelligence",
+    "chief-of-staff-core",
+    "plan-arbiter",
+    "evidence-watchdog",
+    "executive-research",
+    "memory-policy",
+    "convergence-controller"
+  ],
+  "conditional_implicit_skills": [
+    "capability-forensics",
+    "mcp-surface-engineering",
+    "agent-runtime-forensics"
+  ],
+  "explicit_only_skills": [
+    "autonomy-contract",
+    "persistent-work-ledger",
+    "authorized-reverse-engineering"
+  ],
+  "routing": {
+    "router_version": 2,
+    "one_primary_phase_owner": true,
+    "max_implicit_skills": 3,
+    "precedence": [
+      "user_correction",
+      "authority",
+      "host_capability",
+      "goal_contract",
+      "task_phase",
+      "capability_gap",
+      "runtime_evidence_gap",
+      "tool_surface_pressure",
+      "semantic_similarity"
+    ],
+    "signal_dimensions": [
+      "goal_and_acceptance",
+      "task_phase",
+      "target_identity",
+      "required_capabilities",
+      "host_capabilities",
+      "tool_surface_pressure",
+      "runtime_effect_mismatch",
+      "evidence_gap",
+      "repeated_failure",
+      "freshness_and_version",
+      "cost_and_context_pressure"
+    ],
+    "goal_gate_skill": "task-goal-intelligence",
+    "phase_before_keyword_similarity": true,
+    "deterministic_baseline_required": true,
+    "semantic_rerank_optional_after_eligibility_filter": true,
+    "negative_routing_is_a_regression_gate": true,
+    "route_bundle_enabled": true,
+    "conditional_specialists": {
+      "capability-forensics": "capability appears missing, inconsistent across harness/session/account/surface, or blocked at an unknown layer",
+      "mcp-surface-engineering": "many/changing/conflicting tools, MCP schema drift, dynamic discovery, namespace, entitlement, context-cost, or tool-trust pressure",
+      "agent-runtime-forensics": "a tool/process claims success but the intended file/process/network/artifact/postcondition state is missing or causally unclear"
+    }
+  },
+  "composition": {
+    "complex_research": ["task-goal-intelligence", "executive-research", "evidence-watchdog"],
+    "capability_bottleneck": ["task-goal-intelligence", "capability-forensics", "evidence-watchdog"],
+    "many_tool_or_mcp_surface": ["task-goal-intelligence", "mcp-surface-engineering", "evidence-watchdog"],
+    "runtime_effect_mismatch": ["task-goal-intelligence", "agent-runtime-forensics", "evidence-watchdog"],
+    "architecture_choice": ["task-goal-intelligence", "plan-arbiter"],
+    "repeated_failure": ["task-goal-intelligence", "convergence-controller", "evidence-watchdog"],
+    "cross_session_context": ["task-goal-intelligence", "memory-policy"],
+    "complex_multi_stage": ["task-goal-intelligence", "chief-of-staff-core", "evidence-watchdog"]
+  },
+  "fallback_graph": {
+    "capability-forensics": ["executive-research", "evidence-watchdog"],
+    "mcp-surface-engineering": ["capability-forensics", "executive-research", "evidence-watchdog"],
+    "agent-runtime-forensics": ["capability-forensics", "evidence-watchdog"],
+    "executive-research": ["task-goal-intelligence", "evidence-watchdog"],
+    "plan-arbiter": ["chief-of-staff-core"],
+    "convergence-controller": ["chief-of-staff-core", "evidence-watchdog"]
+  },
+  "fallback_rules": {
+    "route_failure_does_not_change_root_goal": true,
+    "retry_same_route_without_new_evidence_limit": 1,
+    "after_repeated_failure_choose_materially_different_route": true,
+    "unavailable_specialist_must_fall_back_to_goal_advancing_base_skill": true,
+    "host_capability_mismatch_must_be_reported_not_fabricated": true,
+    "completion_requires_postcondition_evidence": true
+  },
+  "expert_labs": {
+    "activation": "conditional-demand-loaded",
+    "default_enabled": false,
+    "implicit_eligible": [
+      "capability-forensics",
+      "mcp-surface-engineering",
+      "agent-runtime-forensics"
+    ],
+    "explicit_only": ["authorized-reverse-engineering"],
+    "load_only_on_material_need": true,
+    "no_skill_counterfactual_required_for_promotion": true,
+    "host_version_capability_probe_required": true,
+    "safety_boundary": "Maximize authorized capability and observability; do not bypass provider safety controls, access controls, licensing/DRM, or authorization boundaries.",
+    "labs": [
+      "capability-forensics",
+      "mcp-surface-engineering",
+      "authorized-reverse-engineering",
+      "agent-runtime-forensics"
+    ]
+  },
+  "task_contract": {
+    "required_fields": [
+      "objective",
+      "deliverables",
+      "acceptance",
+      "constraints",
+      "authority_ceiling",
+      "decision_critical_unknowns",
+      "completion_evidence_plan",
+      "stop_conditions"
+    ],
+    "freeze_before_effectful_execution": true,
+    "derived_rules_cannot_weaken_source_requirements": true,
+    "reviewer_cannot_add_gate_without_controller": true
+  },
+  "research_profiles": {
+    "ADAPTIVE": {
+      "default": true,
+      "fixed_elapsed_time_is_depth": false,
+      "fixed_source_count_is_quality": false,
+      "round_requires_material_delta": true,
+      "same_class_no_delta_pivot_after": 2,
+      "load_bearing_claim_min_independent_source_families": 2,
+      "high_impact_claim_target_independent_source_families": 3,
+      "search_modes": ["NO_SEARCH", "TARGETED", "BROAD", "FORENSIC"],
+      "preserve_conflicting_evidence": true,
+      "search_snippets_are_discovery_only_when_source_can_be_opened": true
+    },
+    "STRICT_DEEPLOCK": {
+      "explicit_only": true,
+      "purpose": "User-selected acceptance profile for unusually strict long-horizon research; thresholds are acceptance gates, not a universal measure of reasoning quality.",
+      "requires_trusted_runtime_telemetry": true,
+      "minimum_productive_active_seconds": 600,
+      "minimum_aggregate_worker_execution_seconds": 600,
+      "minimum_qualified_evidence_families": 50,
+      "minimum_independent_domains": 10,
+      "minimum_distinct_first_pass_worker_identities": 10,
+      "minimum_research_passes": 4,
+      "required_passes": ["broad_scan", "gap_expansion", "adversarial_counterevidence", "cross_validation"],
+      "if_required_telemetry_is_missing": "PROCESS_COMPLETE_MAX",
+      "time_padding_forbidden": true,
+      "majority_vote_is_not_completion_proof": true
+    }
+  },
+  "verification": {
+    "postcondition_required_for_stateful_change": true,
+    "command_success_is_not_state_success": true,
+    "executor_self_report_is_not_independent_proof": true,
+    "unknown_is_first_class": true,
+    "state_sensitive_evidence_requires_current_epoch": true
+  },
+  "convergence": {
+    "default_max_review_rounds": 3,
+    "max_new_gates_after_freeze_without_controller": 0,
+    "same_progress_fingerprint_stall_limit": 2,
+    "skill_change_requires_target_protection_holdout": true,
+    "whole_skill_folder_change_allowed": true,
+    "self_approval_forbidden": true
+  },
+  "memory": {
+    "durable_classes": ["decision", "preference", "commitment", "verified_durable_fact"],
+    "raw_external_evidence_is_durable": false,
+    "instruction_like_external_content": "QUARANTINE",
+    "transformation_cannot_raise_authority": true
+  },
+  "capability_truth": {
+    "ordinary_skill_does_not_imply_filesystem_hooks": true,
+    "ordinary_skill_does_not_imply_background_polling": true,
+    "ordinary_skill_does_not_imply_subagents": true,
+    "installed_does_not_imply_invokable": true,
+    "invokable_does_not_imply_effective": true,
+    "effective_does_not_imply_verified": true,
+    "plugin_package_does_not_imply_host_live": true
+  }
 }
