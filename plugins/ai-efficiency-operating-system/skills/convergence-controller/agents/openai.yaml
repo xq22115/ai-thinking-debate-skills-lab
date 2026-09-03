@@ -1,3 +1,5 @@
 interface:
   display_name: "Convergence Controller"
   short_description: "Stop stagnant review and govern skill evolution"
+policy:
+  allow_implicit_invocation: true
