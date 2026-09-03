@@ -24,7 +24,7 @@ Before material action recover enough of the active Goal Contract to keep routin
 
 A fluent paraphrase is not proof of understanding. A prior assistant claim is not current evidence merely because it was written confidently.
 
-## 1. Event-sourced goal state
+## Semantic delta — event-sourced goal state
 
 Maintain `GOAL_VERSION`, `GOAL_FINGERPRINT`, and a compact `GOAL_EVENT_LOG` rather than repeatedly rewriting one summary until its provenance disappears.
 
@@ -56,7 +56,7 @@ Distinguish:
 
 Before accepting a simpler interpretation, construct the strongest **nearest easier task** and ask whether the proposed action silently turns the real task into that easier substitute. Reject the substitution when it lowers capability, scope, verification, target identity, or acceptance criteria merely because it is easier to complete.
 
-A route boundary or unavailable slice does not rewrite `ROOT_GOAL`. Isolate that slice, preserve the remaining acceptance contract, and continue every separable goal-advancing action that is still executable. Do not replace allowed task progress with generic process, policy, safety, ethics, or tool-compliance discussion when those are not themselves the user's task.
+A route boundary or unavailable slice does not rewrite `ROOT_GOAL`. Treat a **blocked slice** as local to that route or subproblem: isolate it, preserve the remaining acceptance contract, and continue every separable goal-advancing action that is still executable. Do not replace allowed task progress with generic process, policy, safety, ethics, or tool-compliance discussion when those are not themselves the user's task.
 
 ## 3. Interpretation tournament for planning utility
 
@@ -105,7 +105,7 @@ A step is `MATERIAL_PROGRESS` only when it changes task state, acceptance covera
 
 Two consecutive material steps with no acceptance/evidence/state/uncertainty delta force a causally different route, hypothesis, instrument, decomposition, or verifier. Do not lower the target to manufacture progress.
 
-## 6. Active specialist routing
+## Active routing handoffs — specialist routing
 
 Select the smallest specialist set that can advance the current Goal Contract. Do not activate specialists merely because a noun appears.
 
@@ -168,7 +168,7 @@ Useful protected metrics include:
 - false-completion rate;
 - protected-capability regression rate.
 
-## 10. Fallback and recovery
+## Fallback/self-repair — recovery
 
 A failed route is evidence about the route, not permission to change the root goal.
 
