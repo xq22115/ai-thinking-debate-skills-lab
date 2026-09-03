@@ -17,11 +17,27 @@ The runtime-facing design combines a deterministic eligibility baseline with dem
 
 A host may add semantic/learned reranking after the deterministic eligibility filter. The deterministic layer stays canonical for regression tests, hard negatives and rollback.
 
+## Task Goal Intelligence v3
+
+The goal gate is no longer only a first-turn interpretation step. Its v3 runtime projection adds an evidence-bearing state machine around the whole trajectory:
+
+- event-sourced `GOAL_VERSION` / `GOAL_FINGERPRINT` semantics so corrections invalidate dependent work without silently rewriting history;
+- historical completion/config/runtime claims are provisional until rebound to fresh owning-system evidence;
+- anti-loophole / anti-minimization checks prevent imperfect wording, examples, named tools, or a route-local blocker from silently shrinking the desired end state;
+- blocked-slice isolation continues every separable goal-advancing path instead of turning one unavailable route into task abandonment;
+- Goal Capsule recitation re-anchors the current goal after corrections, context compaction/handoff, route changes, repeated failures, target/session changes and before final acceptance;
+- Progress Ledger requires acceptance/evidence/uncertainty/state delta; activity volume by itself is not progress, and repeated no-delta steps force a causally different route;
+- high-scale ecosystem evidence is combined with high-discrimination negative/rare evidence; opaque/anonymous/underground/onion threat-intelligence signals begin as provenance-bearing leads rather than facts;
+- end-to-end user-goal success is judged before step-level polish, failure analysis identifies the first upstream failure, and completion claims are reverse-walked to current owning evidence;
+- real corrections and false-completion traces are promoted into adversarial regression cases and optimizer feedback.
+
+The dedicated `Task Goal Intelligence v3 Gate` reruns the canonical v2/v2.2 invariants before validating v3, so the package cannot pass by deleting prior protections or renaming away routing contracts.
+
 ## Default implicit skills
 
 | Skill | Primary ownership |
 |---|---|
-| `task-goal-intelligence` | goal interpretation, semantic delta, information-gain routing |
+| `task-goal-intelligence` | goal interpretation, semantic delta, historical-claim revalidation, anti-minimization, progress evidence and information-gain routing |
 | `chief-of-staff-core` | complex task contract and phase ownership |
 | `plan-arbiter` | plan/architecture/sequence choice |
 | `evidence-watchdog` | completion claims, postconditions and read-back |
@@ -71,7 +87,7 @@ A skill activation is not success. For material investigations, the specialist m
 
 ## Research and world-class patterns
 
-The architecture follows a synthesis rather than one framework copy: constrained candidate selection/hand-off patterns, conditional tool nodes, dynamic tool discovery, semantic routing after eligibility filtering, negative-routing tests, fallback graphs, held-out promotion gates and postcondition verification. External 2026 references remain in `references/2026-baseline.md`.
+The architecture follows a synthesis rather than one framework copy: constrained candidate selection/hand-off patterns, conditional tool nodes, dynamic tool discovery, semantic routing after eligibility filtering, negative-routing tests, fallback graphs, held-out promotion gates and postcondition verification. Task Goal Intelligence v3 additionally records targeted mechanisms from RECAP/EACL intent-for-planning evaluation, Hamel Husain + Shreya Shankar's end-to-end/error-analysis methodology, DSPy/GEPA textual-feedback optimization, Manus context recitation, Magentic-One task/progress ledgers, and OpenCTI/MISP provenance patterns. External references and limitations are kept in machine-readable source ledgers rather than being treated as authority by name alone.
 
 Default research is adaptive and MATERIAL-DELTA driven. Historic numeric/time/worker thresholds survive only under explicit `STRICT_DEEPLOCK`; they are not a universal definition of depth.
 
@@ -83,13 +99,15 @@ The repository contains `.agents/plugins/marketplace.json`. The package is skill
 
 ## Tests and promotion
 
-The package uses deterministic routing, behavior, specialist and composition/fallback regression corpora. A v1.2 promotion requires:
+The package uses deterministic routing, behavior, specialist and composition/fallback regression corpora plus a dedicated task-goal v3 hard-negative corpus. Promotion requires:
 
 - package/metadata/schema validation;
 - primary routing corpus PASS;
 - composition + fallback corpus PASS;
 - Expert Labs known-outcome oracle PASS;
 - simple-task and specialist-noun hard negatives PASS;
+- Task Goal Intelligence v2/v2.2 invariant preservation PASS;
+- Task Goal Intelligence v3 machine contract / adversarial corpus PASS;
 - JSON/JSONL parse PASS;
 - no protected capability or authorization-boundary regression.
 
