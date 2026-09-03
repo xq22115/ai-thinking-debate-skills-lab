@@ -1,15 +1,9 @@
 #!/usr/bin/env python3
-"""Re-anchor every Antigravity invocation to the user's Goal Contract.
+"""Re-anchor every invocation to Goal Intelligence v2.
 
-The previous version skipped invocation 0 on the assumption that an always-on rule
-had already established the Goal Contract. That assumption is too weak for hostile
-or stale runtime states: the first model turn is exactly where a controller event,
-partial context, or stale summary can be promoted into a replacement mission.
-
-This hook therefore injects a compact progress contract on *every* invocation.
-It does not weaken or bypass controller/safety/permission boundaries; it requires
-the model to keep those boundaries in CURRENT_BLOCKER and spend available effort
-on the highest-value action that still advances the user's actual task.
+Inject a compact task-understanding contract on every invocation so long-running
+work keeps the user's operative goal, current intent belief state, decision-critical
+unknowns, and acceptance evidence aligned even after route changes or context churn.
 """
 
 from __future__ import annotations
@@ -19,23 +13,27 @@ import sys
 
 
 ANCHOR = (
-    "GOAL-LOCK CONTINUATION: Preserve the user's active ROOT_GOAL, GOAL_SIGNATURE, "
-    "hard constraints, protected capabilities, target identity, and acceptance tests. "
-    "A Stop/retry/tool/controller/permission/capability/safety event is CURRENT_BLOCKER only; "
-    "do not promote escaping, exploiting, bypassing, killing, weakening, disabling, or gaming "
-    "that controller into the mission merely to terminate or unlock more authority. "
-    "Before choosing the next action, ask which unresolved Goal Contract field or acceptance "
-    "test this action advances. If none, reject the action as non-progress and choose a materially "
-    "different task-advancing route. Pivot method/layer/instrument/decomposition/evidence path "
-    "before pivoting the goal. Controller analysis is allowed only when diagnosing or modifying "
-    "that controller is itself an authorized task-relevant objective; even then, do not silently "
-    "turn permission or safety boundaries into a bypass objective. Do not substitute agent "
-    "headcount, generic refusal/policy/ethics debate, fabricated runtime independence, or lower "
-    "reasoning effort, agent budget, tests, acceptance criteria, or protected capabilities for "
-    "progress. If one requested portion is unavailable, isolate that portion and continue the "
-    "remaining goal-advancing work instead of abandoning the entire task. Count a subagent only "
-    "when it adds a unique contribution mapped to the Goal Contract. Completion requires "
-    "observable owning-runtime evidence, not self-report."
+    "GOAL-INTELLIGENCE V2: Preserve the active ROOT_GOAL, GOAL_SIGNATURE, hard constraints, "
+    "protected capabilities, target identity, and acceptance tests. Maintain a compact "
+    "INTENT_BELIEF_GRAPH with evidence/confidence, an ASSUMPTION_LEDGER, and up to three "
+    "materially different CANDIDATE_GOALS when ambiguity can change the action. Treat the "
+    "latest user turn as a semantic delta: detect refinement, correction, new constraint, "
+    "target change, priority change, related pivot, or full task switch; mark superseded "
+    "constraints OBSOLETE instead of letting stale requirements survive. Before the next "
+    "material action, choose the observation/tool call with the highest expected decision "
+    "value: impact-if-wrong × uncertainty × discrimination power, adjusted for observation "
+    "cost. Prefer reliable tool/runtime/history evidence over asking the user. If human "
+    "clarification is genuinely necessary, ask the smallest question that best separates "
+    "remaining candidate goals; never ask the user to repeat known information. Map every "
+    "material action to a goal node, hard constraint, decision-critical unknown, or acceptance "
+    "test; otherwise treat it as non-progress. For research-heavy work, diversify retrieval "
+    "across source, config, releases, commits, issues, PRs, tests, benchmarks, papers, maintainer "
+    "design notes, practitioner evidence, postmortems, negative evidence, reverted approaches, "
+    "version conflicts, competing implementations, reverse search, prompt/config archaeology, "
+    "and niche citation/maintainer-linked signals; obscurity alone is not quality. A blocker is "
+    "CURRENT_BLOCKER, not a replacement mission. Change route before changing the user's end "
+    "state. Completion requires observable acceptance evidence and, when practical, an "
+    "independent audit against the original Goal Contract; self-report alone cannot PASS."
 )
 
 
@@ -45,11 +43,7 @@ def main() -> int:
     except (json.JSONDecodeError, OSError):
         pass
 
-    print(json.dumps({
-        "injectSteps": [
-            {"ephemeralMessage": ANCHOR}
-        ]
-    }))
+    print(json.dumps({"injectSteps": [{"ephemeralMessage": ANCHOR}]}))
     return 0
 
 
