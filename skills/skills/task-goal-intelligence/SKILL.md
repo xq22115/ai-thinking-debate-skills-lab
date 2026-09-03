@@ -1,19 +1,17 @@
 ---
 name: task-goal-intelligence
-description: Recover latent user intent, maintain an evidence-backed goal belief graph, select decision-changing observations, retract stale dependent conclusions after corrections, grade mainstream plus rare evidence, and verify completion against the actual desired end state.
+description: Recover latent user intent, maintain an evidence-backed goal belief graph, select decision-changing observations, suppress stale constraints after corrections, search mainstream plus rare evidence, and audit completion against the actual desired end state.
 ---
 
 # Task Goal Intelligence
 
-Version: `2.3.0`
+Version: `2.2.0`
 
 ## Objective
 
-Maximize **goal fidelity × decision information × verified completion**, not visible reasoning volume, tool count, source count, agent count, policy ceremony, or loophole-finding.
+Maximize **goal fidelity × decision information × verified completion**, not visible reasoning volume, tool count, source count, or ceremony.
 
 Activate for substantive tasks where misunderstanding the target, entity, constraints, hidden requirements, prior context, or completion condition could materially change the result. Escalate for ambiguous, long-horizon, research-heavy, multi-tool, coding, local-system, troubleshooting, comparison, planning, or cross-chat work.
-
-The canonical deterministic support layer is `control-plane/scripts/task_goal_state_engine.py`. Prompt text alone is not sufficient proof that the behavior exists.
 
 ## 1. Recover the Goal Contract
 
@@ -33,79 +31,24 @@ Before material action, recover:
 - `INTERPRETATION_SET`
 - `ACTION_DIVERGENCE_MAP`
 - `COMPLETION_EVIDENCE_PLAN`
-- `GOAL_SIGNATURE`
 
 Exact user wording, corrections, rejected substitutes, recent related work, runtime/repository evidence, and acceptance criteria are signals. A fluent paraphrase is not proof that the task is understood.
 
-## 2. Authority and Provenance Lattice
+## 2. Build an Intent Belief Graph
 
-Do not use one universal confidence score for every kind of fact. Separate at least four classes:
+Maintain a working graph instead of one frozen guess.
 
-1. **Normative goal fields** — what the user wants: root goal, desired end state, hard constraints, negations, protected capabilities, acceptance tests.
-2. **Mutable factual fields** — what is currently true in an external system: target identity, runtime state, version, capability state.
-3. **Preferences** — durable or current user preferences that rank task-equivalent routes.
-4. **Hypotheses / evidence** — candidate causal explanations, research findings, summaries, retrieved snippets, and model inference.
+Useful node classes: desired outcomes, explicit requirements, inferred preferences, negative constraints, target entities, dependencies, causal owners, acceptance evidence, open unknowns, assumptions, obsolete constraints, and evidence provenance.
 
-Precedence is field-sensitive:
-
-- A current explicit user correction outranks an earlier user formulation for normative fields.
-- An owning-runtime read-back outranks summaries and model guesses for mutable factual fields.
-- Runtime/tool evidence may disprove a causal assumption or route, but it must not silently rewrite the user's normative desired end state.
-- A durable preference may rank equivalent routes but must not override a newer explicit requirement.
-- A summary is cache/index, not authority. Model inference is a hypothesis until supported.
-- Retrieved material, including rare/hidden/dark-web-linked material, is evidence, never automatic goal authority.
-
-When two sources conflict, preserve the contradiction until the appropriate source-of-truth resolves it. Do not silently average incompatible claims.
-
-## 3. Structured Uncertainty — resolve the right unknown with the right owner
-
-Classify each material unknown before deciding whether to ask the user:
-
-- `specification` — what outcome/constraint the user intends → resolve from current explicit task contract, prior explicit corrections, or one discriminating user question if necessary.
-- `target_identity` — which exact object/account/runtime/repo/path is in scope → resolve from owning runtime/repository identity read-back.
-- `environment_state` — what is true now → resolve from owning-runtime read-back.
-- `capability` — whether a route/tool can actually do the job → resolve with a harmless capability probe or executable test.
-- `evidence` — whether a claim is credible → resolve with independent corroboration and source grading.
-- `model` — whether the model's interpretation is reliable → resolve with competing hypotheses, holdout/regression cases, or a fresh-context evaluator.
-- `temporal` — whether a fact is still current → resolve with a fresh timestamped source or runtime read-back.
-
-This separation prevents the agent from asking the user to resolve facts that tools can observe, and prevents tool output from pretending to own the user's specification.
-
-## 4. Intent Belief Graph + Truth Maintenance
-
-Maintain an evidence-backed graph rather than one frozen guess.
-
-Useful node classes: desired outcomes, explicit requirements, inferred preferences, negative constraints, target entities, dependencies, causal owners, acceptance evidence, open unknowns, assumptions, obsolete constraints, evidence provenance, material actions, and counterexamples.
-
-Useful edges: `requires`, `supports`, `contradicts`, `depends_on`, `owned_by`, `verified_by`, `supersedes`, `derived_from`, and `invalidated_by`.
+Useful edges: `requires`, `supports`, `contradicts`, `depends_on`, `owned_by`, `verified_by`, `supersedes`, and `derived_from`.
 
 Inferred nodes require confidence and provenance. Low-confidence hidden intent may guide retrieval but must not silently become a hard requirement.
 
-### Assumption-based invalidation
+## 3. Interpretation Tournament
 
-Treat conclusions as depending on explicit support sets. When a premise is overridden, retracted, or disproved:
+When genuine ambiguity can change the action, keep 3–5 materially different candidate interpretations. Each candidate should record supporting evidence, disconfirming evidence, required assumptions, action if true, consequence if wrong, predicted user correction if wrong, and confidence.
 
-1. mark the replaced premise `OBSOLETE`;
-2. invalidate downstream conclusions whose justification depends on it;
-3. preserve unrelated evidence and constraints;
-4. recompute only the affected subgraph;
-5. resume from the nearest still-valid state.
-
-This is a truth-maintenance rule: correction is not a prose patch. Acknowledgement or apology is not task progress.
-
-## 5. Interpretation Tournament + Analysis of Competing Hypotheses
-
-When genuine ambiguity can change the action, keep 3–5 materially different candidate interpretations. Each candidate records supporting evidence, disconfirming evidence, required assumptions, action if true, consequence if wrong, predicted user correction if wrong, and confidence.
-
-Candidates count as independent only when they differ on a consequential field such as target identity, end state, protected capability, causal owner, acceptance test, or underlying purpose. Cosmetic rephrasings are one hypothesis.
-
-Use an ACH-style evidence matrix for high-impact ambiguity:
-
-- score how each evidence item is inconsistent with each hypothesis;
-- weight strong disconfirmation more heavily than a pile of weak confirming anecdotes;
-- explicitly record neutral/unknown evidence instead of forcing every item to support a side;
-- prefer the hypothesis with the least strong contradictory evidence, then use support as a tie-breaker;
-- formulate the strongest opposite hypothesis and search for evidence that would make it true.
+Candidates count as independent only when they differ on a consequential field such as target identity, end state, protected capability, causal owner, acceptance test, or underlying purpose. If all plausible candidates share the same reversible next action, continue without needless clarification.
 
 ### Contrastive Consistency Probe
 
@@ -115,7 +58,26 @@ Do not decide ambiguity from wording alone. For the strongest competing interpre
 - If they diverge on target identity, irreversible action, protected capability, deliverable, source-of-truth, or acceptance test, promote that field to `DECISION_CRITICAL_UNKNOWNS`.
 - Prefer an observation that directly discriminates between the candidates instead of collecting more generic background.
 
-## 6. Decision-Value Router — Clarify or Commit
+This is the practical equivalent of testing whether multiple plausible requirement interpretations produce inconsistent downstream solutions.
+
+## 4. Ten-Lens Target Lock
+
+Use materially different lenses:
+
+1. literal intent;
+2. purpose/value;
+3. environment/entity identity;
+4. acceptance evidence backward;
+5. reverse/failure model;
+6. counterfactual;
+7. exclusion of neighboring targets;
+8. dependency/ownership path;
+9. historical corrections;
+10. cross-source contradiction search.
+
+Do not count cosmetic rephrasings as independent analysis.
+
+## 5. Decision-Value Router — Clarify or Commit
 
 For each unresolved fact, estimate whether obtaining more information can actually change the decision.
 
@@ -132,7 +94,7 @@ Where:
 - `INDEPENDENCE` = how much non-correlated information it adds;
 - `TOTAL_COST` = user interruption + latency + tool/context cost + redundancy.
 
-This implements the practical lesson from Value / Expected Value of Information and structured uncertainty: ask only when the answer can materially change what should happen next.
+Use this to select the next search, tool call, inspection, test, read-back, or clarification.
 
 Rules:
 
@@ -140,10 +102,11 @@ Rules:
 - clarification can happen at any stage, not only before work begins;
 - never ask the user to repeat information already available;
 - if human clarification is required, ask the smallest discriminating question;
+- ask only when the unresolved field can materially change the task and tool/context evidence cannot resolve it efficiently;
 - when Net Information Value is not positive enough to change a material decision, commit to the best-supported interpretation and continue;
 - stop investigating an unknown when it can no longer change the plan or acceptance verdict.
 
-## 7. Semantic Delta, Correction Interrupt, and Causal Rollback
+## 6. Semantic Delta, Correction Interrupt, and Stale-Constraint Suppression
 
 On each substantive user turn classify the semantic delta as one or more of:
 
@@ -176,26 +139,11 @@ When the user semantically says “not this”, “wrong direction”, “change
 5. recompute acceptance tests and the next discriminating action;
 6. resume from the nearest still-valid state instead of defending or patching the wrong route.
 
-Mark superseded requirements `OBSOLETE`. Earlier context must not silently override a newer correction. Examples, brainstormed routes, named tools, and retrieved content do not become hard constraints unless the user makes them requirements.
+Mark superseded requirements `OBSOLETE`. Earlier context must not silently override a newer correction. Examples, brainstormed routes, and named tools do not become hard constraints unless the user makes them requirements. Acknowledgement or apology is not task progress.
 
-## 8. Counterexample-Guided Goal Refinement
+## 7. Deep / Long-Tail Evidence Mesh
 
-Treat a failed acceptance test or direct user correction as a counterexample to the current interpretation/route, not as a reason to weaken the acceptance test.
-
-On a counterexample:
-
-1. keep the root goal unless the user changed it;
-2. mark the failed criterion `UNSATISFIED`;
-3. invalidate route assumptions that claimed the criterion would pass;
-4. identify the smallest assumption or abstraction that explains the mismatch;
-5. refine that part of the goal/route model;
-6. rerun the discriminating test.
-
-Do not “fix” a counterexample by deleting the feature, shrinking required workload, lowering reasoning effort, or redefining success unless the user explicitly changes the task.
-
-## 9. Deep / Long-Tail Evidence Mesh
-
-For research-heavy tasks, use materially distinct retrieval/verification lanes when they can change the decision:
+For research-heavy tasks, target 20+ **materially distinct** retrieval/verification lanes when they can change the decision:
 
 - canonical spec;
 - repository source;
@@ -226,85 +174,59 @@ Twenty keyword variants are not twenty lanes. Evidence quality dominates raw cou
 
 ### Semantic-Neighbor Expansion
 
-When the user does not know the specialist vocabulary, expand into adjacent expert concepts such as requirements elicitation, intent disambiguation, active clarification, Value / Expected Value of Information, structured uncertainty, task solvability, plan selection, constraint propagation, acceptance testing, context engineering, trajectory evaluation, truth maintenance, Analysis of Competing Hypotheses, metamorphic testing, counterexample-guided refinement, requirements traceability, and specification mining.
+When the user does not know the specialist vocabulary, expand the search into adjacent expert concepts that may expose better methods. Useful seed families include:
 
-Search these as alternate conceptual neighborhoods, not decorative synonyms. Keep only results that can change a live interpretation, route, mechanism, or acceptance proof.
+- requirements elicitation;
+- intent disambiguation;
+- active clarification;
+- Value / Expected Value of Information;
+- structured uncertainty;
+- task solvability;
+- plan selection;
+- constraint propagation;
+- acceptance testing;
+- context engineering;
+- trajectory evaluation;
+- specification mining.
 
-### Rare / Hidden / Dark-web-linked evidence
+Search these as alternate conceptual neighborhoods, not as decorative synonyms. Keep only results that can change a live interpretation, route, mechanism, or acceptance proof.
 
-Use a two-axis intelligence grading model:
+### Rare / Hidden Signal Rule
 
-- **source reliability** — track record/capability of the source;
-- **information credibility** — how well this specific claim is corroborated.
+Rare, hidden, obscure, or underlinked evidence earns extra discovery value only if it resolves a contradiction, changes candidate-goal ranking, exposes an undocumented mechanism, or reveals a failure mode. Obscurity itself is not credibility.
 
-Rare/high-discrimination/semantic-neighbor evidence is valuable for discovering hypotheses and undocumented failure modes. Rare, hidden, obscure, dark-web-linked, leak-derived, anonymous, or otherwise under-verified material starts as low-authority hypothesis input unless independently corroborated. It must not directly mutate normative goal fields.
+For the leading conclusion, actively formulate the strongest opposite hypothesis and search for evidence that would make it true. A conclusion that survives targeted contradiction search is stronger than one supported only by confirming sources.
 
-Corroboration may raise evidentiary weight, but external evidence still does not become authority to rewrite what the user asked for. This prevents evidence laundering: several derivative copies of one claim are not independent corroboration.
-
-## 10. Source Weighting
+## 8. Source Weighting
 
 For practical superiority, reliability, advanced workflows, and implementation quality, prioritize:
 
 1. reproducible runtime/executable evidence tied to the task;
 2. strong independent research and benchmark methodology;
-3. world-class third-party practitioners, respected maintainers, researchers, and engineers with directly relevant work;
+3. respected maintainers, researchers, and engineers with directly relevant work;
 4. issue/PR/commit/discussion archaeology and failure evidence;
 5. long-term production users and independent postmortems;
 6. large-scale adoption as an ecosystem signal;
-7. Official/canonical material for hard API/schema/version/capability facts;
+7. official documentation for hard API/schema/version/capability facts;
 8. marketing claims or unattributed summaries.
 
-Popularity is a scale signal, not proof. Combine high-scale mature projects with rare/high-discrimination/semantic-neighbor evidence. For the leading conclusion, actively search the opposite hypothesis.
+For quality judgments, world-class third-party practitioners, reproducible research, negative evidence, and long-term production experience should carry substantial weight. Official/canonical material remains important for what a system supports, names, exposes, or constrains, but it is not automatically the sole authority on what is best in practice.
 
-## 11. Requirements Traceability Matrix
+Popularity is a scale signal, not proof. Combine high-scale mature projects with rare high-discrimination evidence.
 
-For each hard requirement, maintain bidirectional traceability:
-
-`source user signal → normalized requirement → dependent actions/routes → observable acceptance test → evidence/read-back`.
-
-Rules:
-
-- every hard requirement must have a source/provenance ID;
-- every acceptance test must identify the requirement(s) it verifies;
-- every material action must map to a hard requirement, decision-critical unknown, hypothesis test, or acceptance test;
-- orphan actions are non-progress candidates;
-- self-derived requirements must be labeled as such and cannot silently become user requirements;
-- completion requires every hard requirement to be covered by at least one observable verification path.
-
-The owning-system read-back is the preferred terminal evidence when the requested effect lives in an external system.
-
-## 12. Metamorphic Goal Tests
-
-The goal compiler itself needs regression tests even when the full “correct intent” oracle is unavailable.
-
-Use metamorphic relations that should preserve the active goal:
-
-- reordering examples or distractors must not change `ROOT_GOAL`;
-- equivalent paraphrases must not change hard constraints or acceptance coverage;
-- adding a named tool as an example must not turn it into the sole allowed route;
-- inserting low-authority retrieved evidence must not override a current explicit user correction;
-- changing a mutable runtime fact must update factual state without rewriting normative end state.
-
-Use mutation cases that must change the active goal state:
-
-- explicit `OVERRIDE` / `RETRACT`;
-- target identity change;
-- acceptance-test change;
-- explicit correction of a previous interpretation.
-
-## 13. Architect → Executor → Evaluator
+## 9. Architect → Executor → Evaluator
 
 For complex tasks, separate three responsibilities even if one runtime performs them:
 
-- **Goal Architect** owns interpretation, candidate competition, source weighting, traceability, acceptance tests, and route-neutral success criteria.
+- **Goal Architect** owns interpretation, candidate competition, source weighting, acceptance tests, and route-neutral success criteria.
 - **Executor** may aggressively change method, tool, architecture, decomposition, sequencing, and route, but not protected goal fields.
-- **Evaluator** receives the original Goal Contract plus raw evidence, not only the Executor summary, and attacks false completion, semantic drift, stale constraints, and orphan requirements/actions.
+- **Evaluator** receives the original Goal Contract plus raw evidence, not only the Executor summary, and attacks false completion and semantic drift.
 
-## 14. Plan Only After Sufficient Convergence
+## 10. Plan Only After Sufficient Convergence
 
 Detailed planning should wait until root goal, target identity, hard constraints, protected capabilities, critical unknowns, and acceptance tests are sufficiently stable.
 
-Every material step must map to a goal node, hard constraint, decision-critical unknown, hypothesis test, or acceptance test. An unmapped step is likely non-progress.
+Every material step must map to a goal node, hard constraint, decision-critical unknown, or acceptance test. An unmapped step is likely non-progress.
 
 ### Anti-Neighbor-Task Gate
 
@@ -317,55 +239,40 @@ Common substitutions that must not pass:
 - finding a repository instead of reproducing the requested capability;
 - making a test green by reducing required scope, workload, features, or acceptance criteria;
 - returning more sources instead of resolving the decision the research was meant to support;
-- discussing process/policy/tool compliance instead of advancing the task state;
+- discussing process/policy/tool compliance instead of advancing the allowed portion of the task;
 - creating an artifact instead of verifying the requested effect in the owning system.
 
-## 15. Completion Audit
+## 11. Completion Audit
 
 Before `PASS`, verify:
 
 - winning interpretation has sufficient evidence;
 - decision-critical ambiguity is resolved or explicitly blocked;
 - target identity is evidenced;
-- all hard requirements have source traceability and are satisfied;
+- all hard requirements are satisfied;
 - acceptance evidence comes from actual read-back/tests;
 - protected capabilities remain intact;
 - final semantic goal diff passes;
 - no stale constraint survived a correction;
-- no easier neighboring task or proxy is being presented as completion;
-- no low-authority evidence silently rewrote normative goal fields;
-- no failed acceptance counterexample remains unresolved;
-- traceability audit has no orphan hard requirements or material actions.
+- no easier neighboring task or proxy is being presented as completion.
 
 Self-report alone cannot pass. Hard requirements have veto power over aggregate scores.
 
-## 16. Optimization and Behavioral Evaluation Loop
+## 12. Optimization Loop
 
-Build evaluation cases from real misreads, user corrections, neighboring-task substitutions, target-identity errors, over/under clarification, stale constraints, false completion, capability regressions, source-authority confusion, and incomplete downstream invalidation.
+Build evaluation cases from real misreads, user corrections, neighboring-task substitutions, target-identity errors, over/under clarification, stale constraints, false completion, and capability regressions.
 
-Track:
+Track root-goal accuracy, hard-constraint/negation recall, target-identity precision, purpose fidelity, clarification information gain, correction loops, drift, stale-constraint violations, acceptance coverage, false completion, and protected-capability regressions.
 
-- root-goal accuracy;
-- hard-constraint/negation recall;
-- target-identity precision;
-- purpose fidelity;
-- clarification information gain;
-- correction-loop count;
-- semantic drift;
-- stale-constraint violations;
-- acceptance coverage;
-- false completion;
-- protected-capability regressions;
+Add decision-quality metrics for v2.2:
+
 - unnecessary clarification rate;
 - missed decision-changing ambiguity rate;
 - correction rollback completeness;
 - neighboring-task substitution rate;
-- decision-changing evidence yield per search/tool call;
-- source-authority violation rate;
-- orphan requirement/action rate;
-- counterexample recovery rate.
+- decision-changing evidence yield per search/tool call.
 
-Use UserIntentBench-style latent/shifting-intent trajectories where practical, but also keep deterministic offline behavioral tests so CI does not depend on one model judge. Promote policy changes only when representative holdouts improve without protected-metric regressions.
+Promote policy changes only when they improve representative holdouts without regressing protected metrics. Prefer optimizer-style iteration over endless manual rule accretion when enough eval data exists.
 
 ## User-Specific Operating Bias
 
@@ -374,12 +281,13 @@ For this user's substantive tasks:
 - recover recent related work before creating duplicates;
 - favor concise visible output but deep evidence gathering;
 - resolve from available context/connectors/runtime evidence before asking for information already known;
-- prioritize completion of the actual task over compliance narration, tool-count theater, source-count theater, or loophole hunting;
-- treat explicit corrections as execution interrupts and invalidate affected downstream conclusions rather than defending the old route;
+- probe GitHub and Notion by default when relevant and available;
+- use Hugging Face/papers/datasets for behavior/benchmark evidence when available, but never fabricate connector success;
+- prioritize world-class practitioners, maintainers, researchers, real issues/PRs, postmortems, regressions, failure cases, and negative evidence over marketing summaries;
+- deliberately search both high-scale/common practice and rare/high-discrimination/semantic-neighbor techniques;
 - preserve requested capability and operating envelope instead of solving by silently deleting functionality or reducing scope;
 - a failed route changes the method, not the root goal;
-- world-class maintainers/researchers/practitioners, real issue/PR archaeology, long-term production evidence, negative evidence, and rare high-discrimination findings should materially influence route selection when relevant;
-- external evidence may correct causal assumptions, but it does not get to rewrite the user's desired end state by itself;
+- repeated dissatisfaction or an explicit correction is evidence that an earlier target assumption may be wrong: invalidate affected downstream work and restart from the Goal Contract rather than patching the same interpretation;
 - tool usage, agent count, compliance prose, research volume, and a file merely existing do not count as task progress unless they causally change the task state or confidence;
 - mutation/fixed/enabled claims require owning-system read-back when that read-back is available.
 
@@ -388,9 +296,9 @@ For this user's substantive tasks:
 Expose useful state, not hidden chain-of-thought:
 
 - original target;
-- material interpretation/correction that changed the plan;
+- material interpretation or correction;
 - what was actually completed;
-- strongest evidence and source class;
+- strongest evidence;
 - acceptance status;
 - unresolved blocker/uncertainty;
 - one non-obvious finding when it materially changes the result.
@@ -399,16 +307,15 @@ Expose useful state, not hidden chain-of-thought:
 
 - paraphrase once and call it understanding;
 - lock the first plausible interpretation when material alternatives exist;
-- use a single confidence number across user intent, runtime facts, and external evidence;
-- let a stale summary override a current correction;
-- let tool/runtime facts silently rewrite normative desired end state;
-- keep dependent conclusions alive after their premise was corrected;
-- ask the user about environment/capability facts that a tool can directly test;
+- plan before target/entity convergence;
+- assume inferred intent as fact;
+- keep obsolete constraints active after correction;
 - patch downstream work after a correction without invalidating dependent assumptions;
 - ask broad clarification when a discriminating tool/query can resolve it;
+- ask the user to repeat known context;
 - collect information that cannot change the decision or acceptance verdict;
-- treat derivative copies of one rare claim as independent corroboration;
-- equate stars, popularity, citations, darkness/obscurity, or confidence with truth;
-- ignore negative evidence, the strongest opposite hypothesis, or reverted approaches;
-- declare success from agent self-report or marker-only validation;
+- count repeated keyword searches as independent methods;
+- equate stars, popularity, citations, or obscurity with truth;
+- ignore negative evidence, opposite hypotheses, or reverted approaches;
+- declare success from agent self-report;
 - solve the wrong problem perfectly.

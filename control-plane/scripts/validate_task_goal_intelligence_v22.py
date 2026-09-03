@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate Task Goal Intelligence v2.2 invariants, including compatible v2.3 supersets."""
+"""Validate Task Goal Intelligence v2.2 decision-value and correction invariants."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from pathlib import Path
 
 
 REQUIRED_SKILL_MARKERS = {
+    "Version: `2.2.0`",
     "Contrastive Consistency Probe",
     "NET_INFORMATION_VALUE",
     "P_CHANGE",
@@ -59,9 +60,6 @@ def main() -> int:
     skill = skill_path.read_text(encoding="utf-8")
     config = json.loads(config_path.read_text(encoding="utf-8"))
 
-    if not any(version in skill for version in ("Version: `2.2.0`", "Version: `2.3.0`")):
-        errors.append("skill version must preserve v2.2 invariants or be the v2.3 compatible superset")
-
     for marker in sorted(REQUIRED_SKILL_MARKERS):
         if marker.lower() not in skill.lower():
             errors.append(f"skill marker missing: {marker}")
@@ -107,7 +105,7 @@ def main() -> int:
         if required not in release:
             errors.append(f"release gate missing: {required}")
 
-    # The v2.2 evidence hierarchy remains a protected compatibility surface in v2.3.
+    # The v2.2 skill must keep the practical evidence hierarchy explicit.
     for phrase in (
         "world-class third-party practitioners",
         "Official/canonical material",
