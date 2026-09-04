@@ -143,6 +143,8 @@ def main() -> int:
     surfaces = set(lock.get("openclaw", {}).get("surfaces") or [])
     if "docs/tools/lobster.md" not in surfaces:
         errors.append("Lobster upstream surface is not pinned")
+    if "src/config/schema.help.runtime.ts" not in surfaces:
+        errors.append("absolute tool-policy source is not pinned")
 
     rows = [
         json.loads(line)
@@ -184,7 +186,10 @@ def main() -> int:
         "--expect-current-absent",
         "numeric_floor",
         "skills.load.extraDirs",
-        "tools.alsoAllow",
+        "ensure_tools_allowed",
+        "allow_path",
+        "also_allow_path",
+        "agents.entries.{args.agent}.tools",
         "lobster",
         "config\", \"validate",
         "CONFIG_BACKUP",
