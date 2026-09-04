@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "adapter": "openclaw-native",
+  "adapter_version": "0.1.0",
+  "checked_at": "2026-09-04",
+  "openclaw": {
+    "repository": "openclaw/openclaw",
+    "branch": "main",
+    "commit": "d84cdc5c03d378c0f50db1b0abb17537f390b01c",
+    "surfaces": [
+      "docs/tools/self-learning.md",
+      "docs/tools/creating-skills.md",
+      "docs/tools/skills-config.md",
+      "docs/tools/subagents.md",
+      "docs/tools/swarm.md",
+      "docs/concepts/parallel-specialist-lanes.md",
+      "docs/cli/config.md",
+      "docs/cli/skills.md"
+    ]
+  },
+  "adopted_contracts": [
+    "SKILL.md folder skills and loading precedence",
+    "Skill Workshop proposal/scan/apply/rollback lifecycle",
+    "autonomous learning off/propose/auto",
+    "isolated/fork subagent context semantics",
+    "parent review of child completion evidence",
+    "experimental opt-in Swarm collectors and bounded fan-out",
+    "config get/set/patch/validate with conditional writes",
+    "skill prompt/loading limits and agent visibility boundaries"
+  ],
+  "status": "SOURCE_LOCKED_PACKAGE_NOT_HOST_LIVE"
+}
