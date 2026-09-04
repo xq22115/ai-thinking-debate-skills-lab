@@ -111,6 +111,18 @@
       "load_mode": "substantive_task_before_material_action"
     },
     {
+      "id": "adversarial-deliberation-council",
+      "path": "skills/skills/adversarial-deliberation-council/SKILL.md",
+      "semantic_owner": "adversarial_deliberation_orchestration",
+      "load_mode": "complex_research_architecture_cross_system_or_repeated_failure"
+    },
+    {
+      "id": "adversarial-deliberation-council-plugin-projection",
+      "path": "plugins/ai-efficiency-operating-system/skills/adversarial-deliberation-council/SKILL.md",
+      "semantic_owner": "adversarial_deliberation_auto_invoke_projection",
+      "load_mode": "plugin_runtime_auto_invoke_for_complex_or_contested_tasks"
+    },
+    {
       "id": "continuous-thinking-quality",
       "path": "docs/CONTINUOUS_THINKING_QUALITY_OS.md",
       "semantic_owner": "reasoning_quality",
