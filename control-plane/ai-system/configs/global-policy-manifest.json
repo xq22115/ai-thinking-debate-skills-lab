@@ -1,1 +1,278 @@
-{"schema_version":1,"profile_id":"global-policy-durability-v1","canonical_repository":"xq22115/ai-thinking-debate-skills-lab","objective":"keep global AI behavior durable, inspectable, rehydratable, and resistant to silent instruction decay without bloating every model context","kernel":{"path":"docs/GLOBAL_POLICY_KERNEL.md","load_mode":"always_when_host_supports_project_or_user_instructions","max_bytes":8192,"semantic_owner":"global_bootstrap"},"entrypoints":[{"path":"AGENTS.md","role":"repository_bootstrap","required_markers":["GLOBAL_POLICY_KERNEL.md","global-policy-manifest.json","ai-efficiency-operating-system"]},{"path":"control-plane/scripts/install_codex_global_quality.py","role":"codex_user_level_projection","required_markers":["No silent policy decay","Rehydrate","Truth lock"]},{"path":"control-plane/scripts/install_antigravity_global_goal_lock.py","role":"antigravity_user_level_global_projection","required_markers":[".gemini/GEMINI.md",".gemini/config/agents","ANTIGRAVITY-GOAL-LOCK","goal-fidelity-anti-evasion.md","owning-runtime-verifier"]},{"path":"control-plane/scripts/validate_goal_fidelity_global.py","role":"goal_fidelity_machine_validator","required_markers":["goal-fidelity-global.json","GitHub","Notion"]},{"path":"control-plane/scripts/validate_task_goal_intelligence_v3.py","role":"task_goal_intelligence_v3_runtime_validator","required_markers":["task-goal-intelligence-v3-extension.json","task_goal_intelligence_v3_cases.jsonl","opaque_source_provenance"]},{"path":"control-plane/scripts/validate_task_goal_intelligence_v31.py","role":"task_goal_intelligence_v31_behavioral_validator","required_markers":["task-goal-intelligence-v31-truth-maintenance.json","task_goal_state_engine.py","behavioral"]}],"canonical_policies":[{"id":"goal-fidelity-target-lock","path":"docs/GOAL_FIDELITY_AND_TARGET_LOCK_POLICY.md","semantic_owner":"goal_fidelity_and_target_lock","load_mode":"substantive_task_before_material_action"},{"id":"goal-fidelity-machine","path":"control-plane/ai-system/configs/goal-fidelity-global.json","semantic_owner":"goal_fidelity_machine_contract","load_mode":"substantive_task_before_material_action"},{"id":"task-goal-intelligence-skill","path":"skills/skills/task-goal-intelligence/SKILL.md","semantic_owner":"task_goal_intelligence_portable_base","load_mode":"substantive_task_before_material_action"},{"id":"task-goal-intelligence-v3-extension","path":"control-plane/ai-system/configs/task-goal-intelligence-v3-extension.json","semantic_owner":"task_goal_intelligence_v3_runtime_extension","load_mode":"substantive_task_before_material_action"},{"id":"task-goal-intelligence-v3-sources","path":"control-plane/ai-system/configs/task-goal-intelligence-v3-sources.json","semantic_owner":"task_goal_intelligence_v3_provenance_ledger","load_mode":"research_heavy_or_goal_intelligence_change"},{"id":"task-goal-intelligence-plugin-projection","path":"plugins/ai-efficiency-operating-system/skills/task-goal-intelligence/SKILL.md","semantic_owner":"task_goal_intelligence_auto_invoke_projection","load_mode":"plugin_runtime_auto_invoke"},{"id":"task-goal-intelligence-v31-truth-maintenance","path":"control-plane/ai-system/configs/task-goal-intelligence-v31-truth-maintenance.json","semantic_owner":"task_goal_intelligence_truth_maintenance","load_mode":"substantive_task_before_material_action"},{"id":"adversarial-deliberation-council","path":"skills/skills/adversarial-deliberation-council/SKILL.md","semantic_owner":"adversarial_deliberation_orchestration","load_mode":"complex_research_architecture_cross_system_or_repeated_failure"},{"id":"adversarial-deliberation-council-plugin-projection","path":"plugins/ai-efficiency-operating-system/skills/adversarial-deliberation-council/SKILL.md","semantic_owner":"adversarial_deliberation_auto_invoke_projection","load_mode":"plugin_runtime_auto_invoke_for_complex_or_contested_tasks"},{"id":"continuous-thinking-quality","path":"docs/CONTINUOUS_THINKING_QUALITY_OS.md","semantic_owner":"reasoning_quality","load_mode":"material_or_critical_task"},{"id":"continuous-thinking-machine","path":"control-plane/ai-system/configs/continuous-thinking-global.json","semantic_owner":"reasoning_quality_machine_contract","load_mode":"material_or_critical_task"},{"id":"capability-flexibility","path":"docs/CAPABILITY_ACCESS_AND_FLEXIBILITY_POLICY.md","semantic_owner":"capability_and_anti_overrefusal","load_mode":"task_relevant"},{"id":"capability-routing-machine","path":"control-plane/ai-system/configs/context-first-capability-routing.json","semantic_owner":"capability_and_anti_overrefusal_machine_contract","load_mode":"task_relevant"},{"id":"desktop-execution","path":"docs/DESKTOP_AGENT_EXECUTION_POLICY.md","semantic_owner":"desktop_execution","load_mode":"desktop_or_local_task"},{"id":"desktop-execution-machine","path":"control-plane/ai-system/configs/desktop-agent-execution-global.json","semantic_owner":"desktop_execution_machine_contract","load_mode":"desktop_or_local_task"},{"id":"ai-efficiency-operating-system","path":"plugins/ai-efficiency-operating-system/skills/chief-of-staff-core/SKILL.md","semantic_owner":"cross_chat_hidden_state_and_execution_orchestration","load_mode":"progressive_disclosure_for_complex_or_cross_chat_work"}],"rehydration":{"required":true,"triggers":["session_or_thread_start_when_loader_is_available","context_compaction_or_summary_replacement","cwd_repository_workspace_or_surface_change","instruction_or_policy_revision_change","active_instruction_provenance_unknown","contradiction_between_memory_summary_tools_and_current_state","after_failed_turn_or_partial_stream_before_reuse","before_material_write_when_active_rules_cannot_be_proven_loaded"],"procedure":["resolve_host_surface_and_target_identity","inventory_active_instruction_sources_and_precedence","load_kernel","load_only_task_relevant_manifest_entries","load_task_goal_portable_base_v3_extension_and_v31_truth_maintenance_for_substantive_tasks","restore_root_goal_underlying_purpose_goal_signature_acceptance_contract_open_gates_failed_routes_and_evidence_index","restore_goal_version_event_log_intent_belief_authority_uncertainty_traceability_progress_and_counterexample_state","quarantine_failed_or_stale_context","record_loaded_policy_revision_and_source_provenance","continue_only_after_required_invariants_are_present"],"silent_drop_forbidden":true,"unknown_policy_state":"UNKNOWN_NOT_COMPLIANT"},"context_budget":{"progressive_disclosure_required":true,"discover_many_load_few":true,"root_agents_soft_target_bytes":20000,"root_agents_hard_max_bytes":24576,"reason":"maintain margin below reported Codex AGENTS.md truncation behavior and reduce context competition"},"instruction_provenance":{"required_fields":["source","scope","precedence_or_merge_rule","revision_or_content_hash_when_available","loaded_state","retest_trigger"],"loaded_states":["DISCOVERED","FETCHED","LOADED","APPLIED","UNKNOWN"],"repository_presence_is_not_loaded":true},"durable_state":{"chat_history_is_not_canonical":true,"summary_is_cache_not_authority":true,"failed_turn_quarantine":true,"atomic_or_idempotent_persistence_preferred":true,"preserve_after_compaction":["ROOT_GOAL","UNDERLYING_PURPOSE","GOAL_SIGNATURE","GOAL_VERSION","GOAL_FINGERPRINT","GOAL_EVENT_LOG","DESIRED_END_STATE","HARD_CONSTRAINTS","NEGATIONS","ACCEPTANCE_TESTS","protected_capabilities","TARGET_IDENTITY","INTENT_BELIEF_GRAPH","ASSUMPTION_LEDGER","authority_ledger","uncertainty_ledger","traceability_matrix","progress_ledger","invalidated_goal_nodes","counterexamples","historical_claims","CURRENT_BLOCKER","NEXT_ACTION","open_unknowns","failed_routes","evidence_index","contradictions","pending_effects","rollback_target","completion_gate","jury_status","active_policy_revision"]},"platform_truth":{"codex_repo_agents":"can be auto-discovered by Codex within its documented scope but must still be verified as loaded for material compliance claims","codex_user_global":"managed through the repository installer into the active CODEX_HOME instruction file when explicitly installed","antigravity_workspace":"workspace rules, hooks, and the five recovery subagents are projected through .agents/rules, .agents/hooks.json, and .agents/agents; repository presence still requires Antigravity to open or mount the owning workspace before claiming them loaded","antigravity_user_global":"machine-wide rule content lives in ~/.gemini/GEMINI.md and machine-wide custom subagents live in ~/.gemini/config/agents; both are projected with backups by control-plane/scripts/install_antigravity_global_goal_lock.py, which must be executed and read back on the target machine before claiming global load","ordinary_chat":"repository files are not inherently global instructions; current ChatGPT plugin use still requires the plugin/marketplace to be imported or installed on the owning workspace/surface, or another host-supported memory/project instruction mechanism","skills":"progressive disclosure; a skill existing on disk or in a repository does not prove its body was loaded"},"drift_gate":{"manifest_paths_must_exist":true,"entrypoint_markers_must_exist":true,"kernel_must_fit_budget":true,"root_agents_must_fit_hard_budget":true,"canonical_policy_ids_unique":true,"semantic_owner_collisions_forbidden":true,"fail_if_global_entrypoint_loses_manifest":true,"fail_if_installer_loses_durability_kernel":true}}
+{
+  "schema_version": 1,
+  "profile_id": "global-policy-durability-v1",
+  "canonical_repository": "xq22115/ai-thinking-debate-skills-lab",
+  "objective": "keep global AI behavior durable, inspectable, rehydratable, and resistant to silent instruction decay without bloating every model context",
+  "kernel": {
+    "path": "docs/GLOBAL_POLICY_KERNEL.md",
+    "load_mode": "always_when_host_supports_project_or_user_instructions",
+    "max_bytes": 8192,
+    "semantic_owner": "global_bootstrap"
+  },
+  "entrypoints": [
+    {
+      "path": "AGENTS.md",
+      "role": "repository_bootstrap",
+      "required_markers": [
+        "GLOBAL_POLICY_KERNEL.md",
+        "global-policy-manifest.json",
+        "ai-efficiency-operating-system"
+      ]
+    },
+    {
+      "path": "control-plane/scripts/install_codex_global_quality.py",
+      "role": "codex_user_level_projection",
+      "required_markers": [
+        "No silent policy decay",
+        "Rehydrate",
+        "Truth lock"
+      ]
+    },
+    {
+      "path": "control-plane/scripts/install_antigravity_global_goal_lock.py",
+      "role": "antigravity_user_level_global_projection",
+      "required_markers": [
+        ".gemini/GEMINI.md",
+        ".gemini/config/agents",
+        "ANTIGRAVITY-GOAL-LOCK",
+        "goal-fidelity-anti-evasion.md",
+        "owning-runtime-verifier"
+      ]
+    },
+    {
+      "path": "control-plane/scripts/validate_goal_fidelity_global.py",
+      "role": "goal_fidelity_machine_validator",
+      "required_markers": [
+        "goal-fidelity-global.json",
+        "GitHub",
+        "Notion"
+      ]
+    },
+    {
+      "path": "control-plane/scripts/validate_task_goal_intelligence_v3.py",
+      "role": "task_goal_intelligence_v3_runtime_validator",
+      "required_markers": [
+        "task-goal-intelligence-v3-extension.json",
+        "task_goal_intelligence_v3_cases.jsonl",
+        "opaque_source_provenance"
+      ]
+    },
+    {
+      "path": "control-plane/scripts/validate_task_goal_intelligence_v31.py",
+      "role": "task_goal_intelligence_v31_behavioral_validator",
+      "required_markers": [
+        "task-goal-intelligence-v31-truth-maintenance.json",
+        "task_goal_state_engine.py",
+        "behavioral"
+      ]
+    }
+  ],
+  "canonical_policies": [
+    {
+      "id": "goal-fidelity-target-lock",
+      "path": "docs/GOAL_FIDELITY_AND_TARGET_LOCK_POLICY.md",
+      "semantic_owner": "goal_fidelity_and_target_lock",
+      "load_mode": "substantive_task_before_material_action"
+    },
+    {
+      "id": "goal-fidelity-machine",
+      "path": "control-plane/ai-system/configs/goal-fidelity-global.json",
+      "semantic_owner": "goal_fidelity_machine_contract",
+      "load_mode": "substantive_task_before_material_action"
+    },
+    {
+      "id": "task-goal-intelligence-skill",
+      "path": "skills/skills/task-goal-intelligence/SKILL.md",
+      "semantic_owner": "task_goal_intelligence_portable_base",
+      "load_mode": "substantive_task_before_material_action"
+    },
+    {
+      "id": "task-goal-intelligence-v3-extension",
+      "path": "control-plane/ai-system/configs/task-goal-intelligence-v3-extension.json",
+      "semantic_owner": "task_goal_intelligence_v3_runtime_extension",
+      "load_mode": "substantive_task_before_material_action"
+    },
+    {
+      "id": "task-goal-intelligence-v3-sources",
+      "path": "control-plane/ai-system/configs/task-goal-intelligence-v3-sources.json",
+      "semantic_owner": "task_goal_intelligence_v3_provenance_ledger",
+      "load_mode": "research_heavy_or_goal_intelligence_change"
+    },
+    {
+      "id": "task-goal-intelligence-plugin-projection",
+      "path": "plugins/ai-efficiency-operating-system/skills/task-goal-intelligence/SKILL.md",
+      "semantic_owner": "task_goal_intelligence_auto_invoke_projection",
+      "load_mode": "plugin_runtime_auto_invoke"
+    },
+    {
+      "id": "task-goal-intelligence-v31-truth-maintenance",
+      "path": "control-plane/ai-system/configs/task-goal-intelligence-v31-truth-maintenance.json",
+      "semantic_owner": "task_goal_intelligence_truth_maintenance",
+      "load_mode": "substantive_task_before_material_action"
+    },
+    {
+      "id": "adversarial-deliberation-council",
+      "path": "skills/skills/adversarial-deliberation-council/SKILL.md",
+      "semantic_owner": "adversarial_deliberation_orchestration",
+      "load_mode": "complex_research_architecture_cross_system_or_repeated_failure"
+    },
+    {
+      "id": "adversarial-deliberation-council-plugin-projection",
+      "path": "plugins/ai-efficiency-operating-system/skills/adversarial-deliberation-council/SKILL.md",
+      "semantic_owner": "adversarial_deliberation_auto_invoke_projection",
+      "load_mode": "plugin_runtime_auto_invoke_for_complex_or_contested_tasks"
+    },
+    {
+      "id": "continuous-thinking-quality",
+      "path": "docs/CONTINUOUS_THINKING_QUALITY_OS.md",
+      "semantic_owner": "reasoning_quality",
+      "load_mode": "material_or_critical_task"
+    },
+    {
+      "id": "continuous-thinking-machine",
+      "path": "control-plane/ai-system/configs/continuous-thinking-global.json",
+      "semantic_owner": "reasoning_quality_machine_contract",
+      "load_mode": "material_or_critical_task"
+    },
+    {
+      "id": "capability-flexibility",
+      "path": "docs/CAPABILITY_ACCESS_AND_FLEXIBILITY_POLICY.md",
+      "semantic_owner": "capability_and_anti_overrefusal",
+      "load_mode": "task_relevant"
+    },
+    {
+      "id": "capability-routing-machine",
+      "path": "control-plane/ai-system/configs/context-first-capability-routing.json",
+      "semantic_owner": "capability_and_anti_overrefusal_machine_contract",
+      "load_mode": "task_relevant"
+    },
+    {
+      "id": "desktop-execution",
+      "path": "docs/DESKTOP_AGENT_EXECUTION_POLICY.md",
+      "semantic_owner": "desktop_execution",
+      "load_mode": "desktop_or_local_task"
+    },
+    {
+      "id": "desktop-execution-machine",
+      "path": "control-plane/ai-system/configs/desktop-agent-execution-global.json",
+      "semantic_owner": "desktop_execution_machine_contract",
+      "load_mode": "desktop_or_local_task"
+    },
+    {
+      "id": "ai-efficiency-operating-system",
+      "path": "plugins/ai-efficiency-operating-system/skills/chief-of-staff-core/SKILL.md",
+      "semantic_owner": "cross_chat_hidden_state_and_execution_orchestration",
+      "load_mode": "progressive_disclosure_for_complex_or_cross_chat_work"
+    }
+  ],
+  "rehydration": {
+    "required": true,
+    "triggers": [
+      "session_or_thread_start_when_loader_is_available",
+      "context_compaction_or_summary_replacement",
+      "cwd_repository_workspace_or_surface_change",
+      "instruction_or_policy_revision_change",
+      "active_instruction_provenance_unknown",
+      "contradiction_between_memory_summary_tools_and_current_state",
+      "after_failed_turn_or_partial_stream_before_reuse",
+      "before_material_write_when_active_rules_cannot_be_proven_loaded"
+    ],
+    "procedure": [
+      "resolve_host_surface_and_target_identity",
+      "inventory_active_instruction_sources_and_precedence",
+      "load_kernel",
+      "load_only_task_relevant_manifest_entries",
+      "load_task_goal_portable_base_v3_extension_and_v31_truth_maintenance_for_substantive_tasks",
+      "restore_root_goal_underlying_purpose_goal_signature_acceptance_contract_open_gates_failed_routes_and_evidence_index",
+      "restore_goal_version_event_log_intent_belief_authority_uncertainty_traceability_progress_and_counterexample_state",
+      "quarantine_failed_or_stale_context",
+      "record_loaded_policy_revision_and_source_provenance",
+      "continue_only_after_required_invariants_are_present"
+    ],
+    "silent_drop_forbidden": true,
+    "unknown_policy_state": "UNKNOWN_NOT_COMPLIANT"
+  },
+  "context_budget": {
+    "progressive_disclosure_required": true,
+    "discover_many_load_few": true,
+    "root_agents_soft_target_bytes": 20000,
+    "root_agents_hard_max_bytes": 24576,
+    "reason": "maintain margin below reported Codex AGENTS.md truncation behavior and reduce context competition"
+  },
+  "instruction_provenance": {
+    "required_fields": [
+      "source",
+      "scope",
+      "precedence_or_merge_rule",
+      "revision_or_content_hash_when_available",
+      "loaded_state",
+      "retest_trigger"
+    ],
+    "loaded_states": [
+      "DISCOVERED",
+      "FETCHED",
+      "LOADED",
+      "APPLIED",
+      "UNKNOWN"
+    ],
+    "repository_presence_is_not_loaded": true
+  },
+  "durable_state": {
+    "chat_history_is_not_canonical": true,
+    "summary_is_cache_not_authority": true,
+    "failed_turn_quarantine": true,
+    "atomic_or_idempotent_persistence_preferred": true,
+    "preserve_after_compaction": [
+      "ROOT_GOAL",
+      "UNDERLYING_PURPOSE",
+      "GOAL_SIGNATURE",
+      "GOAL_VERSION",
+      "GOAL_FINGERPRINT",
+      "GOAL_EVENT_LOG",
+      "DESIRED_END_STATE",
+      "HARD_CONSTRAINTS",
+      "NEGATIONS",
+      "ACCEPTANCE_TESTS",
+      "protected_capabilities",
+      "TARGET_IDENTITY",
+      "INTENT_BELIEF_GRAPH",
+      "ASSUMPTION_LEDGER",
+      "authority_ledger",
+      "uncertainty_ledger",
+      "traceability_matrix",
+      "progress_ledger",
+      "invalidated_goal_nodes",
+      "counterexamples",
+      "historical_claims",
+      "CURRENT_BLOCKER",
+      "NEXT_ACTION",
+      "open_unknowns",
+      "failed_routes",
+      "evidence_index",
+      "contradictions",
+      "pending_effects",
+      "rollback_target",
+      "completion_gate",
+      "jury_status",
+      "active_policy_revision"
+    ]
+  },
+  "platform_truth": {
+    "codex_repo_agents": "can be auto-discovered by Codex within its documented scope but must still be verified as loaded for material compliance claims",
+    "codex_user_global": "managed through the repository installer into the active CODEX_HOME instruction file when explicitly installed",
+    "antigravity_workspace": "workspace rules, hooks, and the five recovery subagents are projected through .agents/rules, .agents/hooks.json, and .agents/agents; repository presence still requires Antigravity to open or mount the owning workspace before claiming them loaded",
+    "antigravity_user_global": "machine-wide rule content lives in ~/.gemini/GEMINI.md and machine-wide custom subagents live in ~/.gemini/config/agents; both are projected with backups by control-plane/scripts/install_antigravity_global_goal_lock.py, which must be executed and read back on the target machine before claiming global load",
+    "ordinary_chat": "repository files are not inherently global instructions; current ChatGPT plugin use still requires the plugin/marketplace to be imported or installed on the owning workspace/surface, or another host-supported memory/project instruction mechanism",
+    "skills": "progressive disclosure; a skill existing on disk or in a repository does not prove its body was loaded"
+  },
+  "drift_gate": {
+    "manifest_paths_must_exist": true,
+    "entrypoint_markers_must_exist": true,
+    "kernel_must_fit_budget": true,
+    "root_agents_must_fit_hard_budget": true,
+    "canonical_policy_ids_unique": true,
+    "semantic_owner_collisions_forbidden": true,
+    "fail_if_global_entrypoint_loses_manifest": true,
+    "fail_if_installer_loses_durability_kernel": true
+  }
+}
