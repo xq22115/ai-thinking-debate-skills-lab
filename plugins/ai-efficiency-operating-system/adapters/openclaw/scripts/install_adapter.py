@@ -24,8 +24,9 @@ ADAPTER_SKILLS = [
     "openclaw-evidence-gate",
     "openclaw-runtime-recovery",
     "openclaw-learning-loop",
+    "openclaw-lobster-workflows",
 ]
-PRODUCTION_TOOLS = ["sessions_spawn", "sessions_yield", "subagents", "skill_workshop"]
+PRODUCTION_TOOLS = ["sessions_spawn", "sessions_yield", "subagents", "skill_workshop", "lobster"]
 LAB_TOOLS = PRODUCTION_TOOLS + ["agents_wait"]
 
 
