@@ -1,0 +1,16 @@
+{"id":"oc-001-direct-no-fanout","class":"direct","state":{"complexity":"direct"},"expected_roles":[]}
+{"id":"oc-002-investigative","class":"research","state":{"complexity":"investigative"},"expected_roles":["researcher"]}
+{"id":"oc-003-research-direct","class":"research","state":{"complexity":"direct","research":true},"expected_roles":["researcher"]}
+{"id":"oc-004-state-change","class":"execution","state":{"complexity":"direct","state_change":true},"expected_roles":["implementer","evidence-gate"]}
+{"id":"oc-005-runtime-mismatch","class":"forensics","state":{"complexity":"direct","runtime_mismatch":true},"expected_roles":["runtime-forensics","evidence-gate"]}
+{"id":"oc-006-conflict","class":"falsification","state":{"complexity":"investigative","conflicting_evidence":true},"expected_roles":["researcher","falsifier"]}
+{"id":"oc-007-high-impact","class":"impact","state":{"complexity":"direct","high_impact":true},"expected_roles":["falsifier","evidence-gate"]}
+{"id":"oc-008-compatibility","class":"compatibility","state":{"complexity":"direct","compatibility_risk":true},"expected_roles":["compatibility-reviewer"]}
+{"id":"oc-009-repeated-failure","class":"recovery","state":{"complexity":"direct","repeated_failure":true},"expected_roles":["recovery","evidence-gate"]}
+{"id":"oc-010-learning","class":"learning","state":{"complexity":"direct","learning_candidate":true},"expected_roles":["learning-curator"]}
+{"id":"oc-011-architectural","class":"architecture","state":{"complexity":"architectural"},"expected_roles":["architecture-arbiter","evidence-gate"]}
+{"id":"oc-012-architecture-research","class":"architecture","state":{"complexity":"architectural","research":true},"expected_roles":["architecture-arbiter","researcher","evidence-gate"]}
+{"id":"oc-013-implementation-forensics","class":"combined","state":{"complexity":"investigative","state_change":true,"runtime_mismatch":true},"expected_roles":["researcher","implementer","runtime-forensics","evidence-gate"]}
+{"id":"oc-014-high-impact-change","class":"combined","state":{"complexity":"direct","high_impact":true,"state_change":true},"expected_roles":["falsifier","implementer","evidence-gate"]}
+{"id":"oc-015-recovery-learning","class":"combined","state":{"complexity":"direct","repeated_failure":true,"learning_candidate":true},"expected_roles":["recovery","evidence-gate","learning-curator"]}
+{"id":"oc-016-full-pressure","class":"pressure","state":{"complexity":"architectural","research":true,"state_change":true,"runtime_mismatch":true,"compatibility_risk":true,"repeated_failure":true,"learning_candidate":true,"high_impact":true,"conflicting_evidence":true},"expected_roles":["architecture-arbiter","researcher","falsifier","compatibility-reviewer","implementer","runtime-forensics","recovery","evidence-gate","learning-curator"]}
