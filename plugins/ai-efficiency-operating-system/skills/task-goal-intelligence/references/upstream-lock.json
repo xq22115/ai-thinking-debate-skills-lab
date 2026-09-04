@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "profile": "task-goal-native-upstream-lock-v1",
+  "captured_at": "2026-09-04",
+  "policy": {
+    "mechanism_level_adaptation_only": true,
+    "upstream_text_vendored": false,
+    "exact_revision_required_for_claims": true,
+    "source_prestige_is_not_acceptance_evidence": true
+  },
+  "sources": [
+    {
+      "id": "openai-plugins",
+      "repo": "openai/plugins",
+      "commit": "1e285826e604f66f7208f7ac4dba0fe8341d1f57",
+      "paths": [
+        ".agents/skills/plugin-creator/SKILL.md",
+        ".agents/skills/plugin-creator/agents",
+        ".agents/skills/plugin-creator/references",
+        ".agents/skills/plugin-creator/scripts",
+        "plugins/build-web-apps/.codex-plugin",
+        "plugins/build-web-apps/agents",
+        "plugins/build-web-apps/skills"
+      ],
+      "adopt": [
+        "skill package is a folder, not one prompt",
+        "manifest plus agents policy plus references plus scripts",
+        "required behavior and quick validation live with the skill"
+      ],
+      "do_not_copy": ["provider-specific product metadata not needed by this plugin"]
+    },
+    {
+      "id": "superpowers",
+      "repo": "obra/superpowers",
+      "commit": "b36e0829c6d0140e93cfef2ca599b1b07d4a7797",
+      "paths": [
+        "skills/using-superpowers/SKILL.md",
+        "skills/brainstorming/SKILL.md",
+        "skills/systematic-debugging/SKILL.md",
+        "skills/verification-before-completion/SKILL.md"
+      ],
+      "adopt": [
+        "process skill before implementation skill",
+        "explicit phase gates and one-way complexity ratchet",
+        "root-cause investigation before repair",
+        "fresh verification before completion claims",
+        "rationalization/red-flag tests as behavioral guards"
+      ],
+      "do_not_copy": [
+        "mandatory human approval for every bounded action where the current user explicitly requests autonomous execution"
+      ]
+    },
+    {
+      "id": "gstack",
+      "repo": "garrytan/gstack",
+      "commit": "0d1bd5616c0ef096bb7ccee336f63c60ee408618",
+      "paths": [
+        "SKILL.md",
+        "SKILL.md.tmpl",
+        "plan-ceo-review/SKILL.md",
+        "plan-ceo-review/sections/review-sections.md",
+        "docs/PROJECT_STRUCTURE.md"
+      ],
+      "adopt": [
+        "runtime preamble with machine-readable status lines",
+        "degraded mode continues the user task instead of failing closed on optional telemetry",
+        "session-bound runtime instructions",
+        "thin router delegates to specialist workflows",
+        "completion status protocol and durable learning extraction",
+        "generated/template source of truth separated from rendered skills"
+      ],
+      "do_not_copy": ["Claude-specific home paths, telemetry implementation, and product-specific commands"]
+    },
+    {
+      "id": "anthropic-skills",
+      "repo": "anthropics/skills",
+      "commit": "41bbe19d1a1a7eaab5e7bb9050a417e5c6cffc8f",
+      "paths": ["spec/agent-skills-spec.md", "template/SKILL.md", "skills"],
+      "adopt": [
+        "separate skill specification, minimal template, and concrete skill packages",
+        "progressive disclosure rather than universal giant prompt"
+      ],
+      "do_not_copy": ["Claude-only packaging assumptions where Codex/OpenAI metadata differs"]
+    },
+    {
+      "id": "dspy-gepa",
+      "repo": "stanfordnlp/dspy",
+      "commit": "59ce7601ec40cd2160ac64f476f9053efdc1599e",
+      "paths": [
+        "docs/docs/api/optimizers/GEPA/overview.md",
+        "dspy/teleprompt/gepa/gepa.py"
+      ],
+      "adopt": [
+        "full execution traces plus textual feedback for optimization",
+        "candidate evolution evaluated on held-out behavior",
+        "protect hard slices instead of trusting aggregate score"
+      ],
+      "do_not_copy": ["DSPy runtime dependency in the default plugin path"]
+    }
+  ]
+}
