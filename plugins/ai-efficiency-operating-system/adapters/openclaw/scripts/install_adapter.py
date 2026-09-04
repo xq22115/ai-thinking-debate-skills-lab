@@ -87,6 +87,25 @@ def append_unique(path: str, additions: list[str], *, dry_run: bool) -> str:
     return set_value(path, merged, dry_run=dry_run)
 
 
+def ensure_tools_allowed(scope: str, tools: list[str], *, dry_run: bool) -> str:
+    """Preserve strict allowlist semantics instead of assuming alsoAllow can override them.
+
+    OpenClaw treats `tools.allow` (and per-agent `...tools.allow`) as an absolute
+    allowlist. If one exists at the scope we are targeting, required tools must
+    be appended there. When no absolute allowlist exists, `alsoAllow` is the
+    additive profile-preserving route.
+    """
+
+    allow_path = f"{scope}.allow"
+    also_allow_path = f"{scope}.alsoAllow"
+    allow_exists, allow = get_json(allow_path)
+    if allow_exists:
+        if not isinstance(allow, list) or any(not isinstance(item, str) for item in allow):
+            raise InstallError(f"{allow_path} must be a string array; found {type(allow).__name__}")
+        return append_unique(allow_path, tools, dry_run=dry_run)
+    return append_unique(also_allow_path, tools, dry_run=dry_run)
+
+
 def numeric_floor(path: str, floor: int, *, dry_run: bool) -> str:
     exists, current = get_json(path)
     if exists:
@@ -148,7 +167,7 @@ def configure(args: argparse.Namespace) -> list[str]:
             changes.append(set_value("skills.workshop.approvalPolicy", "auto", dry_run=args.dry_run))
 
     tools = LAB_TOOLS if args.mode == "lab" else PRODUCTION_TOOLS
-    changes.append(append_unique("tools.alsoAllow", tools, dry_run=args.dry_run))
+    changes.append(ensure_tools_allowed("tools", tools, dry_run=args.dry_run))
     changes.append(
         set_value("agents.defaults.subagents.delegationMode", "prefer", dry_run=args.dry_run)
     )
@@ -169,6 +188,12 @@ def configure(args: argparse.Namespace) -> list[str]:
         agent_exists, _ = get_json(agent_path)
         if agent_exists:
             changes.append(append_unique(agent_path, ADAPTER_SKILLS, dry_run=args.dry_run))
+        # Per-agent absolute allowlists are final clamps over global alsoAllow.
+        # Grant the same required tools at the target scope without deleting any
+        # existing restriction or unrelated tool entry.
+        changes.append(
+            ensure_tools_allowed(f"agents.entries.{args.agent}.tools", tools, dry_run=args.dry_run)
+        )
 
     if args.mode == "lab":
         changes.append(set_value("tools.codeMode", True, dry_run=args.dry_run))
@@ -221,7 +246,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", choices=["production", "lab"], default="production")
     parser.add_argument("--learning", choices=["auto", "propose", "keep"], default="auto")
-    parser.add_argument("--agent", help="Optional OpenClaw agent id whose explicit skill allowlist should be extended.")
+    parser.add_argument("--agent", help="Optional OpenClaw agent id whose explicit skill/tool allowlists should be extended additively.")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--verify-only", action="store_true")
     parser.add_argument("--deep-verify", action="store_true")
