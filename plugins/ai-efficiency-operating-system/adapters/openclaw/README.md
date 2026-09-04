@@ -13,7 +13,8 @@ The canonical plugin already owns goal integrity, evidence gates, recovery, memo
 - Skill Workshop and autonomous learning;
 - bundled Lobster deterministic workflows with approval/resume;
 - Code Mode + experimental Swarm collectors;
-- config read/write/validate primitives.
+- config read/write/validate primitives;
+- absolute/global/per-agent tool-policy layers that must be handled explicitly.
 
 The adapter therefore preserves **TRUTH HARD / METHOD SOFT** while changing the execution harness.
 
@@ -51,7 +52,9 @@ Uses stable/bundled OpenClaw primitives:
 
 The installer raises concurrency only to a minimum floor (`agents.defaults.maxConcurrent >= 4`, `subagents.maxConcurrent >= 8`); higher existing values are preserved.
 
-Lobster is bundled but opt-in in OpenClaw, so the adapter adds it through `tools.alsoAllow` without replacing the active tool profile. The runtime skill explicitly preserves current upstream limitations: sandboxed tool contexts cannot use Lobster, and embedded Lobster must not assume nested `openclaw.invoke` inherits Gateway URL/auth context.
+Lobster is bundled but opt-in in OpenClaw. When no absolute tool allowlist exists, the adapter adds required tools through `tools.alsoAllow`. When `tools.allow` already exists, the installer appends to that absolute allowlist instead, because OpenClaw treats it as a profile-replacing clamp. With `--agent <id>`, the same additive logic is applied at the target agent scope so a per-agent allowlist cannot silently nullify the global grant.
+
+The runtime skill also preserves current upstream limitations: sandboxed tool contexts cannot use Lobster, and embedded Lobster must not assume nested `openclaw.invoke` inherits Gateway URL/auth context.
 
 ### Lab
 
@@ -89,7 +92,7 @@ python3 plugins/ai-efficiency-operating-system/adapters/openclaw/scripts/install
 # preserve existing autonomous-learning mode
 python3 plugins/ai-efficiency-operating-system/adapters/openclaw/scripts/install_adapter.py --learning keep
 
-# target an agent that already has an explicit skills allowlist
+# target an agent that already has explicit skill/tool policy
 python3 plugins/ai-efficiency-operating-system/adapters/openclaw/scripts/install_adapter.py --agent <agent-id>
 
 # read-back only after a Gateway restart/new session
@@ -103,18 +106,19 @@ The installer:
 3. appends this adapter's skill root without deleting existing roots;
 4. enables skill watching;
 5. configures Workshop learning (`auto` by default, or `propose`/`keep`);
-6. appends required sub-agent/Workshop/Lobster tools without deleting existing tools;
-7. raises concurrency floors without lowering higher values;
-8. extends existing default/target-agent skill allowlists instead of replacing them;
-9. uses conditional config writes to reject stale-current races;
-10. runs `openclaw config validate`;
-11. requires all five adapter skills to appear in the selected OpenClaw inventory.
+6. grants required sub-agent/Workshop/Lobster tools additively: extend an existing absolute `allow`, otherwise extend `alsoAllow`;
+7. mirrors the same additive tool grant into a target agent when `--agent` is supplied;
+8. raises concurrency floors without lowering higher values;
+9. extends existing default/target-agent skill allowlists instead of replacing them;
+10. uses conditional config writes to reject stale-current races;
+11. runs `openclaw config validate`;
+12. requires all five adapter skills to appear in the selected OpenClaw inventory.
 
-It does **not** change model selection, credentials, providers, channels, browser profile, OS permissions, agent workspaces, or existing named agent ownership.
+It does **not** change model selection, credentials, providers, channels, browser profile, OS permissions, agent workspaces, or existing named agent ownership. It does not delete existing tool allow/deny entries; effective deny/sandbox/provider policy remains an owning-runtime verification concern.
 
 ## Adaptive specialist topology
 
-The deterministic baseline is `scripts/role_router.py` with 16 regression cases. It can select zero to nine child roles; there is deliberately no fixed N.
+The deterministic baseline is `scripts/role_router.py` with 20 regression cases. It can select zero to nine child roles and one of four execution planes (`parent`, `agents`, `lobster`, `hybrid`); there is deliberately no fixed N.
 
 Children are specialized, not clones. The parent retains Goal Contract and completion authority. Child results are evidence for synthesis, not terminal truth.
 
@@ -131,6 +135,7 @@ A repeated verified known-path procedure may be promoted into a Lobster workflow
 Repository package verification:
 
 ```bash
+python3 plugins/ai-efficiency-operating-system/adapters/openclaw/scripts/test_install_adapter.py
 python3 plugins/ai-efficiency-operating-system/adapters/openclaw/scripts/validate_adapter.py
 ```
 
