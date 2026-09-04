@@ -13,6 +13,7 @@ on:
       - 'control-plane/scripts/task_goal_state_engine.py'
       - 'control-plane/scripts/validate_task_goal_intelligence_v31.py'
       - 'control-plane/tests/test_task_goal_state_engine.py'
+      - 'control-plane/tests/test_task_goal_state_engine_authority.py'
       - '.agents/hooks/goal-fidelity-preinvocation.py'
       - 'docs/GLOBAL_POLICY_KERNEL.md'
       - '.github/workflows/task-goal-intelligence-v31-gate.yml'
@@ -28,6 +29,7 @@ on:
       - 'control-plane/scripts/task_goal_state_engine.py'
       - 'control-plane/scripts/validate_task_goal_intelligence_v31.py'
       - 'control-plane/tests/test_task_goal_state_engine.py'
+      - 'control-plane/tests/test_task_goal_state_engine_authority.py'
       - '.agents/hooks/goal-fidelity-preinvocation.py'
       - 'docs/GLOBAL_POLICY_KERNEL.md'
       - '.github/workflows/task-goal-intelligence-v31-gate.yml'
@@ -72,7 +74,10 @@ jobs:
           python control-plane/scripts/validate_global_policy_durability.py
       - name: Run executable v3.1 goal-state behavior corpus
         working-directory: control-plane
-        run: python -m unittest -v tests.test_task_goal_state_engine
+        run: |
+          python -m unittest -v \
+            tests.test_task_goal_state_engine \
+            tests.test_task_goal_state_engine_authority
       - name: Protect legacy Goal Lock behavior
         working-directory: control-plane
         run: |
