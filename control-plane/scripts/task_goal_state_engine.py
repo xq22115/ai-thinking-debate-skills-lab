@@ -236,7 +236,6 @@ class GoalState:
         metadata = dict(metadata or {})
         depends = set(depends_on)
 
-        # Examples/noise can be retained for provenance but never bind task state.
         if effect in {"EXAMPLE", "DISTRACTOR"}:
             node = GoalNode(
                 node_id=node_id,
@@ -260,12 +259,11 @@ class GoalState:
                 f"field type mismatch for {key}: active={current.field_type}, incoming={field_type}"
             )
 
-        # Non-user evidence cannot create or change normative meaning. It may, however,
-        # corroborate the *same* already-authorized value without becoming its authority.
         if field_type in NORMATIVE_TYPES and authority not in USER_AUTHORITIES:
             if current is None:
                 return self._reject(
-                    f"non-user authority {authority} cannot create normative field {key}"
+                    f"non-user authority {authority} cannot create or mutate normative field {key}; "
+                    "no active user-authorized value exists"
                 )
             if effect == "RETRACT":
                 return self._reject(
