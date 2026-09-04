@@ -4,8 +4,9 @@ on:
   push:
     paths:
       - 'plugins/ai-efficiency-operating-system/native-goal-harness.json'
+      - 'plugins/ai-efficiency-operating-system/spec/task-goal-intelligence-spec.md'
       - 'plugins/ai-efficiency-operating-system/skills/task-goal-intelligence/**'
-      - 'plugins/ai-efficiency-operating-system/evals/task-goal-native-state-cases.jsonl'
+      - 'plugins/ai-efficiency-operating-system/evals/task-goal-native-*.jsonl'
       - 'plugins/ai-efficiency-operating-system/scripts/task_goal_native_oracle.py'
       - 'plugins/ai-efficiency-operating-system/scripts/validate_native_goal_harness.py'
       - 'control-plane/ai-system/configs/task-goal-intelligence-v3-extension.json'
@@ -14,8 +15,9 @@ on:
   pull_request:
     paths:
       - 'plugins/ai-efficiency-operating-system/native-goal-harness.json'
+      - 'plugins/ai-efficiency-operating-system/spec/task-goal-intelligence-spec.md'
       - 'plugins/ai-efficiency-operating-system/skills/task-goal-intelligence/**'
-      - 'plugins/ai-efficiency-operating-system/evals/task-goal-native-state-cases.jsonl'
+      - 'plugins/ai-efficiency-operating-system/evals/task-goal-native-*.jsonl'
       - 'plugins/ai-efficiency-operating-system/scripts/task_goal_native_oracle.py'
       - 'plugins/ai-efficiency-operating-system/scripts/validate_native_goal_harness.py'
       - 'control-plane/ai-system/configs/task-goal-intelligence-v3-extension.json'
@@ -42,11 +44,12 @@ jobs:
           python -m json.tool plugins/ai-efficiency-operating-system/skills/task-goal-intelligence/references/upstream-lock.json >/dev/null
           python - <<'PY'
           import json, pathlib
-          path = pathlib.Path('plugins/ai-efficiency-operating-system/evals/task-goal-native-state-cases.jsonl')
-          rows = [json.loads(line) for line in path.read_text(encoding='utf-8').splitlines() if line.strip()]
-          assert len(rows) >= 30
-          assert len({row['id'] for row in rows}) == len(rows)
-          print(f'jsonl cases={len(rows)}')
+          root = pathlib.Path('plugins/ai-efficiency-operating-system/evals')
+          state = [json.loads(line) for line in (root / 'task-goal-native-state-cases.jsonl').read_text(encoding='utf-8').splitlines() if line.strip()]
+          pressure = [json.loads(line) for line in (root / 'task-goal-native-pressure-holdout.jsonl').read_text(encoding='utf-8').splitlines() if line.strip()]
+          assert len(state) >= 30 and len({row['id'] for row in state}) == len(state)
+          assert len(pressure) >= 24 and len({row['id'] for row in pressure}) == len(pressure)
+          print(f'state_cases={len(state)} pressure_holdout={len(pressure)}')
           PY
           python -m py_compile \
             plugins/ai-efficiency-operating-system/skills/task-goal-intelligence/scripts/goal_skill_start.py \
@@ -57,7 +60,7 @@ jobs:
         run: python plugins/ai-efficiency-operating-system/skills/task-goal-intelligence/scripts/quick_validate.py
       - name: Run behavioral state-machine oracle
         run: python plugins/ai-efficiency-operating-system/scripts/task_goal_native_oracle.py
-      - name: Validate native harness contract
+      - name: Validate native harness contract and holdout packaging
         run: python plugins/ai-efficiency-operating-system/scripts/validate_native_goal_harness.py
       - name: Preserve existing plugin and v3 protections
         run: |
