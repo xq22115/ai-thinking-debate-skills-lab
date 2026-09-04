@@ -18,6 +18,18 @@ def load_jsonl(path: Path) -> list[dict]:
 def main() -> int:
     errors: list[str] = []
     config = json.loads(CONFIG.read_text(encoding="utf-8"))
+    settings = json.loads((ROOT / "settings.json").read_text(encoding="utf-8"))
+    plugin = json.loads((ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8"))
+
+    if plugin.get("version") != "1.3.0" or settings.get("version") != "1.3.0":
+        errors.append("native package version must be 1.3.0 in plugin + settings")
+    if plugin.get("version") != settings.get("version"):
+        errors.append("plugin/settings version drift")
+    binding = settings.get("native_goal_harness") or {}
+    if binding.get("profile") != "./native-goal-harness.json" or binding.get("revision") != "4.0.0-native":
+        errors.append("settings native_goal_harness binding drift")
+    if binding.get("host_pressure_holdout_pass_not_preclaimed") is not True:
+        errors.append("settings must preserve HOST_LIVE holdout truth boundary")
 
     if config.get("revision") != "4.0.0-native":
         errors.append("native harness revision drift")
@@ -138,6 +150,7 @@ def main() -> int:
     print(json.dumps({
         "status": "PASS" if not errors else "FAIL",
         "errors": errors,
+        "package_version": plugin.get("version"),
         "pressure_holdout_cases": len(holdout),
         "pressure_holdout_classes": len(classes),
         "subvalidators": command_results,
