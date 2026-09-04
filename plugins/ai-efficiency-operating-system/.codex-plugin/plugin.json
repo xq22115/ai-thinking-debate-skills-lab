@@ -1,22 +1,24 @@
 {
   "name": "ai-efficiency-operating-system",
-  "version": "1.2.0",
-  "description": "Goal-first semantic skill routing, deep research, conditional capability/MCP/runtime forensics, verification, memory, convergence, authorized reverse engineering, autonomy and durable-state workflows for complex ChatGPT and Codex tasks.",
+  "version": "1.3.0",
+  "description": "Native goal-first agent harness with runtime preamble, phase-gated semantic routing, progressive skill disclosure, deep research, capability/MCP/runtime forensics, fresh verification, recovery and failure-trace optimization for complex ChatGPT and Codex tasks.",
   "repository": "https://github.com/xq22115/ai-thinking-debate-skills-lab",
   "skills": "./skills/",
   "license": "MIT",
   "keywords": [
     "task-goal-intelligence",
+    "native-agent-harness",
+    "runtime-preamble",
+    "phase-machine",
     "semantic-routing",
+    "progressive-disclosure",
     "auto-invoke",
     "deep-research",
     "reasoning",
     "verification",
     "capability-forensics",
     "mcp",
-    "dynamic-tool-discovery",
     "runtime-forensics",
-    "reverse-engineering",
     "goal-integrity",
     "long-horizon",
     "chatgpt-desktop",
@@ -26,14 +28,14 @@
     "displayName": "AI Efficiency Operating System",
     "developerName": "xq22115",
     "category": "Productivity",
-    "shortDescription": "Goal-aware auto-routing, deep research and verified execution",
-    "longDescription": "A lightweight task-goal intelligence gate plus six executive implicit skills, three conditionally auto-invoked specialist skills for capability, MCP/tool-surface and runtime-effect diagnosis, and three explicit-only authority/specialist skills. Uses bounded skill bundles, dynamic/demand loading, deterministic regression routing, fallback graphs and postcondition verification rather than treating installed or connected capabilities as proven usable.",
+    "shortDescription": "Native goal harness, semantic routing and verified execution",
+    "longDescription": "A thin implicit Task Goal Intelligence router backed by a deterministic runtime preamble, ORIENT→DISCRIMINATE→COMMIT→EXECUTE→VERIFY→RECOVER→LEARN phase machine, progressive references/scripts, bounded specialist composition, failure-trace optimization and fresh owning-system verification. The design adapts native control structures from leading public agent harnesses without vendoring their prompt text.",
     "capabilities": ["Interactive", "Read"],
     "defaultPrompt": [
-      "Recover my actual goal, select only the skills and tools that materially help, and verify the result.",
-      "Diagnose whether the bottleneck is the model, harness, tool surface, permission, session, entitlement, environment or runtime before changing the system.",
-      "When many tools or MCP schemas are present, discover and load the smallest relevant capability set instead of inflating context.",
-      "If a route fails, preserve the goal, switch to a materially different fallback, and do not claim completion without read-back evidence."
+      "Recover my actual goal, run the smallest useful native workflow, and verify the result with current owning evidence.",
+      "Treat route failures as recovery signals rather than permission to reduce the goal or acceptance criteria.",
+      "Use progressive disclosure: load only the phase reference and specialist needed for the current decision.",
+      "Before any completion claim, reverse-walk the claim through acceptance, owning evidence, current goal version and causal path."
     ]
   }
 }

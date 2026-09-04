@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "profile_id": "native-task-goal-harness-v4",
+  "revision": "4.0.0-native",
+  "status": "PACKAGE_CANDIDATE_HOST_LIVE_UNVERIFIED",
+  "architecture": {
+    "skill_spec": "spec/task-goal-intelligence-spec.md",
+    "thin_router": "skills/task-goal-intelligence/SKILL.md",
+    "runtime_preamble": "skills/task-goal-intelligence/scripts/goal_skill_start.py",
+    "quick_validator": "skills/task-goal-intelligence/scripts/quick_validate.py",
+    "state_machine": "skills/task-goal-intelligence/references/phase-machine.md",
+    "verification_optimizer": "skills/task-goal-intelligence/references/evidence-and-optimization.md",
+    "upstream_lock": "skills/task-goal-intelligence/references/upstream-lock.json",
+    "state_eval": "evals/task-goal-native-state-cases.jsonl",
+    "host_pressure_holdout": "evals/task-goal-native-pressure-holdout.jsonl",
+    "progressive_disclosure": true,
+    "router_line_budget": 260
+  },
+  "runtime": {
+    "protocol": 1,
+    "status_prefix": "GOAL_",
+    "gate_prefix": "GATE_",
+    "native_preamble_preferred_when_executable": true,
+    "degraded_inline_mode_when_unavailable": true,
+    "degraded_mode_may_not_lower_goal_or_acceptance": true,
+    "optional_runtime_instrumentation_failure_may_not_replace_user_task": true,
+    "runtime_output_must_be_current_invocation_bound": true
+  },
+  "phase_machine": {
+    "states": ["ORIENT", "DISCRIMINATE", "COMMIT", "EXECUTE", "VERIFY", "RECOVER", "LEARN"],
+    "default_flow": ["ORIENT", "DISCRIMINATE", "COMMIT", "EXECUTE", "VERIFY", "LEARN"],
+    "recovery_interrupt": true,
+    "correction_interrupt_returns_to": "ORIENT",
+    "task_paths": ["DIRECT", "INVESTIGATIVE", "ARCHITECTURAL"],
+    "complexity_ratchet": "ONE_WAY_UNLESS_USER_SEMANTIC_SCOPE_CHANGE",
+    "three_failed_repairs_promote_architectural_review": true
+  },
+  "routing": {
+    "goal_gate_first": true,
+    "one_primary_phase_owner": true,
+    "max_implicit_skills": 3,
+    "process_before_implementation_when_process_skill_materially_applies": true,
+    "phase_before_keyword_similarity": true,
+    "route_change_does_not_change_goal": true,
+    "nearest_easier_task_probe_before_scope_reduction": true
+  },
+  "progress": {
+    "material_progress_any_of": ["acceptance_delta", "evidence_delta", "decision_critical_uncertainty_delta", "observable_state_delta"],
+    "activity_volume_is_not_progress": true,
+    "two_no_delta_steps_force_causal_recovery": true
+  },
+  "verification": {
+    "fresh_evidence_before_success_claim": true,
+    "reverse_walk": ["claim", "acceptance_test", "owning_evidence", "current_goal_version", "causal_path"],
+    "historical_claim_is_not_current_evidence": true,
+    "agent_self_report_is_not_independent_proof": true,
+    "command_success_is_not_postcondition_success": true,
+    "terminal_statuses": ["DONE", "DONE_WITH_CONCERNS", "BLOCKED", "NEEDS_CONTEXT"]
+  },
+  "optimization": {
+    "failure_trace_first": true,
+    "textual_feedback_preferred": true,
+    "whole_skill_folder_is_optimization_unit": true,
+    "promotion_slices": ["target", "protection", "holdout", "adversarial"],
+    "aggregate_score_cannot_override_hard_slice_regression": true,
+    "host_pressure_holdout_is_packaged_not_preclaimed_passed": true
+  },
+  "upstream_style": {
+    "openai_skill_package": true,
+    "superpowers_phase_gates": true,
+    "gstack_runtime_preamble_and_degraded_mode": true,
+    "anthropic_spec_template_separation": true,
+    "dspy_gepa_failure_trace_optimization": true,
+    "mechanism_adaptation_not_verbatim_vendoring": true
+  }
+}
