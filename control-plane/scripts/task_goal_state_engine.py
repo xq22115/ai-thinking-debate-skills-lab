@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Deterministic support layer for Task Goal Intelligence v2.3.
+"""Deterministic support layer for Task Goal Intelligence v3.1.
 
-This module does not try to infer natural-language intent by itself. It enforces the
-state transitions that should happen *after* an agent has classified a signal:
+This module does not infer natural-language intent by itself. It enforces state
+transitions after a signal has been classified:
 
 - authority is field-sensitive (goal requirements are not mutable runtime facts),
+- non-user evidence may propose hypotheses but cannot create normative goal state,
 - corrections retract dependent conclusions through a truth-maintenance graph,
 - uncertainty classes route to different resolvers,
 - competing hypotheses are ranked disconfirmation-first (ACH style),
@@ -48,12 +49,13 @@ FACTUAL_TYPES = {
 }
 PREFERENCE_TYPES = {"preference"}
 
+# Only explicit user task statements can bind normative fields. Durable preferences
+# remain preferences: they may rank equivalent routes but cannot create a hard goal.
 USER_AUTHORITIES = {
     "current_user_correction",
     "current_user_explicit",
     "original_user_request",
     "prior_user_explicit",
-    "durable_user_preference",
 }
 
 NORMATIVE_AUTHORITY = {
@@ -266,6 +268,13 @@ class GoalState:
             self._register(node)
             return TransitionResult(True, node_id=node_id, reason=f"{effect} is non-binding")
 
+        # Binding normative state must originate in explicit user task authority. Inferred
+        # intent remains a hypothesis/preference until the user actually made it a requirement.
+        if field_type in NORMATIVE_TYPES and authority not in USER_AUTHORITIES:
+            return self._reject(
+                f"non-user authority {authority} cannot create or mutate normative field {key}"
+            )
+
         current_id = self.active_by_key.get(key)
         current = self.nodes[current_id] if current_id else None
 
@@ -281,10 +290,6 @@ class GoalState:
             if not current:
                 return TransitionResult(False, reason="nothing active to retract")
             old_score = self.authority_score(current.field_type, current.authority)
-            if current.field_type in NORMATIVE_TYPES and authority not in USER_AUTHORITIES:
-                return self._reject(
-                    f"non-user authority {authority} cannot retract normative field {key}"
-                )
             if new_score < old_score:
                 return self._reject(
                     f"lower-authority retract rejected for {key}: {authority}({new_score}) "
@@ -313,25 +318,17 @@ class GoalState:
             old_score = self.authority_score(current.field_type, current.authority)
             values_conflict = current.value != value
 
-            if current.field_type in NORMATIVE_TYPES and authority not in USER_AUTHORITIES and values_conflict:
-                return self._reject(
-                    f"non-user authority {authority} cannot override normative field {key}"
-                )
-
             if new_score < old_score:
                 if values_conflict:
                     return self._reject(
                         f"lower-authority signal rejected for {key}: {authority}({new_score}) "
                         f"< {current.authority}({old_score})"
                     )
-                # Same value from a weaker source is corroboration, never an authority downgrade.
                 if source_id:
                     current.metadata.setdefault("corroborating_sources", []).append(source_id)
                 return TransitionResult(True, node_id=current.node_id, reason="same value; weaker source cannot downgrade authority")
 
             if not values_conflict:
-                # Promote provenance in-place when a stronger source confirms the same fact so
-                # downstream dependency edges stay valid and future conflicts see the stronger authority.
                 if new_score > old_score:
                     current.metadata.setdefault("prior_authorities", []).append(
                         {"authority": current.authority, "source_id": current.source_id}
