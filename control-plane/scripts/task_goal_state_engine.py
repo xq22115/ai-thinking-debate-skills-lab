@@ -1,22 +1,10 @@
 #!/usr/bin/env python3
-"""Deterministic support layer for Task Goal Intelligence v3.1.
+"""Deterministic Task Goal Intelligence v3.1 state engine.
 
-This module does not infer natural-language intent by itself. It enforces state
-transitions after a signal has been classified:
-
-- authority is field-sensitive (goal requirements are not mutable runtime facts),
-- non-user evidence may propose hypotheses but cannot create normative goal state,
-- corrections retract dependent conclusions through a truth-maintenance graph,
-- uncertainty classes route to different resolvers,
-- competing hypotheses are ranked disconfirmation-first (ACH style),
-- source reliability and information credibility are tracked separately,
-- rare / dark-web / otherwise unverified evidence may propose hypotheses but cannot
-  silently rewrite normative goal fields,
-- failed acceptance tests generate counterexamples and reopen dependent assumptions,
-- traceability audits reject orphan requirements and orphan actions.
-
-The purpose is to make goal-understanding regressions executable and testable rather
-than depending only on prompt wording.
+Natural-language interpretation stays with the agent. This module enforces the
+post-classification invariants: field-sensitive authority, dependency invalidation,
+structured uncertainty routing, ACH-style evidence ranking, source grading,
+counterexample recovery, and requirement/action traceability.
 """
 
 from __future__ import annotations
@@ -49,8 +37,8 @@ FACTUAL_TYPES = {
 }
 PREFERENCE_TYPES = {"preference"}
 
-# Only explicit user task statements can bind normative fields. Durable preferences
-# remain preferences: they may rank equivalent routes but cannot create a hard goal.
+# Durable preferences may rank equivalent routes, but only explicit task statements
+# may create/change binding normative state.
 USER_AUTHORITIES = {
     "current_user_correction",
     "current_user_explicit",
@@ -71,7 +59,6 @@ NORMATIVE_AUTHORITY = {
     "external_research": 0,
     "rare_unverified_source": 0,
 }
-
 FACTUAL_AUTHORITY = {
     "owning_runtime_readback": 100,
     "immutable_repo_evidence": 92,
@@ -86,7 +73,6 @@ FACTUAL_AUTHORITY = {
     "model_inference": 5,
     "rare_unverified_source": 3,
 }
-
 PREFERENCE_AUTHORITY = {
     "current_user_correction": 100,
     "current_user_explicit": 95,
@@ -99,7 +85,6 @@ PREFERENCE_AUTHORITY = {
     "owning_runtime_readback": 0,
     "rare_unverified_source": 0,
 }
-
 GENERAL_AUTHORITY = {
     "current_user_correction": 100,
     "current_user_explicit": 95,
@@ -182,8 +167,6 @@ class TransitionResult:
 
 
 class GoalState:
-    """Small assumption-based truth-maintenance graph for goal state."""
-
     def __init__(self) -> None:
         self.nodes: dict[str, GoalNode] = {}
         self.active_by_key: dict[str, str] = {}
@@ -222,17 +205,17 @@ class GoalState:
         stack: list[tuple[str, bool]] = [(node_id, True)]
         seen: set[str] = set()
         while stack:
-            current, is_root = stack.pop()
-            if current in seen or current not in self.nodes:
+            current_id, is_root = stack.pop()
+            if current_id in seen or current_id not in self.nodes:
                 continue
-            seen.add(current)
-            node = self.nodes[current]
+            seen.add(current_id)
+            node = self.nodes[current_id]
             node.status = root_status if is_root else INVALIDATED
             node.invalidated_by = by
-            if self.active_by_key.get(node.key) == current:
+            if self.active_by_key.get(node.key) == current_id:
                 self.active_by_key.pop(node.key, None)
-            invalidated.append(current)
-            for child in sorted(self.dependents.get(current, set())):
+            invalidated.append(current_id)
+            for child in sorted(self.dependents.get(current_id, set())):
                 stack.append((child, False))
         return invalidated
 
@@ -253,6 +236,7 @@ class GoalState:
         metadata = dict(metadata or {})
         depends = set(depends_on)
 
+        # Examples/noise can be retained for provenance but never bind task state.
         if effect in {"EXAMPLE", "DISTRACTOR"}:
             node = GoalNode(
                 node_id=node_id,
@@ -268,19 +252,35 @@ class GoalState:
             self._register(node)
             return TransitionResult(True, node_id=node_id, reason=f"{effect} is non-binding")
 
-        # Binding normative state must originate in explicit user task authority. Inferred
-        # intent remains a hypothesis/preference until the user actually made it a requirement.
-        if field_type in NORMATIVE_TYPES and authority not in USER_AUTHORITIES:
-            return self._reject(
-                f"non-user authority {authority} cannot create or mutate normative field {key}"
-            )
-
         current_id = self.active_by_key.get(key)
         current = self.nodes[current_id] if current_id else None
 
         if current and current.field_type != field_type:
             return self._reject(
                 f"field type mismatch for {key}: active={current.field_type}, incoming={field_type}"
+            )
+
+        # Non-user evidence cannot create or change normative meaning. It may, however,
+        # corroborate the *same* already-authorized value without becoming its authority.
+        if field_type in NORMATIVE_TYPES and authority not in USER_AUTHORITIES:
+            if current is None:
+                return self._reject(
+                    f"non-user authority {authority} cannot create normative field {key}"
+                )
+            if effect == "RETRACT":
+                return self._reject(
+                    f"non-user authority {authority} cannot retract normative field {key}"
+                )
+            if current.value != value:
+                return self._reject(
+                    f"non-user authority {authority} cannot mutate normative field {key}"
+                )
+            if source_id:
+                current.metadata.setdefault("corroborating_sources", []).append(source_id)
+            return TransitionResult(
+                True,
+                node_id=current.node_id,
+                reason="same normative value corroborated; non-user source cannot own or downgrade it",
             )
 
         authority_field_type = current.field_type if current else field_type
@@ -303,7 +303,6 @@ class GoalState:
                 field_type=current.field_type,
                 authority=authority,
                 source_id=source_id,
-                depends_on=set(),
                 status=ACTIVE,
                 metadata={**metadata, "effect": "RETRACT"},
             )
@@ -313,7 +312,6 @@ class GoalState:
             return TransitionResult(True, node_id=node_id, invalidated=invalidated, reason="retracted")
 
         invalidated: list[str] = []
-
         if current:
             old_score = self.authority_score(current.field_type, current.authority)
             values_conflict = current.value != value
@@ -326,7 +324,11 @@ class GoalState:
                     )
                 if source_id:
                     current.metadata.setdefault("corroborating_sources", []).append(source_id)
-                return TransitionResult(True, node_id=current.node_id, reason="same value; weaker source cannot downgrade authority")
+                return TransitionResult(
+                    True,
+                    node_id=current.node_id,
+                    reason="same value; weaker source cannot downgrade authority",
+                )
 
             if not values_conflict:
                 if new_score > old_score:
@@ -402,20 +404,14 @@ class GoalState:
 
 
 def rank_hypotheses(hypotheses: Iterable[str], evidence: Iterable[EvidenceItem]) -> list[dict[str, Any]]:
-    """Rank hypotheses by weighted inconsistency, in the spirit of ACH.
-
-    Support is deliberately not allowed to erase contradictions. The preferred
-    hypothesis is the one with the least strong disconfirming evidence, then the most
-    independent support. This resists confirmation-heavy research.
-    """
-
+    """ACH-style ranking: minimize weighted contradiction before maximizing support."""
     rows: list[dict[str, Any]] = []
-    evidence_list = list(evidence)
+    items = list(evidence)
     for hypothesis in hypotheses:
         contradiction = 0.0
         support = 0.0
         unknown = 0
-        for item in evidence_list:
+        for item in items:
             relation = item.relations.get(hypothesis, "neutral")
             weight = item.weight()
             if relation == "contradict":
@@ -436,6 +432,5 @@ def rank_hypotheses(hypotheses: Iterable[str], evidence: Iterable[EvidenceItem])
 
 
 def can_evidence_mutate_normative_goal(evidence: EvidenceItem) -> bool:
-    """External evidence never directly rewrites a normative user goal."""
-
+    """External evidence can change hypotheses/routes, never normative user intent."""
     return False
