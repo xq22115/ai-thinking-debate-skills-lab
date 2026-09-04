@@ -4,12 +4,15 @@
   "revision": "4.0.0-native",
   "status": "PACKAGE_CANDIDATE_HOST_LIVE_UNVERIFIED",
   "architecture": {
+    "skill_spec": "spec/task-goal-intelligence-spec.md",
     "thin_router": "skills/task-goal-intelligence/SKILL.md",
     "runtime_preamble": "skills/task-goal-intelligence/scripts/goal_skill_start.py",
     "quick_validator": "skills/task-goal-intelligence/scripts/quick_validate.py",
     "state_machine": "skills/task-goal-intelligence/references/phase-machine.md",
     "verification_optimizer": "skills/task-goal-intelligence/references/evidence-and-optimization.md",
     "upstream_lock": "skills/task-goal-intelligence/references/upstream-lock.json",
+    "state_eval": "evals/task-goal-native-state-cases.jsonl",
+    "host_pressure_holdout": "evals/task-goal-native-pressure-holdout.jsonl",
     "progressive_disclosure": true,
     "router_line_budget": 260
   },
@@ -59,7 +62,8 @@
     "textual_feedback_preferred": true,
     "whole_skill_folder_is_optimization_unit": true,
     "promotion_slices": ["target", "protection", "holdout", "adversarial"],
-    "aggregate_score_cannot_override_hard_slice_regression": true
+    "aggregate_score_cannot_override_hard_slice_regression": true,
+    "host_pressure_holdout_is_packaged_not_preclaimed_passed": true
   },
   "upstream_style": {
     "openai_skill_package": true,
