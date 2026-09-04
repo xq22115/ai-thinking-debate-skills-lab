@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "adapter": "openclaw-native",
-  "adapter_version": "0.1.0",
+  "adapter_version": "0.2.0",
   "checked_at": "2026-09-04",
   "openclaw": {
     "repository": "openclaw/openclaw",
@@ -13,6 +13,7 @@
       "docs/tools/skills-config.md",
       "docs/tools/subagents.md",
       "docs/tools/swarm.md",
+      "docs/tools/lobster.md",
       "docs/concepts/parallel-specialist-lanes.md",
       "docs/cli/config.md",
       "docs/cli/skills.md"
@@ -25,6 +26,9 @@
     "isolated/fork subagent context semantics",
     "parent review of child completion evidence",
     "experimental opt-in Swarm collectors and bounded fan-out",
+    "bundled optional Lobster tool for deterministic pipelines",
+    "Lobster approval/resume envelopes and workflow-file semantics",
+    "Lobster sandbox unavailability and embedded openclaw.invoke context limitation",
     "config get/set/patch/validate with conditional writes",
     "skill prompt/loading limits and agent visibility boundaries"
   ],
