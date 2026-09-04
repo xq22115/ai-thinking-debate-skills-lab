@@ -38,7 +38,10 @@ jobs:
           python -m py_compile \
             plugins/ai-efficiency-operating-system/adapters/openclaw/scripts/install_adapter.py \
             plugins/ai-efficiency-operating-system/adapters/openclaw/scripts/role_router.py \
+            plugins/ai-efficiency-operating-system/adapters/openclaw/scripts/test_install_adapter.py \
             plugins/ai-efficiency-operating-system/adapters/openclaw/scripts/validate_adapter.py
+      - name: Prove additive installer behavior
+        run: python plugins/ai-efficiency-operating-system/adapters/openclaw/scripts/test_install_adapter.py
       - name: Run deterministic adapter gate
         run: python plugins/ai-efficiency-operating-system/adapters/openclaw/scripts/validate_adapter.py
       - name: Preserve canonical plugin protections
