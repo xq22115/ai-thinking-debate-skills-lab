@@ -1,0 +1,207 @@
+{
+  "schema_version": 1,
+  "profile_id": "task-goal-intelligence-v31-truth-maintenance",
+  "revision": "3.1.0",
+  "extends": [
+    "goal-fidelity-task-understanding-v2",
+    "task-goal-intelligence-v3-extension"
+  ],
+  "default_enabled": true,
+  "canonical_base_skill": "skills/skills/task-goal-intelligence/SKILL.md",
+  "auto_invoke_projection": "plugins/ai-efficiency-operating-system/skills/task-goal-intelligence/SKILL.md",
+  "deterministic_engine": "control-plane/scripts/task_goal_state_engine.py",
+  "behavioral_tests": "control-plane/tests/test_task_goal_state_engine.py",
+  "objective": "Add deterministic field-sensitive authority, assumption-based truth maintenance, disconfirmation-first hypothesis ranking, counterexample recovery, traceability, and metamorphic behavioral proof to the existing v3 event-sourced anti-minimization runtime without removing any v2.2 or v3 capability.",
+  "authority_lattice": {
+    "field_sensitive": true,
+    "normative_fields": [
+      "ROOT_GOAL",
+      "DESIRED_END_STATE",
+      "HARD_CONSTRAINTS",
+      "NEGATIONS",
+      "PROTECTED_CAPABILITIES",
+      "ACCEPTANCE_TESTS"
+    ],
+    "mutable_factual_fields": [
+      "TARGET_IDENTITY",
+      "environment_state",
+      "version",
+      "runtime_fact",
+      "capability_fact"
+    ],
+    "normative_rule": "current explicit user corrections and requirements own what the task should achieve; external evidence may challenge causal assumptions or feasibility but cannot silently rewrite normative fields",
+    "factual_rule": "owning-runtime read-back outranks stale summaries and model inference for mutable external facts",
+    "preference_rule": "current explicit user preference outranks durable preference; durable preference may rank task-equivalent routes but cannot override explicit hard requirements",
+    "summary_is_cache_not_authority": true,
+    "model_inference_is_hypothesis_not_authority": true,
+    "external_retrieval_is_evidence_not_goal_authority": true,
+    "weaker_same_value_signal_cannot_downgrade_authority": true,
+    "retract_or_override_requires_sufficient_field_authority": true,
+    "conflicts_remain_explicit_until_resolved": true
+  },
+  "uncertainty_routing": {
+    "required_classes": [
+      "specification",
+      "target_identity",
+      "environment_state",
+      "capability",
+      "evidence",
+      "model",
+      "temporal"
+    ],
+    "resolvers": {
+      "specification": "current_user_or_explicit_task_contract",
+      "target_identity": "owning_runtime_or_repository_identity_readback",
+      "environment_state": "owning_runtime_readback",
+      "capability": "harmless_capability_probe_or_executable_test",
+      "evidence": "independent_corroboration_and_source_grading",
+      "model": "competing_hypotheses_holdout_or_fresh_context_evaluator",
+      "temporal": "fresh_timestamped_source_or_runtime_readback"
+    },
+    "do_not_ask_user_for_tool_resolvable_facts": true,
+    "do_not_let_tool_facts_own_user_specification": true
+  },
+  "truth_maintenance": {
+    "enabled": true,
+    "support_sets_required_for_derived_conclusions": true,
+    "correction_is_execution_interrupt": true,
+    "event_sourced_goal_state_is_preserved": true,
+    "on_override_or_retract": [
+      "verify_field_authority",
+      "mark_replaced_premise_obsolete",
+      "invalidate_dependent_conclusions",
+      "preserve_unaffected_constraints_and_evidence",
+      "recompute_only_affected_subgraph",
+      "resume_from_nearest_valid_state"
+    ],
+    "stale_dependent_conclusion_cannot_remain_active": true,
+    "examples_and_distractors_are_non_binding": true,
+    "acknowledgement_or_apology_is_not_progress": true
+  },
+  "competing_hypotheses": {
+    "method": "analysis_of_competing_hypotheses",
+    "disconfirmation_first": true,
+    "strong_contradiction_outweighs_many_weak_confirmations": true,
+    "neutral_or_unknown_evidence_is_explicit": true,
+    "opposite_hypothesis_search_required_for_high_impact_conclusion": true,
+    "evidence_matrix_fields": [
+      "hypothesis",
+      "evidence_id",
+      "relation",
+      "source_reliability",
+      "information_credibility",
+      "origin",
+      "corroborated"
+    ]
+  },
+  "source_grading": {
+    "separate_source_reliability_and_information_credibility": true,
+    "source_reliability_scale": ["A", "B", "C", "D", "E", "F"],
+    "information_credibility_scale": [1, 2, 3, 4, 5, 6],
+    "origin_classes": [
+      "owning_runtime",
+      "primary",
+      "independent_reproduction",
+      "maintainer",
+      "practitioner",
+      "long_tail",
+      "darkweb_or_unverified",
+      "summary",
+      "model_inference"
+    ],
+    "opaque_v3_lead_state_is_preserved": true,
+    "rare_or_darkweb_unverified_starts_low_authority": true,
+    "rare_sources_may_seed_hypotheses": true,
+    "rare_sources_cannot_directly_mutate_normative_goal": true,
+    "corroboration_may_increase_evidence_weight": true,
+    "derivative_copies_do_not_count_as_independent_corroboration": true
+  },
+  "counterexample_guided_refinement": {
+    "enabled": true,
+    "failed_acceptance_test_is_counterexample": true,
+    "counterexample_must_reopen_dependent_route_assumptions": true,
+    "counterexample_must_not_weaken_root_goal_by_default": true,
+    "forbid_acceptance_redefinition_to_hide_failure": true,
+    "first_upstream_failure_analysis_is_preserved": true
+  },
+  "traceability": {
+    "bidirectional": true,
+    "chain": [
+      "source_user_signal",
+      "normalized_requirement",
+      "dependent_action_or_route",
+      "observable_acceptance_test",
+      "evidence_or_readback"
+    ],
+    "every_hard_requirement_has_source_id": true,
+    "every_acceptance_test_maps_to_requirement": true,
+    "every_material_action_maps_to_goal_unknown_hypothesis_or_acceptance": true,
+    "orphan_action_is_non_progress_candidate": true,
+    "self_derived_requirements_must_be_labeled": true,
+    "all_hard_requirements_need_verification_path_before_pass": true,
+    "completion_reverse_walk_must_bind_current_goal_version": true
+  },
+  "metamorphic_goal_tests": {
+    "required": true,
+    "invariants": [
+      "example_or_distractor_reordering_does_not_change_root_goal",
+      "equivalent_paraphrase_does_not_change_hard_constraints",
+      "named_tool_example_does_not_become_sole_route",
+      "low_authority_retrieval_does_not_override_current_user_correction",
+      "mutable_runtime_fact_change_does_not_rewrite_normative_end_state",
+      "same_value_weaker_source_does_not_downgrade_authority"
+    ],
+    "mutations_that_must_change_state": [
+      "authorized_explicit_override",
+      "authorized_explicit_retract",
+      "target_identity_change",
+      "acceptance_test_change",
+      "explicit_interpretation_correction"
+    ]
+  },
+  "behavioral_gate": {
+    "marker_only_validation_is_insufficient": true,
+    "offline_deterministic_tests_required": true,
+    "minimum_behavioral_cases": 15,
+    "required_case_families": [
+      "correction_cascade",
+      "non_binding_example_distractor",
+      "field_sensitive_authority",
+      "low_authority_retract_rejection",
+      "same_value_authority_downgrade_rejection",
+      "stronger_same_value_provenance_promotion",
+      "stale_summary_suppression",
+      "uncertainty_resolver_routing",
+      "rare_source_grading",
+      "ach_disconfirmation",
+      "counterexample_recovery",
+      "traceability",
+      "metamorphic_invariance"
+    ]
+  },
+  "release_gate_additions": [
+    "v2_base_invariants_preserved",
+    "v3_runtime_extension_invariants_preserved",
+    "v31_truth_maintenance_is_manifest_registered",
+    "v31_auto_invoke_projection_contains_truth_maintenance",
+    "behavioral_goal_state_tests_pass",
+    "no_source_authority_violation",
+    "no_stale_dependent_conclusion",
+    "no_orphan_hard_requirement_or_material_action",
+    "no_unresolved_failed_acceptance_counterexample"
+  ],
+  "design_provenance": [
+    "UserIntentBench_latent_and_shifting_intent_graphs",
+    "Structured_Uncertainty_EVPI_ClarifyBench_ACL_2026",
+    "ClarifyGPT_contrastive_solution_consistency",
+    "de_Kleer_assumption_based_truth_maintenance",
+    "CIA_analysis_of_competing_hypotheses",
+    "NASA_bidirectional_requirements_traceability",
+    "CEGAR_counterexample_guided_refinement",
+    "metamorphic_testing_oracle_relations",
+    "OpenCTI_source_reliability_and_information_confidence",
+    "MISP_Admiralty_source_reliability_information_credibility",
+    "HumanLayer_context_engineering_and_state_ownership",
+    "Task_Goal_Intelligence_v3_event_sourcing_anti_minimization_and_progress_ledger"
+  ]
+}

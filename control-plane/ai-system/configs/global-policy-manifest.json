@@ -47,6 +47,24 @@
         "GitHub",
         "Notion"
       ]
+    },
+    {
+      "path": "control-plane/scripts/validate_task_goal_intelligence_v3.py",
+      "role": "task_goal_intelligence_v3_runtime_validator",
+      "required_markers": [
+        "task-goal-intelligence-v3-extension.json",
+        "task_goal_intelligence_v3_cases.jsonl",
+        "opaque_source_provenance"
+      ]
+    },
+    {
+      "path": "control-plane/scripts/validate_task_goal_intelligence_v31.py",
+      "role": "task_goal_intelligence_v31_behavioral_validator",
+      "required_markers": [
+        "task-goal-intelligence-v31-truth-maintenance.json",
+        "task_goal_state_engine.py",
+        "behavioral"
+      ]
     }
   ],
   "canonical_policies": [
@@ -60,6 +78,36 @@
       "id": "goal-fidelity-machine",
       "path": "control-plane/ai-system/configs/goal-fidelity-global.json",
       "semantic_owner": "goal_fidelity_machine_contract",
+      "load_mode": "substantive_task_before_material_action"
+    },
+    {
+      "id": "task-goal-intelligence-skill",
+      "path": "skills/skills/task-goal-intelligence/SKILL.md",
+      "semantic_owner": "task_goal_intelligence_portable_base",
+      "load_mode": "substantive_task_before_material_action"
+    },
+    {
+      "id": "task-goal-intelligence-v3-extension",
+      "path": "control-plane/ai-system/configs/task-goal-intelligence-v3-extension.json",
+      "semantic_owner": "task_goal_intelligence_v3_runtime_extension",
+      "load_mode": "substantive_task_before_material_action"
+    },
+    {
+      "id": "task-goal-intelligence-v3-sources",
+      "path": "control-plane/ai-system/configs/task-goal-intelligence-v3-sources.json",
+      "semantic_owner": "task_goal_intelligence_v3_provenance_ledger",
+      "load_mode": "research_heavy_or_goal_intelligence_change"
+    },
+    {
+      "id": "task-goal-intelligence-plugin-projection",
+      "path": "plugins/ai-efficiency-operating-system/skills/task-goal-intelligence/SKILL.md",
+      "semantic_owner": "task_goal_intelligence_auto_invoke_projection",
+      "load_mode": "plugin_runtime_auto_invoke"
+    },
+    {
+      "id": "task-goal-intelligence-v31-truth-maintenance",
+      "path": "control-plane/ai-system/configs/task-goal-intelligence-v31-truth-maintenance.json",
+      "semantic_owner": "task_goal_intelligence_truth_maintenance",
       "load_mode": "substantive_task_before_material_action"
     },
     {
@@ -122,7 +170,9 @@
       "inventory_active_instruction_sources_and_precedence",
       "load_kernel",
       "load_only_task_relevant_manifest_entries",
+      "load_task_goal_portable_base_v3_extension_and_v31_truth_maintenance_for_substantive_tasks",
       "restore_root_goal_underlying_purpose_goal_signature_acceptance_contract_open_gates_failed_routes_and_evidence_index",
+      "restore_goal_version_event_log_intent_belief_authority_uncertainty_traceability_progress_and_counterexample_state",
       "quarantine_failed_or_stale_context",
       "record_loaded_policy_revision_and_source_provenance",
       "continue_only_after_required_invariants_are_present"
@@ -164,12 +214,24 @@
       "ROOT_GOAL",
       "UNDERLYING_PURPOSE",
       "GOAL_SIGNATURE",
+      "GOAL_VERSION",
+      "GOAL_FINGERPRINT",
+      "GOAL_EVENT_LOG",
       "DESIRED_END_STATE",
       "HARD_CONSTRAINTS",
       "NEGATIONS",
       "ACCEPTANCE_TESTS",
       "protected_capabilities",
       "TARGET_IDENTITY",
+      "INTENT_BELIEF_GRAPH",
+      "ASSUMPTION_LEDGER",
+      "authority_ledger",
+      "uncertainty_ledger",
+      "traceability_matrix",
+      "progress_ledger",
+      "invalidated_goal_nodes",
+      "counterexamples",
+      "historical_claims",
       "CURRENT_BLOCKER",
       "NEXT_ACTION",
       "open_unknowns",
