@@ -19,6 +19,7 @@ EXPECTED_SKILLS = {
     "openclaw-evidence-gate",
     "openclaw-runtime-recovery",
     "openclaw-learning-loop",
+    "openclaw-lobster-workflows",
 }
 EXPECTED_CLASSES = {
     "direct",
@@ -112,11 +113,26 @@ def main() -> int:
         if marker.lower() not in learning.lower():
             errors.append(f"learning marker missing: {marker}")
 
+    lobster = (SKILLS / "openclaw-lobster-workflows" / "SKILL.md").read_text(encoding="utf-8")
+    for marker in [
+        "Sub-agents / Swarm",
+        "needs_approval",
+        "resume",
+        "openclaw.invoke",
+        "sandboxed",
+        "openclaw-evidence-gate",
+    ]:
+        if marker.lower() not in lobster.lower():
+            errors.append(f"lobster marker missing: {marker}")
+
     lock = json.loads(LOCK.read_text(encoding="utf-8"))
     if lock.get("openclaw", {}).get("commit") != OPENCLAW_SHA:
         errors.append("OpenClaw upstream lock drift")
     if lock.get("checked_at") != "2026-09-04":
         errors.append("OpenClaw checked_at drift")
+    surfaces = set(lock.get("openclaw", {}).get("surfaces") or [])
+    if "docs/tools/lobster.md" not in surfaces:
+        errors.append("Lobster upstream surface is not pinned")
 
     rows = [
         json.loads(line)
@@ -150,6 +166,7 @@ def main() -> int:
         "numeric_floor",
         "skills.load.extraDirs",
         "tools.alsoAllow",
+        "lobster",
         "config\", \"validate",
         "CONFIG_BACKUP",
     ]:
