@@ -120,6 +120,23 @@ A failed route changes the method, not the root goal.
 - if a specialist/runtime feature is unavailable, fall back to the nearest capable route and record the mismatch;
 - optional preamble/telemetry failure must not replace the user's task.
 
+## v3 compatibility index
+
+The native router preserves the prior semantic protections through progressive disclosure. These are compatibility anchors, not duplicated implementations:
+
+- Runtime projection revision: `3.0.0` — superseded by `4.0.0-native`, retained so v3 protection tests remain meaningful.
+- Event-sourced goal state → `references/phase-machine.md` and the current goal fingerprint protocol.
+- Historical-claim invalidation → `ORIENT` plus fresh owning evidence.
+- Anti-loophole / anti-minimization gate → `COMMIT` nearest easier task probe.
+- Goal Capsule recitation → `references/runtime-preamble.md` host handoff capsule.
+- Progress Ledger: effort is not progress → material-delta protocol above.
+- Two consecutive material steps with no delta → `RECOVER` and causal pivot.
+- High-scale + rare-signal evidence mesh → `references/evidence-and-optimization.md`.
+- Opaque evidence begins at `LEAD` before corroboration/promotion.
+- Failure-driven optimization → target/protection/holdout/adversarial promotion slices.
+- Completion chain: claim → acceptance test → owning evidence → current goal version → causal path.
+- The nearest easier task cannot replace the user's actual desired end state.
+
 ## Terminal status
 
 Use one:
