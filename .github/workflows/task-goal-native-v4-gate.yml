@@ -3,23 +3,31 @@ name: Task Goal Native v4 Gate
 on:
   push:
     paths:
+      - 'plugins/ai-efficiency-operating-system/.codex-plugin/plugin.json'
+      - 'plugins/ai-efficiency-operating-system/settings.json'
       - 'plugins/ai-efficiency-operating-system/native-goal-harness.json'
+      - 'plugins/ai-efficiency-operating-system/README.md'
       - 'plugins/ai-efficiency-operating-system/spec/task-goal-intelligence-spec.md'
       - 'plugins/ai-efficiency-operating-system/skills/task-goal-intelligence/**'
       - 'plugins/ai-efficiency-operating-system/evals/task-goal-native-*.jsonl'
       - 'plugins/ai-efficiency-operating-system/scripts/task_goal_native_oracle.py'
       - 'plugins/ai-efficiency-operating-system/scripts/validate_native_goal_harness.py'
+      - 'skills/02-skills-catalog.md'
       - 'control-plane/ai-system/configs/task-goal-intelligence-v3-extension.json'
       - 'control-plane/scripts/validate_task_goal_intelligence_v3.py'
       - '.github/workflows/task-goal-native-v4-gate.yml'
   pull_request:
     paths:
+      - 'plugins/ai-efficiency-operating-system/.codex-plugin/plugin.json'
+      - 'plugins/ai-efficiency-operating-system/settings.json'
       - 'plugins/ai-efficiency-operating-system/native-goal-harness.json'
+      - 'plugins/ai-efficiency-operating-system/README.md'
       - 'plugins/ai-efficiency-operating-system/spec/task-goal-intelligence-spec.md'
       - 'plugins/ai-efficiency-operating-system/skills/task-goal-intelligence/**'
       - 'plugins/ai-efficiency-operating-system/evals/task-goal-native-*.jsonl'
       - 'plugins/ai-efficiency-operating-system/scripts/task_goal_native_oracle.py'
       - 'plugins/ai-efficiency-operating-system/scripts/validate_native_goal_harness.py'
+      - 'skills/02-skills-catalog.md'
       - 'control-plane/ai-system/configs/task-goal-intelligence-v3-extension.json'
       - 'control-plane/scripts/validate_task_goal_intelligence_v3.py'
       - '.github/workflows/task-goal-native-v4-gate.yml'
@@ -40,6 +48,8 @@ jobs:
           python-version: '3.12'
       - name: Parse and compile native package
         run: |
+          python -m json.tool plugins/ai-efficiency-operating-system/.codex-plugin/plugin.json >/dev/null
+          python -m json.tool plugins/ai-efficiency-operating-system/settings.json >/dev/null
           python -m json.tool plugins/ai-efficiency-operating-system/native-goal-harness.json >/dev/null
           python -m json.tool plugins/ai-efficiency-operating-system/skills/task-goal-intelligence/references/upstream-lock.json >/dev/null
           python - <<'PY'
