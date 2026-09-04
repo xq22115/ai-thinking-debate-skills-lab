@@ -42,6 +42,26 @@ class InstallerAdditivityTests(unittest.TestCase):
                 "skills.load.extraDirs", ["/adapter/skills"], dry_run=False
             )
 
+    def test_absolute_tool_allowlist_is_extended_in_place(self) -> None:
+        with patch.object(installer, "get_json", return_value=(True, ["read", "write"])), patch.object(
+            installer, "append_unique", return_value="SET"
+        ) as append:
+            installer.ensure_tools_allowed("tools", ["lobster", "subagents"], dry_run=False)
+            append.assert_called_once_with(
+                "tools.allow", ["lobster", "subagents"], dry_run=False
+            )
+
+    def test_profile_scope_without_absolute_allowlist_uses_also_allow(self) -> None:
+        with patch.object(installer, "get_json", return_value=(False, None)), patch.object(
+            installer, "append_unique", return_value="SET"
+        ) as append:
+            installer.ensure_tools_allowed(
+                "agents.entries.main.tools", ["lobster", "subagents"], dry_run=False
+            )
+            append.assert_called_once_with(
+                "agents.entries.main.tools.alsoAllow", ["lobster", "subagents"], dry_run=False
+            )
+
     def test_numeric_floor_never_lowers_higher_existing_value(self) -> None:
         with patch.object(installer, "get_json", return_value=(True, 32)), patch.object(
             installer, "set_value", return_value="SET"
