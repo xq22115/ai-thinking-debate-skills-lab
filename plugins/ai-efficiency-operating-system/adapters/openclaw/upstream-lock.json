@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "adapter": "openclaw-native",
-  "adapter_version": "0.2.0",
+  "adapter_version": "0.3.0",
   "checked_at": "2026-09-04",
   "openclaw": {
     "repository": "openclaw/openclaw",
@@ -16,7 +16,9 @@
       "docs/tools/lobster.md",
       "docs/concepts/parallel-specialist-lanes.md",
       "docs/cli/config.md",
-      "docs/cli/skills.md"
+      "docs/cli/skills.md",
+      "src/config/schema.help.runtime.ts",
+      "src/agents/tools-effective-inventory.ts"
     ]
   },
   "adopted_contracts": [
@@ -29,6 +31,8 @@
     "bundled optional Lobster tool for deterministic pipelines",
     "Lobster approval/resume envelopes and workflow-file semantics",
     "Lobster sandbox unavailability and embedded openclaw.invoke context limitation",
+    "tools.allow is an absolute allowlist that replaces profile expansion",
+    "per-agent absolute allowlists can clamp global tools.alsoAllow additions",
     "config get/set/patch/validate with conditional writes",
     "skill prompt/loading limits and agent visibility boundaries"
   ],
