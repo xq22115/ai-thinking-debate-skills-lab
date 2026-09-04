@@ -42,6 +42,22 @@ Do not learn:
 
 Require a counterexample/holdout before promoting a broad rule. A local win cannot erase a protected behavior that previously passed.
 
+## Procedure compilation into Lobster
+
+A repeated procedure is eligible for `openclaw-lobster-workflows` only when its action path is already deterministic enough to replay without fresh model judgment.
+
+Before compiling a learned procedure into Lobster, require:
+
+- a stable trigger and target identity;
+- at least one verified positive execution;
+- a counterexample/protection case showing when the workflow must **not** run;
+- explicit approval placement before material side effects;
+- finite timeout/output bounds;
+- a rollback or compensating path where the target permits it;
+- owning-system read-back after the workflow.
+
+Do not encode unresolved hypotheses, ambiguous compatibility branches, or changing causal diagnosis into a rigid workflow. Keep those in the adaptive agent plane until discrimination is complete; a hybrid route may then hand only the stable execution segment to Lobster.
+
 ## Workshop behavior
 
 When available, use Skill Workshop rather than direct ad-hoc mutation:
@@ -65,4 +81,5 @@ After apply/approval:
 2. exercise a representative trigger;
 3. verify the behavior/postcondition;
 4. run a counterexample that should not trigger the new rule;
-5. mark the learning `VERIFIED` only after both positive and protection checks pass.
+5. if the learning compiles to Lobster, verify the actual workflow/approval/resume path rather than only the proposal text;
+6. mark the learning `VERIFIED` only after positive and protection checks pass.
