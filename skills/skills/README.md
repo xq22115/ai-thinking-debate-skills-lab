@@ -12,7 +12,7 @@ The skill folder shape follows the current Agent Skills semantic pattern: each p
 4. `completion-gate` — prevents false `done` / `verified` / `deployed` claims; exact-revision and infrastructure-state aware. (`0.1.1-rc1`)
 5. `recoverable-state` — external checkpoints for long-horizon work.
 6. `compatibility-audit` — host/OS/version/permission/product-surface checks with source-class separation. (`0.1.1-rc1`)
-7. `multi-agent-deliberation` — dynamic 1–30 role coverage pool routed by marginal information gain; runtime independence is evidence-gated. (`0.1.1-rc1`)
+7. `multi-agent-deliberation` — evidence-gated Expert Debate Council with canonical five-lane core, dynamic 1–30 role coverage, cross-chat single-writer coordination, Web logical-role projection, minority preservation, and owning-runtime verification; runtime independence is never inferred from role labels. (`0.1.3-rc1`)
 8. `capability-challenge` — separates `VISIBLE`, `AUTHORIZED`, and `VERIFIED` before terminal `cannot`. (`0.1.1-rc1`)
 9. `durable-agent-control-plane` — durable task identity, isolated writers, receipts, resume/recovery, and task-result vs infrastructure-state separation. (`0.1.1-rc1`)
 
@@ -22,7 +22,7 @@ For complex engineering/research tasks, recommended default composition:
 
 `capability-challenge → compatibility-audit → evidence-gap-research → competing-hypotheses → root-cause-clustering → multi-agent-deliberation (only if useful) → durable-agent-control-plane (when execution spans actors/interruptions) → execution → completion-gate → recoverable-state checkpoint`
 
-The orchestrator should omit skills when their trigger conditions are absent.
+The orchestrator should omit skills when their trigger conditions are absent. For multi-agent deliberation, bind the council to the current Goal Contract/goal version before material debate and stop debating when execution, measurement, or owning-runtime read-back has higher expected information value.
 
 ## Shared Hard Invariants
 
@@ -37,6 +37,8 @@ The orchestrator should omit skills when their trigger conditions are absent.
 - `REPOSITORY_ARTIFACT != PROVIDER_LIVE_EXECUTION`
 - `TOOL_SUCCESS != TASK_COMPLETE`
 - `PRE_STEP_INFRA_FAILURE != TEST_FAILURE`
+- `ROLE_DIVERSITY != RUNTIME_INDEPENDENCE`
+- `REPOSITORY_SKILL_PERSISTED != CHATGPT_WEB_NATIVE_ALL_CHAT_DEPLOYED`
 
 ## Promotion Rule
 
