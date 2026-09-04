@@ -34,8 +34,10 @@ EXPECTED_CLASSES = {
     "architecture",
     "combined",
     "pressure",
+    "workflow",
 }
 OPENCLAW_SHA = "d84cdc5c03d378c0f50db1b0abb17537f390b01c"
+EXPECTED_PLANES = {"parent", "agents", "lobster", "hybrid"}
 
 
 def frontmatter(text: str) -> dict[str, str]:
@@ -84,6 +86,8 @@ def main() -> int:
         "child result is evidence",
         "sessions_spawn",
         "Swarm",
+        "Lobster",
+        "hybrid",
         "isolated",
         "fork",
         "parent owns the final completion claim",
@@ -125,6 +129,12 @@ def main() -> int:
         if marker.lower() not in lobster.lower():
             errors.append(f"lobster marker missing: {marker}")
 
+    role_pool = json.loads(
+        (SKILLS / "openclaw-goal-orchestrator" / "references" / "role-pool.json").read_text(encoding="utf-8")
+    )
+    if set((role_pool.get("execution_planes") or {}).keys()) != EXPECTED_PLANES:
+        errors.append("execution-plane contract drift")
+
     lock = json.loads(LOCK.read_text(encoding="utf-8"))
     if lock.get("openclaw", {}).get("commit") != OPENCLAW_SHA:
         errors.append("OpenClaw upstream lock drift")
@@ -139,8 +149,8 @@ def main() -> int:
         for line in EVALS.read_text(encoding="utf-8").splitlines()
         if line.strip()
     ]
-    if len(rows) < 16:
-        errors.append("need at least 16 adapter regression cases")
+    if len(rows) < 20:
+        errors.append("need at least 20 adapter regression cases")
     ids = [row["id"] for row in rows]
     if len(ids) != len(set(ids)):
         errors.append("duplicate eval ids")
@@ -150,14 +160,23 @@ def main() -> int:
 
     router = load_router()
     counts = set()
+    planes = set()
     for row in rows:
-        actual, _ = router.select_roles(row["state"])
+        routed = router.route(row["state"])
+        actual = routed["roles"]
+        plane = routed["execution_plane"]
         expected = row["expected_roles"]
+        expected_plane = row["expected_plane"]
         counts.add(len(actual))
+        planes.add(plane)
         if actual != expected:
-            errors.append(f"{row['id']}: expected {expected}, got {actual}")
+            errors.append(f"{row['id']}: expected roles {expected}, got {actual}")
+        if plane != expected_plane:
+            errors.append(f"{row['id']}: expected plane {expected_plane}, got {plane}")
     if len(counts) < 5 or 0 not in counts:
-        errors.append("role routing does not demonstrate adaptive fan-out including zero-child direct path")
+        errors.append("role routing does not demonstrate adaptive fan-out including zero-child paths")
+    if planes != EXPECTED_PLANES:
+        errors.append(f"execution-plane coverage drift: {sorted(planes)}")
 
     installer = (ROOT / "scripts" / "install_adapter.py").read_text(encoding="utf-8")
     for marker in [
@@ -181,8 +200,8 @@ def main() -> int:
 
     print("OPENCLAW ADAPTER VALIDATION PASS")
     print(
-        f"skills={len(EXPECTED_SKILLS)} evals={len(rows)} "
-        f"fanout_counts={sorted(counts)} upstream={OPENCLAW_SHA[:12]}"
+        f"skills={len(EXPECTED_SKILLS)} evals={len(rows)} fanout_counts={sorted(counts)} "
+        f"planes={sorted(planes)} upstream={OPENCLAW_SHA[:12]}"
     )
     return 0
 
