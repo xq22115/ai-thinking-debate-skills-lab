@@ -1,0 +1,65 @@
+name: Task Goal Native v4 Gate
+
+on:
+  push:
+    paths:
+      - 'plugins/ai-efficiency-operating-system/native-goal-harness.json'
+      - 'plugins/ai-efficiency-operating-system/skills/task-goal-intelligence/**'
+      - 'plugins/ai-efficiency-operating-system/evals/task-goal-native-state-cases.jsonl'
+      - 'plugins/ai-efficiency-operating-system/scripts/task_goal_native_oracle.py'
+      - 'plugins/ai-efficiency-operating-system/scripts/validate_native_goal_harness.py'
+      - 'control-plane/ai-system/configs/task-goal-intelligence-v3-extension.json'
+      - 'control-plane/scripts/validate_task_goal_intelligence_v3.py'
+      - '.github/workflows/task-goal-native-v4-gate.yml'
+  pull_request:
+    paths:
+      - 'plugins/ai-efficiency-operating-system/native-goal-harness.json'
+      - 'plugins/ai-efficiency-operating-system/skills/task-goal-intelligence/**'
+      - 'plugins/ai-efficiency-operating-system/evals/task-goal-native-state-cases.jsonl'
+      - 'plugins/ai-efficiency-operating-system/scripts/task_goal_native_oracle.py'
+      - 'plugins/ai-efficiency-operating-system/scripts/validate_native_goal_harness.py'
+      - 'control-plane/ai-system/configs/task-goal-intelligence-v3-extension.json'
+      - 'control-plane/scripts/validate_task_goal_intelligence_v3.py'
+      - '.github/workflows/task-goal-native-v4-gate.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  native-goal-harness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Parse and compile native package
+        run: |
+          python -m json.tool plugins/ai-efficiency-operating-system/native-goal-harness.json >/dev/null
+          python -m json.tool plugins/ai-efficiency-operating-system/skills/task-goal-intelligence/references/upstream-lock.json >/dev/null
+          python - <<'PY'
+          import json, pathlib
+          path = pathlib.Path('plugins/ai-efficiency-operating-system/evals/task-goal-native-state-cases.jsonl')
+          rows = [json.loads(line) for line in path.read_text(encoding='utf-8').splitlines() if line.strip()]
+          assert len(rows) >= 30
+          assert len({row['id'] for row in rows}) == len(rows)
+          print(f'jsonl cases={len(rows)}')
+          PY
+          python -m py_compile \
+            plugins/ai-efficiency-operating-system/skills/task-goal-intelligence/scripts/goal_skill_start.py \
+            plugins/ai-efficiency-operating-system/skills/task-goal-intelligence/scripts/quick_validate.py \
+            plugins/ai-efficiency-operating-system/scripts/task_goal_native_oracle.py \
+            plugins/ai-efficiency-operating-system/scripts/validate_native_goal_harness.py
+      - name: Validate native skill package
+        run: python plugins/ai-efficiency-operating-system/skills/task-goal-intelligence/scripts/quick_validate.py
+      - name: Run behavioral state-machine oracle
+        run: python plugins/ai-efficiency-operating-system/scripts/task_goal_native_oracle.py
+      - name: Validate native harness contract
+        run: python plugins/ai-efficiency-operating-system/scripts/validate_native_goal_harness.py
+      - name: Preserve existing plugin and v3 protections
+        run: |
+          python plugins/ai-efficiency-operating-system/scripts/validate_plugin.py
+          python control-plane/scripts/validate_task_goal_intelligence_v3.py
