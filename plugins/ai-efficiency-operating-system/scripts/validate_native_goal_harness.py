@@ -7,9 +7,12 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-REPO = ROOT.parents[1]
 CONFIG = ROOT / "native-goal-harness.json"
 SKILL = ROOT / "skills" / "task-goal-intelligence"
+
+
+def load_jsonl(path: Path) -> list[dict]:
+    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
 def main() -> int:
@@ -19,7 +22,17 @@ def main() -> int:
     if config.get("revision") != "4.0.0-native":
         errors.append("native harness revision drift")
     arch = config.get("architecture") or {}
-    for key in ("thin_router", "runtime_preamble", "quick_validator", "state_machine", "verification_optimizer", "upstream_lock"):
+    for key in (
+        "skill_spec",
+        "thin_router",
+        "runtime_preamble",
+        "quick_validator",
+        "state_machine",
+        "verification_optimizer",
+        "upstream_lock",
+        "state_eval",
+        "host_pressure_holdout",
+    ):
         rel = arch.get(key)
         if not rel or not (ROOT / rel).exists():
             errors.append(f"native architecture target missing: {key} -> {rel}")
@@ -49,7 +62,13 @@ def main() -> int:
     routing = config.get("routing") or {}
     if int(routing.get("max_implicit_skills", 0)) != 3:
         errors.append("native routing max implicit skills must remain 3")
-    for key in ("goal_gate_first", "process_before_implementation_when_process_skill_materially_applies", "phase_before_keyword_similarity", "route_change_does_not_change_goal", "nearest_easier_task_probe_before_scope_reduction"):
+    for key in (
+        "goal_gate_first",
+        "process_before_implementation_when_process_skill_materially_applies",
+        "phase_before_keyword_similarity",
+        "route_change_does_not_change_goal",
+        "nearest_easier_task_probe_before_scope_reduction",
+    ):
         if routing.get(key) is not True:
             errors.append(f"routing invariant missing: {key}")
 
@@ -57,7 +76,12 @@ def main() -> int:
     expected_reverse = ["claim", "acceptance_test", "owning_evidence", "current_goal_version", "causal_path"]
     if verification.get("reverse_walk") != expected_reverse:
         errors.append("completion reverse-walk drift")
-    for key in ("fresh_evidence_before_success_claim", "historical_claim_is_not_current_evidence", "agent_self_report_is_not_independent_proof", "command_success_is_not_postcondition_success"):
+    for key in (
+        "fresh_evidence_before_success_claim",
+        "historical_claim_is_not_current_evidence",
+        "agent_self_report_is_not_independent_proof",
+        "command_success_is_not_postcondition_success",
+    ):
         if verification.get(key) is not True:
             errors.append(f"verification invariant missing: {key}")
 
@@ -66,13 +90,39 @@ def main() -> int:
         errors.append("optimizer promotion slices drift")
     if optimization.get("aggregate_score_cannot_override_hard_slice_regression") is not True:
         errors.append("hard-slice veto missing")
+    if optimization.get("host_pressure_holdout_is_packaged_not_preclaimed_passed") is not True:
+        errors.append("host holdout truth boundary missing")
 
     router = (SKILL / "SKILL.md").read_text(encoding="utf-8")
     if len(router.splitlines()) > 260:
         errors.append(f"thin router exceeded 260 lines: {len(router.splitlines())}")
-    for rel in ("references/phase-machine.md", "references/runtime-preamble.md", "references/evidence-and-optimization.md", "references/upstream-lock.json"):
+    for rel in (
+        "references/phase-machine.md",
+        "references/runtime-preamble.md",
+        "references/evidence-and-optimization.md",
+        "references/upstream-lock.json",
+    ):
         if rel not in router:
             errors.append(f"router does not progressively disclose: {rel}")
+
+    holdout = load_jsonl(ROOT / arch["host_pressure_holdout"])
+    ids = [row.get("id") for row in holdout]
+    classes = {row.get("class") for row in holdout}
+    if len(holdout) < 24:
+        errors.append(f"insufficient host pressure holdout: {len(holdout)} < 24")
+    if len(ids) != len(set(ids)):
+        errors.append("duplicate host pressure holdout IDs")
+    required_classes = {
+        "semantic_minimization", "neighbor_task", "historical_claim", "recovery",
+        "partial_blocker", "progress_theater", "semantic_delta", "completion",
+        "capability_truth", "context_drift", "complexity", "architecture",
+        "research", "provenance", "ambiguity", "debugging", "optimizer"
+    }
+    if not required_classes.issubset(classes):
+        errors.append(f"pressure holdout class coverage missing: {sorted(required_classes - classes)}")
+    for row in holdout:
+        if not row.get("prompt") or not row.get("must") or not row.get("must_not"):
+            errors.append(f"incomplete pressure holdout case: {row.get('id')}")
 
     commands = [
         [sys.executable, str(SKILL / "scripts" / "quick_validate.py")],
@@ -85,7 +135,13 @@ def main() -> int:
         if proc.returncode != 0:
             errors.append(f"sub-validator failed: {command[-1]}: {proc.stdout.strip()} {proc.stderr.strip()}")
 
-    print(json.dumps({"status": "PASS" if not errors else "FAIL", "errors": errors, "subvalidators": command_results}, ensure_ascii=False, sort_keys=True))
+    print(json.dumps({
+        "status": "PASS" if not errors else "FAIL",
+        "errors": errors,
+        "pressure_holdout_cases": len(holdout),
+        "pressure_holdout_classes": len(classes),
+        "subvalidators": command_results,
+    }, ensure_ascii=False, sort_keys=True))
     return 0 if not errors else 1
 
 
