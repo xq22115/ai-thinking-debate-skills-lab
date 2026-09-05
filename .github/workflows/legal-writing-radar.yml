@@ -1,0 +1,89 @@
+name: Legal Writing Radar
+
+on:
+  push:
+    paths:
+      - 'systems/legal-writing-radar/**'
+      - 'skills/13-elite-us-legal-business-correspondence.md'
+      - '.github/workflows/legal-writing-radar.yml'
+  pull_request:
+    paths:
+      - 'systems/legal-writing-radar/**'
+      - 'skills/13-elite-us-legal-business-correspondence.md'
+      - '.github/workflows/legal-writing-radar.yml'
+  workflow_dispatch:
+  schedule:
+    # GitHub schedule is best-effort. Offset from :00 to reduce peak-delay risk.
+    - cron: '17,47 * * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  unit-and-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact revision
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile radar
+        run: python -m py_compile systems/legal-writing-radar/legal_writing_radar.py
+      - name: Run radar unit tests
+        run: python -m unittest discover -s systems/legal-writing-radar/tests -p 'test_*.py'
+      - name: Verify ten-source June-August 2026 catalog
+        run: python systems/legal-writing-radar/legal_writing_radar.py verify
+
+  lane-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10']
+    steps:
+      - name: Checkout exact revision
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Scan independent official-source lane
+        run: |
+          mkdir -p "$RUNNER_TEMP/legal-writing-radar"
+          python systems/legal-writing-radar/legal_writing_radar.py scan \
+            --lane "${{ matrix.lane }}" \
+            --output "$RUNNER_TEMP/legal-writing-radar/lane-${{ matrix.lane }}.json"
+      - name: Upload lane evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: legal-writing-radar-lane-${{ matrix.lane }}
+          path: ${{ runner.temp }}/legal-writing-radar/lane-${{ matrix.lane }}.json
+          if-no-files-found: ignore
+          retention-days: 14
+
+  adjudicate:
+    needs: [unit-and-evidence, lane-scan]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact revision
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download independent lane evidence
+        uses: actions/download-artifact@v4
+        with:
+          pattern: legal-writing-radar-lane-*
+          path: ${{ runner.temp }}/legal-writing-radar-lanes
+          merge-multiple: true
+      - name: Independent adjudication
+        run: |
+          python systems/legal-writing-radar/legal_writing_radar.py adjudicate \
+            --directory "$RUNNER_TEMP/legal-writing-radar-lanes"
