@@ -1,0 +1,50 @@
+name: OpenClaw Native Adapter Gate
+
+on:
+  push:
+    paths:
+      - 'plugins/ai-efficiency-operating-system/adapters/openclaw/**'
+      - '.github/workflows/openclaw-native-adapter-gate.yml'
+  pull_request:
+    paths:
+      - 'plugins/ai-efficiency-operating-system/adapters/openclaw/**'
+      - '.github/workflows/openclaw-native-adapter-gate.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  adapter-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Parse and compile adapter
+        run: |
+          python -m json.tool plugins/ai-efficiency-operating-system/adapters/openclaw/upstream-lock.json >/dev/null
+          python -m json.tool plugins/ai-efficiency-operating-system/adapters/openclaw/skills/openclaw-goal-orchestrator/references/role-pool.json >/dev/null
+          python - <<'PY'
+          import json, pathlib
+          path = pathlib.Path('plugins/ai-efficiency-operating-system/adapters/openclaw/evals/openclaw-adapter-cases.jsonl')
+          rows = [json.loads(line) for line in path.read_text(encoding='utf-8').splitlines() if line.strip()]
+          assert len(rows) >= 20
+          assert len({row['id'] for row in rows}) == len(rows)
+          assert {'parent','agents','lobster','hybrid'} <= {row['expected_plane'] for row in rows}
+          print(f'openclaw_adapter_cases={len(rows)} planes={sorted({row["expected_plane"] for row in rows})}')
+          PY
+          python -m py_compile \
+            plugins/ai-efficiency-operating-system/adapters/openclaw/scripts/install_adapter.py \
+            plugins/ai-efficiency-operating-system/adapters/openclaw/scripts/role_router.py \
+            plugins/ai-efficiency-operating-system/adapters/openclaw/scripts/test_install_adapter.py \
+            plugins/ai-efficiency-operating-system/adapters/openclaw/scripts/validate_adapter.py
+      - name: Prove additive installer behavior
+        run: python plugins/ai-efficiency-operating-system/adapters/openclaw/scripts/test_install_adapter.py
+      - name: Run deterministic adapter gate
+        run: python plugins/ai-efficiency-operating-system/adapters/openclaw/scripts/validate_adapter.py
+      - name: Preserve canonical plugin protections
+        run: |
+          python plugins/ai-efficiency-operating-system/scripts/validate_plugin.py
+          python plugins/ai-efficiency-operating-system/scripts/validate_native_goal_harness.py
