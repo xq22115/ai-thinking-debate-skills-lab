@@ -58,6 +58,54 @@ The harness does not make provider calls. Execute the prepared requests through 
 
 `manifest.json` binds exact fixture path/hash, instruction bundle hashes, model/provider label, arms and repository revision so runs can be reproduced without silently changing the test surface.
 
+## Campaign packet preparation
+
+For a strict DS + DSP + DSG campaign, prefer the campaign preparer over three manually assembled commands. It freezes one shared `repo_ref`, `model_id`, `provider`, and `seed`, then composes the existing run preparer and execution-receipt template generator:
+
+```text
+python skills/evals/prepare_semantic_dialogue_state_campaign.py prepare CAMPAIGN_DIR \
+  --repo-ref EXACT_SHA \
+  --model-id MODEL_ID \
+  --provider PROVIDER \
+  --seed SEED
+
+python skills/evals/prepare_semantic_dialogue_state_campaign.py validate CAMPAIGN_DIR
+```
+
+The packet contains:
+
+```text
+CAMPAIGN_DIR/
+  campaign_manifest.json
+  target/
+    manifest.json
+    bundles.json
+    requests.jsonl
+    execution_receipts.template.jsonl
+  protection/
+    manifest.json
+    bundles.json
+    requests.jsonl
+    execution_receipts.template.jsonl
+  generalization/
+    manifest.json
+    bundles.json
+    requests.jsonl
+    execution_receipts.template.jsonl
+```
+
+The target run is frozen to all four arms. DSP and DSG are frozen to `microscope-core` versus `microscope-dialogue-state`. The generalization run retains the harness/promotion-gate compatibility role `protection`; its distinct DSG fixture suite/path still identifies it as the generalization holdout.
+
+`campaign_manifest.json` links all three run IDs and records each fixture/path/hash, arm set, request count, run-manifest hash, bundle hash, request-file hash, ordered request-ID hash, and receipt-template hash. Validation fails on repo/model/provider/seed identity drift, suite/path/arm drift, run-link drift, file-hash drift, request-identity drift, or a receipt template that prematurely claims execution state.
+
+The generated receipt templates deliberately keep host/session/timestamps/output hash, fresh-context evidence, contamination booleans and status unresolved until real execution. A prepared packet is therefore bookkeeping/provenance infrastructure, not model evidence.
+
+`CAMPAIGN_PACKET_VALID != TARGET_MODEL_RUN`.
+
+`PREPARED_NOT_EXECUTED != OUTPUT_RECORDED`.
+
+After campaign preparation, each request still requires one fresh isolated target-model context and a completed execution receipt before judging.
+
 ## Target-model execution isolation
 
 Before a recorded response can count as comparison-grade `TARGET_MODEL_RUN` evidence, validate it against `semantic-dialogue-state-execution-isolation.md` with:
@@ -256,10 +304,12 @@ Keep these states separate:
 
 `TARGET_MODEL_RUN` requires clean execution provenance for the compared requests. A synthetic execution-receipt self-test validates only the isolation validator itself; it does not create a real target-model run.
 
-Synthetic target/protection self-tests prove harness plumbing only. Static DSG validation proves only that the anti-leakage suite is packaged and executable through the generalized harness. Neither proves real model generalization.
+Synthetic target/protection self-tests prove harness plumbing only. Static DSG validation proves only that the anti-leakage suite is packaged and executable through the generalized harness. A valid campaign packet proves only three-suite preparation/identity integrity. None of these prove real model generalization.
 
 ## Status boundary
 
 `HARNESS_READY != MODEL_RUN_COMPLETE != JUDGE_VALIDATED != HOST_LIVE`.
 
-The repository may package and validate this protocol without access to a provider model. Behavioral verification requires real isolated recorded outputs and judgments bound to an exact run manifest.
+`CAMPAIGN_PACKET_VALID != TARGET_MODEL_RUN != INDEPENDENT_JUDGED != REPEATED != HOST_LIVE`.
+
+The repository may package and validate this protocol without access to a provider model. Behavioral verification requires real isolated recorded outputs and judgments bound to an exact run manifest and, when using a campaign packet, its frozen campaign identity.
