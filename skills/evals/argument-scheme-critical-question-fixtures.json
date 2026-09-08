@@ -1,0 +1,63 @@
+{
+  "suite": "argument-scheme-critical-questions-v0.1",
+  "status": "SPECIFIED_NOT_EXECUTED",
+  "scope": "argument-scheme-recognition-and-critical-question-selection",
+  "cases": [
+    {
+      "id": "CQ1-expert-domain-fit",
+      "input": "A famous physicist says a specific tax policy will definitely increase employment, therefore the forecast is correct.",
+      "must_detect": ["expert_opinion_scheme", "domain_fit_question", "primary_evidence_question"],
+      "best_questions": ["Is the source expert in the economic/labor domain relevant to the forecast?", "What evidence or model supports the employment prediction?"],
+      "fail_if": ["accepts_fame_as_domain_expertise", "attacks_person_without_testing_evidence"]
+    },
+    {
+      "id": "CQ2-causal-confound",
+      "input": "After a school introduced a new app, grades rose, so the app caused the improvement.",
+      "must_detect": ["causal_scheme", "confound_question", "comparison_or_mechanism_question"],
+      "fail_if": ["treats_temporal_sequence_as_sufficient_causation"]
+    },
+    {
+      "id": "CQ3-analogy-structure",
+      "input": "Running a city is like running a household, so a city should never borrow money.",
+      "must_detect": ["analogy_scheme", "relevant_similarity_test", "relevant_dissimilarity_test"],
+      "fail_if": ["accepts_surface_similarity", "rejects_analogy_only_because_entities_differ"]
+    },
+    {
+      "id": "CQ4-consequence-hidden-value",
+      "input": "Policy P will probably increase average output, therefore P is the right policy.",
+      "must_detect": ["consequence_or_practical_reasoning_scheme", "forecast_uncertainty", "hidden_value_tradeoff", "alternative_action_question"],
+      "fail_if": ["treats_more_output_as_complete_normative_proof"]
+    },
+    {
+      "id": "CQ5-burden-not-proven-vs-false",
+      "input": "No one has proven that the new process is unsafe, therefore it is proven safe.",
+      "must_detect": ["burden_or_absence_of_evidence_move", "not_proven_does_not_equal_false", "expected_evidence_question"],
+      "fail_if": ["accepts_proven_safe_from_missing_disproof"]
+    },
+    {
+      "id": "CQ6-critical-question-ranking",
+      "input": "Claim: a medication policy reduced errors because errors fell after adoption. Candidate questions include: (A) What color is the policy document? (B) Did measurement/reporting rules change at the same time? (C) Do staff like the policy? (D) What other interventions occurred concurrently?",
+      "must_detect": ["causal_scheme", "B_and_D_high_decision_value", "A_low_value", "C_secondary_unless_linked_to_mechanism"],
+      "fail_if": ["treats_all_questions_as_equally_critical", "ranks_style_or_preference_above_confounders"]
+    },
+    {
+      "id": "CQ7-steelman-fidelity",
+      "input": "Speaker says: 'This rule usually helps because it reduces queue time.' A critic strengthens it to 'This rule always helps everyone' and then defeats that stronger version with one exception.",
+      "must_detect": ["claim_strength_distortion", "faithful_steelman_required", "exception_does_not_refute_usually_claim_by_itself"],
+      "fail_if": ["calls_invented_stronger_version_a_steelman", "claims_original_defeated"]
+    },
+    {
+      "id": "CQ8-scheme-ambiguity",
+      "input": "An argument cites an expert who also presents a causal study. The conclusion relies both on the source's expertise and on the study design.",
+      "must_detect": ["multiple_schemes_possible", "separate_authority_from_causal_evidence", "do_not_force_single_label"],
+      "fail_if": ["forces_one_scheme_and_ignores_other_inference_path"]
+    }
+  ],
+  "release_gate": {
+    "fixture_presence": "PASS_WHEN_READ_BACK",
+    "scheme_model_execution": "NOT_RUN",
+    "critical_question_ranking_eval": "NOT_RUN",
+    "independent_judge": "NOT_RUN",
+    "host_live_regression": "NOT_RUN"
+  }
+}
