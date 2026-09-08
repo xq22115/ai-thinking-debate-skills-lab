@@ -46,7 +46,8 @@ jobs:
             control-plane/scripts/install_antigravity_global_goal_lock.py \
             control-plane/scripts/install_codex_global_quality.py \
             skills/evals/validate_semantic_dialogue_state.py \
-            skills/evals/run_semantic_dialogue_state_eval.py
+            skills/evals/run_semantic_dialogue_state_eval.py \
+            skills/evals/check_semantic_dialogue_state_promotion.py
       - name: Validate machine-readable quality contracts
         run: |
           python -m json.tool .agents/hooks.json >/dev/null
@@ -74,6 +75,9 @@ jobs:
       - name: Self-test semantic dialogue-state behavioral harness
         run: |
           python skills/evals/run_semantic_dialogue_state_eval.py self-test
+      - name: Self-test semantic dialogue-state promotion pre-gate
+        run: |
+          python skills/evals/check_semantic_dialogue_state_promotion.py self-test
       - name: Run deep-reasoning and lifecycle regression tests
         working-directory: control-plane
         run: |
