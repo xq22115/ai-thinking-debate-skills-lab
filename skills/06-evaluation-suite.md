@@ -1,8 +1,10 @@
-# 06 — Evaluation Suite v1.3
+# 06 — Evaluation Suite v1.4
 
 ## Purpose
 
-Test whether an AI system is genuinely better at evidence use, semantic/causal reasoning, multi-turn dialogue-state tracking, belief revision, debate, skill use, recovery, and completion — rather than merely producing longer answers or more agents.
+Test whether an AI system is genuinely better at evidence use, semantic/causal reasoning, multi-turn dialogue-state tracking, belief revision, debate, skill use, recovery, and completion — rather than merely producing longer answers, more elaborate prompts, or more agents.
+
+A target capability is not considered safely improved merely because its own benchmark score rises. Promotion must also protect neighboring capabilities, survive paraphrase/domain shifts, preserve judge uncertainty, and remain bound to the intended runtime/evidence level.
 
 ## A. Core scorecard
 
@@ -19,11 +21,13 @@ Test whether an AI system is genuinely better at evidence use, semantic/causal r
 | Dialogue-state fidelity | Does it preserve shared/disputed/temporary/unresolved commitments across turns? | Temporary grant, silence, or presupposition becomes false common ground |
 | Argument-target comprehension | Does a rebuttal attack the premise/warrant that actually supports the conclusion? | Rhetorical neighboring answer is credited as structural rebuttal |
 | Causal reasoning | Does it separate association/intervention/counterfactual and check confounding? | Treats correlation/sequence as sufficient causation |
+| Structural generalization | Does the same relation/state analysis survive paraphrase, domain swap and lexical-cue removal? | Performance depends on benchmark vocabulary |
+| Routing discipline | Is extra semantic/dialogue machinery loaded only when it can change the verdict? | Invents common ground/history on self-contained cases |
 | Hypothesis diversity | Are materially different explanations generated? | Cosmetic paraphrases only |
 | Falsification quality | Does it seek discriminating/disconfirming evidence? | Only confirmation search |
 | VOI routing | Does it select the highest-value next test/search/action? | More search volume despite a cheap decisive test |
 | Debate efficiency | Does multi-agent deliberation improve results per cost? | More agents, no measurable gain |
-| Judge robustness | Does verdict resist order/verbosity/bandwagon/prestige bias? | Verdict flips without evidence change |
+| Judge robustness | Does verdict resist order/verbosity/bandwagon/prestige bias and preserve disagreement? | Verdict flips without evidence change or disagreement is silently erased |
 | State durability | Can work resume from a checkpoint? | Must reconstruct from scratch |
 | Tool truthfulness | Does it distinguish attempted/succeeded/verified? | Reports success without receipt |
 | Root-cause quality | Does it identify shared mechanisms? | Patch-by-patch symptom chasing |
@@ -42,16 +46,21 @@ Every complex workflow should compare, when applicable:
 6. Debate with selective disagreement retention.
 7. Dynamic role routing + evidence-weighted judge.
 
-For the semantic dialogue-state extension, use the narrower four-arm comparison defined by `semantic-dialogue-state-eval-protocol.md`:
+For the semantic dialogue-state **target** suite, use the narrower four-arm comparison defined by `semantic-dialogue-state-eval-protocol.md`:
 
 1. `direct`;
 2. `generic-careful`;
 3. `microscope-core`;
 4. `microscope-dialogue-state`.
 
-This isolates whether the demand-loaded dialogue-state reference adds value beyond both a simple careful prompt and the canonical semantic core itself.
+For semantic **protection/generalization** holdouts, at minimum compare:
 
-Do not accept a multi-agent, longer-reasoning, or larger-instruction design as better merely because it is more elaborate.
+1. `microscope-core`;
+2. `microscope-dialogue-state`.
+
+This isolates whether the demand-loaded reference adds target value without degrading the canonical semantic core or relying on copied vocabulary.
+
+Do not accept a multi-agent, longer-reasoning, larger-instruction, or larger-context design as better merely because it is more elaborate.
 
 ## C. Epistemic calibration tests
 
@@ -86,9 +95,11 @@ Suggested metrics:
 
 Canonical fixtures:
 
-- `semantic-argument-microscope-fixtures.json` — S1–S12;
-- `argument-scheme-critical-question-fixtures.json` — CQ1–CQ8;
-- `semantic-dialogue-state-fixtures.json` — DS1–DS8.
+- `semantic-argument-microscope-fixtures.json` — S1–S12 semantic/pragmatic core;
+- `argument-scheme-critical-question-fixtures.json` — CQ1–CQ8 argument-scheme/CQ core;
+- `semantic-dialogue-state-fixtures.json` — DS1–DS8 target dialogue-state capability;
+- `semantic-dialogue-state-protection-fixtures.json` — DSP1–DSP12 neighboring-capability protection;
+- `semantic-dialogue-state-generalization-holdout.json` — DSG1–DSG12 anti-leakage / lexical-domain generalization.
 
 Semantic/argument measures include:
 
@@ -102,7 +113,7 @@ Semantic/argument measures include:
 - burden handling;
 - faithful steelman rather than claim distortion.
 
-Dialogue-state measures include:
+Dialogue-state target measures include:
 
 - common-ground integrity;
 - temporary-grant vs genuine agreement separation;
@@ -112,22 +123,40 @@ Dialogue-state measures include:
 - rebuttal-target comprehension;
 - provenance quality vs citation/RAG volume;
 - repair quality after a corrupted commitment;
-- structural generalization under paraphrase/domain swap/lexical-cue removal;
 - calibrated uncertainty when dialogue state remains unresolved.
+
+Protection measures include:
+
+- no regression in definition/QUD/pragmatic analysis;
+- no regression in defeasible revision or stance freedom;
+- no regression in critical-question ranking / steelman fidelity;
+- no regression in causal/interventional/global-graph reasoning;
+- no invented participants, shared history, commitments or ceremonial ledgers on self-contained cases.
+
+Generalization measures include:
+
+- stable commitment-state reasoning after paraphrase;
+- stable support/attack/dependency reasoning after domain swap;
+- resistance to loaded or indirect formulations without canonical skill vocabulary;
+- correct handling of bounded concessions, stale/withdrawn positions and non-answers without relying on `AGREED`, `COMMON_GROUND`, or similar lexical cues.
 
 Use `semantic-dialogue-state-scoring-rubric.md` for observable-output scoring. A rubric blocking error fails the case even when an aggregate dimension score looks acceptable.
 
-### D1 — Behavioral harness
+### D1 — Reusable behavioral harness
 
 `run_semantic_dialogue_state_eval.py` is provider-neutral. It does not call a model provider by itself. It can:
 
-- prepare a frozen run manifest and four-arm request set;
+- prepare a frozen run manifest for an approved fixture path and selected arm subset;
 - hash instruction bundles and exact fixture/rubric/protocol revisions;
 - validate externally recorded target-model responses;
 - generate blinded judge tasks;
+- accept one or multiple judge records per candidate;
 - validate structured per-dimension judgments and blocking errors;
-- summarize per-arm results, treatment deltas, and treatment regressions;
-- run a synthetic end-to-end self-test for harness integrity.
+- aggregate **case first, then arm**, so cases with more judges are not overweighted;
+- preserve dimension disagreement, blocking disagreement, judge count and same-model-family exposure;
+- summarize per-arm results, treatment deltas and per-case regressions;
+- set `protection_promotion_veto` on protection/generalization runs when treatment regresses against core;
+- run synthetic target + protection + multi-judge self-tests for harness integrity.
 
 A synthetic harness self-test verifies execution plumbing only; it does not advance a case to `TARGET_MODEL_RUN`.
 
@@ -138,10 +167,43 @@ When an LLM judge is used:
 - blind candidate/arm identity where possible;
 - preserve judge identity/model-family metadata;
 - avoid same-model self-judging when an independent judge is available;
+- use distinct `judgment_id` plus judge/task/variant identity to prevent duplicate records from masquerading as independent evidence;
 - use order swaps for pairwise preference claims;
 - preserve per-dimension scores and blocking errors;
+- report `any-judge` and `all-judge` blocking signals separately;
 - report judge disagreement rather than forcing consensus;
 - do not treat judge fluency or generated rationales as ground truth.
+
+`JUDGE_CONSENSUS != GROUND_TRUTH`.
+
+### D3 — Protection promotion pre-gate
+
+`check_semantic_dialogue_state_promotion.py` combines three **already judged** reports:
+
+1. target DS report;
+2. neighboring-capability DSP report;
+3. generalization DSG report.
+
+It first requires the reports to agree on exact `repo_ref`, candidate `model_id`, and provider. It then blocks advancement when any material condition holds:
+
+- target treatment does not improve over `microscope-core` under the configured minimum delta;
+- any target hard case regresses;
+- any target blocking regression appears;
+- either protection report has `protection_promotion_veto != false`;
+- DSP or DSG contains a treatment regression or new blocking regression;
+- judge metadata shows same-model-family judge exposure.
+
+Judge disagreement is retained as a review flag rather than converted to consensus.
+
+The highest successful state is:
+
+`READY_FOR_REPEATED_VALIDATION`
+
+not `PROMOTE`, `STABLE`, or `HOST_LIVE`.
+
+`READY_FOR_REPEATED_VALIDATION != REPEATED != STABLE != HOST_LIVE`.
+
+`TARGET_GAIN != SAFE_PROMOTION`.
 
 ## E. Causal / abductive tests
 
@@ -256,6 +318,8 @@ Do not collapse these:
 6. `REPEATED` — enough runs/order swaps to estimate variance, calibration, or judge instability where needed.
 7. `HOST_LIVE_REGRESSION` — behavior verified on intended host/runtime.
 
+`READY_FOR_REPEATED_VALIDATION` is a promotion-pre-gate decision state, not an additional evidence level. It means the current target/protection/generalization reports are coherent enough to justify repeated validation; it does not skip `REPEATED` or `HOST_LIVE_REGRESSION`.
+
 A higher packaging/harness level cannot be substituted for a lower missing behavioral level. In particular, `HARNESS_SELF_TESTED != TARGET_MODEL_RUN`.
 
 ## L. Suggested aggregate metrics
@@ -274,8 +338,14 @@ A higher packaging/harness level cannot be substituted for a lower missing behav
 - Rebuttal-target comprehension rate.
 - Structural-generalization rate under domain/paraphrase shift.
 - Dialogue-state blocking-error rate.
-- Treatment delta: `microscope-dialogue-state` vs `direct` and `microscope-core`.
-- Treatment regression count vs `microscope-core`.
+- `unnecessary_dialogue_state_invention` count/rate.
+- Target treatment delta: `microscope-dialogue-state` vs `direct` and `microscope-core`.
+- Target treatment regression count vs `microscope-core`.
+- DSP protection regression count / promotion veto state.
+- DSG generalization regression count / promotion veto state.
+- Judge count per candidate and same-model-family exposure.
+- Judge disagreement / order-swap instability.
+- Any-judge vs all-judge blocking rate.
 - Discriminating-test selection rate.
 - VOI efficiency / unnecessary search rate.
 - False-completion rate.
@@ -284,9 +354,10 @@ A higher packaging/harness level cannot be substituted for a lower missing behav
 - Tokens / wall-clock / tool calls.
 - Marginal gain per added role.
 - Judge order/verbosity/bandwagon sensitivity.
-- Judge disagreement / order-swap instability.
 - Human correction count.
 
 ## M. 2026 design implication
 
-Current evidence supports conditional, topology-sensitive use of debate and reasoning rather than unconditional scaling. The benchmark target is therefore **decision-quality, structural comprehension, and calibration improvement over simpler baselines at acceptable compute/tool cost**, with explicit unresolved states when evidence or dialogue state cannot justify a definitive answer.
+Current evidence supports conditional, topology-sensitive use of debate and reasoning rather than unconditional scaling. The benchmark target is therefore **decision-quality, structural comprehension, calibration, and generalization improvement over simpler baselines at acceptable compute/tool cost**, with explicit unresolved states when evidence or dialogue state cannot justify a definitive answer.
+
+For progressive reasoning references, the release objective is stronger still: **target gain with protected neighboring capabilities, lexical/domain robustness, judge uncertainty preserved, and no false host-live completion claim**.
