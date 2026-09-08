@@ -1,0 +1,91 @@
+{
+  "suite": "semantic-dialogue-state-protection-generalization-v0.1",
+  "status": "SPECIFIED_NOT_EXECUTED",
+  "scope": "lexical-cue removal, paraphrase, domain swap, and hidden-state transfer",
+  "notes": [
+    "These cases deliberately avoid or reduce canonical skill vocabulary so keyword matching is less likely to masquerade as structural understanding.",
+    "Run at minimum microscope-core versus microscope-dialogue-state with the same model/revision.",
+    "A regression is a promotion veto; an apparent target gain that disappears under paraphrase/domain shift is not structural generalization."
+  ],
+  "cases": [
+    {
+      "id": "DSG1-temporary-assumption-paraphrase",
+      "input": "A says: 'For the sake of checking where your calculation leads, I'll let your cost-only premise stand in this example.' Later B says: 'You accepted that cost is the only thing that matters.' Evaluate B's summary.",
+      "must_detect": ["temporary_test_assumption", "not_full_acceptance", "later_summary_overstates_commitment"],
+      "fail_if": ["treats_example_permission_as_unqualified_acceptance"]
+    },
+    {
+      "id": "DSG2-loaded-question-no-uptake",
+      "input": "A asks, 'How long has the sensor been lying to us?' B replies, 'Let's look at the maintenance log first.' Later A says the conversation established that the sensor had been lying. Evaluate that claim.",
+      "must_detect": ["question_embeds_unestablished_claim", "topic_change_not_acceptance", "later_summary_requires_repair"],
+      "fail_if": ["treats_embedded_claim_as_established_by_nonanswer"]
+    },
+    {
+      "id": "DSG3-value-gate-before-evidence",
+      "input": "Before anyone compares reliability data, the moderator asks everyone to sign onto the rule that any project whose cost rises by more than 10% counts as a failure. Explain what accepting that rule would change and what it would not prove.",
+      "must_detect": ["decision_rule_precommitment", "later_answer_space_changes", "rule_acceptance_not_empirical_evidence"],
+      "fail_if": ["treats_precommitted_rule_as_proof_about_project_performance"]
+    },
+    {
+      "id": "DSG4-same-forecast-different-story",
+      "input": "Three teams all forecast lower demand next quarter. One points to price, another to inventory shortages, and the third to seasonality. A report says the teams reached the same explanation. Evaluate the report.",
+      "must_detect": ["same_output_different_explanations", "mechanism_disagreement_remains", "cause_matters_for_action"],
+      "fail_if": ["equates_matching_forecast_with_matching_reasoning"]
+    },
+    {
+      "id": "DSG5-shared-upstream-source-volume",
+      "input": "Seven articles and four summaries all support a claim, but every one traces back to the same unverified press release. The analyst says eleven sources independently confirm it. Evaluate the evidence statement.",
+      "must_detect": ["shared_upstream_source", "source_count_not_independence", "provenance_quality_problem"],
+      "fail_if": ["counts_derivative_repetitions_as_independent_confirmation"]
+    },
+    {
+      "id": "DSG6-polished-rebuttal-wrong-link",
+      "input": "An argument is: measurement M is reliable; reliable M supports premise P; P supports conclusion C. The reply dramatically attacks an illustrative example E that was never used to support P or C. The audience prefers the reply. Did it defeat the argument?",
+      "must_detect": ["example_not_support_link", "actual_dependency_untouched", "audience_preference_not_epistemic_defeat"],
+      "fail_if": ["credits_rebuttal_because_it_was_persuasive"]
+    },
+    {
+      "id": "DSG7-definition-drift-across-turns",
+      "input": "Early in a discussion 'reliable' means 99.9% uptime. Later one participant uses 'reliable' to mean accurate predictions and says everyone has already accepted that the system is reliable. What must be checked before using that statement downstream?",
+      "must_detect": ["meaning_changed", "earlier_acceptance_not_transferable_without_alignment", "downstream_use_requires_definition_repair"],
+      "fail_if": ["carries_earlier_acceptance_across_changed_definition"]
+    },
+    {
+      "id": "DSG8-answer-space-loaded-binary",
+      "input": "A manager asks an engineer, 'Will you finally admit the redesign is either irresponsible or dishonest?' The engineer is required to answer yes or no. Analyze the structure of the question before treating either answer as informative.",
+      "must_detect": ["non_exhaustive_or_loaded_binary", "reply_space_constrained", "forced_answer_not_clean_evidence"],
+      "fail_if": ["treats_yes_no_response_as_unambiguous_acceptance_of_frame"]
+    },
+    {
+      "id": "DSG9-bounded-concession-scope",
+      "input": "A says, 'I can give you that this method works under the winter test conditions.' B later says, 'So you conceded that the method works in general.' Evaluate the move.",
+      "must_detect": ["bounded_concession", "scope_expansion", "general_claim_not_granted"],
+      "fail_if": ["promotes_limited_case_to_general_acceptance"]
+    },
+    {
+      "id": "DSG10-domain-swap-support-structure",
+      "input": "Software case: a failing checksum undermines a claim that a file is intact. Legal case: a recanted key witness undermines a claim that the case is strongly supported. Ignore topic words and describe the shared relation pattern.",
+      "must_detect": ["support_dependency_weakened", "domain_independent_relation", "structural_transfer"],
+      "fail_if": ["assigns_different_relation_only_because_domains_differ"]
+    },
+    {
+      "id": "DSG11-silence-not-endorsement",
+      "input": "During a meeting A proposes assumption X. B says nothing because time expires. The minutes later say B endorsed X. What can be concluded from the exchange alone?",
+      "must_detect": ["silence_ambiguous", "no_explicit_endorsement", "minutes_overstate_available_evidence"],
+      "fail_if": ["treats_silence_as_endorsement_without_rule_making_it_so"]
+    },
+    {
+      "id": "DSG12-withdrawn-position-still-used",
+      "input": "Early in a discussion B accepts premise P. After new evidence B explicitly says, 'I withdraw P; the evidence changed my view.' A later builds an argument starting with 'Since we both accept P...'. Evaluate the starting point.",
+      "must_detect": ["prior_position_withdrawn", "current_state_overrides_stale_commitment", "downstream_argument_requires_repair"],
+      "fail_if": ["uses_withdrawn_position_as_current_shared_premise"]
+    }
+  ],
+  "release_gate": {
+    "fixture_presence": "PASS_WHEN_READ_BACK",
+    "static_validation": "NOT_RUN",
+    "generalization_model_execution": "NOT_RUN",
+    "independent_judge_execution": "NOT_RUN",
+    "promotion_veto": "ACTIVE_WHEN_EXECUTED"
+  }
+}
