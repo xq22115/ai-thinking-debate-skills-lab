@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -52,6 +51,13 @@ def require_arm(report: dict[str, Any], arm: str, label: str) -> dict[str, Any]:
     judged = value.get("cases_judged")
     if not isinstance(judged, int) or judged <= 0:
         raise ValueError(f"{label}: arm {arm} has no judged cases")
+    return value
+
+
+def blocked_cases(arm: dict[str, Any], label: str, arm_name: str) -> int:
+    value = arm.get("blocked_cases", 0)
+    if not isinstance(value, int) or value < 0:
+        raise ValueError(f"{label}: invalid blocked_cases for {arm_name}")
     return value
 
 
@@ -100,6 +106,10 @@ def evaluate(
     }
 
     identity: dict[str, dict[str, str]] = {}
+    arms_by_report: dict[str, dict[str, dict[str, Any]]] = {}
+    blocking: list[str] = []
+    review_flags: list[str] = []
+
     for label, report in reports.items():
         identity[label] = {
             "repo_ref": require_text(report, "repo_ref", label),
@@ -108,29 +118,42 @@ def evaluate(
             "fixture_suite": require_text(report, "fixture_suite", label),
             "suite_role": require_text(report, "suite_role", label),
         }
-        require_arm(report, CORE, label)
-        require_arm(report, TREATMENT, label)
-
-    blocking: list[str] = []
-    review_flags: list[str] = []
+        status = require_text(report, "status", label)
+        if status != "JUDGED":
+            blocking.append(f"{label}_report_status_not_judged:{status}")
+        core_arm = require_arm(report, CORE, label)
+        treatment_arm = require_arm(report, TREATMENT, label)
+        arms_by_report[label] = {CORE: core_arm, TREATMENT: treatment_arm}
 
     for key in ("repo_ref", "model_id", "provider"):
         values = {identity[label][key] for label in identity}
         if len(values) != 1:
             blocking.append(f"identity_mismatch:{key}:{sorted(values)}")
 
+    suites = {identity[label]["fixture_suite"] for label in identity}
+    if len(suites) != 3:
+        blocking.append("fixture_suites_not_distinct")
+
+    target_suite = identity["target"]["fixture_suite"].lower()
+    protection_suite = identity["protection"]["fixture_suite"].lower()
+    generalization_suite = identity["generalization"]["fixture_suite"].lower()
+
     if identity["target"]["suite_role"] != "target":
         blocking.append("target_report_not_target_role")
+    if "protection" in target_suite or "generalization" in target_suite:
+        blocking.append("target_report_wrong_fixture_suite")
+
     if identity["protection"]["suite_role"] != "protection":
         blocking.append("protection_report_not_protection_role")
+    if "protection" not in protection_suite or "generalization" in protection_suite:
+        blocking.append("protection_report_wrong_fixture_suite")
+
     if identity["generalization"]["suite_role"] != "protection":
         blocking.append("generalization_report_not_protection_role")
-    if "generalization" not in identity["generalization"]["fixture_suite"].lower():
+    if "protection" not in generalization_suite or "generalization" not in generalization_suite:
         blocking.append("generalization_report_wrong_fixture_suite")
 
-    target_delta = numeric_delta(
-        target, "overall_vs_microscope_core", "target"
-    )
+    target_delta = numeric_delta(target, "overall_vs_microscope_core", "target")
     if target_delta <= min_target_delta:
         blocking.append(
             f"insufficient_target_gain:{target_delta}<=min:{min_target_delta}"
@@ -148,6 +171,12 @@ def evaluate(
         blocking.append(
             f"target_blocking_regressions:{len(target_blocking_regressions)}"
         )
+
+    target_treatment_blocks = blocked_cases(
+        arms_by_report["target"][TREATMENT], "target", TREATMENT
+    )
+    if target_treatment_blocks:
+        blocking.append(f"target_treatment_blocking_cases:{target_treatment_blocks}")
 
     for label, report in (
         ("protection", protection),
@@ -169,6 +198,17 @@ def evaluate(
                 f"{label}_blocking_regressions:{len(blocking_regressions)}"
             )
 
+    generalization_treatment_blocks = blocked_cases(
+        arms_by_report["generalization"][TREATMENT],
+        "generalization",
+        TREATMENT,
+    )
+    if generalization_treatment_blocks:
+        blocking.append(
+            "generalization_treatment_blocking_cases:"
+            f"{generalization_treatment_blocks}"
+        )
+
     same_model_total = 0
     disagreement_total = 0
     for label, report in reports.items():
@@ -182,13 +222,15 @@ def evaluate(
 
     decision = "BLOCKED" if blocking else "READY_FOR_REPEATED_VALIDATION"
     result = {
-        "schema_version": 1,
+        "schema_version": 2,
         "decision": decision,
         "repo_ref": identity["target"]["repo_ref"],
         "model_id": identity["target"]["model_id"],
         "provider": identity["target"]["provider"],
         "target_delta_vs_core": target_delta,
         "min_target_delta": min_target_delta,
+        "target_treatment_blocking_cases": target_treatment_blocks,
+        "generalization_treatment_blocking_cases": generalization_treatment_blocks,
         "blocking_reasons": blocking,
         "review_flags": review_flags,
         "same_model_judge_exposure_cases": same_model_total,
@@ -213,10 +255,13 @@ def synthetic_report(
     target_delta: float,
     veto: bool | None,
     *,
+    status: str = "JUDGED",
     same_model: int = 0,
     disagreement: bool = False,
     regressions: list[str] | None = None,
     blocking_regressions: list[str] | None = None,
+    core_blocked: int = 0,
+    treatment_blocked: int = 0,
 ) -> dict[str, Any]:
     return {
         "schema_version": 3,
@@ -225,13 +270,16 @@ def synthetic_report(
         "provider": "synthetic-provider",
         "fixture_suite": suite,
         "suite_role": role,
+        "status": status,
         "arms": {
             CORE: {
                 "cases_judged": 4,
+                "blocked_cases": core_blocked,
                 "same_model_judge_cases": 0,
             },
             TREATMENT: {
                 "cases_judged": 4,
+                "blocked_cases": treatment_blocked,
                 "same_model_judge_cases": same_model,
             },
         },
@@ -241,12 +289,16 @@ def synthetic_report(
         "treatment_regression_cases_vs_core": regressions or [],
         "treatment_blocking_regressions_vs_core": blocking_regressions or [],
         "protection_promotion_veto": veto,
-        "judge_disagreement_tasks": ([{"case_id": "synthetic"}] if disagreement else []),
+        "judge_disagreement_tasks": (
+            [{"case_id": "synthetic"}] if disagreement else []
+        ),
     }
 
 
 def self_test() -> None:
-    target = synthetic_report("semantic-dialogue-state-v0.1", "target", 0.5, None)
+    target = synthetic_report(
+        "semantic-dialogue-state-v0.1", "target", 0.5, None
+    )
     protection = synthetic_report(
         "semantic-dialogue-state-protection-v0.1", "protection", 0.0, False
     )
@@ -260,6 +312,8 @@ def self_test() -> None:
     good = evaluate(target, protection, generalization, min_target_delta=0.0)
     assert good["decision"] == "READY_FOR_REPEATED_VALIDATION"
     assert good["review_flags"] == ["judge_disagreement_tasks:1"]
+    assert good["target_treatment_blocking_cases"] == 0
+    assert good["generalization_treatment_blocking_cases"] == 0
 
     bad_protection = synthetic_report(
         "semantic-dialogue-state-protection-v0.1",
@@ -270,8 +324,48 @@ def self_test() -> None:
     )
     bad = evaluate(target, bad_protection, generalization, min_target_delta=0.0)
     assert bad["decision"] == "BLOCKED"
-    assert any("protection_promotion_veto" in reason for reason in bad["blocking_reasons"])
-    assert any("protection_case_regressions" in reason for reason in bad["blocking_reasons"])
+    assert any(
+        "protection_promotion_veto" in reason
+        for reason in bad["blocking_reasons"]
+    )
+    assert any(
+        "protection_case_regressions" in reason
+        for reason in bad["blocking_reasons"]
+    )
+
+    blocked_target = synthetic_report(
+        "semantic-dialogue-state-v0.1",
+        "target",
+        0.5,
+        None,
+        core_blocked=1,
+        treatment_blocked=1,
+    )
+    blocked_target_result = evaluate(
+        blocked_target, protection, generalization, min_target_delta=0.0
+    )
+    assert blocked_target_result["decision"] == "BLOCKED"
+    assert any(
+        "target_treatment_blocking_cases" in reason
+        for reason in blocked_target_result["blocking_reasons"]
+    )
+
+    blocked_generalization = synthetic_report(
+        "semantic-dialogue-state-protection-generalization-v0.1",
+        "protection",
+        0.0,
+        False,
+        core_blocked=1,
+        treatment_blocked=1,
+    )
+    blocked_generalization_result = evaluate(
+        target, protection, blocked_generalization, min_target_delta=0.0
+    )
+    assert blocked_generalization_result["decision"] == "BLOCKED"
+    assert any(
+        "generalization_treatment_blocking_cases" in reason
+        for reason in blocked_generalization_result["blocking_reasons"]
+    )
 
     same_model_generalization = synthetic_report(
         "semantic-dialogue-state-protection-generalization-v0.1",
@@ -284,7 +378,43 @@ def self_test() -> None:
         target, protection, same_model_generalization, min_target_delta=0.0
     )
     assert same_model_result["decision"] == "BLOCKED"
-    assert any("same_model_judge_exposure" in reason for reason in same_model_result["blocking_reasons"])
+    assert any(
+        "same_model_judge_exposure" in reason
+        for reason in same_model_result["blocking_reasons"]
+    )
+
+    not_judged = synthetic_report(
+        "semantic-dialogue-state-v0.1",
+        "target",
+        0.5,
+        None,
+        status="NOT_RUN",
+    )
+    not_judged_result = evaluate(
+        not_judged, protection, generalization, min_target_delta=0.0
+    )
+    assert not_judged_result["decision"] == "BLOCKED"
+    assert any(
+        "target_report_status_not_judged" in reason
+        for reason in not_judged_result["blocking_reasons"]
+    )
+
+    wrong_suite = synthetic_report(
+        "semantic-dialogue-state-protection-generalization-v0.1",
+        "protection",
+        0.0,
+        False,
+    )
+    wrong_suite_result = evaluate(
+        target, wrong_suite, generalization, min_target_delta=0.0
+    )
+    assert wrong_suite_result["decision"] == "BLOCKED"
+    assert any(
+        "protection_report_wrong_fixture_suite" in reason
+        or "fixture_suites_not_distinct" in reason
+        for reason in wrong_suite_result["blocking_reasons"]
+    )
+
     print("semantic dialogue-state promotion pre-gate self-test: PASS")
 
 
@@ -314,7 +444,10 @@ def main() -> None:
         min_target_delta=args.min_target_delta,
     )
     write_report(args.output, result)
-    if args.require_ready and result["decision"] != "READY_FOR_REPEATED_VALIDATION":
+    if (
+        args.require_ready
+        and result["decision"] != "READY_FOR_REPEATED_VALIDATION"
+    ):
         raise SystemExit(1)
 
 
