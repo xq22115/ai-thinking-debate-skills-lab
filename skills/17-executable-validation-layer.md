@@ -6,7 +6,7 @@ Date: 2026-09-09
 
 Move the project from specification-only artifacts toward evidence-producing validation without overstating what has been tested.
 
-This layer now distinguishes deterministic policy execution from model-reasoning smoke tests, independent judging, repeated evaluation, authentic multi-agent runtime, and host-live verification.
+This layer distinguishes deterministic policy execution from model-reasoning smoke tests, decision-robustness smoke tests, independent judging, hidden/adversarial evaluation, repeated evaluation, authentic multi-agent runtime, and host-live verification.
 
 ## Components
 
@@ -49,7 +49,7 @@ Hard boundary:
 
 `SAME_MODEL_PASS != INDEPENDENT_VALIDATION`
 
-Same-model results may expose obvious contract failures or regressions, but cannot establish unseen generalization, unbiased judging, runtime independence, or host-live behavior.
+Same-model results may expose obvious contract failures or regressions, but cannot establish unseen generalization, unbiased judging, runtime independence, distribution-shift robustness, or host-live behavior.
 
 Allowed output classes include `SMOKE_BASELINE_PASS`, `SMOKE_BASELINE_FAIL`, and explicit `NOT_RUN` gates.
 
@@ -71,7 +71,7 @@ Machine-readable receipt:
 
 ### Same-model reasoning smoke receipt — 2026-09-09
 
-A same-session, authoring-overlap contract-conformance pass was recorded against the currently explicit S/CQ/C/J/E fixture families.
+A same-session, authoring-overlap contract-conformance pass was recorded against the explicit S/CQ/C/J/E fixture families.
 
 Result:
 
@@ -90,7 +90,32 @@ Machine-readable receipt:
 
 `evidence/same-model-reasoning-smoke-2026-09-09.json`
 
-Interpretation: the current procedural rules can be applied consistently to the 48 static explicit fixtures in the same authoring context, and no immediate contract contradiction was observed there. This is **not** evidence of independent model improvement.
+Interpretation: the current procedural rules can be applied consistently to the 48 static explicit fixtures in the same authoring context. This is **not** evidence of independent model improvement.
+
+### Same-model decision-robustness smoke receipt — 2026-09-09
+
+A separate same-session, authoring-overlap contract-conformance pass was recorded for DR1–DR10.
+
+Result:
+
+- total explicit fixtures: 10
+- static smoke pass: 10
+- partial: 0
+- fail: 0
+- evidence class: `LOW_SELF_REFERENTIAL`
+- authoring overlap: true
+- fixture expected labels visible: true
+- fresh-context run: NOT_RUN
+- hidden shift variants: NOT_RUN
+- independent judge: NOT_RUN
+- repeated variance: NOT_RUN
+- host-live: false
+
+Machine-readable receipt:
+
+`evidence/same-model-decision-robustness-smoke-2026-09-09.json`
+
+Interpretation: the current decision-robustness rules are internally applicable to the 10 visible authored fixtures. This does **not** establish real distribution-shift robustness, correct human utilities, numerical regret optimality, or host-live action quality.
 
 ## Validation ladder
 
@@ -101,10 +126,11 @@ Do not collapse these evidence levels:
 3. `SAME_MODEL_SMOKE`
 4. `FRESH_CONTEXT_RUN`
 5. `INDEPENDENT_JUDGED`
-6. `UNSEEN_ADVERSARIAL`
-7. `REPEATED_VARIANCE`
-8. `AUTHENTIC_MULTI_AGENT_RUNTIME`
-9. `HOST_LIVE_REGRESSION`
+6. `PERTURBED_HIDDEN`
+7. `UNSEEN_ADVERSARIAL`
+8. `REPEATED_VARIANCE`
+9. `AUTHENTIC_MULTI_AGENT_RUNTIME`
+10. `HOST_LIVE_REGRESSION`
 
 A later level does not retroactively upgrade the meaning of an earlier receipt.
 
@@ -119,6 +145,8 @@ Neither proves:
 - performance on unseen/adversarial distributions;
 - calibrated confidence over repeated trials;
 - position/order/prestige invariance unless paired experiments actually run;
+- natural distribution-shift robustness;
+- optimal utility/loss modeling;
 - genuine epistemic diversity;
 - authentic 10/30-agent execution;
 - host adapter compatibility;
