@@ -1,8 +1,8 @@
-# 06 — Evaluation Suite v1.2
+# 06 — Evaluation Suite v1.3
 
 ## Purpose
 
-Test whether an AI system is genuinely better at evidence use, semantic/causal reasoning, belief revision, debate, skill use, recovery, and completion — rather than merely producing longer answers or more agents.
+Test whether an AI system is genuinely better at evidence use, semantic/causal reasoning, multi-turn dialogue-state tracking, belief revision, debate, skill use, recovery, and completion — rather than merely producing longer answers or more agents.
 
 ## A. Core scorecard
 
@@ -16,6 +16,8 @@ Test whether an AI system is genuinely better at evidence use, semantic/causal r
 | Calibration | Does expressed certainty track actual correctness/evidence state across repeated cases? | Persistent overconfidence/underconfidence |
 | Contradiction handling | Are real conflicts exposed and adjudicated or left unresolved? | Smooth synthesis hides incompatible evidence |
 | Semantic fidelity | Does it preserve literal/pragmatic boundary, QUD, scope and quantifiers? | Debates a neighboring or strengthened/weakened claim |
+| Dialogue-state fidelity | Does it preserve shared/disputed/temporary/unresolved commitments across turns? | Temporary grant, silence, or presupposition becomes false common ground |
+| Argument-target comprehension | Does a rebuttal attack the premise/warrant that actually supports the conclusion? | Rhetorical neighboring answer is credited as structural rebuttal |
 | Causal reasoning | Does it separate association/intervention/counterfactual and check confounding? | Treats correlation/sequence as sufficient causation |
 | Hypothesis diversity | Are materially different explanations generated? | Cosmetic paraphrases only |
 | Falsification quality | Does it seek discriminating/disconfirming evidence? | Only confirmation search |
@@ -40,7 +42,16 @@ Every complex workflow should compare, when applicable:
 6. Debate with selective disagreement retention.
 7. Dynamic role routing + evidence-weighted judge.
 
-Do not accept a multi-agent or longer-reasoning design as better merely because it is more elaborate.
+For the semantic dialogue-state extension, use the narrower four-arm comparison defined by `semantic-dialogue-state-eval-protocol.md`:
+
+1. `direct`;
+2. `generic-careful`;
+3. `microscope-core`;
+4. `microscope-dialogue-state`.
+
+This isolates whether the demand-loaded dialogue-state reference adds value beyond both a simple careful prompt and the canonical semantic core itself.
+
+Do not accept a multi-agent, longer-reasoning, or larger-instruction design as better merely because it is more elaborate.
 
 ## C. Epistemic calibration tests
 
@@ -71,14 +82,15 @@ Suggested metrics:
 - high-VOI action selection rate;
 - unnecessary-search/tool-call count after stop condition.
 
-## D. Semantic / argument tests
+## D. Semantic / argument / dialogue-state tests
 
 Canonical fixtures:
 
 - `semantic-argument-microscope-fixtures.json` — S1–S12;
-- `argument-scheme-critical-question-fixtures.json` — CQ1–CQ8.
+- `argument-scheme-critical-question-fixtures.json` — CQ1–CQ8;
+- `semantic-dialogue-state-fixtures.json` — DS1–DS8.
 
-Measure:
+Semantic/argument measures include:
 
 - definition/scope/QUD normalization;
 - hidden warrant recovery;
@@ -89,6 +101,47 @@ Measure:
 - critical-question decision value;
 - burden handling;
 - faithful steelman rather than claim distortion.
+
+Dialogue-state measures include:
+
+- common-ground integrity;
+- temporary-grant vs genuine agreement separation;
+- silence/presupposition vs established commitment separation;
+- commitment / answer-space / burden / criterion-state deltas;
+- same conclusion vs same reasoning separation;
+- rebuttal-target comprehension;
+- provenance quality vs citation/RAG volume;
+- repair quality after a corrupted commitment;
+- structural generalization under paraphrase/domain swap/lexical-cue removal;
+- calibrated uncertainty when dialogue state remains unresolved.
+
+Use `semantic-dialogue-state-scoring-rubric.md` for observable-output scoring. A rubric blocking error fails the case even when an aggregate dimension score looks acceptable.
+
+### D1 — Behavioral harness
+
+`run_semantic_dialogue_state_eval.py` is provider-neutral. It does not call a model provider by itself. It can:
+
+- prepare a frozen run manifest and four-arm request set;
+- hash instruction bundles and exact fixture/rubric/protocol revisions;
+- validate externally recorded target-model responses;
+- generate blinded judge tasks;
+- validate structured per-dimension judgments and blocking errors;
+- summarize per-arm results, treatment deltas, and treatment regressions;
+- run a synthetic end-to-end self-test for harness integrity.
+
+A synthetic harness self-test verifies execution plumbing only; it does not advance a case to `TARGET_MODEL_RUN`.
+
+### D2 — Judge safeguards
+
+When an LLM judge is used:
+
+- blind candidate/arm identity where possible;
+- preserve judge identity/model-family metadata;
+- avoid same-model self-judging when an independent judge is available;
+- use order swaps for pairwise preference claims;
+- preserve per-dimension scores and blocking errors;
+- report judge disagreement rather than forcing consensus;
+- do not treat judge fluency or generated rationales as ground truth.
 
 ## E. Causal / abductive tests
 
@@ -112,33 +165,33 @@ Canonical fixture: `multi-agent-judge-bias-fixtures.json` — J1–J8.
 
 Additional debate tests:
 
-### D1 — Homogeneous clone trap
+### F1 — Homogeneous clone trap
 Give the same model/prompt/evidence path to many agents.
 
 Expected:
 - system detects low epistemic diversity;
 - avoids treating duplicated opinions as independent evidence.
 
-### D2 — Minority-correct hypothesis
+### F2 — Minority-correct hypothesis
 Create a task where one minority branch has stronger evidence.
 
 Expected:
 - minority survives aggregation;
 - evidence-weighted judge can select it over majority vote.
 
-### D3 — Noise saturation
+### F3 — Noise saturation
 Increase agent count while holding problem complexity fixed.
 
 Expected:
 - router stops adding agents when marginal information gain collapses.
 
-### D4 — Selective retention
+### F4 — Selective retention
 Compare full message broadcast with disagreement-focused retention.
 
 Expected:
 - lower context cost without losing decisive counterarguments.
 
-### D5 — Judge permutation
+### F5 — Judge permutation
 Randomize candidate order/labels and vary response length while preserving evidence.
 
 Expected:
@@ -196,13 +249,14 @@ A skill is `STABLE` only after all blocking tests pass.
 Do not collapse these:
 
 1. `FIXTURE_SPECIFIED` — test case exists.
-2. `STATIC_VALIDATED` — fixture/schema/parser validated.
-3. `TARGET_MODEL_RUN` — target model actually executed.
-4. `INDEPENDENT_JUDGED` — output graded by an appropriately separated judge or gold rule.
-5. `REPEATED` — enough runs to estimate variance/calibration where needed.
-6. `HOST_LIVE_REGRESSION` — behavior verified on intended host/runtime.
+2. `STATIC_VALIDATED` — fixture/schema/parser/protocol assets validated.
+3. `HARNESS_SELF_TESTED` — synthetic end-to-end harness plumbing passed; **not** a target-model result.
+4. `TARGET_MODEL_RUN` — target model actually executed and outputs were recorded against exact requests.
+5. `INDEPENDENT_JUDGED` — output graded by an appropriately separated judge or gold rule.
+6. `REPEATED` — enough runs/order swaps to estimate variance, calibration, or judge instability where needed.
+7. `HOST_LIVE_REGRESSION` — behavior verified on intended host/runtime.
 
-Fixture presence alone is not evidence of model improvement.
+A higher packaging/harness level cannot be substituted for a lower missing behavioral level. In particular, `HARNESS_SELF_TESTED != TARGET_MODEL_RUN`.
 
 ## L. Suggested aggregate metrics
 
@@ -215,6 +269,13 @@ Fixture presence alone is not evidence of model improvement.
 - Belief-update correctness.
 - Source-dependence de-duplication rate.
 - Contradiction detection rate.
+- Common-ground corruption rate.
+- Temporary-grant laundering rate.
+- Rebuttal-target comprehension rate.
+- Structural-generalization rate under domain/paraphrase shift.
+- Dialogue-state blocking-error rate.
+- Treatment delta: `microscope-dialogue-state` vs `direct` and `microscope-core`.
+- Treatment regression count vs `microscope-core`.
 - Discriminating-test selection rate.
 - VOI efficiency / unnecessary search rate.
 - False-completion rate.
@@ -223,8 +284,9 @@ Fixture presence alone is not evidence of model improvement.
 - Tokens / wall-clock / tool calls.
 - Marginal gain per added role.
 - Judge order/verbosity/bandwagon sensitivity.
+- Judge disagreement / order-swap instability.
 - Human correction count.
 
 ## M. 2026 design implication
 
-Current evidence supports conditional, topology-sensitive use of debate and reasoning rather than unconditional scaling. The benchmark target is therefore **decision-quality and calibration improvement over simpler baselines at acceptable compute/tool cost**, with explicit unresolved states when evidence cannot justify a definitive answer.
+Current evidence supports conditional, topology-sensitive use of debate and reasoning rather than unconditional scaling. The benchmark target is therefore **decision-quality, structural comprehension, and calibration improvement over simpler baselines at acceptable compute/tool cost**, with explicit unresolved states when evidence or dialogue state cannot justify a definitive answer.
