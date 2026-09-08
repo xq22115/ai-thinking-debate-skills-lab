@@ -164,10 +164,38 @@ Evidence: proposes logic-grounded metamorphic relations derived from formal equi
 
 Consequence: add metamorphic invariance tests for paraphrase, candidate order, prestige masking, verbosity normalization, quantifier equivalence, causal graph isomorphism, and evidence-provenance duplication.
 
+## LENS — natural prompt distribution shift, ACL 2026
+https://aclanthology.org/2026.acl-long.1508/
+
+Evidence: studies 192 real-world post-deployment prompt-shift settings across time, user-group, and geographic axes, showing that natural prompt-distribution changes are a material deployment reliability problem rather than only a synthetic OOD concern.
+
+Consequence: deployment reasoning must include a target-context shift gate. Historical model/evaluator performance should not be treated as transportable by default when the user/task population changes.
+
+## SConU — selective conformal uncertainty, ACL 2025
+https://aclanthology.org/2025.acl-long.934/
+
+Evidence: conformal uncertainty methods provide risk/coverage mechanisms under assumptions such as exchangeability; SConU explicitly adds tests for samples that deviate from the calibration uncertainty distribution because ordinary conformal coverage can become unbounded when those assumptions fail.
+
+Consequence: `CALIBRATED_IN_DOMAIN != CALIBRATED_UNDER_SHIFT`. Risk-control guarantees must be conditioned on their assumptions, with shift detection / abstention / wider uncertainty when transfer is unsupported.
+
+## CAP — context-adaptive conformalized abstention policy, ACML 2025 / PMLR 2026 publication
+https://proceedings.mlr.press/v304/tayebati26a.html
+
+Evidence: learns context-adaptive risk/abstention behavior that balances point prediction, set prediction, and full abstention according to downstream utility, reporting maintained target coverage and improved selective-generation/calibration metrics in the studied setups.
+
+Consequence: abstention should be treated as one action in a utility/risk policy, not a universal response to uncertainty. Depending on consequence and reversibility, `PROBE`, `PILOT`, bounded answer, or abstention can be preferable.
+
+## Robust decision-focused learning via worst-case regret, UAI 2026
+https://proceedings.mlr.press/v337/yamao26a.html
+
+Evidence: in optimization-based decision-making with uncertain coefficients/distributions, worst-case-regret objectives over explicit uncertainty/ambiguity sets can yield more stable downstream solutions than nominal decision-focused baselines in the reported experiments.
+
+Consequence: `MOST_LIKELY_STATE != BEST_ACTION`. Under fragile probabilities or asymmetric downside, compare expected performance with sensitivity / regret / robustness; however, the chosen uncertainty set and loss model remain assumptions that must themselves be audited.
+
 ## 2026 synthesis
 
-The current evidence supports a layered reasoning-and-verification design:
+The current evidence supports a layered reasoning-verification-decision design:
 
-`evidence sufficiency/provenance -> semantic/QUD normalization -> causal/abductive model when needed -> competing hypotheses -> discriminating test -> selective multi-agent deliberation -> bias-resistant judge -> verifier robustness/metamorphic checks -> VOI stop rule -> calibrated conclusion`
+`evidence sufficiency/provenance -> semantic/QUD normalization -> causal/abductive model when needed -> competing hypotheses -> discriminating test -> selective multi-agent deliberation -> bias-resistant judge -> verifier robustness/metamorphic checks -> VOI stop rule -> loss/reversibility/shift/sensitivity check -> COMMIT / PROBE / PILOT / DEFER / ABSTAIN / ROBUST_FALLBACK -> calibrated conclusion/action`
 
-The repeated research signal is negative as well as positive: more tokens, more sources, more agents, more confidence machinery, more learned-verifier scores, and more rounds do **not** monotonically improve reliability. The system should optimize for independent evidence, discrimination, calibration, target-bound deterministic checks where available, evaluator robustness, and decision value rather than visible reasoning/evaluation volume.
+The repeated research signal is negative as well as positive: more tokens, more sources, more agents, more confidence machinery, more learned-verifier scores, and more rounds do **not** monotonically improve reliability. Likewise, a better probability estimate does not automatically imply a better action. The system should optimize for independent evidence, discrimination, calibration, target-bound deterministic checks where available, evaluator robustness, distribution-shift awareness, reversible learning, sensitivity, regret, and decision value rather than visible reasoning/evaluation volume.
