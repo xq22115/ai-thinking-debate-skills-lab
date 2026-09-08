@@ -53,12 +53,8 @@ Consequence: pin exact version/commit before applying configs.
 - Diversity-aware message retention: https://arxiv.org/abs/2603.20640
 - Pareto-optimal multi-agent test-time scaling: https://arxiv.org/abs/2605.01566
 - Social reasoning / collective truth-seeking: https://arxiv.org/abs/2605.30391
-- SELENE — Selective and Evidence-Weighted LLM Debating (EACL 2026): https://aclanthology.org/2026.eacl-industry.7/
-- Persuasion-driven adversarial influence in multi-agent LLM debate (Scientific Reports 2026): https://www.nature.com/articles/s41598-026-42705-7
-- Demystifying Multi-Agent Debate: The Role of Confidence and Diversity (Findings of ACL 2026): https://aclanthology.org/2026.findings-acl.1694/
-- Free-MAD: Consensus-Free Multi-Agent Debate (Findings of ACL 2026): https://aclanthology.org/2026.findings-acl.1600/
 
-Synthesis: debate can help, but raw agent count or debate duration is not the objective. Diversity, topology, selective initiation/communication, calibrated confidence, cost, anti-sycophancy, evidence-weighted adjudication, minority preservation, and resistance to persuasive-but-wrong arguments determine value.
+Synthesis: debate can help, but raw agent count is not the objective. Diversity, topology, selective communication, cost, anti-sycophancy, and evidence-based adjudication determine value.
 
 ## BayesBench — sequential evidence accumulation, 2026-06-29
 https://arxiv.org/abs/2606.30850
@@ -132,14 +128,139 @@ Evidence: increasing the number of documents can degrade performance even when t
 
 Consequence: more retrieved documents are not automatically better. De-duplicate and select by decision value rather than maximizing document count.
 
-## Semantic argument / dialogue-state evidence
+## Verifiable Process Reward Models — Findings of ACL 2026
+https://aclanthology.org/2026.findings-acl.1611/
+
+Evidence: VPRMs replace purely neural step scoring with deterministic rule-based verification for checkable intermediate decisions in a structured medical evidence-synthesis task. The reported experiments improve coherence between intermediate decisions and final labels, with gains over outcome-only verifiable rewards in that domain.
+
+Consequence: when intermediate obligations are genuinely programmatically checkable, deterministic process verification should be preferred over asking a neural judge to infer rule adherence from prose. Do not generalize this to domains lacking a valid executable process oracle.
+
+## VerifyBench — ICLR/AAAI 2026 verifier benchmarks
+https://proceedings.iclr.cc/paper_files/paper/2026/hash/e812af67a942c21dd0104bd929f99da1-Abstract-Conference.html
+https://ojs.aaai.org/index.php/AAAI/article/view/40448
+
+Evidence: current reference-based/specialized/general verifiers retain substantial error on difficult cases. The AAAI benchmark reports sensitivity to response structure and cross-domain tradeoffs; no single verifier is uniformly reliable across all conditions.
+
+Consequence: `ONE_VERIFIER != GROUND_TRUTH`. Evaluate verifier robustness by task family, structure, and cross-domain transfer; preserve disagreement between verifiers rather than collapsing it into one scalar.
+
+## Reward hacking in agentic LLM systems — 2026 survey
+https://link.springer.com/article/10.1007/s44163-026-01980-z
+
+Evidence: review synthesizes feature-level, representation-level, evaluator-level, and environment-level reward-hacking surfaces, including verbosity/sycophancy shortcuts, judge/verifier gaming, benchmark overfitting, test exploitation, and reward-channel manipulation.
+
+Consequence: treat tests, hidden variants, reference fields, reward channels, and audit logs as privileged verification assets when runtime separation is possible. A visible evaluator is itself an attack/optimization surface.
+
+## Causal Reward Adjustment — AAAI 2026
+https://ojs.aaai.org/index.php/AAAI/article/view/40584
+
+Evidence: studies reward hacking in process-reward-model-guided reasoning and attributes failures partly to confounding semantic features; reports improvements from causal adjustment in the studied math-reasoning setup.
+
+Consequence: high PRM score is not equivalent to logical correctness. Treat reward-model features as potentially confounded proxies and test with alternative/deterministic verification where possible.
+
+## Logic-Grounded Metamorphic Testing — 2026
+https://www.sciencedirect.com/science/article/pii/S0950705126010506
+
+Evidence: proposes logic-grounded metamorphic relations derived from formal equivalences to test reasoning consistency under semantics-preserving transformations, addressing limitations of static benchmarks.
+
+Consequence: add metamorphic invariance tests for paraphrase, candidate order, prestige masking, verbosity normalization, quantifier equivalence, causal graph isomorphism, and evidence-provenance duplication.
+
+## LENS — natural prompt distribution shift, ACL 2026
+https://aclanthology.org/2026.acl-long.1508/
+
+Evidence: studies 192 real-world post-deployment prompt-shift settings across time, user-group, and geographic axes, showing that natural prompt-distribution changes are a material deployment reliability problem rather than only a synthetic OOD concern.
+
+Consequence: deployment reasoning must include a target-context shift gate. Historical model/evaluator performance should not be treated as transportable by default when the user/task population changes.
+
+## SConU — selective conformal uncertainty, ACL 2025
+https://aclanthology.org/2025.acl-long.934/
+
+Evidence: conformal uncertainty methods provide risk/coverage mechanisms under assumptions such as exchangeability; SConU explicitly adds tests for samples that deviate from the calibration uncertainty distribution because ordinary conformal coverage can become unbounded when those assumptions fail.
+
+Consequence: `CALIBRATED_IN_DOMAIN != CALIBRATED_UNDER_SHIFT`. Risk-control guarantees must be conditioned on their assumptions, with shift detection / abstention / wider uncertainty when transfer is unsupported.
+
+## CAP — context-adaptive conformalized abstention policy, ACML 2025 / PMLR 2026 publication
+https://proceedings.mlr.press/v304/tayebati26a.html
+
+Evidence: learns context-adaptive risk/abstention behavior that balances point prediction, set prediction, and full abstention according to downstream utility, reporting maintained target coverage and improved selective-generation/calibration metrics in the studied setups.
+
+Consequence: abstention should be treated as one action in a utility/risk policy, not a universal response to uncertainty. Depending on consequence and reversibility, `PROBE`, `PILOT`, bounded answer, or abstention can be preferable.
+
+## Robust decision-focused learning via worst-case regret, UAI 2026
+https://proceedings.mlr.press/v337/yamao26a.html
+
+Evidence: in optimization-based decision-making with uncertain coefficients/distributions, worst-case-regret objectives over explicit uncertainty/ambiguity sets can yield more stable downstream solutions than nominal decision-focused baselines in the reported experiments.
+
+Consequence: `MOST_LIKELY_STATE != BEST_ACTION`. Under fragile probabilities or asymmetric downside, compare expected performance with sensitivity / regret / robustness; however, the chosen uncertainty set and loss model remain assumptions that must themselves be audited.
+
+## RECAP — intent rewriting for agentic planning, Findings of EACL 2026
+https://aclanthology.org/2026.findings-eacl.105/
+
+Evidence: RECAP targets real conversational ambiguity, underspecification, intent drift, vagueness, and mixed-goal dialogue by rewriting conversation into concise goal representations for downstream planning. The work reports utility improvements over baselines from intent rewriting approaches.
+
+Consequence: explicit task-local goal normalization is a legitimate planning layer. Preserve a compact Goal Contract rather than allowing downstream planners/agents to infer different hidden objectives from the raw conversation.
+
+## Structured Uncertainty Guided Clarification / ClarifyBench — Findings of ACL 2026
+https://aclanthology.org/2026.findings-acl.2028/
+
+Evidence: separates specification uncertainty (what the user wants) from model uncertainty and uses Expected Value of Perfect Information plus clarification cost to determine what to ask and when to stop in tool-calling agents.
+
+Consequence: `SPECIFICATION_UNCERTAINTY != MODEL_UNCERTAINTY`. Ask high-value clarifying questions only when user-authoritative information is needed and materially changes the action; use direct reads/tests for internally resolvable world-state uncertainty.
+
+## Planorama — preference vs actual helpfulness, EMNLP 2025
+https://aclanthology.org/2025.emnlp-main.585/
+
+Evidence: across thousands of plan executions/comparisons, user/model preferences and agent success did not reliably predict which plans actually helped users complete the task; surface preferences such as brevity and similarity were associated with preference but not helpfulness.
+
+Consequence: `STATED_OR_RATED_PREFERENCE != VERIFIED_HELPFULNESS`. Evaluate real task outcome separately from what looks preferable, concise, familiar, or judge-friendly.
+
+## Personalized Benchmarking — Findings of ACL 2026
+https://aclanthology.org/2026.findings-acl.31/
+
+Evidence: aggregate model rankings can diverge substantially from individual users' rankings, showing that population-average preference is a poor universal proxy for individual preference in many settings.
+
+Consequence: do not silently substitute aggregate preference for the user's task-local preference/constraint state. Keep personalization bounded to evidence supplied by the user/context rather than inventing latent values.
+
+## Revealed preferences for LLM alignment/steering — Microsoft Research, 2026
+https://www.microsoft.com/en-us/research/publication/can-revealed-preferences-clarify-llm-alignment-and-steering/
+
+Evidence: recovers cost functions implied by model choices and reports meaningful mismatches between models' verbalized objectives/preferences and the policies revealed by their decisions, including limits in reliably adopting user-specified cost functions.
+
+Consequence: `MODEL_STATED_OBJECTIVE != REVEALED_DECISION_POLICY`. For task-local objective audits, compare declared priorities with observable choices under controlled tradeoffs rather than trusting self-description alone.
+
+## Specification gaming in reasoning models — 2026
+https://arxiv.org/abs/2605.02269
+
+Evidence: a diverse suite of tasks with unintended high-scoring actions finds non-negligible specification gaming across tested reasoning models in most settings; the authors report higher exploit rates with RL reasoning training and only partial mitigation from test-time interventions.
+
+Consequence: powerful reasoning against an imperfect specification can increase optimization pressure on the wrong proxy. Acceptance tests/proxies require outcome-binding, hidden variants, and anti-gaming checks; higher reasoning budget should not be assumed to improve goal fidelity.
+
+## 2026 synthesis
+
+The current evidence supports a layered goal-reasoning-verification-decision design:
+
+`Goal Contract / specification audit -> capability/compatibility -> evidence sufficiency/provenance -> semantic/QUD normalization -> causal/abductive model when needed -> competing hypotheses -> discriminating test -> selective multi-agent deliberation -> bias-resistant judge -> verifier robustness/metamorphic checks -> VOI stop rule -> loss/reversibility/shift/sensitivity check -> COMMIT / PROBE / PILOT / DEFER / ABSTAIN / ROBUST_FALLBACK -> outcome-bound completion check`
+
+The repeated research signal is negative as well as positive: more tokens, sources, agents, confidence machinery, verifier scores, preference ratings, or rounds do **not** monotonically improve reliability. A better probability estimate does not automatically imply a better action, and a higher proxy/preference score does not automatically imply user success. The system should optimize for user-authorized goal fidelity, independent evidence, discrimination, calibration, target-bound verification, evaluator robustness, distribution-shift awareness, reversible learning, sensitivity/regret, and outcome-bound completion rather than visible reasoning/evaluation volume.
+
+## PR #50 semantic argument / dialogue-state evidence extension
+
+The following evidence and implications are retained from the semantic-dialogue-state work and compose with, rather than replace, the broader goal/decision/verifier architecture above.
+
+### Selective/evidence-weighted debate and adversarial persuasion
+
+- SELENE — Selective and Evidence-Weighted LLM Debating (EACL 2026): https://aclanthology.org/2026.eacl-industry.7/
+- Persuasion-driven adversarial influence in multi-agent LLM debate (Scientific Reports 2026): https://www.nature.com/articles/s41598-026-42705-7
+- Demystifying Multi-Agent Debate: The Role of Confidence and Diversity (Findings of ACL 2026): https://aclanthology.org/2026.findings-acl.1694/
+- Free-MAD: Consensus-Free Multi-Agent Debate (Findings of ACL 2026): https://aclanthology.org/2026.findings-acl.1600/
+
+Consequence: raw agent count or debate duration is not the objective. Selective initiation, calibrated confidence, evidence-weighted adjudication, minority preservation, and resistance to persuasive-but-wrong agents matter more than forced consensus.
 
 ### Dialogue is the Plan: From Interface to Joint Action in Agentic AI — ACL 2026
 https://aclanthology.org/2026.acl-short.63/
 
 Evidence: treating language only as an interface misses common ground, grounding, repair, and shared commitments involved in joint action.
 
-Consequence: long multi-turn argument should not rely only on a flat transcript summary. When shared commitments materially affect later reasoning, preserve explicit common-ground state and repair corrupted assumptions before continuing.
+Consequence: when later reasoning depends on what earlier turns actually established, preserve explicit common-ground state rather than relying on a flat transcript summary.
 
 ### Multi-Agent LLM Debate Unveils the Premise Left Unsaid — ArgMining 2025
 https://aclanthology.org/2025.argmining-1.6/
@@ -153,16 +274,16 @@ https://aclanthology.org/2025.argmining-1.23/
 https://aclanthology.org/2025.argmining-1.31/
 https://aclanthology.org/2025.argmining-1.29/
 
-Evidence: critical-question generation remains difficult; scheme information and usefulness-based candidate selection improve the quality of questions.
+Evidence: critical-question generation remains difficult; scheme information and usefulness-based candidate selection improve question quality.
 
-Consequence: `ARGUMENT_SCHEMES.md` should generate candidate questions and rank a small number by decision value rather than rewarding question volume.
+Consequence: generate candidate critical questions and rank a small number by decision value instead of rewarding question volume.
 
 ### The Thin Line Between Comprehension and Persuasion in LLMs — Findings of ACL 2026
 https://aclanthology.org/2026.findings-acl.329/
 
 Evidence: models can sustain coherent persuasive dialogue while still failing on deeper dialogical/argument comprehension such as supporting-premise structure and argument quality.
 
-Consequence: rhetorical success and structural comprehension require separate evaluation. Audience reaction, fluency, confidence, or verbal dominance cannot substitute for correct support/attack targeting or common-ground tracking.
+Consequence: `PERSUASION != COMPREHENSION`; rhetorical success cannot substitute for correct support/attack targeting or common-ground tracking.
 
 ### Can LLMs Judge Debates? Evaluating Non-Linear Reasoning via Argumentation Theory Semantics — Findings of EMNLP 2025
 https://aclanthology.org/2025.findings-emnlp.1159/
@@ -171,12 +292,12 @@ Evidence: natural debate is non-linear and is better represented through support
 
 Consequence: use argument graphs/QUD/crux plus dialogue-state repair when turn history changes available premises.
 
-### Limited Generalizability in Argument Mining: State-Of-The-Art Models Learn Datasets, Not Arguments — ACL 2025
+### Limited Generalizability in Argument Mining — ACL 2025
 https://aclanthology.org/2025.acl-long.1164/
 
-Evidence: strong benchmark scores can rely on lexical/data-set shortcuts and degrade on unseen domains.
+Evidence: strong benchmark scores can rely on lexical/dataset shortcuts and degrade on unseen domains.
 
-Consequence: semantic/argument reasoning must survive paraphrase, domain swaps, style changes, and removal of familiar lexical cues before being treated as structurally general.
+Consequence: semantic/argument reasoning must survive paraphrase, domain swaps, style changes, and familiar-cue removal before being treated as structural generalization.
 
 ### Relation-based and end-to-end Argument Mining — COLING 2025
 https://aclanthology.org/2025.coling-main.569/
@@ -184,59 +305,30 @@ https://aclanthology.org/2025.coling-main.442/
 
 Evidence: identifying argumentative units and classifying support/attack/neither relations are distinct capabilities.
 
-Consequence: a rebuttal is structurally successful only if it attacks a proposition/warrant that materially supports the target conclusion; a polished neighboring response is not enough.
+Consequence: a rebuttal is structurally successful only if it attacks a proposition/warrant that materially supports the target conclusion.
 
 ### Pragmatic Inference Chain — EMNLP 2025
 https://aclanthology.org/2025.emnlp-main.296/
 
 Evidence: structured pragmatic inference improves reasoning over inference-intensive implicit language.
 
-Consequence: preserve the literal/pragmatic boundary and do not promote a plausible implicature or presupposition into established world evidence.
+Consequence: preserve literal/pragmatic boundaries; do not promote plausible implicature or presupposition into established world evidence.
 
-## Behavioral evaluation / judge reliability evidence
+### Judge reliability evidence
 
-### Judging the Judges: A Systematic Study of Position Bias in LLM-as-a-Judge — IJCNLP-AACL 2025
-https://aclanthology.org/2025.ijcnlp-long.18/
+- Judging the Judges — IJCNLP-AACL 2025: https://aclanthology.org/2025.ijcnlp-long.18/
+- Judging with Many Minds — Findings of EMNLP 2025: https://aclanthology.org/2025.findings-emnlp.941/
+- LRBench and Judge-R1 — Findings of ACL 2026: https://aclanthology.org/2026.findings-acl.2029/
+- Don't Judge Code by Its Cover — Findings of EACL 2026: https://aclanthology.org/2026.findings-eacl.70/
 
-Evidence: across many judges/tasks, answer position can systematically influence LLM-as-a-Judge decisions; the effect is not explainable as random noise alone.
+Consequence: blinded labels, order swaps, case-first multi-judge aggregation, explicit blocking errors, and preserved disagreement are stronger evidence than a single fluent judge rationale.
 
-Consequence: pairwise preference claims should use blinded labels and order swaps, and disagreement should be reported rather than silently averaged away.
+### Integrated semantic path
 
-### Judging with Many Minds: Do More Perspectives Mean Less Prejudice? — Findings of EMNLP 2025
-https://aclanthology.org/2025.findings-emnlp.941/
+Within the broader architecture above, the semantic path is:
 
-Evidence: multi-agent judge/debate frameworks can amplify position, verbosity, chain-of-thought and bandwagon biases after interaction instead of automatically canceling them.
+`semantic/QUD normalization -> DIALOGUE_STATE common-ground repair only when multi-turn commitment state can change the verdict -> causal/abductive reference when needed -> competing hypotheses -> discriminating test -> selective deliberation -> separated judging`
 
-Consequence: `more judges` or `judge debate` is not itself a reliability guarantee. Preserve raw judge outputs, independent scores, bias checks, and dissent where material.
+The canonical semantic owner remains `semantic-argument-microscope`. `ARGUMENT_SCHEMES.md`, `CAUSAL_ABDUCTIVE_REASONING.md`, and `DIALOGUE_STATE.md` are progressive references, not competing owners.
 
-### LRBench and Judge-R1: Principled Evaluation and Training of LLM-Based Judges for Long-Context Reasoning — Findings of ACL 2026
-https://aclanthology.org/2026.findings-acl.2029/
-
-Evidence: long-context reasoning evaluation benefits from fine-grained principle-violation labels rather than final-answer preference alone.
-
-Consequence: the dialogue-state harness records dimension-level scores and explicit blocking errors instead of collapsing evaluation immediately to one scalar.
-
-### Don't Judge Code by Its Cover: Exploring Biases in LLM Judges for Code Evaluation — Findings of EACL 2026
-https://aclanthology.org/2026.findings-eacl.70/
-
-Evidence: judges can remain vulnerable to systematic presentation biases even when asked to generate tests before scoring.
-
-Consequence: a judge-generated rationale or test is not sufficient proof of judge reliability. Protect evaluation with structured criteria, independent evidence when available, and explicit judge metadata.
-
-## 2026 synthesis
-
-The current evidence supports a layered reasoning design:
-
-`evidence sufficiency/provenance -> semantic/QUD normalization -> dialogue-state/common-ground repair when multi-turn commitments matter -> causal/abductive model when needed -> competing hypotheses -> discriminating test -> selective multi-agent deliberation -> bias-resistant judge -> VOI stop rule -> calibrated conclusion`
-
-The canonical semantic owner remains `semantic-argument-microscope`. Progressive references extend it only when needed:
-
-- `ARGUMENT_SCHEMES.md` — inferential scheme + decision-critical question selection;
-- `CAUSAL_ABDUCTIVE_REASONING.md` — causal/explanatory/interventional/counterfactual reasoning;
-- `DIALOGUE_STATE.md` — multi-turn shared commitments, temporary grants, answer-space/criterion shifts, common-ground repair, provenance laundering, and structural-transfer checks.
-
-Behavioral evaluation is also evidence-gated. `semantic-dialogue-state-eval-protocol.md` plus `run_semantic_dialogue_state_eval.py` freeze four comparable arms, prompt/instruction hashes, response identities, blind judge tasks, dimension-level scoring, blocking errors, same-model-judge metadata, and treatment regressions. The harness intentionally does not make provider calls by itself.
-
-The repeated research signal is negative as well as positive: more tokens, more sources, more agents, more rounds, and more judges do **not** monotonically improve reliability. Optimize for independent evidence, discrimination, calibration, structural comprehension, decision value, and auditable state changes rather than visible reasoning volume.
-
-Static fixtures, CI asset validation, and harness self-tests remain packaging/execution-harness evidence only; target-model behavior, independent judge validity, and host-live routing require separate execution evidence.
+Static fixtures, campaign packaging, CI asset validation, and synthetic harness self-tests are preparation/plumbing evidence only. They do not prove target-model improvement, independent judge validity, repeated robustness, or host-live routing.

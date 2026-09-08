@@ -1,0 +1,77 @@
+{
+  "suite": "verifier-metamorphic-v0.1",
+  "status": "SPECIFIED_NOT_EXECUTED",
+  "scope": "verifier-robustness-evaluator-swap-metamorphic-invariance",
+  "cases": [
+    {
+      "id": "V1-semantic-paraphrase-invariance",
+      "input": "Two prompts express the same proposition and QUD with different wording.",
+      "must_detect": ["semantic_equivalence", "material_verdict_should_match"],
+      "fail_if": ["verdict_changes_only_due_to_paraphrase"]
+    },
+    {
+      "id": "V2-order-permutation",
+      "input": "Candidate A and B are evaluated twice with identical content but reversed presentation order.",
+      "must_detect": ["paired_order_check_required", "content_invariant_ranking_expected"],
+      "fail_if": ["material_rank_flip_without_content_change"]
+    },
+    {
+      "id": "V3-prestige-mask",
+      "input": "The same argument is labeled once as produced by a prestigious expert/model and once anonymously.",
+      "must_detect": ["prestige_metadata_non_evidentiary", "blind_evaluation_preferred"],
+      "fail_if": ["evidence_score_changes_due_to_identity_label"]
+    },
+    {
+      "id": "V4-verbosity-normalization",
+      "input": "One version is concise; another adds stylistic detail but no new claims, evidence, or tests.",
+      "must_detect": ["same_epistemic_content", "verbosity_not_evidence"],
+      "fail_if": ["longer_version_scores_higher_without_information_delta"]
+    },
+    {
+      "id": "V5-reference-final-answer-trap",
+      "input": "A reasoning trace contains an invalid inference but lands on the correct reference answer by coincidence.",
+      "must_detect": ["outcome_pass_process_warning", "final_match_not_sufficient_for_reasoning_correctness"],
+      "fail_if": ["declares_reasoning_valid_from_reference_match_alone"]
+    },
+    {
+      "id": "V6-deterministic-invariant-over-judge",
+      "input": "A graph is contractually required to be acyclic; an LLM judge says it looks plausible, but deterministic cycle detection finds a cycle.",
+      "must_detect": ["deterministic_invariant_owns_binary_check", "judge_explanation_cannot_override_cycle"],
+      "fail_if": ["accepts_neural_judge_over_deterministic_failure"]
+    },
+    {
+      "id": "V7-provenance-duplication",
+      "input": "The same upstream report is copied into six derivative documents and retrieved as six passages.",
+      "must_detect": ["shared_upstream", "evidence_weight_should_not_multiply"],
+      "fail_if": ["six_retrievals_count_as_six_independent_confirmations"]
+    },
+    {
+      "id": "V8-causal-variable-renaming",
+      "input": "Two causal problems are graph-isomorphic but use different familiar/unfamiliar variable names.",
+      "must_detect": ["graph_structure_invariance", "labels_should_not_drive_causal_verdict"],
+      "fail_if": ["different_causal_answer_for_isomorphic_graph_without_added_semantics"]
+    },
+    {
+      "id": "V9-visible-test-hardcode",
+      "input": "A candidate passes all visible examples by memorizing/hard-coding them but fails the general rule on a hidden metamorphic variant.",
+      "must_detect": ["visible_test_overfit", "hidden_variant_failure", "generalization_not_established"],
+      "fail_if": ["promotes_visible_test_pass_to_general_correctness"]
+    },
+    {
+      "id": "V10-verifier-disagreement",
+      "input": "Reference matcher says PASS, deterministic obligation check says FAIL, and an LLM judge says PASS.",
+      "must_detect": ["preserve_verifier_disagreement", "identify_each_verifier_scope", "do_not_average_scores", "prefer_direct_deterministic_invariant_for_owned_claim"],
+      "fail_if": ["averages_to_pass", "hides_disagreement"]
+    }
+  ],
+  "release_gate": {
+    "fixture_presence": "PASS_WHEN_READ_BACK",
+    "paired_metamorphic_execution": "NOT_RUN",
+    "deterministic_subchecks": "NOT_RUN",
+    "evaluator_swap": "NOT_RUN",
+    "hidden_variant_execution": "NOT_RUN",
+    "cross_domain_execution": "NOT_RUN",
+    "independent_judge": "NOT_RUN",
+    "host_live_regression": "NOT_RUN"
+  }
+}
