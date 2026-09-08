@@ -77,6 +77,7 @@ These specialists are eligible for implicit invocation only after the routing el
 ## Canonical combination patterns
 
 - research-heavy → `task-goal-intelligence` + `executive-research` + `evidence-watchdog`
+- contested/ambiguous claim → `task-goal-intelligence` + portable `semantic-argument-microscope` + `evidence-watchdog`; demand-load semantic references only when their trigger is material
 - capability bottleneck → `task-goal-intelligence` + `capability-forensics` + `evidence-watchdog`
 - MCP/tool-surface pressure → `task-goal-intelligence` + `mcp-surface-engineering` + `evidence-watchdog`
 - runtime-effect mismatch → `task-goal-intelligence` + `agent-runtime-forensics` + `evidence-watchdog`
@@ -85,12 +86,13 @@ These specialists are eligible for implicit invocation only after the routing el
 - cross-session context → `task-goal-intelligence` + `memory-policy`
 - complex multi-stage → `task-goal-intelligence` + `chief-of-staff-core` + `evidence-watchdog`
 
-Implicit bundles are bounded to three skills per phase. Discover many, load few.
+Implicit bundles are bounded to three skills per phase. Discover many, load few. A portable specialist listed in a combination pattern is a routing/composition contract, **not proof that a hosted plugin surface has loaded or invoked it**.
 
 ## Portable specialist library
 
 The following specialists remain useful as direct references or standalone skills when their narrow trigger applies. They do not compete with the canonical plugin for orchestration ownership:
 
+- `semantic-argument-microscope` — canonical portable semantic/argument owner for literal/pragmatic boundary, QUD/crux/warrant normalization and demand-loaded `ARGUMENT_SCHEMES.md`, `CAUSAL_ABDUCTIVE_REASONING.md`, or `DIALOGUE_STATE.md`; current branch candidate `0.3.0-rc1`
 - `evidence-gap-research`
 - `competing-hypotheses`
 - `root-cause-clustering`
@@ -101,6 +103,8 @@ The following specialists remain useful as direct references or standalone skill
 - `capability-challenge`
 - `durable-agent-control-plane`
 - canonical full-detail `task-goal-intelligence` under `skills/skills/`
+
+For `semantic-argument-microscope`, use `skills/07-deliberation-router-spec.md` Gate C as the portable routing contract. `DIALOGUE_STATE.md` is not a default depth layer: load it only when multi-turn commitment/common-ground state can change the verdict. Self-contained claims should remain on the smaller semantic core.
 
 ## Skill authoring rule
 
