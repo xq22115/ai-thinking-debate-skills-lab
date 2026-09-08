@@ -1,3 +1,4 @@
+import errno
 import importlib.util
 import json
 import pathlib
@@ -5,6 +6,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -24,7 +26,7 @@ PREP_SPEC = importlib.util.spec_from_file_location(
     "preparer", ROOT / "scripts/prepare_local_agent_run.py"
 )
 preparer = importlib.util.module_from_spec(PREP_SPEC)
-PREP_SPEC.loader.exec_module(preparer)
+SPEC.loader.exec_module(manager)
 ISSUE = 27
 RUN_ID = "run-lifecycle"
 
@@ -101,7 +103,21 @@ class ManageLocalAgentRunTests(unittest.TestCase):
         self.assertEqual(self.workflow["result"], "PASS", self.workflow)
 
     def tearDown(self):
-        self.temp.cleanup()
+        # Match the workflow suite's cleanup discipline: Git worktree metadata can
+        # still be touched briefly after parallel workflow activity completes.
+        # Retry only transient ENOTEMPTY races; persistent or different failures
+        # remain real test failures.
+        if self.repo.is_dir():
+            git(self.repo, "worktree", "prune", "--expire", "now", check=False)
+        for attempt in range(4):
+            try:
+                self.temp.cleanup()
+                return
+            except OSError as exc:
+                if exc.errno != errno.ENOTEMPTY or attempt == 3:
+                    raise
+                time.sleep(0.05 * (attempt + 1))
+
     def test_resume_cli_needs_no_claude_when_all_receipts_revalidate(self):
         prep_json = self.root / "resume-preparation.json"
         prep_json.write_text(json.dumps(self.preparation), encoding="utf-8")
@@ -172,6 +188,7 @@ class ManageLocalAgentRunTests(unittest.TestCase):
         self.assertTrue(first["atomic_push_attempted"])
         second = manager.publish_run(self.preparation, self.workflow, remote="origin")
         self.assertEqual(second["result"], "PASS", second)
+        self.assertTrue(second["unchanged"])
         for actor, finalization in self.workflow["finalizations"].items():
             branch = next(row["branch"] for row in self.preparation["assignments"] if row["actor_id"] == actor)
             remote_head = git(self.remote, "rev-parse", f"refs/heads/{branch}", capture=True)
@@ -198,6 +215,7 @@ class ManageLocalAgentRunTests(unittest.TestCase):
         self.assertEqual(result["result"], "VETO", result)
         self.assertIn("workflow_not_pass", result["failures"])
         self.assertEqual(git(self.repo, "rev-parse", self.preparation["integration_branch"], capture=True), self.base_sha)
+
     def test_integrate_merges_all_actor_evidence_and_re_adjudicates(self):
         result = manager.integrate_run(self.preparation, self.workflow)
         self.assertEqual(result["result"], "PASS", result)
