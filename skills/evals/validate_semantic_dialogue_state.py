@@ -17,6 +17,7 @@ GENERALIZATION = HERE / "semantic-dialogue-state-generalization-holdout.json"
 RUBRIC = HERE / "semantic-dialogue-state-scoring-rubric.md"
 PROTOCOL = HERE / "semantic-dialogue-state-eval-protocol.md"
 HARNESS = HERE / "run_semantic_dialogue_state_eval.py"
+PROMOTION_GATE = HERE / "check_semantic_dialogue_state_promotion.py"
 REFERENCE = ROOT / "skills" / "semantic-argument-microscope" / "DIALOGUE_STATE.md"
 EXPECTED_TARGET_CASES = 8
 EXPECTED_PROTECTION_CASES = 12
@@ -76,8 +77,24 @@ def exact_prefixes(ids: set[str], stem: str, count: int) -> None:
         )
 
 
+def require_markers(path: Path, markers: list[str], label: str) -> None:
+    text = path.read_text(encoding="utf-8")
+    missing = [marker for marker in markers if marker not in text]
+    if missing:
+        fail(f"{label} missing markers: {missing}")
+
+
 def main() -> None:
-    for path in (FIXTURE, PROTECTION, GENERALIZATION, RUBRIC, PROTOCOL, HARNESS, REFERENCE):
+    for path in (
+        FIXTURE,
+        PROTECTION,
+        GENERALIZATION,
+        RUBRIC,
+        PROTOCOL,
+        HARNESS,
+        PROMOTION_GATE,
+        REFERENCE,
+    ):
         if not path.is_file():
             fail(f"missing {path.relative_to(ROOT.parent)}")
 
@@ -106,70 +123,86 @@ def main() -> None:
     if "protection" not in generalization_suite or "generalization" not in generalization_suite:
         fail("generalization suite name must identify both protection and generalization roles")
 
-    reference_text = REFERENCE.read_text(encoding="utf-8")
-    reference_markers = [
-        "Common-Ground Ledger",
-        "Dialogue-State Delta",
-        "ASSUMED_FOR_TEST != AGREED",
-        "UNANSWERED_PRESUPPOSITION != COMMON_GROUND",
-        "Provenance Laundering",
-        "Structural Generalization Guard",
-    ]
-    missing_reference = [m for m in reference_markers if m not in reference_text]
-    if missing_reference:
-        fail(f"reference missing markers: {missing_reference}")
+    require_markers(
+        REFERENCE,
+        [
+            "Common-Ground Ledger",
+            "Dialogue-State Delta",
+            "ASSUMED_FOR_TEST != AGREED",
+            "UNANSWERED_PRESUPPOSITION != COMMON_GROUND",
+            "Provenance Laundering",
+            "Structural Generalization Guard",
+        ],
+        "reference",
+    )
 
-    rubric_text = RUBRIC.read_text(encoding="utf-8")
-    rubric_markers = [
-        "Common-ground integrity",
-        "Dialogue-state delta",
-        "Evidence/provenance fidelity",
-        "Structural generalization",
-        "Blocking errors",
-        "Protection-holdout metrics",
-        "unnecessary_dialogue_state_invention",
-        "promotion veto",
-        "Acceptance boundary",
-    ]
-    missing_rubric = [m for m in rubric_markers if m not in rubric_text]
-    if missing_rubric:
-        fail(f"rubric missing markers: {missing_rubric}")
+    require_markers(
+        RUBRIC,
+        [
+            "Common-ground integrity",
+            "Dialogue-state delta",
+            "Evidence/provenance fidelity",
+            "Structural generalization",
+            "Blocking errors",
+            "Protection-holdout metrics",
+            "unnecessary_dialogue_state_invention",
+            "promotion veto",
+            "Acceptance boundary",
+        ],
+        "rubric",
+    )
 
-    protocol_text = PROTOCOL.read_text(encoding="utf-8")
-    protocol_markers = [
-        "Evaluation arms",
-        "Run manifest",
-        "Judge protocol",
-        "Multi-judge record identity",
-        "Case-first aggregation",
-        "Protection baseline",
-        "TARGET_GAIN != SAFE_PROMOTION",
-        "HARNESS_READY != MODEL_RUN_COMPLETE != JUDGE_VALIDATED != HOST_LIVE",
-    ]
-    missing_protocol = [m for m in protocol_markers if m not in protocol_text]
-    if missing_protocol:
-        fail(f"protocol missing markers: {missing_protocol}")
+    require_markers(
+        PROTOCOL,
+        [
+            "Evaluation arms",
+            "Run manifest",
+            "Judge protocol",
+            "Multi-judge record identity",
+            "Case-first aggregation",
+            "Protection baseline",
+            "DSG1–DSG12",
+            "TARGET_GAIN != SAFE_PROMOTION",
+            "HARNESS_READY != MODEL_RUN_COMPLETE != JUDGE_VALIDATED != HOST_LIVE",
+        ],
+        "protocol",
+    )
 
-    harness_text = HARNESS.read_text(encoding="utf-8")
-    harness_markers = [
-        '"direct"',
-        '"generic-careful"',
-        '"microscope-core"',
-        '"microscope-dialogue-state"',
-        "PROTECTION_FIXTURES",
-        "fixture_path",
-        "normalize_arms",
-        "prepare_judge_tasks",
-        "normalize_judgments",
-        "judge_disagreement_tasks",
-        "protection_promotion_veto",
-        "validate_judgments",
-        "treatment_blocking_regressions_vs_core",
-        "self_test",
-    ]
-    missing_harness = [m for m in harness_markers if m not in harness_text]
-    if missing_harness:
-        fail(f"harness missing markers: {missing_harness}")
+    require_markers(
+        HARNESS,
+        [
+            '"direct"',
+            '"generic-careful"',
+            '"microscope-core"',
+            '"microscope-dialogue-state"',
+            "PROTECTION_FIXTURES",
+            "fixture_path",
+            "normalize_arms",
+            "prepare_judge_tasks",
+            "normalize_judgments",
+            "judge_disagreement_tasks",
+            "protection_promotion_veto",
+            "validate_judgments",
+            "treatment_blocking_regressions_vs_core",
+            "self_test",
+        ],
+        "harness",
+    )
+
+    require_markers(
+        PROMOTION_GATE,
+        [
+            "READY_FOR_REPEATED_VALIDATION",
+            "protection_promotion_veto",
+            "same_model_judge_exposure",
+            "judge_disagreement_tasks",
+            "target_case_regressions",
+            "generalization_report_wrong_fixture_suite",
+            "READY_FOR_REPEATED_VALIDATION != REPEATED != STABLE != HOST_LIVE",
+            "self_test",
+        ],
+        "promotion pre-gate",
+    )
 
     print(
         "semantic dialogue-state assets: PASS "
@@ -178,11 +211,11 @@ def main() -> None:
     )
     print(
         "harness packaging: PASS — reusable fixture/arm execution + multi-judge disagreement + "
-        "protection veto present"
+        "protection veto + combined promotion pre-gate present"
     )
     print(
         "behavioral status: NOT EXECUTED — real target-model, protection/generalization, "
-        "and host-live checks remain separate"
+        "repeated validation and host-live checks remain separate"
     )
 
 
