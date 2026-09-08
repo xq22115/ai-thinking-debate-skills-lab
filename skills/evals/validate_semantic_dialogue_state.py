@@ -13,6 +13,8 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 FIXTURE = HERE / "semantic-dialogue-state-fixtures.json"
 RUBRIC = HERE / "semantic-dialogue-state-scoring-rubric.md"
+PROTOCOL = HERE / "semantic-dialogue-state-eval-protocol.md"
+HARNESS = HERE / "run_semantic_dialogue_state_eval.py"
 REFERENCE = ROOT / "skills" / "semantic-argument-microscope" / "DIALOGUE_STATE.md"
 EXPECTED_CASES = 8
 
@@ -22,7 +24,7 @@ def fail(message: str) -> None:
 
 
 def main() -> None:
-    for path in (FIXTURE, RUBRIC, REFERENCE):
+    for path in (FIXTURE, RUBRIC, PROTOCOL, HARNESS, REFERENCE):
         if not path.is_file():
             fail(f"missing {path.relative_to(ROOT.parent)}")
 
@@ -90,7 +92,35 @@ def main() -> None:
     if missing_rubric:
         fail(f"rubric missing markers: {missing_rubric}")
 
+    protocol_text = PROTOCOL.read_text(encoding="utf-8")
+    protocol_markers = [
+        "Evaluation arms",
+        "Run manifest",
+        "Judge protocol",
+        "Protection baseline",
+        "HARNESS_READY != MODEL_RUN_COMPLETE != JUDGE_VALIDATED != HOST_LIVE",
+    ]
+    missing_protocol = [m for m in protocol_markers if m not in protocol_text]
+    if missing_protocol:
+        fail(f"protocol missing markers: {missing_protocol}")
+
+    harness_text = HARNESS.read_text(encoding="utf-8")
+    harness_markers = [
+        '"direct"',
+        '"generic-careful"',
+        '"microscope-core"',
+        '"microscope-dialogue-state"',
+        "prepare_judge_tasks",
+        "validate_judgments",
+        "treatment_blocking_regressions_vs_core",
+        "self_test",
+    ]
+    missing_harness = [m for m in harness_markers if m not in harness_text]
+    if missing_harness:
+        fail(f"harness missing markers: {missing_harness}")
+
     print(f"semantic dialogue-state assets: PASS ({len(cases)} cases, {len(set(ids))} unique ids)")
+    print("harness packaging: PASS — provider-neutral execution + blind judging protocol present")
     print("behavioral status: NOT EXECUTED — target-model and host-live checks remain separate")
 
 
