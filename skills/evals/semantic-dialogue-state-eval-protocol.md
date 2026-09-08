@@ -66,9 +66,56 @@ Preferred safeguards:
 
 `JUDGE_CONSENSUS != GROUND_TRUTH`.
 
+### Multi-judge record identity
+
+A candidate/judge task may have more than one judgment. Each judgment should include:
+
+- `judge_task_id` — the candidate task being scored;
+- `judge.id` — the judge identity/model label;
+- `judgment_id` — unique record identity; the harness can deterministically derive one when omitted;
+- optional `variant_id` — use a distinct value for intentional repeats such as an order swap or a second prompting variant from the same judge.
+
+The tuple `(judge_task_id, judge.id, variant_id)` must be unique. This prevents an accidental duplicate from masquerading as independent evidence while still allowing deliberate repeated measurements.
+
+### Case-first aggregation
+
+Do **not** pool every judgment directly into an arm mean. That would overweight candidates that happened to receive more judges.
+
+Aggregation order is:
+
+`raw judgments → one aggregate per candidate/judge_task → one aggregate per arm`
+
+For each candidate/task:
+
+- compute a mean for each applicable dimension across its judgments;
+- compute the candidate overall score from those dimension means;
+- preserve whether **any** judge reported a blocking error and whether **all** judges did;
+- preserve dimension-level score disagreement;
+- preserve blocking-set disagreement;
+- preserve judge count and same-model-family judge exposure.
+
+Then give each candidate/task equal weight in arm-level statistics regardless of how many judgments it received.
+
+The report should expose at least:
+
+- `mean_judges_per_case`;
+- `judge_disagreement_cases` / `judge_disagreement_rate`;
+- dimension disagreement details for affected tasks;
+- blocking disagreement;
+- `blocked_cases` as the conservative any-judge blocking count;
+- `blocked_all_judges_cases` separately;
+- same-model-family judge exposure.
+
+A disagreement is evidence about evaluation uncertainty; do not erase it by replacing all judgments with a single majority label.
+
 ## Blocking-error policy
 
-A blocking error defined in the rubric fails that case for the arm regardless of aggregate dimension points. Aggregate score may still be reported diagnostically, but it cannot override the block.
+A blocking error defined in the rubric is a serious case-level failure signal. With a single judge, the case is blocked if that judge records a valid blocking error. With multiple judges, report both:
+
+- **any-judge block** — conservative failure signal used by the current treatment regression check;
+- **all-judge block** — stronger agreement that the block is present.
+
+If judges disagree on a blocking error, preserve that disagreement for review rather than silently converting it to consensus. Aggregate dimension points may still be reported diagnostically, but they cannot erase a recorded blocking-error signal.
 
 ## Protection baseline
 
@@ -93,6 +140,7 @@ A behavioral run should report:
 - treatment delta vs `direct` and vs `microscope-core`;
 - cases where treatment regressed;
 - judge disagreement / order-swap instability when measured;
+- judge count and same-model-family judge exposure;
 - exact model + repo revision;
 - remaining unknowns.
 
