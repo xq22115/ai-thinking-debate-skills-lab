@@ -7,20 +7,21 @@ The skill folder shape follows the current Agent Skills semantic pattern: each p
 ## RC1 Core Skills
 
 1. `evidence-gap-research` — claim/evidence closure and counterevidence search.
-2. `competing-hypotheses` — materially different explanations and discriminating tests.
-3. `root-cause-clustering` — mechanism-level repair instead of symptom patching.
-4. `completion-gate` — prevents false `done` / `verified` / `deployed` claims; exact-revision and infrastructure-state aware. (`0.1.1-rc1`)
-5. `recoverable-state` — external checkpoints for long-horizon work.
-6. `compatibility-audit` — host/OS/version/permission/product-surface checks with source-class separation. (`0.1.1-rc1`)
-7. `multi-agent-deliberation` — dynamic 1–30 role coverage pool routed by marginal information gain; runtime independence is evidence-gated. (`0.1.1-rc1`)
-8. `capability-challenge` — separates `VISIBLE`, `AUTHORIZED`, and `VERIFIED` before terminal `cannot`. (`0.1.1-rc1`)
-9. `durable-agent-control-plane` — durable task identity, isolated writers, receipts, resume/recovery, and task-result vs infrastructure-state separation. (`0.1.1-rc1`)
+2. `semantic-argument-microscope` — reconstructs literal claims, hidden warrants, presuppositions, definitions, cruxes, evidence obligations, counterexamples, frame shifts, and rhetorical-vs-epistemic effects before debate. (`0.1.0-rc1`)
+3. `competing-hypotheses` — materially different explanations and discriminating tests.
+4. `root-cause-clustering` — mechanism-level repair instead of symptom patching.
+5. `completion-gate` — prevents false `done` / `verified` / `deployed` claims; exact-revision and infrastructure-state aware. (`0.1.1-rc1`)
+6. `recoverable-state` — external checkpoints for long-horizon work.
+7. `compatibility-audit` — host/OS/version/permission/product-surface checks with source-class separation. (`0.1.1-rc1`)
+8. `multi-agent-deliberation` — dynamic 1–30 role coverage pool routed by marginal information gain; runtime independence is evidence-gated. (`0.1.1-rc1`)
+9. `capability-challenge` — separates `VISIBLE`, `AUTHORIZED`, and `VERIFIED` before terminal `cannot`. (`0.1.1-rc1`)
+10. `durable-agent-control-plane` — durable task identity, isolated writers, receipts, resume/recovery, and task-result vs infrastructure-state separation. (`0.1.1-rc1`)
 
 ## Composition Order
 
 For complex engineering/research tasks, recommended default composition:
 
-`capability-challenge → compatibility-audit → evidence-gap-research → competing-hypotheses → root-cause-clustering → multi-agent-deliberation (only if useful) → durable-agent-control-plane (when execution spans actors/interruptions) → execution → completion-gate → recoverable-state checkpoint`
+`capability-challenge → compatibility-audit → evidence-gap-research → semantic-argument-microscope (when claims/wording are contested) → competing-hypotheses → root-cause-clustering → multi-agent-deliberation (only if useful) → durable-agent-control-plane (when execution spans actors/interruptions) → execution → completion-gate → recoverable-state checkpoint`
 
 The orchestrator should omit skills when their trigger conditions are absent.
 
@@ -33,6 +34,8 @@ The orchestrator should omit skills when their trigger conditions are absent.
 - `CONFIGURED != VERIFIED_DIRECT`
 - `CONFIDENCE != EVIDENCE`
 - `CONSENSUS != CORRECTNESS`
+- `RHETORICAL_WIN != EPISTEMIC_WIN`
+- `SELF_CRITIQUE_WITHOUT_NEW_INFORMATION != VERIFICATION`
 - `LOCAL_TEST_PASS != HOSTED_CI_PASS`
 - `REPOSITORY_ARTIFACT != PROVIDER_LIVE_EXECUTION`
 - `TOOL_SUCCESS != TASK_COMPLETE`
