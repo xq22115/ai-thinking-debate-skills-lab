@@ -4,6 +4,10 @@
 This script does not call any model provider. It prepares reproducible requests,
 validates externally-recorded responses, creates blinded judge tasks, validates
 structured judgments, and summarizes arm-level behavioral results.
+
+Multiple judges may score the same candidate. Aggregation is deliberately
+case-first: judgments are aggregated inside each candidate/task before arm-level
+statistics are computed, so cases with more judges do not receive more weight.
 """
 
 from __future__ import annotations
@@ -13,6 +17,7 @@ import hashlib
 import json
 import random
 import tempfile
+from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -151,7 +156,7 @@ def prepare(run_dir: Path, repo_ref: str, model_id: str, provider: str, seed: in
             )
 
     manifest = {
-        "schema_version": 1,
+        "schema_version": 2,
         "run_id": run_id,
         "created_at": datetime.now(timezone.utc).isoformat(),
         "repo_ref": repo_ref,
@@ -258,22 +263,65 @@ def prepare_judge_tasks(run_dir: Path, blind_seed: int) -> None:
                 ),
             }
         )
+
     dump_jsonl(run_dir / "judge_tasks.jsonl", tasks)
     dump_json(run_dir / "blind_map.json", {"blind_seed": blind_seed, "labels": labels})
     print(f"prepared {len(tasks)} blinded judge tasks")
 
 
+def normalize_judgments(rows: list[dict[str, Any]], tasks: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
+    normalized: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
+    seen_slots: set[tuple[str, str, str]] = set()
+
+    for row in rows:
+        task_id = row.get("judge_task_id")
+        if not isinstance(task_id, str) or not task_id:
+            raise ValueError("judgment: judge_task_id is required")
+        if task_id not in tasks:
+            raise ValueError(f"judgment references unknown judge_task_id={task_id}")
+
+        judge = row.get("judge")
+        if not isinstance(judge, dict) or not str(judge.get("id", "")).strip():
+            raise ValueError(f"judgment {task_id}: judge.id is required")
+        judge_id = str(judge["id"]).strip()
+        variant_id = str(row.get("variant_id", "default")).strip() or "default"
+        judgment_id = row.get("judgment_id")
+        if judgment_id is None:
+            judgment_id = stable_id("judgment", task_id, judge_id, variant_id)
+        if not isinstance(judgment_id, str) or not judgment_id:
+            raise ValueError(f"judgment {task_id}: judgment_id must be a non-empty string")
+        if judgment_id in seen_ids:
+            raise ValueError(f"duplicate judgment_id={judgment_id}")
+        seen_ids.add(judgment_id)
+
+        slot = (task_id, judge_id, variant_id)
+        if slot in seen_slots:
+            raise ValueError(
+                "duplicate judgment slot for "
+                f"task={task_id}, judge={judge_id}, variant={variant_id}; "
+                "use a distinct variant_id for an intentional repeat/order-swap"
+            )
+        seen_slots.add(slot)
+
+        item = dict(row)
+        item["judgment_id"] = judgment_id
+        item["variant_id"] = variant_id
+        normalized.append(item)
+
+    return normalized
+
+
 def validate_judgments(run_dir: Path, allow_partial: bool = False) -> dict[str, Any]:
     tasks = index_unique(load_jsonl(run_dir / "judge_tasks.jsonl"), "judge_task_id", "judge tasks")
-    judgments = index_unique(load_jsonl(run_dir / "judgments.jsonl"), "judge_task_id", "judgments")
-    unknown = sorted(set(judgments) - set(tasks))
-    missing = sorted(set(tasks) - set(judgments))
-    if unknown:
-        raise ValueError(f"judgments contain unknown task ids: {unknown[:5]}")
+    judgments = normalize_judgments(load_jsonl(run_dir / "judgments.jsonl"), tasks)
+    covered_tasks = {row["judge_task_id"] for row in judgments}
+    missing = sorted(set(tasks) - covered_tasks)
     if missing and not allow_partial:
-        raise ValueError(f"missing {len(missing)} judgments")
+        raise ValueError(f"missing judgments for {len(missing)} judge tasks")
 
-    for task_id, judgment in judgments.items():
+    for judgment in judgments:
+        task_id = judgment["judge_task_id"]
         scores = judgment.get("scores")
         if not isinstance(scores, dict):
             raise ValueError(f"judgment {task_id}: scores must be an object")
@@ -290,15 +338,19 @@ def validate_judgments(run_dir: Path, allow_partial: bool = False) -> dict[str, 
         unknown_blocks = set(blocks) - set(BLOCKING_ERROR_IDS)
         if unknown_blocks:
             raise ValueError(f"judgment {task_id}: unknown blocking errors {sorted(unknown_blocks)}")
-        judge = judgment.get("judge")
-        if not isinstance(judge, dict) or not str(judge.get("id", "")).strip():
-            raise ValueError(f"judgment {task_id}: judge.id is required")
         if judgment.get("request_id") not in (None, tasks[task_id]["request_id"]):
             raise ValueError(f"judgment {task_id}: request_id mismatch")
+
+    judges_per_task: dict[str, set[str]] = defaultdict(set)
+    for judgment in judgments:
+        judges_per_task[judgment["judge_task_id"]].add(str(judgment["judge"]["id"]))
 
     summary = {
         "judge_tasks": len(tasks),
         "judgments": len(judgments),
+        "tasks_covered": len(covered_tasks),
+        "tasks_with_multiple_judges": sum(1 for ids in judges_per_task.values() if len(ids) > 1),
+        "unique_judges": len({str(row["judge"]["id"]) for row in judgments}),
         "missing": len(missing),
         "complete": not missing,
     }
@@ -310,47 +362,109 @@ def mean(values: list[float]) -> float | None:
     return round(sum(values) / len(values), 4) if values else None
 
 
+def aggregate_task_judgments(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    dimension_values: dict[str, list[float]] = {dim: [] for dim in DIMENSIONS}
+    block_sets: list[set[str]] = []
+    judge_ids: set[str] = set()
+    same_model_exposure = False
+
+    for judgment in rows:
+        judge_ids.add(str(judgment["judge"]["id"]))
+        if judgment.get("judge", {}).get("same_model_family_as_generator") is True:
+            same_model_exposure = True
+        for dim in DIMENSIONS:
+            value = judgment.get("scores", {}).get(dim)
+            if value is not None:
+                dimension_values[dim].append(float(value))
+        block_sets.append(set(judgment.get("blocking_errors", [])))
+
+    mean_by_dimension = {dim: mean(values) for dim, values in dimension_values.items()}
+    applicable_dimension_means = [float(v) for v in mean_by_dimension.values() if v is not None]
+    dimension_disagreements = {
+        dim: sorted(set(values))
+        for dim, values in dimension_values.items()
+        if len(set(values)) > 1
+    }
+    blocking_disagreement = len({tuple(sorted(blocks)) for blocks in block_sets}) > 1
+    blocking_union = sorted(set().union(*block_sets)) if block_sets else []
+
+    return {
+        "judge_count": len(rows),
+        "unique_judge_count": len(judge_ids),
+        "same_model_judge_exposure": same_model_exposure,
+        "mean_by_dimension": mean_by_dimension,
+        "overall": mean(applicable_dimension_means),
+        "blocked_any": any(block_sets),
+        "blocked_all": bool(block_sets) and all(block_sets),
+        "blocking_errors_union": blocking_union,
+        "dimension_disagreements": dimension_disagreements,
+        "blocking_disagreement": blocking_disagreement,
+        "judge_disagreement": bool(dimension_disagreements) or blocking_disagreement,
+    }
+
+
 def summarize(run_dir: Path) -> dict[str, Any]:
     validate_judgments(run_dir, allow_partial=False)
     requests = index_unique(load_jsonl(run_dir / "requests.jsonl"), "request_id", "requests")
     tasks = index_unique(load_jsonl(run_dir / "judge_tasks.jsonl"), "judge_task_id", "judge tasks")
-    judgments = index_unique(load_jsonl(run_dir / "judgments.jsonl"), "judge_task_id", "judgments")
+    judgments = normalize_judgments(load_jsonl(run_dir / "judgments.jsonl"), tasks)
+
+    grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for judgment in judgments:
+        grouped[judgment["judge_task_id"]].append(judgment)
 
     per_arm: dict[str, dict[str, Any]] = {}
     per_case_arm: dict[tuple[str, str], dict[str, Any]] = {}
+    disagreement_tasks: list[dict[str, Any]] = []
     for arm in ARMS:
         per_arm[arm] = {
             "cases_judged": 0,
             "blocked_cases": 0,
+            "blocked_all_judges_cases": 0,
+            "judge_disagreement_cases": 0,
             "dimension_values": {dim: [] for dim in DIMENSIONS},
             "overall_values": [],
+            "judge_counts": [],
             "same_model_judge_cases": 0,
         }
 
-    for task_id, judgment in judgments.items():
+    for task_id, task_rows in grouped.items():
         task = tasks[task_id]
         request = requests[task["request_id"]]
         arm = request["arm"]
-        scores = judgment["scores"]
-        applicable = [float(v) for v in scores.values() if v is not None]
-        overall = mean(applicable)
-        blocked = bool(judgment.get("blocking_errors"))
+        aggregate = aggregate_task_judgments(task_rows)
         bucket = per_arm[arm]
         bucket["cases_judged"] += 1
-        bucket["blocked_cases"] += int(blocked)
-        if judgment.get("judge", {}).get("same_model_family_as_generator") is True:
-            bucket["same_model_judge_cases"] += 1
+        bucket["blocked_cases"] += int(aggregate["blocked_any"])
+        bucket["blocked_all_judges_cases"] += int(aggregate["blocked_all"])
+        bucket["judge_disagreement_cases"] += int(aggregate["judge_disagreement"])
+        bucket["judge_counts"].append(float(aggregate["judge_count"]))
+        bucket["same_model_judge_cases"] += int(aggregate["same_model_judge_exposure"])
         for dim in DIMENSIONS:
-            value = scores.get(dim)
+            value = aggregate["mean_by_dimension"][dim]
             if value is not None:
                 bucket["dimension_values"][dim].append(float(value))
-        if overall is not None:
-            bucket["overall_values"].append(float(overall))
+        if aggregate["overall"] is not None:
+            bucket["overall_values"].append(float(aggregate["overall"]))
+
         per_case_arm[(request["case_id"], arm)] = {
-            "overall": overall,
-            "blocked": blocked,
-            "blocking_errors": judgment.get("blocking_errors", []),
+            "overall": aggregate["overall"],
+            "blocked": aggregate["blocked_any"],
+            "blocked_all_judges": aggregate["blocked_all"],
+            "blocking_errors": aggregate["blocking_errors_union"],
+            "judge_disagreement": aggregate["judge_disagreement"],
+            "judge_count": aggregate["judge_count"],
         }
+        if aggregate["judge_disagreement"]:
+            disagreement_tasks.append(
+                {
+                    "case_id": request["case_id"],
+                    "arm": arm,
+                    "judge_count": aggregate["judge_count"],
+                    "dimension_disagreements": aggregate["dimension_disagreements"],
+                    "blocking_disagreement": aggregate["blocking_disagreement"],
+                }
+            )
 
     arm_report: dict[str, Any] = {}
     for arm, bucket in per_arm.items():
@@ -359,6 +473,15 @@ def summarize(run_dir: Path) -> dict[str, Any]:
             "cases_judged": judged,
             "blocked_cases": bucket["blocked_cases"],
             "blocking_error_rate": round(bucket["blocked_cases"] / judged, 4) if judged else None,
+            "blocked_all_judges_cases": bucket["blocked_all_judges_cases"],
+            "blocking_all_judges_rate": (
+                round(bucket["blocked_all_judges_cases"] / judged, 4) if judged else None
+            ),
+            "judge_disagreement_cases": bucket["judge_disagreement_cases"],
+            "judge_disagreement_rate": (
+                round(bucket["judge_disagreement_cases"] / judged, 4) if judged else None
+            ),
+            "mean_judges_per_case": mean(bucket["judge_counts"]),
             "mean_overall_applicable_score": mean(bucket["overall_values"]),
             "mean_by_dimension": {
                 dim: mean(bucket["dimension_values"][dim]) for dim in DIMENSIONS
@@ -393,20 +516,27 @@ def summarize(run_dir: Path) -> dict[str, Any]:
 
     manifest = load_json(run_dir / "manifest.json")
     report = {
-        "schema_version": 1,
+        "schema_version": 2,
         "run_id": manifest["run_id"],
         "repo_ref": manifest["repo_ref"],
         "model_id": manifest["model_id"],
         "provider": manifest["provider"],
+        "judgment_count": len(judgments),
         "arms": arm_report,
         "treatment_deltas": {
             "overall_vs_direct": delta(treatment, "direct", "mean_overall_applicable_score"),
             "overall_vs_microscope_core": delta(treatment, "microscope-core", "mean_overall_applicable_score"),
             "blocking_rate_vs_direct": delta(treatment, "direct", "blocking_error_rate"),
             "blocking_rate_vs_microscope_core": delta(treatment, "microscope-core", "blocking_error_rate"),
+            "judge_disagreement_rate_vs_core": delta(
+                treatment, "microscope-core", "judge_disagreement_rate"
+            ),
         },
         "treatment_regression_cases_vs_core": regression_cases,
         "treatment_blocking_regressions_vs_core": blocked_regressions,
+        "judge_disagreement_tasks": sorted(
+            disagreement_tasks, key=lambda row: (row["case_id"], row["arm"])
+        ),
         "status": "JUDGED",
         "status_boundary": "JUDGED != INDEPENDENTLY_VALIDATED != HOST_LIVE",
     }
@@ -435,27 +565,37 @@ def self_test() -> None:
         tasks = load_jsonl(run_dir / "judge_tasks.jsonl")
         judgments: list[dict[str, Any]] = []
         req_index = index_unique(requests, "request_id", "requests")
-        for task in tasks:
+        for idx, task in enumerate(tasks):
             arm = req_index[task["request_id"]]["arm"]
             treatment = arm == "microscope-dialogue-state"
-            score = 2 if treatment else 1
-            judgments.append(
-                {
-                    "judge_task_id": task["judge_task_id"],
-                    "request_id": task["request_id"],
-                    "scores": {dim: score for dim in DIMENSIONS},
-                    "blocking_errors": [],
-                    "judge": {
-                        "id": "synthetic-independent-judge",
-                        "same_model_family_as_generator": False,
-                    },
-                }
-            )
+            base_score = 2 if treatment else 1
+            for judge_idx, judge_id in enumerate(("synthetic-independent-judge-a", "synthetic-independent-judge-b")):
+                score = base_score
+                # Deliberately create one non-treatment disagreement so the self-test
+                # verifies that disagreement is preserved without changing treatment delta.
+                if idx == 0 and judge_idx == 1 and not treatment:
+                    score = 0
+                judgments.append(
+                    {
+                        "judgment_id": stable_id("self-test-judgment", task["judge_task_id"], judge_id),
+                        "judge_task_id": task["judge_task_id"],
+                        "request_id": task["request_id"],
+                        "scores": {dim: score for dim in DIMENSIONS},
+                        "blocking_errors": [],
+                        "judge": {
+                            "id": judge_id,
+                            "same_model_family_as_generator": False,
+                        },
+                    }
+                )
         dump_jsonl(run_dir / "judgments.jsonl", judgments)
-        validate_judgments(run_dir)
+        validation = validate_judgments(run_dir)
+        assert validation["tasks_with_multiple_judges"] == len(tasks)
         report = summarize(run_dir)
         assert report["treatment_deltas"]["overall_vs_microscope_core"] == 1.0
         assert report["treatment_blocking_regressions_vs_core"] == []
+        assert report["judge_disagreement_tasks"]
+        assert report["arms"]["direct"]["judge_disagreement_cases"] >= 1
     print("semantic dialogue-state eval harness self-test: PASS")
 
 
