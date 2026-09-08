@@ -91,6 +91,65 @@ def require_bool(row: dict[str, Any], key: str, label: str) -> bool:
     return value
 
 
+def prepare_template(run_dir: Path, output: Path | None = None) -> Path:
+    """Generate a non-validating receipt template from frozen manifest/requests.
+
+    Template placeholders intentionally remain null/FILL_ME so the file cannot be
+    mistaken for proof of execution. Copy/fill it into execution_receipts.jsonl
+    only after each request is actually executed.
+    """
+
+    manifest = load_json(run_dir / "manifest.json")
+    if not isinstance(manifest, dict):
+        raise ValueError("manifest.json root must be an object")
+    run_id = require_text(manifest, "run_id", "manifest")
+    model_id = require_text(manifest, "model_id", "manifest")
+    provider = require_text(manifest, "provider", "manifest")
+    requests = load_jsonl(run_dir / "requests.jsonl")
+    index_unique(requests, "request_id", "requests")
+
+    rows: list[dict[str, Any]] = []
+    for request in requests:
+        request_id = require_text(request, "request_id", "request")
+        case_id = require_text(request, "case_id", f"request {request_id}")
+        arm = require_text(request, "arm", f"request {request_id}")
+        bundle_sha256 = require_text(request, "bundle_sha256", f"request {request_id}")
+        expected_exposure = EXPECTED_ARM_EXPOSURE.get(arm)
+        if expected_exposure is None:
+            raise ValueError(f"request {request_id}: unknown arm {arm}")
+        rows.append(
+            {
+                "request_id": request_id,
+                "run_id": run_id,
+                "case_id": case_id,
+                "arm": arm,
+                "bundle_sha256": bundle_sha256,
+                "model_id": model_id,
+                "provider": provider,
+                "surface": "FILL_ME",
+                "session_id_hash": "FILL_ME_UNIQUE_HASH",
+                "fresh_context": None,
+                "fixture_answer_key_exposed_before_response": None,
+                "rubric_exposed_before_response": None,
+                "cross_arm_output_exposed_before_response": None,
+                "judge_information_exposed_before_response": None,
+                "arm_bundle_exposure": expected_exposure,
+                "output_sha256": "FILL_AFTER_RESPONSE",
+                "started_at": "FILL_ME",
+                "finished_at": "FILL_ME",
+                "tool_access": "unknown",
+                "sampling_settings": "unknown",
+                "status": "FILL_ME",
+                "notes": "",
+            }
+        )
+
+    output = output or (run_dir / "execution_receipts.template.jsonl")
+    dump_jsonl(output, rows)
+    print(f"prepared {len(rows)} execution receipt templates at {output}")
+    return output
+
+
 def validate(run_dir: Path, allow_partial: bool = False) -> dict[str, Any]:
     manifest = load_json(run_dir / "manifest.json")
     if not isinstance(manifest, dict):
@@ -179,17 +238,17 @@ def validate(run_dir: Path, allow_partial: bool = False) -> dict[str, Any]:
             if response is None:
                 invalid_reasons[request_id].append("missing_recorded_response")
             else:
-                output = response.get("output")
-                if not isinstance(output, str) or not output.strip():
+                output_text = response.get("output")
+                if not isinstance(output_text, str) or not output_text.strip():
                     invalid_reasons[request_id].append("empty_response_output")
-                elif sha256_text(output) != output_hash:
+                elif sha256_text(output_text) != output_hash:
                     invalid_reasons[request_id].append("output_sha256_mismatch")
                 for field in ("case_id", "arm"):
                     if response.get(field) not in (None, request.get(field)):
                         invalid_reasons[request_id].append(f"response_{field}_mismatch")
         elif response is not None:
-            output = response.get("output")
-            if isinstance(output, str) and output.strip() and sha256_text(output) != output_hash:
+            output_text = response.get("output")
+            if isinstance(output_text, str) and output_text.strip() and sha256_text(output_text) != output_hash:
                 invalid_reasons[request_id].append("nonclean_output_sha256_mismatch")
 
         if status == "INVALID_FOR_COMPARISON":
@@ -306,6 +365,37 @@ def synthetic_files(run_dir: Path, contaminated: bool = False) -> None:
 
 
 def self_test() -> None:
+    with tempfile.TemporaryDirectory(prefix="semantic-execution-template-") as tmp:
+        template_dir = Path(tmp)
+        dump_json(
+            template_dir / "manifest.json",
+            {"run_id": "template-run", "model_id": "template-model", "provider": "template-provider"},
+        )
+        dump_jsonl(
+            template_dir / "requests.jsonl",
+            [
+                {
+                    "request_id": "template-direct",
+                    "case_id": "DS1",
+                    "arm": "direct",
+                    "bundle_sha256": sha256_text(""),
+                },
+                {
+                    "request_id": "template-core",
+                    "case_id": "DS2",
+                    "arm": "microscope-core",
+                    "bundle_sha256": sha256_text("core"),
+                },
+            ],
+        )
+        template_path = prepare_template(template_dir)
+        template_rows = load_jsonl(template_path)
+        assert len(template_rows) == 2
+        assert template_rows[0]["arm_bundle_exposure"] == "none"
+        assert template_rows[1]["arm_bundle_exposure"] == "microscope-core"
+        assert template_rows[0]["fresh_context"] is None
+        assert template_rows[0]["status"] == "FILL_ME"
+
     with tempfile.TemporaryDirectory(prefix="semantic-execution-clean-") as tmp:
         clean_dir = Path(tmp)
         synthetic_files(clean_dir, contaminated=False)
@@ -328,6 +418,10 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="command", required=True)
 
+    template = sub.add_parser("prepare-template")
+    template.add_argument("run_dir", type=Path)
+    template.add_argument("--output", type=Path)
+
     check = sub.add_parser("validate")
     check.add_argument("run_dir", type=Path)
     check.add_argument("--allow-partial", action="store_true")
@@ -338,6 +432,9 @@ def main() -> None:
     args = parser.parse_args()
     if args.command == "self-test":
         self_test()
+        return
+    if args.command == "prepare-template":
+        prepare_template(args.run_dir, args.output)
         return
 
     result = validate(args.run_dir, allow_partial=args.allow_partial)
