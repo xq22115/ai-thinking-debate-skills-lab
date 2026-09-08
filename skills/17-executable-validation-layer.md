@@ -6,7 +6,7 @@ Date: 2026-09-09
 
 Move the project from specification-only artifacts toward evidence-producing validation without overstating what has been tested.
 
-This layer distinguishes deterministic policy execution from model-reasoning smoke tests, decision-robustness smoke tests, independent judging, hidden/adversarial evaluation, repeated evaluation, authentic multi-agent runtime, and host-live verification.
+This layer distinguishes deterministic policy execution from model-reasoning smoke tests, decision-robustness smoke tests, goal-objective smoke tests, independent judging, hidden/adversarial evaluation, repeated evaluation, authentic multi-agent runtime, and host-live verification.
 
 ## Components
 
@@ -22,17 +22,13 @@ Checks include:
 - STATUS does not contain an unqualified terminal status such as `STABLE`, `DEPLOYED`, `HEALTHY`, or `HOST_LIVE_VERIFIED`;
 - role activation policy retains escalation/de-escalation/coverage-pool signals.
 
-Output status is limited to:
-- `PASS_STATIC`
-- `FAIL_STATIC`
-
-It explicitly sets `host_live_verified=false`.
+Output status is limited to `PASS_STATIC` / `FAIL_STATIC` and explicitly sets `host_live_verified=false`.
 
 ### `evals/run_policy_evals.py`
 
 Executable fail-closed policy test harness.
 
-The previously executed deterministic policy cases cover:
+Previously executed deterministic cases cover:
 1. false completion after file write only;
 2. pre-step CI infrastructure failure;
 3. role labels without runtime independence receipts;
@@ -43,21 +39,15 @@ The previously executed deterministic policy cases cover:
 
 ### `skills/evals/SAME_MODEL_EVAL_PROTOCOL.md`
 
-Governance contract for cheap reasoning smoke tests performed by the same model/session that helped author the rules or fixtures.
-
-Hard boundary:
+Governance contract for cheap smoke tests performed by the same model/session that helped author rules or fixtures.
 
 `SAME_MODEL_PASS != INDEPENDENT_VALIDATION`
 
-Same-model results may expose obvious contract failures or regressions, but cannot establish unseen generalization, unbiased judging, runtime independence, distribution-shift robustness, or host-live behavior.
-
-Allowed output classes include `SMOKE_BASELINE_PASS`, `SMOKE_BASELINE_FAIL`, and explicit `NOT_RUN` gates.
+Same-model results may expose obvious contract failures/regressions, but cannot establish unseen generalization, unbiased judging, runtime independence, distribution-shift robustness, objective fidelity on hidden/mixed goals, or host-live behavior.
 
 ## Executed receipts
 
 ### Deterministic policy receipt — 2026-08-18
-
-A local deterministic run produced:
 
 - 7 passed
 - 0 failed
@@ -65,61 +55,47 @@ A local deterministic run produced:
 - `authentic_multi_agent_runtime = NOT_RUN`
 - `host_live_verified = false`
 
-Machine-readable receipt:
+Receipt: `evidence/rc1-policy-eval-2026-08-18.json`
 
-`evidence/rc1-policy-eval-2026-08-18.json`
+### Same-model reasoning smoke — 2026-09-09
 
-### Same-model reasoning smoke receipt — 2026-09-09
-
-A same-session, authoring-overlap contract-conformance pass was recorded against the explicit S/CQ/C/J/E fixture families.
-
-Result:
-
-- total explicit fixtures: 50
-- static smoke pass: 48
-- paired/runtime-dependent not run: 2
+- 50 explicit S/CQ/C/J/E fixtures considered
+- 48 static smoke pass
+- 2 paired/runtime-dependent NOT_RUN (`J1-order-swap`, `J6-blind-label-invariance`)
 - static fail: 0
-- not-run cases: `J1-order-swap`, `J6-blind-label-invariance`
+- evidence class: `LOW_SELF_REFERENTIAL`
+- independent judge / hidden variants / repeated variance / host-live: NOT_RUN
+
+Receipt: `evidence/same-model-reasoning-smoke-2026-09-09.json`
+
+### Same-model decision-robustness smoke — 2026-09-09
+
+- DR1–DR10: 10/10 visible static smoke PASS
+- evidence class: `LOW_SELF_REFERENTIAL`
+- hidden shift variants / independent judge / repeated variance / host-live: NOT_RUN
+
+Receipt: `evidence/same-model-decision-robustness-smoke-2026-09-09.json`
+
+### Same-model goal-objective smoke — 2026-09-09
+
+- GO1–GO10: 10/10 visible static smoke PASS
 - evidence class: `LOW_SELF_REFERENTIAL`
 - authoring overlap: true
-- fixture expected labels visible: true
-- independent judge: NOT_RUN
-- host-live: false
-
-Machine-readable receipt:
-
-`evidence/same-model-reasoning-smoke-2026-09-09.json`
-
-Interpretation: the current procedural rules can be applied consistently to the 48 static explicit fixtures in the same authoring context. This is **not** evidence of independent model improvement.
-
-### Same-model decision-robustness smoke receipt — 2026-09-09
-
-A separate same-session, authoring-overlap contract-conformance pass was recorded for DR1–DR10.
-
-Result:
-
-- total explicit fixtures: 10
-- static smoke pass: 10
-- partial: 0
-- fail: 0
-- evidence class: `LOW_SELF_REFERENTIAL`
-- authoring overlap: true
-- fixture expected labels visible: true
+- expected labels visible: true
 - fresh-context run: NOT_RUN
-- hidden shift variants: NOT_RUN
+- hidden ambiguity/mixed-goal variants: NOT_RUN
+- real proxy-gaming runtime: NOT_RUN
 - independent judge: NOT_RUN
 - repeated variance: NOT_RUN
 - host-live: false
 
-Machine-readable receipt:
+Receipt: `evidence/same-model-goal-objective-smoke-2026-09-09.json`
 
-`evidence/same-model-decision-robustness-smoke-2026-09-09.json`
-
-Interpretation: the current decision-robustness rules are internally applicable to the 10 visible authored fixtures. This does **not** establish real distribution-shift robustness, correct human utilities, numerical regret optimality, or host-live action quality.
+Interpretation: the visible Goal Contract / objective-audit rules are internally applicable to the authored GO fixtures. This does **not** establish real intent-understanding gains, real-user helpfulness improvement, hidden-goal inference, or resistance to specification gaming in a live agent runtime.
 
 ## Validation ladder
 
-Do not collapse these evidence levels:
+Do not collapse:
 
 1. `FIXTURE_SPECIFIED`
 2. `STATIC_VALIDATED`
@@ -132,7 +108,7 @@ Do not collapse these evidence levels:
 9. `AUTHENTIC_MULTI_AGENT_RUNTIME`
 10. `HOST_LIVE_REGRESSION`
 
-A later level does not retroactively upgrade the meaning of an earlier receipt.
+A later level does not retroactively upgrade an earlier receipt.
 
 ## Important boundary
 
@@ -142,9 +118,11 @@ A later level does not retroactively upgrade the meaning of an earlier receipt.
 
 Neither proves:
 - general model reasoning quality;
-- performance on unseen/adversarial distributions;
+- independent intent understanding;
+- performance on hidden ambiguity/mixed-goal/adversarial distributions;
+- preference/helpfulness alignment in real user outcomes;
+- specification-gaming resistance in live agents;
 - calibrated confidence over repeated trials;
-- position/order/prestige invariance unless paired experiments actually run;
 - natural distribution-shift robustness;
 - optimal utility/loss modeling;
 - genuine epistemic diversity;
