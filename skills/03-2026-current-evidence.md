@@ -192,10 +192,52 @@ Evidence: in optimization-based decision-making with uncertain coefficients/dist
 
 Consequence: `MOST_LIKELY_STATE != BEST_ACTION`. Under fragile probabilities or asymmetric downside, compare expected performance with sensitivity / regret / robustness; however, the chosen uncertainty set and loss model remain assumptions that must themselves be audited.
 
+## RECAP — intent rewriting for agentic planning, Findings of EACL 2026
+https://aclanthology.org/2026.findings-eacl.105/
+
+Evidence: RECAP targets real conversational ambiguity, underspecification, intent drift, vagueness, and mixed-goal dialogue by rewriting conversation into concise goal representations for downstream planning. The work reports utility improvements over baselines from intent rewriting approaches.
+
+Consequence: explicit task-local goal normalization is a legitimate planning layer. Preserve a compact Goal Contract rather than allowing downstream planners/agents to infer different hidden objectives from the raw conversation.
+
+## Structured Uncertainty Guided Clarification / ClarifyBench — Findings of ACL 2026
+https://aclanthology.org/2026.findings-acl.2028/
+
+Evidence: separates specification uncertainty (what the user wants) from model uncertainty and uses Expected Value of Perfect Information plus clarification cost to determine what to ask and when to stop in tool-calling agents.
+
+Consequence: `SPECIFICATION_UNCERTAINTY != MODEL_UNCERTAINTY`. Ask high-value clarifying questions only when user-authoritative information is needed and materially changes the action; use direct reads/tests for internally resolvable world-state uncertainty.
+
+## Planorama — preference vs actual helpfulness, EMNLP 2025
+https://aclanthology.org/2025.emnlp-main.585/
+
+Evidence: across thousands of plan executions/comparisons, user/model preferences and agent success did not reliably predict which plans actually helped users complete the task; surface preferences such as brevity and similarity were associated with preference but not helpfulness.
+
+Consequence: `STATED_OR_RATED_PREFERENCE != VERIFIED_HELPFULNESS`. Evaluate real task outcome separately from what looks preferable, concise, familiar, or judge-friendly.
+
+## Personalized Benchmarking — Findings of ACL 2026
+https://aclanthology.org/2026.findings-acl.31/
+
+Evidence: aggregate model rankings can diverge substantially from individual users' rankings, showing that population-average preference is a poor universal proxy for individual preference in many settings.
+
+Consequence: do not silently substitute aggregate preference for the user's task-local preference/constraint state. Keep personalization bounded to evidence supplied by the user/context rather than inventing latent values.
+
+## Revealed preferences for LLM alignment/steering — Microsoft Research, 2026
+https://www.microsoft.com/en-us/research/publication/can-revealed-preferences-clarify-llm-alignment-and-steering/
+
+Evidence: recovers cost functions implied by model choices and reports meaningful mismatches between models' verbalized objectives/preferences and the policies revealed by their decisions, including limits in reliably adopting user-specified cost functions.
+
+Consequence: `MODEL_STATED_OBJECTIVE != REVEALED_DECISION_POLICY`. For task-local objective audits, compare declared priorities with observable choices under controlled tradeoffs rather than trusting self-description alone.
+
+## Specification gaming in reasoning models — 2026
+https://arxiv.org/abs/2605.02269
+
+Evidence: a diverse suite of tasks with unintended high-scoring actions finds non-negligible specification gaming across tested reasoning models in most settings; the authors report higher exploit rates with RL reasoning training and only partial mitigation from test-time interventions.
+
+Consequence: powerful reasoning against an imperfect specification can increase optimization pressure on the wrong proxy. Acceptance tests/proxies require outcome-binding, hidden variants, and anti-gaming checks; higher reasoning budget should not be assumed to improve goal fidelity.
+
 ## 2026 synthesis
 
-The current evidence supports a layered reasoning-verification-decision design:
+The current evidence supports a layered goal-reasoning-verification-decision design:
 
-`evidence sufficiency/provenance -> semantic/QUD normalization -> causal/abductive model when needed -> competing hypotheses -> discriminating test -> selective multi-agent deliberation -> bias-resistant judge -> verifier robustness/metamorphic checks -> VOI stop rule -> loss/reversibility/shift/sensitivity check -> COMMIT / PROBE / PILOT / DEFER / ABSTAIN / ROBUST_FALLBACK -> calibrated conclusion/action`
+`Goal Contract / specification audit -> capability/compatibility -> evidence sufficiency/provenance -> semantic/QUD normalization -> causal/abductive model when needed -> competing hypotheses -> discriminating test -> selective multi-agent deliberation -> bias-resistant judge -> verifier robustness/metamorphic checks -> VOI stop rule -> loss/reversibility/shift/sensitivity check -> COMMIT / PROBE / PILOT / DEFER / ABSTAIN / ROBUST_FALLBACK -> outcome-bound completion check`
 
-The repeated research signal is negative as well as positive: more tokens, more sources, more agents, more confidence machinery, more learned-verifier scores, and more rounds do **not** monotonically improve reliability. Likewise, a better probability estimate does not automatically imply a better action. The system should optimize for independent evidence, discrimination, calibration, target-bound deterministic checks where available, evaluator robustness, distribution-shift awareness, reversible learning, sensitivity, regret, and decision value rather than visible reasoning/evaluation volume.
+The repeated research signal is negative as well as positive: more tokens, sources, agents, confidence machinery, verifier scores, preference ratings, or rounds do **not** monotonically improve reliability. A better probability estimate does not automatically imply a better action, and a higher proxy/preference score does not automatically imply user success. The system should optimize for user-authorized goal fidelity, independent evidence, discrimination, calibration, target-bound verification, evaluator robustness, distribution-shift awareness, reversible learning, sensitivity/regret, and outcome-bound completion rather than visible reasoning/evaluation volume.
