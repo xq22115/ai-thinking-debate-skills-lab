@@ -1,0 +1,89 @@
+{
+  "suite": "semantic-argument-microscope-v0.2",
+  "status": "SPECIFIED_NOT_EXECUTED",
+  "scope": "semantic-pragmatic-argument-reasoning",
+  "notes": [
+    "These fixtures specify observable reasoning behaviors; they are not evidence of model or host-live execution.",
+    "Evaluation must grade the auditable answer/output, not private chain-of-thought."
+  ],
+  "cases": [
+    {
+      "id": "S1-definition-mismatch",
+      "input": "Speaker A says a system is 'efficient' meaning low cost. Speaker B says it is 'inefficient' meaning slow response time.",
+      "must_detect": ["definition_mismatch", "not_direct_contradiction"],
+      "fail_if": ["chooses_winner_before_normalizing_definition"]
+    },
+    {
+      "id": "S2-hidden-warrant",
+      "input": "The library is crowded every afternoon, therefore extending opening hours will reduce crowding.",
+      "must_detect": ["implicit_warrant_about_demand_distribution", "need_discriminating_evidence"],
+      "fail_if": ["treats_premise_as_sufficient_proof"]
+    },
+    {
+      "id": "S3-rhetoric-vs-evidence",
+      "input": "One reply is witty and memorable but does not address whether the reported measurement is accurate.",
+      "must_detect": ["rhetorical_strength", "epistemic_gap", "unanswered_crux"],
+      "fail_if": ["raises_epistemic_score_due_to_style"]
+    },
+    {
+      "id": "S4-counterexample-quality",
+      "input": "Claim: every rule with exceptions is useless. Case A gives one legitimate exception while the rule remains predictive; Case B is only superficially similar.",
+      "must_detect": ["universal_claim_defeated", "analogy_relevance_test"],
+      "fail_if": ["treats_both_cases_as_equivalent"]
+    },
+    {
+      "id": "S5-qud-substitution",
+      "input": "Question: did the update reduce error rate? Answer: the team worked very hard and users like the interface.",
+      "must_detect": ["original_qud", "does_not_answer_qud", "neighboring_claims"],
+      "fail_if": ["marks_question_resolved"]
+    },
+    {
+      "id": "S6-self-critique-theater",
+      "input": "A model repeats three increasingly long critiques but introduces no new evidence, counterexample, or discriminating test.",
+      "must_detect": ["no_material_information_gain", "stop_or_seek_new_evidence"],
+      "fail_if": ["counts_repetition_as_independent_verification"]
+    },
+    {
+      "id": "S7-pragmatic-context-flip",
+      "input": "Sentence: 'That was quick.' Context A: a task finished in seconds. Context B: a task took three hours after a promised five minutes.",
+      "must_detect": ["literal_same", "pragmatic_interpretation_context_dependent", "possible_irony_in_B"],
+      "fail_if": ["assigns_same_hidden_meaning_to_both_contexts", "states_irony_as_certain_without_context_support"]
+    },
+    {
+      "id": "S8-presupposition-not-proof",
+      "input": "Question: 'When did the service stop failing?'",
+      "must_detect": ["presupposes_prior_failure", "presupposition_not_independent_evidence"],
+      "fail_if": ["treats_prior_failure_as_proven_by_question_alone"]
+    },
+    {
+      "id": "S9-defeater-update",
+      "input": "Initial rule: deliveries normally arrive next day, so tomorrow is likely. New evidence: today is a declared service shutdown day.",
+      "must_detect": ["defeasible_initial_inference", "new_defeater", "confidence_revision"],
+      "fail_if": ["keeps_original_conclusion_without_update"]
+    },
+    {
+      "id": "S10-stance-freedom",
+      "input": "Agent A initially favors hypothesis H1. A decisive measurement contradicts H1 and supports H2.",
+      "must_detect": ["revision_expected", "stance_not_identity"],
+      "fail_if": ["continues_defending_H1_because_assigned"]
+    },
+    {
+      "id": "S11-claim-strength-burden",
+      "input": "Speaker first says 'some devices fail under heat' and later says 'all devices fail under heat' with no additional evidence.",
+      "must_detect": ["quantifier_strengthening", "higher_evidence_obligation", "calibration_problem"],
+      "fail_if": ["treats_claims_as_same_strength"]
+    },
+    {
+      "id": "S12-generation-inference-asymmetry",
+      "input": "A model can invent five scenarios where a sentence would imply annoyance, but the actual observed context contains none of those cues.",
+      "must_detect": ["plausibility_not_case_evidence", "implication_unsupported_or_uncertain"],
+      "fail_if": ["infers_annoyance_from_generated_scenarios"]
+    }
+  ],
+  "release_gate": {
+    "static_fixture_presence": "PASS_WHEN_READ_BACK",
+    "semantic_model_execution": "NOT_RUN",
+    "independent_judge_execution": "NOT_RUN",
+    "host_live_regression": "NOT_RUN"
+  }
+}
