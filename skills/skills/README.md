@@ -7,7 +7,7 @@ The skill folder shape follows the current Agent Skills semantic pattern: each p
 ## RC1 Core Skills
 
 1. `evidence-gap-research` — claim/evidence closure and counterevidence search.
-2. `semantic-argument-microscope` — reconstructs literal claims, hidden warrants, presuppositions, definitions, cruxes, evidence obligations, counterexamples, frame shifts, and rhetorical-vs-epistemic effects before debate. (`0.1.0-rc1`)
+2. `semantic-argument-microscope` — literal/pragmatic boundary, implicit warrants, presuppositions, QUD/crux control, defeaters, burden/frame shifts, and rhetorical-vs-epistemic separation before debate. (`0.2.0-rc1`)
 3. `competing-hypotheses` — materially different explanations and discriminating tests.
 4. `root-cause-clustering` — mechanism-level repair instead of symptom patching.
 5. `completion-gate` — prevents false `done` / `verified` / `deployed` claims; exact-revision and infrastructure-state aware. (`0.1.1-rc1`)
@@ -19,9 +19,9 @@ The skill folder shape follows the current Agent Skills semantic pattern: each p
 
 ## Composition Order
 
-For complex engineering/research tasks, recommended default composition:
+For complex engineering/research/argument tasks, recommended default composition:
 
-`capability-challenge → compatibility-audit → evidence-gap-research → semantic-argument-microscope (when claims/wording are contested) → competing-hypotheses → root-cause-clustering → multi-agent-deliberation (only if useful) → durable-agent-control-plane (when execution spans actors/interruptions) → execution → completion-gate → recoverable-state checkpoint`
+`capability-challenge → compatibility-audit → evidence-gap-research → semantic-argument-microscope (when claims/wording/context are contested) → competing-hypotheses → root-cause-clustering → multi-agent-deliberation (only if useful) → durable-agent-control-plane (when execution spans actors/interruptions) → execution → completion-gate → recoverable-state checkpoint`
 
 The orchestrator should omit skills when their trigger conditions are absent.
 
@@ -35,7 +35,10 @@ The orchestrator should omit skills when their trigger conditions are absent.
 - `CONFIDENCE != EVIDENCE`
 - `CONSENSUS != CORRECTNESS`
 - `RHETORICAL_WIN != EPISTEMIC_WIN`
-- `SELF_CRITIQUE_WITHOUT_NEW_INFORMATION != VERIFICATION`
+- `PLAUSIBLE_IMPLICATURE != ASSERTED_FACT`
+- `GENERATIVE_PLAUSIBILITY != CASE_EVIDENCE`
+- `ASSIGNED_STANCE != BELIEF`
+- `SELF_CRITIQUE_WITHOUT_INFORMATION_GAIN != VERIFICATION`
 - `LOCAL_TEST_PASS != HOSTED_CI_PASS`
 - `REPOSITORY_ARTIFACT != PROVIDER_LIVE_EXECUTION`
 - `TOOL_SUCCESS != TASK_COMPLETE`
@@ -44,6 +47,8 @@ The orchestrator should omit skills when their trigger conditions are absent.
 ## Promotion Rule
 
 No skill moves from `EXPERIMENTAL` to `STABLE` until positive, negative, ambiguous-trigger, stale-version, unsupported-host, adversarial, permission, infrastructure-blocker, and regression cases appropriate to that skill are tested.
+
+For `semantic-argument-microscope`, the minimum semantic regression set additionally includes definition mismatch, hidden warrant, QUD substitution, pragmatic context flip, presupposition-vs-assertion, defeater update, stance freedom, claim-strength calibration, and generation/inference asymmetry.
 
 ## Portability Boundary
 
