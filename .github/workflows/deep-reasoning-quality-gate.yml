@@ -79,6 +79,9 @@ jobs:
       - name: Self-test semantic target-model execution isolation
         run: |
           python skills/evals/validate_semantic_dialogue_state_execution.py self-test
+      - name: Contract-test semantic campaign packet generator
+        run: |
+          python skills/evals/test_prepare_semantic_dialogue_state_campaign.py
       - name: Self-test semantic dialogue-state promotion pre-gate
         run: |
           python skills/evals/check_semantic_dialogue_state_promotion.py self-test
