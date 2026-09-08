@@ -13,12 +13,14 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 FIXTURE = HERE / "semantic-dialogue-state-fixtures.json"
 PROTECTION = HERE / "semantic-dialogue-state-protection-fixtures.json"
+GENERALIZATION = HERE / "semantic-dialogue-state-generalization-holdout.json"
 RUBRIC = HERE / "semantic-dialogue-state-scoring-rubric.md"
 PROTOCOL = HERE / "semantic-dialogue-state-eval-protocol.md"
 HARNESS = HERE / "run_semantic_dialogue_state_eval.py"
 REFERENCE = ROOT / "skills" / "semantic-argument-microscope" / "DIALOGUE_STATE.md"
 EXPECTED_TARGET_CASES = 8
 EXPECTED_PROTECTION_CASES = 12
+EXPECTED_GENERALIZATION_CASES = 12
 
 
 def fail(message: str) -> None:
@@ -64,36 +66,45 @@ def load_cases(path: Path, expected_count: int, prefix: str) -> list[dict]:
     return cases
 
 
+def exact_prefixes(ids: set[str], stem: str, count: int) -> None:
+    expected = {f"{stem}{n}" for n in range(1, count + 1)}
+    observed = {case_id.split("-", 1)[0] for case_id in ids}
+    if observed != expected:
+        fail(
+            f"{stem} case prefixes mismatch: expected {sorted(expected)}, "
+            f"found {sorted(observed)}"
+        )
+
+
 def main() -> None:
-    for path in (FIXTURE, PROTECTION, RUBRIC, PROTOCOL, HARNESS, REFERENCE):
+    for path in (FIXTURE, PROTECTION, GENERALIZATION, RUBRIC, PROTOCOL, HARNESS, REFERENCE):
         if not path.is_file():
             fail(f"missing {path.relative_to(ROOT.parent)}")
 
     target_cases = load_cases(FIXTURE, EXPECTED_TARGET_CASES, "DS")
     protection_cases = load_cases(PROTECTION, EXPECTED_PROTECTION_CASES, "DSP")
+    generalization_cases = load_cases(
+        GENERALIZATION, EXPECTED_GENERALIZATION_CASES, "DSG"
+    )
+
     target_ids = {case["id"] for case in target_cases}
     protection_ids = {case["id"] for case in protection_cases}
+    generalization_ids = {case["id"] for case in generalization_cases}
     if target_ids & protection_ids:
         fail("target/protection fixture ids overlap")
+    if target_ids & generalization_ids:
+        fail("target/generalization fixture ids overlap")
+    if protection_ids & generalization_ids:
+        fail("protection/generalization fixture ids overlap")
 
-    expected_target_prefixes = {f"DS{n}" for n in range(1, EXPECTED_TARGET_CASES + 1)}
-    observed_target_prefixes = {case_id.split("-", 1)[0] for case_id in target_ids}
-    if observed_target_prefixes != expected_target_prefixes:
-        fail(
-            "target case prefixes mismatch: "
-            f"expected {sorted(expected_target_prefixes)}, found {sorted(observed_target_prefixes)}"
-        )
+    exact_prefixes(target_ids, "DS", EXPECTED_TARGET_CASES)
+    exact_prefixes(protection_ids, "DSP", EXPECTED_PROTECTION_CASES)
+    exact_prefixes(generalization_ids, "DSG", EXPECTED_GENERALIZATION_CASES)
 
-    expected_protection_prefixes = {
-        f"DSP{n}" for n in range(1, EXPECTED_PROTECTION_CASES + 1)
-    }
-    observed_protection_prefixes = {case_id.split("-", 1)[0] for case_id in protection_ids}
-    if observed_protection_prefixes != expected_protection_prefixes:
-        fail(
-            "protection case prefixes mismatch: "
-            f"expected {sorted(expected_protection_prefixes)}, "
-            f"found {sorted(observed_protection_prefixes)}"
-        )
+    generalization_payload = json.loads(GENERALIZATION.read_text(encoding="utf-8"))
+    generalization_suite = str(generalization_payload.get("suite", ""))
+    if "protection" not in generalization_suite or "generalization" not in generalization_suite:
+        fail("generalization suite name must identify both protection and generalization roles")
 
     reference_text = REFERENCE.read_text(encoding="utf-8")
     reference_markers = [
@@ -132,6 +143,7 @@ def main() -> None:
         "Multi-judge record identity",
         "Case-first aggregation",
         "Protection baseline",
+        "TARGET_GAIN != SAFE_PROMOTION",
         "HARNESS_READY != MODEL_RUN_COMPLETE != JUDGE_VALIDATED != HOST_LIVE",
     ]
     missing_protocol = [m for m in protocol_markers if m not in protocol_text]
@@ -161,13 +173,17 @@ def main() -> None:
 
     print(
         "semantic dialogue-state assets: PASS "
-        f"({len(target_cases)} target + {len(protection_cases)} protection cases)"
+        f"({len(target_cases)} target + {len(protection_cases)} protection + "
+        f"{len(generalization_cases)} generalization cases)"
     )
     print(
         "harness packaging: PASS — reusable fixture/arm execution + multi-judge disagreement + "
         "protection veto present"
     )
-    print("behavioral status: NOT EXECUTED — real target-model and host-live checks remain separate")
+    print(
+        "behavioral status: NOT EXECUTED — real target-model, protection/generalization, "
+        "and host-live checks remain separate"
+    )
 
 
 if __name__ == "__main__":
