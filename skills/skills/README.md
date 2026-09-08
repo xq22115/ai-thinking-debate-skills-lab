@@ -58,6 +58,7 @@ The orchestrator should omit skills and progressive references when their trigge
 - `LEXICAL_MATCH != ARGUMENT_UNDERSTANDING`
 - `JUDGE_CONSENSUS != GROUND_TRUTH`
 - `TARGET_GAIN != SAFE_PROMOTION`
+- `PARAPHRASE_SUCCESS != STRUCTURAL_GENERALIZATION` unless relation/state behavior survives lexical/domain shifts
 - `ASSOCIATION != INTERVENTION`
 - `P_Y_GIVEN_X != P_Y_GIVEN_DO_X`
 - `TEMPORAL_ORDER != CAUSATION`
@@ -77,9 +78,10 @@ The orchestrator should omit skills and progressive references when their trigge
 - `skills/evals/causal-abductive-reasoning-fixtures.json` — C1–C10 association/intervention/counterfactual, confounding, reverse causation, collider, measurement-shift, graph-coherence and abductive discrimination fixtures.
 - `skills/evals/semantic-dialogue-state-fixtures.json` — DS1–DS8 target cases for common-ground integrity, temporary-grant laundering, answer-space/criterion lock, reasoning-alignment, provenance, comprehension-vs-persuasion and cross-domain structural transfer.
 - `skills/evals/semantic-dialogue-state-protection-fixtures.json` — DSP1–DSP12 protection holdout spanning definition/QUD/pragmatics, defeasible revision/stance freedom, critical-question/steelman, causal/intervention/global graph, and simple no-dialogue-state cases.
+- `skills/evals/semantic-dialogue-state-generalization-holdout.json` — DSG1–DSG12 anti-leakage holdout using paraphrase, lexical-cue removal, changed domains and indirect formulations to test structural transfer rather than keyword recognition.
 - `skills/evals/semantic-dialogue-state-scoring-rubric.md` — observable-output scoring, explicit blocking errors, protection metrics and promotion-veto rule.
-- `skills/evals/semantic-dialogue-state-eval-protocol.md` — exact-run manifest, target/protection execution commands, multi-judge case-first aggregation, blinded judging and judge-bias safeguards.
-- `skills/evals/run_semantic_dialogue_state_eval.py` — reusable provider-neutral eval engine for arbitrary approved fixture paths/arm subsets, request preparation, response validation, blinded judge tasks, multi-judge disagreement preservation, treatment/regression summaries, protection promotion veto, and synthetic target+protection self-tests.
+- `skills/evals/semantic-dialogue-state-eval-protocol.md` — exact-run manifest, target/protection/generalization execution commands, multi-judge case-first aggregation, blinded judging and judge-bias safeguards.
+- `skills/evals/run_semantic_dialogue_state_eval.py` — reusable provider-neutral eval engine for approved fixture paths/arm subsets, request preparation, response validation, blinded judge tasks, multi-judge disagreement preservation, treatment/regression summaries, protection promotion veto, and synthetic target+protection self-tests.
 - `skills/evals/multi-agent-judge-bias-fixtures.json` — J1–J8 position/order, verbosity, bandwagon, early-consensus, follow-up persuasion and self-judging bias fixtures.
 
 Fixture presence, static validation, or a synthetic harness self-test is not target-model execution evidence. Behavioral suites remain `SPECIFIED_NOT_EXECUTED` until real target-model outputs and judge receipts/results are recorded against exact revisions.
@@ -90,9 +92,9 @@ No skill moves from `EXPERIMENTAL` to `STABLE` until positive, negative, ambiguo
 
 For `evidence-gap-research`, the minimum epistemic regression set additionally includes duplicate-source detection, sequential evidence revision, non-diagnostic evidence, conflict-aware unresolved states, bounded partial-support answers, fake-precision resistance, high-VOI action selection, stop-rule behavior, confidence-delta auditing, multi-answer semantic clustering, source reliability vs relevance, and over-reasoning termination.
 
-For `semantic-argument-microscope`, the minimum semantic regression set additionally includes definition mismatch, hidden warrant, QUD substitution, pragmatic context flip, presupposition-vs-assertion, defeater update, stance freedom, claim-strength calibration, generation/inference asymmetry, scheme ambiguity, critical-question relevance, burden handling, steelman fidelity, causal-direction checks, intervention/counterfactual separation, causal-graph coherence, temporary-grant/common-ground integrity, answer-space/criterion-lock detection, reasoning-alignment preservation, provenance relevance, rebuttal-target comprehension, cross-domain structural transfer, and the DSP1–DSP12 protection holdout.
+For `semantic-argument-microscope`, the minimum semantic regression set additionally includes definition mismatch, hidden warrant, QUD substitution, pragmatic context flip, presupposition-vs-assertion, defeater update, stance freedom, claim-strength calibration, generation/inference asymmetry, scheme ambiguity, critical-question relevance, burden handling, steelman fidelity, causal-direction checks, intervention/counterfactual separation, causal-graph coherence, temporary-grant/common-ground integrity, answer-space/criterion-lock detection, reasoning-alignment preservation, provenance relevance, rebuttal-target comprehension, cross-domain structural transfer, the DSP1–DSP12 protection holdout, and DSG1–DSG12 lexical/domain generalization holdout.
 
-For the dialogue-state extension specifically, target-suite gain cannot authorize promotion if `microscope-dialogue-state` regresses against `microscope-core` on a protection hard slice or introduces a new blocking error. The behavioral harness records this as `protection_promotion_veto=true` pending review.
+For the dialogue-state extension specifically, target-suite gain cannot authorize promotion if `microscope-dialogue-state` regresses against `microscope-core` on either protection holdout, introduces a new blocking error, or loses the intended relation/state behavior after lexical cues and domain vocabulary are changed. Protection/generalization runs are hard-slice vetoes, not optional diagnostics.
 
 For `multi-agent-deliberation`, material judge validation additionally includes order swap, verbosity normalization, bandwagon resistance, minority-correct retention, early-consensus resistance, follow-up persuasion checks, blind-label invariance, separation from debater self-evaluation, and preservation of material judge disagreement.
 
