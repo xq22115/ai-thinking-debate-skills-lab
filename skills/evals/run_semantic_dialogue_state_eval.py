@@ -5,6 +5,8 @@ The harness does not call a model provider. It prepares reproducible requests,
 validates externally recorded candidate outputs, creates blinded judge tasks,
 accepts one or more judgments per candidate, preserves judge disagreement, and
 summarizes case-first arm-level results.
+
+The same engine can run the target dialogue-state suite or a protection holdout.
 """
 
 from __future__ import annotations
@@ -21,6 +23,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURES = ROOT / "skills/evals/semantic-dialogue-state-fixtures.json"
+PROTECTION_FIXTURES = ROOT / "skills/evals/semantic-dialogue-state-protection-fixtures.json"
 RUBRIC = ROOT / "skills/evals/semantic-dialogue-state-scoring-rubric.md"
 PROTOCOL = ROOT / "skills/evals/semantic-dialogue-state-eval-protocol.md"
 CORE_SKILL = ROOT / "skills/skills/semantic-argument-microscope/SKILL.md"
@@ -53,6 +56,7 @@ BLOCKING_ERROR_IDS = (
     "shared_conclusion_to_shared_reasoning",
     "domain_vocabulary_changes_relation",
     "host_live_claim_without_verification",
+    "unnecessary_dialogue_state_invention",
 )
 
 
@@ -112,6 +116,27 @@ def mean(values: list[float]) -> float | None:
     return round(sum(values) / len(values), 4) if values else None
 
 
+def repo_path(path: Path) -> Path:
+    resolved = path if path.is_absolute() else ROOT / path
+    resolved = resolved.resolve()
+    if resolved != ROOT and ROOT not in resolved.parents:
+        raise ValueError(f"fixture path must stay inside repository root: {path}")
+    if not resolved.is_file():
+        raise ValueError(f"fixture path does not exist: {resolved}")
+    return resolved
+
+
+def normalize_arms(arms: list[str] | tuple[str, ...]) -> tuple[str, ...]:
+    if not arms:
+        raise ValueError("at least one evaluation arm is required")
+    unknown = [arm for arm in arms if arm not in ARMS]
+    if unknown:
+        raise ValueError(f"unknown evaluation arms: {unknown}")
+    if len(set(arms)) != len(arms):
+        raise ValueError("evaluation arms must be unique")
+    return tuple(arms)
+
+
 def arm_bundle_text(arm: str) -> str:
     if arm == "direct":
         return ""
@@ -128,20 +153,30 @@ def arm_bundle_text(arm: str) -> str:
     raise ValueError(f"unknown arm: {arm}")
 
 
-def prepare(run_dir: Path, repo_ref: str, model_id: str, provider: str, seed: int) -> None:
+def prepare(
+    run_dir: Path,
+    repo_ref: str,
+    model_id: str,
+    provider: str,
+    seed: int,
+    fixture_path: Path = FIXTURES,
+    arms: tuple[str, ...] = ARMS,
+) -> None:
     run_dir.mkdir(parents=True, exist_ok=True)
-    fixtures = load_json(FIXTURES)
+    fixture_path = repo_path(fixture_path)
+    arms = normalize_arms(arms)
+    fixtures = load_json(fixture_path)
     cases = fixtures.get("cases") or []
     if not cases:
         raise ValueError("fixture suite has no cases")
 
     run_id = (
         f"ds-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}-"
-        f"{stable_id(repo_ref, model_id, str(seed))[:8]}"
+        f"{stable_id(repo_ref, model_id, str(seed), str(fixture_path.relative_to(ROOT)))[:8]}"
     )
 
     bundles: dict[str, dict[str, Any]] = {}
-    for arm in ARMS:
+    for arm in arms:
         text = arm_bundle_text(arm)
         sources: list[str] = []
         if arm not in {"direct", "generic-careful"}:
@@ -157,7 +192,7 @@ def prepare(run_dir: Path, repo_ref: str, model_id: str, provider: str, seed: in
 
     requests: list[dict[str, Any]] = []
     for case in cases:
-        for arm in ARMS:
+        for arm in arms:
             request_id = stable_id(run_id, case["id"], arm)
             requests.append(
                 {
@@ -173,19 +208,23 @@ def prepare(run_dir: Path, repo_ref: str, model_id: str, provider: str, seed: in
                 }
             )
 
+    suite_name = str(fixtures.get("suite") or "unknown")
+    suite_role = "protection" if "protection" in suite_name else "target"
     manifest = {
-        "schema_version": 2,
+        "schema_version": 3,
         "run_id": run_id,
         "created_at": datetime.now(timezone.utc).isoformat(),
         "repo_ref": repo_ref,
         "model_id": model_id,
         "provider": provider,
         "seed": seed,
-        "fixture_suite": fixtures.get("suite"),
-        "fixture_sha256": sha256_text(read_text(FIXTURES)),
+        "fixture_suite": suite_name,
+        "fixture_path": str(fixture_path.relative_to(ROOT)),
+        "fixture_sha256": sha256_text(read_text(fixture_path)),
+        "suite_role": suite_role,
         "rubric_sha256": sha256_text(read_text(RUBRIC)),
         "protocol_sha256": sha256_text(read_text(PROTOCOL)),
-        "arms": list(ARMS),
+        "arms": list(arms),
         "case_count": len(cases),
         "request_count": len(requests),
         "tool_access": "unknown",
@@ -196,7 +235,10 @@ def prepare(run_dir: Path, repo_ref: str, model_id: str, provider: str, seed: in
     dump_json(run_dir / "manifest.json", manifest)
     dump_json(run_dir / "bundles.json", bundles)
     dump_jsonl(run_dir / "requests.jsonl", requests)
-    print(f"prepared {len(requests)} requests across {len(cases)} cases in {run_dir}")
+    print(
+        f"prepared {len(requests)} requests across {len(cases)} cases "
+        f"from {fixture_path.relative_to(ROOT)} in {run_dir}"
+    )
 
 
 def validate_responses(run_dir: Path, allow_partial: bool = False) -> dict[str, Any]:
@@ -231,9 +273,20 @@ def validate_responses(run_dir: Path, allow_partial: bool = False) -> dict[str, 
     return summary
 
 
+def fixture_for_run(run_dir: Path) -> tuple[dict[str, Any], Path]:
+    manifest = load_json(run_dir / "manifest.json")
+    path_value = manifest.get("fixture_path")
+    if not isinstance(path_value, str) or not path_value:
+        path = FIXTURES
+    else:
+        path = repo_path(Path(path_value))
+    return manifest, path
+
+
 def prepare_judge_tasks(run_dir: Path, blind_seed: int) -> None:
     validate_responses(run_dir, allow_partial=False)
-    fixtures = load_json(FIXTURES)
+    _, fixture_path = fixture_for_run(run_dir)
+    fixtures = load_json(fixture_path)
     cases = {case["id"]: case for case in fixtures["cases"]}
     requests = index_unique(load_jsonl(run_dir / "requests.jsonl"), "request_id", "requests")
     responses = index_unique(load_jsonl(run_dir / "responses.jsonl"), "request_id", "responses")
@@ -406,6 +459,8 @@ def aggregate_task_judgments(rows: list[dict[str, Any]]) -> dict[str, Any]:
 
 def summarize(run_dir: Path) -> dict[str, Any]:
     validate_judgments(run_dir, allow_partial=False)
+    manifest, _ = fixture_for_run(run_dir)
+    arms = normalize_arms(tuple(manifest.get("arms") or []))
     requests = index_unique(load_jsonl(run_dir / "requests.jsonl"), "request_id", "requests")
     tasks = index_unique(load_jsonl(run_dir / "judge_tasks.jsonl"), "judge_task_id", "judge tasks")
     judgments = normalize_judgments(load_jsonl(run_dir / "judgments.jsonl"), tasks)
@@ -425,7 +480,7 @@ def summarize(run_dir: Path) -> dict[str, Any]:
             "judge_counts": [],
             "same_model_judge_cases": 0,
         }
-        for arm in ARMS
+        for arm in arms
     }
     per_case_arm: dict[tuple[str, str], dict[str, Any]] = {}
     disagreement_tasks: list[dict[str, Any]] = []
@@ -492,53 +547,64 @@ def summarize(run_dir: Path) -> dict[str, Any]:
         }
 
     treatment = "microscope-dialogue-state"
+    core = "microscope-core"
     regression_cases: list[str] = []
     blocked_regressions: list[str] = []
-    for case_id in sorted({case_id for case_id, _ in per_case_arm}):
-        treatment_row = per_case_arm.get((case_id, treatment))
-        core_row = per_case_arm.get((case_id, "microscope-core"))
-        if not treatment_row or not core_row:
-            continue
-        if (
-            treatment_row["overall"] is not None
-            and core_row["overall"] is not None
-            and treatment_row["overall"] < core_row["overall"]
-        ):
-            regression_cases.append(case_id)
-        if treatment_row["blocked"] and not core_row["blocked"]:
-            blocked_regressions.append(case_id)
+    if treatment in arms and core in arms:
+        for case_id in sorted({case_id for case_id, _ in per_case_arm}):
+            treatment_row = per_case_arm.get((case_id, treatment))
+            core_row = per_case_arm.get((case_id, core))
+            if not treatment_row or not core_row:
+                continue
+            if (
+                treatment_row["overall"] is not None
+                and core_row["overall"] is not None
+                and treatment_row["overall"] < core_row["overall"]
+            ):
+                regression_cases.append(case_id)
+            if treatment_row["blocked"] and not core_row["blocked"]:
+                blocked_regressions.append(case_id)
 
     def delta(a: str, b: str, field: str) -> float | None:
+        if a not in arm_report or b not in arm_report:
+            return None
         av = arm_report[a].get(field)
         bv = arm_report[b].get(field)
         if av is None or bv is None:
             return None
         return round(float(av) - float(bv), 4)
 
-    manifest = load_json(run_dir / "manifest.json")
+    suite_role = str(manifest.get("suite_role") or "target")
+    protection_veto = None
+    if suite_role == "protection":
+        protection_veto = bool(regression_cases or blocked_regressions)
+
     report = {
-        "schema_version": 2,
+        "schema_version": 3,
         "run_id": manifest["run_id"],
         "repo_ref": manifest["repo_ref"],
         "model_id": manifest["model_id"],
         "provider": manifest["provider"],
+        "fixture_suite": manifest.get("fixture_suite"),
+        "suite_role": suite_role,
         "judgment_count": len(judgments),
         "arms": arm_report,
         "treatment_deltas": {
             "overall_vs_direct": delta(treatment, "direct", "mean_overall_applicable_score"),
             "overall_vs_microscope_core": delta(
-                treatment, "microscope-core", "mean_overall_applicable_score"
+                treatment, core, "mean_overall_applicable_score"
             ),
             "blocking_rate_vs_direct": delta(treatment, "direct", "blocking_error_rate"),
             "blocking_rate_vs_microscope_core": delta(
-                treatment, "microscope-core", "blocking_error_rate"
+                treatment, core, "blocking_error_rate"
             ),
             "judge_disagreement_rate_vs_core": delta(
-                treatment, "microscope-core", "judge_disagreement_rate"
+                treatment, core, "judge_disagreement_rate"
             ),
         },
         "treatment_regression_cases_vs_core": regression_cases,
         "treatment_blocking_regressions_vs_core": blocked_regressions,
+        "protection_promotion_veto": protection_veto,
         "judge_disagreement_tasks": sorted(
             disagreement_tasks, key=lambda row: (row["case_id"], row["arm"])
         ),
@@ -547,13 +613,27 @@ def summarize(run_dir: Path) -> dict[str, Any]:
     }
     dump_json(run_dir / "report.json", report)
     print(json.dumps(report["treatment_deltas"], sort_keys=True))
+    if protection_veto is not None:
+        print(json.dumps({"protection_promotion_veto": protection_veto}, sort_keys=True))
     return report
 
 
-def self_test() -> None:
+def synthetic_run(
+    fixture_path: Path,
+    arms: tuple[str, ...],
+    inject_direct_disagreement: bool,
+) -> dict[str, Any]:
     with tempfile.TemporaryDirectory(prefix="semantic-ds-eval-") as tmp:
         run_dir = Path(tmp)
-        prepare(run_dir, "self-test-ref", "synthetic-model", "synthetic", 7)
+        prepare(
+            run_dir,
+            "self-test-ref",
+            "synthetic-model",
+            "synthetic",
+            7,
+            fixture_path=fixture_path,
+            arms=arms,
+        )
         requests = load_jsonl(run_dir / "requests.jsonl")
         dump_jsonl(
             run_dir / "responses.jsonl",
@@ -581,7 +661,12 @@ def self_test() -> None:
                 ("synthetic-independent-judge-a", "synthetic-independent-judge-b")
             ):
                 score = base_score
-                if arm == "direct" and judge_idx == 1 and not disagreement_injected:
+                if (
+                    inject_direct_disagreement
+                    and arm == "direct"
+                    and judge_idx == 1
+                    and not disagreement_injected
+                ):
                     score = 0
                     disagreement_injected = True
                 judgments.append(
@@ -600,16 +685,32 @@ def self_test() -> None:
                     }
                 )
 
-        assert disagreement_injected
+        if inject_direct_disagreement:
+            assert disagreement_injected
         dump_jsonl(run_dir / "judgments.jsonl", judgments)
         validation = validate_judgments(run_dir)
         assert validation["tasks_with_multiple_judges"] == len(tasks)
         report = summarize(run_dir)
         assert report["treatment_deltas"]["overall_vs_microscope_core"] == 1.0
         assert report["treatment_blocking_regressions_vs_core"] == []
-        assert report["judge_disagreement_tasks"]
-        assert report["arms"]["direct"]["judge_disagreement_cases"] >= 1
-    print("semantic dialogue-state eval harness self-test: PASS")
+        return report
+
+
+def self_test() -> None:
+    target_report = synthetic_run(FIXTURES, ARMS, inject_direct_disagreement=True)
+    assert target_report["judge_disagreement_tasks"]
+    assert target_report["arms"]["direct"]["judge_disagreement_cases"] >= 1
+    assert target_report["protection_promotion_veto"] is None
+
+    protection_report = synthetic_run(
+        PROTECTION_FIXTURES,
+        ("microscope-core", "microscope-dialogue-state"),
+        inject_direct_disagreement=False,
+    )
+    assert protection_report["suite_role"] == "protection"
+    assert protection_report["treatment_deltas"]["overall_vs_direct"] is None
+    assert protection_report["protection_promotion_veto"] is False
+    print("semantic dialogue-state eval harness self-test: PASS (target + protection + multi-judge)")
 
 
 def main() -> None:
@@ -622,6 +723,19 @@ def main() -> None:
     p_prepare.add_argument("--model-id", required=True)
     p_prepare.add_argument("--provider", default="unknown")
     p_prepare.add_argument("--seed", type=int, default=0)
+    p_prepare.add_argument(
+        "--fixture",
+        type=Path,
+        default=FIXTURES.relative_to(ROOT),
+        help="fixture JSON path relative to repository root",
+    )
+    p_prepare.add_argument(
+        "--arms",
+        nargs="+",
+        choices=ARMS,
+        default=list(ARMS),
+        help="evaluation arms to prepare",
+    )
 
     p_resp = sub.add_parser("validate-responses")
     p_resp.add_argument("run_dir", type=Path)
@@ -642,7 +756,15 @@ def main() -> None:
 
     args = parser.parse_args()
     if args.command == "prepare":
-        prepare(args.run_dir, args.repo_ref, args.model_id, args.provider, args.seed)
+        prepare(
+            args.run_dir,
+            args.repo_ref,
+            args.model_id,
+            args.provider,
+            args.seed,
+            fixture_path=args.fixture,
+            arms=tuple(args.arms),
+        )
     elif args.command == "validate-responses":
         validate_responses(args.run_dir, allow_partial=args.allow_partial)
     elif args.command == "prepare-judge":
