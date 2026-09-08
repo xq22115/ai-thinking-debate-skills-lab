@@ -54,9 +54,40 @@ python skills/evals/run_semantic_dialogue_state_eval.py prepare GENERALIZATION_R
   --arms microscope-core microscope-dialogue-state
 ```
 
-The harness does not make provider calls. Execute the prepared requests through the selected provider/runtime, record outputs in `responses.jsonl`, then use `prepare-judge`, record `judgments.jsonl`, and run `summarize`.
+The harness does not make provider calls. Execute the prepared requests through the selected provider/runtime, record outputs in `responses.jsonl`, record one `execution_receipts.jsonl` row per request, validate execution isolation, then use `prepare-judge`, record `judgments.jsonl`, and run `summarize`.
 
 `manifest.json` binds exact fixture path/hash, instruction bundle hashes, model/provider label, arms and repository revision so runs can be reproduced without silently changing the test surface.
+
+## Target-model execution isolation
+
+Before a recorded response can count as comparison-grade `TARGET_MODEL_RUN` evidence, validate it against `semantic-dialogue-state-execution-isolation.md` with:
+
+```text
+python skills/evals/validate_semantic_dialogue_state_execution.py validate RUN_DIR --require-clean
+```
+
+Strict comparative runs use one fresh isolated context per `request_id`. The candidate context may see only the common host/provider defaults, its frozen arm bundle, the case input, and the output contract. Before response completion it must not see fixture answer keys, `must_detect` / `fail_if`, scoring-rubric details, blocking-error labels, judge information, other-arm outputs, aggregate scores, or prior benchmark coaching.
+
+Each execution receipt binds:
+
+- request/run/case/arm identity;
+- exact `bundle_sha256`;
+- model/provider/surface identity;
+- pseudonymous `session_id_hash`;
+- fresh-context state;
+- forbidden-exposure booleans;
+- intended arm-bundle exposure;
+- exact response `output_sha256`;
+- observable tool/sampling metadata or `unknown`;
+- execution status.
+
+A reused context, cross-arm memory, rubric leakage, answer-key exposure, judge leakage, identity mismatch, or response-hash mismatch makes the affected request invalid for strict comparison. Record that state; do not repair it by narrative.
+
+A conversation that has already read DS/DSP/DSG answer keys, rubric details, implementation logic, or prior arm outputs is not a clean target-model execution context for those same benchmark requests.
+
+`OUTPUT_EXISTS != COMPARISON_VALID`.
+
+`CLEAN_EXECUTION_RECEIPT != GOOD_ANSWER`.
 
 ## Run manifest
 
@@ -73,6 +104,7 @@ Every run should record at least:
 - prompt/instruction bundle hash;
 - case id;
 - response id/hash when available;
+- execution-receipt validation state;
 - judge identity and judge mode;
 - whether generator and judge are the same model family;
 - whether candidate labels/order were blinded or swapped;
@@ -205,6 +237,7 @@ A behavioral evaluation should report:
 - target DS1–DS8 attempted / completed / invalid;
 - DSP1–DSP12 attempted / completed / invalid;
 - DSG1–DSG12 attempted / completed / invalid;
+- clean execution-receipt count and invalid/blocked execution count;
 - blocking-error count and rate per arm;
 - average applicable score by dimension per arm;
 - treatment delta vs `direct` and vs `microscope-core` where those arms exist;
@@ -221,10 +254,12 @@ Keep these states separate:
 
 `FIXTURE_SPECIFIED → STATIC_VALIDATED → HARNESS_SELF_TESTED → TARGET_MODEL_RUN → INDEPENDENT_JUDGED → REPEATED → HOST_LIVE_REGRESSION`
 
+`TARGET_MODEL_RUN` requires clean execution provenance for the compared requests. A synthetic execution-receipt self-test validates only the isolation validator itself; it does not create a real target-model run.
+
 Synthetic target/protection self-tests prove harness plumbing only. Static DSG validation proves only that the anti-leakage suite is packaged and executable through the generalized harness. Neither proves real model generalization.
 
 ## Status boundary
 
 `HARNESS_READY != MODEL_RUN_COMPLETE != JUDGE_VALIDATED != HOST_LIVE`.
 
-The repository may package and validate this protocol without access to a provider model. Behavioral verification requires real recorded outputs and judgments bound to an exact run manifest.
+The repository may package and validate this protocol without access to a provider model. Behavioral verification requires real isolated recorded outputs and judgments bound to an exact run manifest.
