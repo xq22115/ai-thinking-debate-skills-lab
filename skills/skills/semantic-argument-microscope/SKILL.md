@@ -1,11 +1,11 @@
 ---
 name: semantic-argument-microscope
-description: Decompose important claims into literal meaning, hidden warrants, presuppositions, definitions, cruxes, evidence obligations, counterexamples, pragmatic implications, and rhetorical effects before accepting, rejecting, or debating them. Use for debates, ambiguous wording, contested claims, policy/ethics arguments, research synthesis, requirements, and any sentence where surface wording may hide multiple meanings.
+description: Decompose important claims into literal meaning, hidden warrants, presuppositions, definitions, cruxes, evidence obligations, counterexamples, pragmatic implications, rhetorical effects, and—when multi-turn state matters—shared commitments/common-ground changes before accepting, rejecting, or debating them. Use for debates, ambiguous wording, contested claims, policy/ethics arguments, research synthesis, requirements, and any sentence where surface wording may hide multiple meanings.
 ---
 
 # Semantic Argument Microscope
 
-Version: `0.2.0-rc1`
+Version: `0.3.0-rc1`
 
 Status: `EXPERIMENTAL / PORTABLE PROCEDURAL CORE`
 
@@ -24,6 +24,7 @@ Activate when one or more of these are true:
 - an argument depends on a moral principle, analogy, authority, causal claim, implicature, presupposition, or broad label;
 - a factual assertion is decisive but vague, bundled, or weakly sourced;
 - a debate is becoming rhetorical, circular, frame-shifting, or stance-locked;
+- a multi-turn dispute depends on whether an earlier proposition was genuinely agreed, merely assumed, left unresolved, or rhetorically pressured;
 - a user asks for deeper meaning, logic, argument quality, hidden assumptions, or debate analysis.
 
 Do not activate for simple deterministic facts or wording where the extra decomposition has negligible decision value.
@@ -151,6 +152,22 @@ The stronger or more consequential the claim, the stronger the evidence obligati
 
 Do not call every clarification a fallacy. A frame shift is problematic only when it evades a material obligation or changes the proposition without acknowledgment.
 
+### Multi-turn dialogue-state escalation
+
+When later reasoning depends on what earlier turns actually established, consult `DIALOGUE_STATE.md` rather than stretching the burden/frame ledger into a transcript memory system.
+
+Use it on demand for:
+
+- explicit common-ground states (`AGREED`, `DISPUTED`, `UNRESOLVED`, `ASSUMED_FOR_TEST`, `WITHDRAWN`, `EVIDENCE_PENDING`);
+- commitment/answer-space/burden/criterion/evidence/downstream state deltas;
+- temporary-grant or unanswered-presupposition laundering;
+- common-ground repair after definition/commitment drift;
+- provenance-volume vs provenance-quality checks;
+- persuasion/comprehension separation in long dialogue;
+- cross-domain structural-transfer checks.
+
+Do not load this extension when a short self-contained QUD/crux/warrant analysis already resolves the dispute.
+
 ### 8. Defeasible reasoning and belief revision
 
 Treat many real-world conclusions as defeasible rather than monotonic: a conclusion can be reasonable under current evidence and later lose support when an exception, defeating condition, or stronger source appears.
@@ -195,7 +212,9 @@ Use this skill to normalize the claim, identify the active QUD, expose hidden wa
 
 ### Before multi-agent debate
 
-Give agents the same current QUD, crux, definition ledger, interpretation-confidence state, and evidence obligations. Diversity should come from hypotheses/evidence/perspectives, not from accidental disagreement over wording.
+Give agents the same current QUD, crux, definition ledger, interpretation-confidence state, and evidence obligations. When dialogue history itself changes which propositions are valid premises, load `DIALOGUE_STATE.md` and also align the material common-ground states before debate.
+
+Diversity should come from hypotheses/evidence/perspectives, not from accidental disagreement over wording or corrupted shared commitments.
 
 Do not permanently assign agents to defend a stance. If stance assignment is used for stress testing, explicitly restore revision freedom before adjudication.
 
@@ -209,6 +228,7 @@ A critique counts as progress only if it adds at least one of:
 - exposed hidden warrant;
 - corrected pragmatic interpretation;
 - corrected definition/scope/QUD;
+- repaired common-ground/commitment state when material;
 - material contradiction;
 - calibrated confidence change.
 
@@ -220,11 +240,15 @@ After decision-relevant evidence, recompute rather than merely append commentary
 
 `claim state -> warrant state -> defeaters -> confidence -> crux -> next discriminating test`
 
+If `DIALOGUE_STATE.md` is active, also update affected shared/participant commitment states and recompute only downstream claims that depend on the changed state.
+
 A confidence change without an identified evidence delta is not a valid belief update.
 
 ### Before final synthesis
 
 Reconstruct the strongest version of each surviving side, identify the decisive cruxes, distinguish literal from pragmatic claims, and report unresolved uncertainty. Do not hide a weak evidence base behind rhetorical certainty.
+
+If apparent agreement depends on incompatible definitions, temporary grants, silence, or unresolved mechanisms, do not report full reasoning consensus.
 
 ## Argument Graph
 
@@ -261,6 +285,8 @@ Merge nodes only when they are semantically equivalent. Preserve disagreements t
 - **Burden escape:** replying to a weaker neighboring question.
 - **Stance lock:** defending an assigned position after its warrant has been defeated.
 - **Rhetoric-as-proof:** treating audience reaction or confidence as evidence.
+- **Common-ground laundering:** converting a temporary grant, silence, unanswered presupposition, or pressured framing move into shared factual agreement.
+- **Provenance laundering:** using citation/RAG volume or technical density to manufacture evidential confidence without direct relevance/quality checks.
 - **Self-critique theater:** producing longer reflection without a new test, fact, or model delta.
 - **False precision:** assigning numerical confidence without an evidence basis.
 - **Monotonicity error:** refusing to revise a conclusion when a legitimate defeater appears.
@@ -280,6 +306,7 @@ For a high-value claim, return a compact analysis containing:
 - decisive test or missing evidence;
 - counterexample/edge-case result;
 - frame/burden shifts if any;
+- material common-ground/commitment status if dialogue history changes available premises;
 - epistemic assessment;
 - rhetorical assessment only when useful;
 - calibrated conclusion, update reason, and remaining uncertainty.
@@ -348,6 +375,8 @@ A model can invent several contexts where an implication would make sense, but t
 
 Pass: do not treat generative plausibility as evidence that the implication is present in the actual case.
 
+Additional multi-turn dialogue-state cases are maintained in `skills/evals/semantic-dialogue-state-fixtures.json`; they remain `SPECIFIED_NOT_EXECUTED` until target-model runs produce results.
+
 ## Research Basis
 
 Portable concepts incorporated here include:
@@ -357,12 +386,14 @@ Portable concepts incorporated here include:
 - pragmatics: implicature, presupposition, reference/deixis, alternatives, and Question Under Discussion;
 - context-sensitive interpretation with explicit anti-overinterpretation controls;
 - argument mapping and claim-evidence graphs;
+- common-ground/shared-commitment tracking and dialogue repair for multi-turn joint reasoning;
 - defeasible / non-monotonic reasoning and evidence-driven belief revision;
 - self-consistency and multi-path reasoning;
 - Tree/Graph-of-Thought style branching when alternatives are materially different;
 - multi-agent debate with evidence-based adjudication and revision freedom;
 - evidence-grounded correction rather than unsupported intrinsic self-correction;
-- diversity-aware oversight to reduce correlated errors and conformity.
+- diversity-aware oversight to reduce correlated errors and conformity;
+- structural generalization checks to distinguish argument understanding from lexical shortcutting.
 
 These are mechanisms, not guarantees. Apply them only when they increase information gain relative to a simpler baseline.
 
@@ -372,16 +403,17 @@ The deepest transferable debate skill is not `answer faster`, `attack harder`, o
 
 It is:
 
-`surface wording -> literal/pragmatic boundary -> hidden structure -> active QUD -> decisive crux -> discriminating evidence -> defeater test -> calibrated revision`
+`surface wording -> literal/pragmatic boundary -> hidden structure -> active QUD -> decisive crux -> discriminating evidence -> dialogue-state repair when needed -> defeater test -> calibrated revision`
 
-A sentence becomes easier to reason about once the implicit bridge between its words and its conclusion is made explicit — and once unsupported bridges are rejected rather than imagined.
+A sentence becomes easier to reason about once the implicit bridge between its words and its conclusion is made explicit — and once unsupported bridges or false shared commitments are rejected rather than imagined.
 
 ## Invalidation Conditions
 
 Re-evaluate this skill if evidence shows that:
 
 - the decomposition adds cost without improving error detection or decision quality;
+- explicit dialogue-state/common-ground tracking adds cost without reducing commitment/state errors on long-dialogue holdouts;
 - a simpler baseline performs equally well on the target task class;
 - the interpretation-confidence ladder systematically suppresses valid pragmatic inference;
-- the host provides a stronger native argument/evidence representation;
-- newer reasoning/debate/pragmatics studies materially reverse the current evidence on self-correction, pragmatic inference, diversity, stance assignment, or adjudication.
+- the host provides a stronger native argument/evidence/dialogue-state representation;
+- newer reasoning/debate/pragmatics studies materially reverse the current evidence on self-correction, pragmatic inference, common ground, diversity, stance assignment, or adjudication.
