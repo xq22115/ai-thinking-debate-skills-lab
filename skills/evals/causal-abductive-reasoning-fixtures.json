@@ -1,0 +1,74 @@
+{
+  "suite": "causal-abductive-reasoning-v0.1",
+  "status": "SPECIFIED_NOT_EXECUTED",
+  "scope": "association-intervention-counterfactual-abduction",
+  "cases": [
+    {
+      "id": "C1-correlation-not-causation",
+      "input": "Neighborhoods with more umbrellas also have more traffic accidents, therefore umbrellas cause accidents.",
+      "must_detect": ["association_only", "common_cause_candidate_weather", "causal_claim_not_established"],
+      "fail_if": ["accepts_causation_from_correlation"]
+    },
+    {
+      "id": "C2-reverse-causation",
+      "input": "People with more medical visits are sicker, therefore medical visits cause sickness.",
+      "must_detect": ["reverse_causation_candidate", "severity_may_cause_visits", "need_design_or_intervention_evidence"],
+      "fail_if": ["infers_visit_to_sickness_direction_from_observation_alone"]
+    },
+    {
+      "id": "C3-confounder",
+      "input": "Students who attend optional tutoring score higher. Conclude tutoring caused all of the difference.",
+      "must_detect": ["selection_or_confounding_candidates", "motivation_prior_ability_possible", "causal_effect_requires_identification"],
+      "fail_if": ["attributes_full_difference_to_tutoring"]
+    },
+    {
+      "id": "C4-collider-warning",
+      "input": "Among only applicants admitted to a highly selective program, two otherwise independent strengths appear negatively correlated because either can help admission.",
+      "must_detect": ["selection_on_common_effect_or_collider", "conditioning_can_induce_association"],
+      "fail_if": ["treats_induced_association_as_direct_causal_tradeoff"]
+    },
+    {
+      "id": "C5-intervention-vs-observation",
+      "input": "People who choose X tend to have Y. Question: what happens if we force X for otherwise comparable people?",
+      "must_detect": ["observational_probability_not_interventional_probability", "need_causal_bridge_or_design"],
+      "fail_if": ["answers_do_X_directly_from_P_Y_given_X"]
+    },
+    {
+      "id": "C6-counterfactual-propagation",
+      "input": "A causes B, B causes C. In the actual case A=1,B=1,C=1. Ask what likely follows under an intervention A=0 under the stated deterministic graph.",
+      "must_detect": ["change_A", "propagate_to_B", "propagate_to_C", "do_not_keep_downstream_facts_fixed"],
+      "fail_if": ["changes_only_A_and_leaves_B_C_unchanged"]
+    },
+    {
+      "id": "C7-abduction-direct-cause",
+      "input": "A server outage follows a power failure; a holiday schedule is also true that day; a monitoring alert occurred after the outage. Choose the most plausible direct cause.",
+      "must_detect": ["power_failure_as_direct_candidate", "holiday_as_background_or_distractor_unless_mechanism", "alert_as_effect_not_cause"],
+      "fail_if": ["selects_semantically_related_but_noncausal_fact"]
+    },
+    {
+      "id": "C8-measurement-shift",
+      "input": "Reported incidents doubled immediately after the reporting threshold was lowered.",
+      "must_detect": ["measurement_or_definition_change", "apparent_increase_not_equal_true_incidence_increase"],
+      "fail_if": ["attributes_full_change_to_underlying_event_rate"]
+    },
+    {
+      "id": "C9-global-graph-coherence",
+      "input": "Pairwise claims A->B, B->C, and C->A are each locally plausible, but the stated system is known to be acyclic.",
+      "must_detect": ["global_graph_constraint", "at_least_one_edge_must_be_wrong_or_reinterpreted"],
+      "fail_if": ["accepts_all_local_edges_without_global_consistency_check"]
+    },
+    {
+      "id": "C10-abductive-discrimination",
+      "input": "Two hypotheses H1 and H2 both explain observation O. H1 predicts P next; H2 predicts not-P. P is measurable.",
+      "must_detect": ["both_hypotheses_live", "P_as_discriminating_test", "do_not_choose_by_narrative_preference"],
+      "fail_if": ["selects_one_without_using_discriminating_evidence"]
+    }
+  ],
+  "release_gate": {
+    "fixture_presence": "PASS_WHEN_READ_BACK",
+    "causal_model_execution": "NOT_RUN",
+    "counterfactual_execution": "NOT_RUN",
+    "independent_judge": "NOT_RUN",
+    "host_live_regression": "NOT_RUN"
+  }
+}
