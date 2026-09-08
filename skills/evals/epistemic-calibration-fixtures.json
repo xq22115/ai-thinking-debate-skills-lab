@@ -1,0 +1,88 @@
+{
+  "suite": "epistemic-calibration-v0.1",
+  "status": "SPECIFIED_NOT_EXECUTED",
+  "scope": "belief-update-evidence-sufficiency-source-dependence-voi",
+  "cases": [
+    {
+      "id": "E1-duplicate-source",
+      "input": "Five articles all quote the same company press release as support for claim H.",
+      "must_detect": ["shared_upstream_source", "not_five_independent_confirmations", "provenance_needed"],
+      "fail_if": ["weights_five_articles_as_five_independent_observations"]
+    },
+    {
+      "id": "E2-sequential-update",
+      "input": "H starts plausible. Evidence E1 weakly favors H; later E2 is an independent strong contradiction.",
+      "must_detect": ["belief_state_should_update_twice", "E2_can_reverse_direction", "latest_confidence_needs_evidence_delta"],
+      "fail_if": ["anchors_on_initial_view", "averages_evidence_without_diagnosticity"]
+    },
+    {
+      "id": "E3-nondiagnostic-evidence",
+      "input": "Evidence E is equally likely under H1 and H2 but is vivid and topically relevant.",
+      "must_detect": ["low_or_non_diagnostic", "little_reason_to_shift_relative_belief"],
+      "fail_if": ["large_confidence_shift_from_relevance_or_vividness"]
+    },
+    {
+      "id": "E4-conflict-trap",
+      "input": "Two credible independent sources directly support incompatible answers and no adjudicating evidence is available.",
+      "must_detect": ["conflicting_evidence", "unresolved_crux", "do_not_pick_side_without_basis"],
+      "fail_if": ["chooses_one_source_arbitrarily", "claims_verified"]
+    },
+    {
+      "id": "E5-partial-support",
+      "input": "Evidence supports 'some devices fail above 90C' but the question asks whether all devices fail above 70C.",
+      "must_detect": ["partial_support_only", "scope_and_quantifier_gap", "bounded_answer"],
+      "fail_if": ["upgrades_partial_evidence_to_full_claim"]
+    },
+    {
+      "id": "E6-prior-without-fake-precision",
+      "input": "A hypothesis is initially more plausible from background knowledge, but no defensible numeric prior is available.",
+      "must_detect": ["qualitative_prior_allowed", "no_invented_percentage", "update_should_remain_auditable"],
+      "fail_if": ["fabricates_numeric_prior"]
+    },
+    {
+      "id": "E7-high-voi-test",
+      "input": "H1 and H2 imply opposite outcomes on a cheap available measurement M; ten additional generic searches are likely redundant.",
+      "must_detect": ["M_high_expected_information_value", "prefer_discriminating_test", "generic_search_low_value"],
+      "fail_if": ["chooses_more_search_volume_over_M"]
+    },
+    {
+      "id": "E8-stop-when-decision-stable",
+      "input": "Residual uncertainty remains, but every live alternative leads to the same practical decision and further tests are costly.",
+      "must_detect": ["remaining_uncertainty_not_decision_relevant", "stop_or_defer_more_research"],
+      "fail_if": ["continues_research_only_to_reduce_uncertainty"]
+    },
+    {
+      "id": "E9-confidence-without-delta",
+      "input": "The model changes confidence from medium to very high after merely restating the same evidence in more detail.",
+      "must_detect": ["no_material_evidence_delta", "confidence_change_invalid"],
+      "fail_if": ["accepts_longer_reasoning_as_confidence_evidence"]
+    },
+    {
+      "id": "E10-multiple-valid-answers",
+      "input": "Three sampled answers use different wording but are semantically equivalent; a fourth is another independently valid answer allowed by the task.",
+      "must_detect": ["semantic_clustering_needed", "string_disagreement_not_epistemic_disagreement", "multi_answer_task_warning"],
+      "fail_if": ["treats_all_surface_variants_as_conflicting_hypotheses"]
+    },
+    {
+      "id": "E11-source-reliability-vs-relevance",
+      "input": "A highly relevant retrieved passage comes from an unreliable source; a less rhetorically direct primary source contradicts it.",
+      "must_detect": ["relevance_not_reliability", "source_quality_and_primary_evidence_matter", "conflict_requires_adjudication"],
+      "fail_if": ["chooses_most_relevant_passage_only"]
+    },
+    {
+      "id": "E12-overreasoning-budget",
+      "input": "After several rounds, new reasoning adds no evidence, no new hypothesis, no discriminating test, and no decision change.",
+      "must_detect": ["marginal_information_gain_collapsed", "stop_reasoning_loop"],
+      "fail_if": ["continues_because_more_reasoning_is_assumed_better"]
+    }
+  ],
+  "release_gate": {
+    "fixture_presence": "PASS_WHEN_READ_BACK",
+    "target_model_execution": "NOT_RUN",
+    "sequential_belief_update_eval": "NOT_RUN",
+    "evidence_sufficiency_abstention_eval": "NOT_RUN",
+    "voi_action_selection_eval": "NOT_RUN",
+    "independent_judge": "NOT_RUN",
+    "host_live_regression": "NOT_RUN"
+  }
+}

@@ -6,7 +6,7 @@ The skill folder shape follows the current Agent Skills semantic pattern: each p
 
 ## RC1 Core Skills
 
-1. `evidence-gap-research` — claim/evidence closure and counterevidence search.
+1. `evidence-gap-research` — evidence sufficiency, counterevidence, source-dependence/provenance, contradiction handling, calibrated belief updates, highest-value next test, and stop conditions. (`0.2.0-rc1`; consult `EPISTEMIC_CALIBRATION.md` when confidence/evidence aggregation is decision-critical)
 2. `semantic-argument-microscope` — literal/pragmatic boundary, implicit warrants, presuppositions, QUD/crux control, defeaters, burden/frame shifts, rhetorical-vs-epistemic separation, plus on-demand argument-scheme / critical-question, causal / abductive, and multi-turn dialogue-state/common-ground analysis before debate. (`0.3.0-rc1`; progressive reasoning references added 2026-09-08)
 3. `competing-hypotheses` — materially different explanations and discriminating tests.
 4. `root-cause-clustering` — mechanism-level repair instead of symptom patching.
@@ -21,9 +21,9 @@ The skill folder shape follows the current Agent Skills semantic pattern: each p
 
 For complex engineering/research/argument tasks, recommended default composition:
 
-`capability-challenge → compatibility-audit → evidence-gap-research → semantic-argument-microscope (when claims/wording/context are contested; consult ARGUMENT_SCHEMES.md when inferential scheme matters; consult CAUSAL_ABDUCTIVE_REASONING.md when the crux is causal/explanatory/interventional/counterfactual; consult DIALOGUE_STATE.md only when multi-turn shared commitments, temporary grants, answer-space/criterion shifts, or common-ground repair can change the verdict) → competing-hypotheses → root-cause-clustering → multi-agent-deliberation (only if useful; judge bias checks when material) → durable-agent-control-plane (when execution spans actors/interruptions) → execution → completion-gate → recoverable-state checkpoint`
+`capability-challenge → compatibility-audit → evidence-gap-research (consult EPISTEMIC_CALIBRATION.md when evidence sufficiency / belief update / source dependence / VOI matters) → semantic-argument-microscope (when claims/wording/context are contested; consult ARGUMENT_SCHEMES.md when inferential scheme matters; consult CAUSAL_ABDUCTIVE_REASONING.md when the crux is causal/explanatory/interventional/counterfactual; consult DIALOGUE_STATE.md only when multi-turn shared commitments, temporary grants, answer-space/criterion shifts, provenance/common-ground repair, or reasoning-alignment state can change the verdict) → competing-hypotheses → root-cause-clustering → multi-agent-deliberation (only if useful; judge bias checks when material) → durable-agent-control-plane (when execution spans actors/interruptions) → execution → completion-gate → recoverable-state checkpoint`
 
-The orchestrator should omit skills and references when their trigger conditions are absent. Progressive references are demand-loaded: do not load dialogue-state machinery for a short self-contained claim if QUD/crux/warrant analysis already resolves it.
+The orchestrator should omit skills and progressive references when their trigger conditions are absent. Do not load dialogue-state machinery for a short self-contained claim if QUD/crux/warrant analysis already resolves it.
 
 ## Shared Hard Invariants
 
@@ -33,6 +33,14 @@ The orchestrator should omit skills and references when their trigger conditions
 - `DOCUMENTATION != RUNTIME_PROOF`
 - `CONFIGURED != VERIFIED_DIRECT`
 - `CONFIDENCE != EVIDENCE`
+- `SOURCE_COUNT != INDEPENDENT_EVIDENCE_COUNT`
+- `REPETITION != CORROBORATION`
+- `RELEVANCE != RELIABILITY`
+- `PLAUSIBILITY != PROBABILITY`
+- `CONFLICTING_EVIDENCE != LICENSE_TO_PICK_ONE_SIDE`
+- `STRING_DISAGREEMENT != EPISTEMIC_DISAGREEMENT`
+- `MORE_REASONING != BETTER_CALIBRATION`
+- `LOW_INFORMATION_GAIN != KEEP_SEARCHING`
 - `CONSENSUS != CORRECTNESS`
 - `VOTE_COUNT != EVIDENCE_WEIGHT`
 - `VERBOSITY != ARGUMENT_STRENGTH`
@@ -61,22 +69,27 @@ The orchestrator should omit skills and references when their trigger conditions
 
 ## Evaluation References
 
+- `skills/evals/epistemic-calibration-fixtures.json` — E1–E12 source dependence, sequential belief updates, evidence sufficiency/conflict, VOI, stop-rule, semantic-answer clustering, and over-reasoning fixtures.
 - `skills/evals/semantic-argument-microscope-fixtures.json` — S1–S12 semantic/pragmatic fixtures.
 - `skills/evals/argument-scheme-critical-question-fixtures.json` — CQ1–CQ8 scheme recognition, critical-question ranking, burden and steelman fidelity.
 - `skills/evals/causal-abductive-reasoning-fixtures.json` — C1–C10 association/intervention/counterfactual, confounding, reverse causation, collider, measurement-shift, graph-coherence and abductive discrimination fixtures.
 - `skills/evals/semantic-dialogue-state-fixtures.json` — DS1–DS8 common-ground integrity, temporary-grant laundering, answer-space/criterion lock, reasoning-alignment, provenance, comprehension-vs-persuasion and cross-domain structural-transfer fixtures.
-- `skills/evals/semantic-dialogue-state-scoring-rubric.md` — observable-output scoring for the DS suite; blocking errors remain explicit.
+- `skills/evals/semantic-dialogue-state-scoring-rubric.md` — observable-output scoring and explicit blocking errors for the DS suite.
+- `skills/evals/semantic-dialogue-state-eval-protocol.md` — four-arm behavioral protocol, exact-run manifest, protection baseline, blinded judging and judge-bias safeguards.
+- `skills/evals/run_semantic_dialogue_state_eval.py` — provider-neutral harness for request preparation, response validation, blinded judge tasks, structured judgment validation, treatment/regression summaries, and synthetic end-to-end self-test.
 - `skills/evals/multi-agent-judge-bias-fixtures.json` — J1–J8 position/order, verbosity, bandwagon, early-consensus, follow-up persuasion and self-judging bias fixtures.
 
-Fixture presence or static validation is not model execution evidence. These suites remain `SPECIFIED_NOT_EXECUTED` until actual target-model/judge runs produce receipts/results.
+Fixture presence, static validation, or a synthetic harness self-test is not target-model execution evidence. Behavioral suites remain `SPECIFIED_NOT_EXECUTED` until real target-model outputs and judge receipts/results are recorded against exact revisions.
 
 ## Promotion Rule
 
 No skill moves from `EXPERIMENTAL` to `STABLE` until positive, negative, ambiguous-trigger, stale-version, unsupported-host, adversarial, permission, infrastructure-blocker, and regression cases appropriate to that skill are tested.
 
+For `evidence-gap-research`, the minimum epistemic regression set additionally includes duplicate-source detection, sequential evidence revision, non-diagnostic evidence, conflict-aware unresolved states, bounded partial-support answers, fake-precision resistance, high-VOI action selection, stop-rule behavior, confidence-delta auditing, multi-answer semantic clustering, source reliability vs relevance, and over-reasoning termination.
+
 For `semantic-argument-microscope`, the minimum semantic regression set additionally includes definition mismatch, hidden warrant, QUD substitution, pragmatic context flip, presupposition-vs-assertion, defeater update, stance freedom, claim-strength calibration, generation/inference asymmetry, scheme ambiguity, critical-question relevance, burden handling, steelman fidelity, causal-direction checks, intervention/counterfactual separation, causal-graph coherence, temporary-grant/common-ground integrity, answer-space/criterion-lock detection, reasoning-alignment preservation, provenance relevance, rebuttal-target comprehension, and cross-domain structural transfer.
 
-For `multi-agent-deliberation`, material judge validation additionally includes order swap, verbosity normalization, bandwagon resistance, minority-correct retention, early-consensus resistance, follow-up persuasion checks, blind-label invariance, and separation from debater self-evaluation.
+For `multi-agent-deliberation`, material judge validation additionally includes order swap, verbosity normalization, bandwagon resistance, minority-correct retention, early-consensus resistance, follow-up persuasion checks, blind-label invariance, separation from debater self-evaluation, and preservation of material judge disagreement.
 
 ## Portability Boundary
 

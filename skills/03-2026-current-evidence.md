@@ -43,7 +43,7 @@ Use current SDK primitives rather than old Swarm-era assumptions.
 ## OpenClaw
 https://github.com/openclaw/openclaw
 
-Current 2026-08-18 commit activity includes changes touching memory bounds/reload, state/session claims, skills GitHub identity, write-scoped worktrees, terminal delivery outcomes, and Claude subagent event isolation.
+Current 2026-08-18 commit activity included changes touching memory bounds/reload, state/session claims, skills GitHub identity, write-scoped worktrees, terminal delivery outcomes, and Claude subagent event isolation.
 
 Consequence: pin exact version/commit before applying configs.
 
@@ -58,7 +58,79 @@ Consequence: pin exact version/commit before applying configs.
 - Demystifying Multi-Agent Debate: The Role of Confidence and Diversity (Findings of ACL 2026): https://aclanthology.org/2026.findings-acl.1694/
 - Free-MAD: Consensus-Free Multi-Agent Debate (Findings of ACL 2026): https://aclanthology.org/2026.findings-acl.1600/
 
-Synthesis: debate can help, but raw agent count or debate duration is not the objective. Diversity, topology, selective initiation/communication, calibrated confidence, cost, evidence-weighted adjudication, minority preservation, and resistance to persuasive-but-wrong arguments determine value.
+Synthesis: debate can help, but raw agent count or debate duration is not the objective. Diversity, topology, selective initiation/communication, calibrated confidence, cost, anti-sycophancy, evidence-weighted adjudication, minority preservation, and resistance to persuasive-but-wrong arguments determine value.
+
+## BayesBench — sequential evidence accumulation, 2026-06-29
+https://arxiv.org/abs/2606.30850
+
+Evidence: evaluates multi-turn Bayesian estimation/prediction and latent-framed prediction across multiple LLMs. Scaling improves latent inference and evidence accumulation, but the improvement does not reliably transfer to downstream prediction.
+
+Consequence: do not score only the final answer. Track belief trajectory, evidence delta, and whether updated latent beliefs actually change the downstream forecast coherently.
+
+## Evidence Sufficiency Benchmark — answer/abstention calibration, 2026
+https://doi.org/10.32604/cmc.2026.086343
+
+Evidence: controlled evidence conditions from full support through partial, irrelevant, absent, and conflicting evidence. Evaluated models frequently over-answer under conflicting evidence; recognizing conflict is harder than recognizing no context.
+
+Consequence: add an evidence-sufficiency gate before definitive answering. `CONFLICT_AWARE_ANSWERING` is insufficient when the decisive contradiction remains unresolved.
+
+## AbstentionBench — reasoning models and unanswerable questions, 2025
+https://arxiv.org/abs/2506.09038
+https://github.com/facebookresearch/AbstentionBench
+
+Evidence: broad abstention benchmark across multiple unanswerable/underspecified scenarios; reports that reasoning-oriented tuning/behavior does not automatically improve abstention and can worsen over-answering.
+
+Consequence: treat abstention/selective answering as a separate capability from raw reasoning accuracy.
+
+## RMCB — confidence estimation for reasoning models, EACL 2026
+https://aclanthology.org/2026.eacl-long.78/
+
+Evidence: large benchmark across high-stakes and reasoning datasets. Reports a persistent trade-off between discrimination and calibration; no single confidence-estimation method dominates both.
+
+Consequence: `confidence estimator` must not be treated as a universal scalar oracle. Evaluate calibration and discrimination separately on the target task class.
+
+## Human's Last Exam / expert-level academic benchmark, Nature 2025/2026
+https://www.nature.com/articles/s41586-025-09962-4
+
+Evidence: frontier models remain poorly calibrated on difficult expert-level questions and can answer incorrectly with high confidence. The paper also reports diminishing and eventually reversing returns at very large reasoning-token budgets in its analyzed setup.
+
+Consequence: `MORE_REASONING != BETTER_CALIBRATION`. Use information-gain/VOI stop rules rather than unconditional reasoning-token escalation.
+
+## Calibrating LLMs with sample consistency, AAAI 2025
+https://ojs.aaai.org/index.php/AAAI/article/view/34120
+
+Evidence: confidence can be estimated from distributions of multiple sampled generations, but sample consistency must be interpreted carefully.
+
+Consequence: cluster semantically equivalent answers and account for tasks with multiple valid answers; `STRING_DISAGREEMENT != EPISTEMIC_DISAGREEMENT`.
+
+## Multiple-correct-answer calibration, 2026
+https://arxiv.org/abs/2602.07842
+
+Evidence: common training-free confidence methods can become miscalibrated when multiple answers are valid; semantic aggregation improves this setting in the reported experiments.
+
+Consequence: answer diversity is not automatically uncertainty. Confidence aggregation should operate over semantic hypotheses, not raw strings.
+
+## Conflicting evidence in RAG — COLM 2025
+https://openreview.net/pdf?id=z1MHB2m3V9
+
+Evidence: RAMDocs studies ambiguity, misinformation, noise, and conflicting retrieved evidence jointly; multi-agent reconciliation can help in the studied setup.
+
+Consequence: retrieved documents need conflict/noise classification before aggregation. Multi-agent debate is useful only when evidence roles are distinct and adjudication remains evidence-weighted.
+
+## Source reliability under conflicting evidence — IJCAI/EMNLP 2025
+https://www.ijcai.org/proceedings/2025/1073
+https://aclanthology.org/2025.emnlp-main.1738/
+
+Evidence: RAG reliability drops when conflicting sources differ in credibility; source-reliability-aware methods improve conflict handling in reported experiments.
+
+Consequence: relevance alone is insufficient. Track source reliability, provenance, and independence before evidence aggregation.
+
+## Multi-document RAG load — Findings of EMNLP 2025
+https://aclanthology.org/2025.findings-emnlp.1064/
+
+Evidence: increasing the number of documents can degrade performance even when total context length and relevant-information position are controlled.
+
+Consequence: more retrieved documents are not automatically better. De-duplicate and select by decision value rather than maximizing document count.
 
 ## Semantic argument / dialogue-state evidence
 
@@ -151,9 +223,13 @@ Evidence: judges can remain vulnerable to systematic presentation biases even wh
 
 Consequence: a judge-generated rationale or test is not sufficient proof of judge reliability. Protect evaluation with structured criteria, independent evidence when available, and explicit judge metadata.
 
-## Semantic dialogue-state synthesis
+## 2026 synthesis
 
-The canonical semantic owner remains `semantic-argument-microscope`. Its core handles literal/pragmatic boundaries, warrants, QUD/crux, defeaters, argument relations, stance freedom, and epistemic-vs-rhetorical separation. Progressive references extend it only when needed:
+The current evidence supports a layered reasoning design:
+
+`evidence sufficiency/provenance -> semantic/QUD normalization -> dialogue-state/common-ground repair when multi-turn commitments matter -> causal/abductive model when needed -> competing hypotheses -> discriminating test -> selective multi-agent deliberation -> bias-resistant judge -> VOI stop rule -> calibrated conclusion`
+
+The canonical semantic owner remains `semantic-argument-microscope`. Progressive references extend it only when needed:
 
 - `ARGUMENT_SCHEMES.md` — inferential scheme + decision-critical question selection;
 - `CAUSAL_ABDUCTIVE_REASONING.md` — causal/explanatory/interventional/counterfactual reasoning;
@@ -161,4 +237,6 @@ The canonical semantic owner remains `semantic-argument-microscope`. Its core ha
 
 Behavioral evaluation is also evidence-gated. `semantic-dialogue-state-eval-protocol.md` plus `run_semantic_dialogue_state_eval.py` freeze four comparable arms, prompt/instruction hashes, response identities, blind judge tasks, dimension-level scoring, blocking errors, same-model-judge metadata, and treatment regressions. The harness intentionally does not make provider calls by itself.
 
-The important boundary is architectural as well as epistemic: prefer one semantic owner and demand-loaded references rather than multiple overlapping skills. Static fixtures, CI asset validation, and harness self-tests remain packaging/execution-harness evidence only; target-model behavior, independent judge validity, and host-live routing require separate execution evidence.
+The repeated research signal is negative as well as positive: more tokens, more sources, more agents, more rounds, and more judges do **not** monotonically improve reliability. Optimize for independent evidence, discrimination, calibration, structural comprehension, decision value, and auditable state changes rather than visible reasoning volume.
+
+Static fixtures, CI asset validation, and harness self-tests remain packaging/execution-harness evidence only; target-model behavior, independent judge validity, and host-live routing require separate execution evidence.
