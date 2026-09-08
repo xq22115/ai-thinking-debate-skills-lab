@@ -16,7 +16,9 @@ PROTECTION = HERE / "semantic-dialogue-state-protection-fixtures.json"
 GENERALIZATION = HERE / "semantic-dialogue-state-generalization-holdout.json"
 RUBRIC = HERE / "semantic-dialogue-state-scoring-rubric.md"
 PROTOCOL = HERE / "semantic-dialogue-state-eval-protocol.md"
+EXECUTION_PROTOCOL = HERE / "semantic-dialogue-state-execution-isolation.md"
 HARNESS = HERE / "run_semantic_dialogue_state_eval.py"
+EXECUTION_VALIDATOR = HERE / "validate_semantic_dialogue_state_execution.py"
 PROMOTION_GATE = HERE / "check_semantic_dialogue_state_promotion.py"
 REFERENCE = ROOT / "skills" / "semantic-argument-microscope" / "DIALOGUE_STATE.md"
 EXPECTED_TARGET_CASES = 8
@@ -91,7 +93,9 @@ def main() -> None:
         GENERALIZATION,
         RUBRIC,
         PROTOCOL,
+        EXECUTION_PROTOCOL,
         HARNESS,
+        EXECUTION_VALIDATOR,
         PROMOTION_GATE,
         REFERENCE,
     ):
@@ -169,6 +173,20 @@ def main() -> None:
     )
 
     require_markers(
+        EXECUTION_PROTOCOL,
+        [
+            "Strict comparison unit",
+            "Forbidden pre-response exposure",
+            "Required execution receipt per request",
+            "INVALID_FOR_COMPARISON",
+            "Current-chat contamination rule",
+            "CLEAN_EXECUTION_RECEIPT != GOOD_ANSWER",
+            "TARGET_MODEL_RUN != INDEPENDENT_JUDGED",
+        ],
+        "execution isolation protocol",
+    )
+
+    require_markers(
         HARNESS,
         [
             '"direct"',
@@ -187,6 +205,21 @@ def main() -> None:
             "self_test",
         ],
         "harness",
+    )
+
+    require_markers(
+        EXECUTION_VALIDATOR,
+        [
+            "EXPECTED_ARM_EXPOSURE",
+            "fixture_answer_key_exposed_before_response",
+            "cross_arm_output_exposed_before_response",
+            "session_context_reused",
+            "output_sha256_mismatch",
+            "CLEAN_COMPLETE",
+            "PARTIAL_OR_INVALID",
+            "self_test",
+        ],
+        "execution receipt validator",
     )
 
     require_markers(
@@ -210,8 +243,8 @@ def main() -> None:
         f"{len(generalization_cases)} generalization cases)"
     )
     print(
-        "harness packaging: PASS — reusable fixture/arm execution + multi-judge disagreement + "
-        "protection veto + combined promotion pre-gate present"
+        "harness packaging: PASS — reusable fixture/arm execution + isolated execution receipts + "
+        "multi-judge disagreement + protection veto + combined promotion pre-gate present"
     )
     print(
         "behavioral status: NOT EXECUTED — real target-model, protection/generalization, "
