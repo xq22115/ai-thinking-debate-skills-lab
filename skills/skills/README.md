@@ -7,7 +7,7 @@ The skill folder shape follows the current Agent Skills semantic pattern: each p
 ## RC1 Core Skills
 
 1. `evidence-gap-research` — claim/evidence closure and counterevidence search.
-2. `semantic-argument-microscope` — literal/pragmatic boundary, implicit warrants, presuppositions, QUD/crux control, defeaters, burden/frame shifts, rhetorical-vs-epistemic separation, plus on-demand argument-scheme / critical-question, causal / abductive, and multi-turn dialogue-state/common-ground analysis before debate. (`0.2.0-rc1` core; progressive reasoning references added 2026-09-08)
+2. `semantic-argument-microscope` — literal/pragmatic boundary, implicit warrants, presuppositions, QUD/crux control, defeaters, burden/frame shifts, rhetorical-vs-epistemic separation, plus on-demand argument-scheme / critical-question, causal / abductive, and multi-turn dialogue-state/common-ground analysis before debate. (`0.3.0-rc1`; progressive reasoning references added 2026-09-08)
 3. `competing-hypotheses` — materially different explanations and discriminating tests.
 4. `root-cause-clustering` — mechanism-level repair instead of symptom patching.
 5. `completion-gate` — prevents false `done` / `verified` / `deployed` claims; exact-revision and infrastructure-state aware. (`0.1.1-rc1`)
