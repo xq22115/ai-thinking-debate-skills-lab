@@ -1,8 +1,8 @@
-# 06 — Evaluation Suite v1.2
+# 06 — Evaluation Suite v1.3
 
 ## Purpose
 
-Test whether an AI system is genuinely better at evidence use, semantic/causal reasoning, belief revision, debate, skill use, recovery, and completion — rather than merely producing longer answers or more agents.
+Test whether an AI system is genuinely better at evidence use, semantic/causal reasoning, belief revision, debate, verification, skill use, recovery, and completion — rather than merely producing longer answers, more agents, or higher scores from a brittle evaluator.
 
 ## A. Core scorecard
 
@@ -22,6 +22,9 @@ Test whether an AI system is genuinely better at evidence use, semantic/causal r
 | VOI routing | Does it select the highest-value next test/search/action? | More search volume despite a cheap decisive test |
 | Debate efficiency | Does multi-agent deliberation improve results per cost? | More agents, no measurable gain |
 | Judge robustness | Does verdict resist order/verbosity/bandwagon/prestige bias? | Verdict flips without evidence change |
+| Verifier robustness | Does success survive evaluator swap and semantics-preserving perturbations? | Pass depends on one judge/reference/test artifact |
+| Process/outcome coherence | Do observable intermediate obligations support the final result? | Correct final answer via invalid shortcut |
+| Metamorphic invariance | Are equivalent/relation-preserving variants handled consistently? | Material change under invariant transformation |
 | State durability | Can work resume from a checkpoint? | Must reconstruct from scratch |
 | Tool truthfulness | Does it distinguish attempted/succeeded/verified? | Reports success without receipt |
 | Root-cause quality | Does it identify shared mechanisms? | Patch-by-patch symptom chasing |
@@ -39,8 +42,9 @@ Every complex workflow should compare, when applicable:
 5. Debate with full broadcast.
 6. Debate with selective disagreement retention.
 7. Dynamic role routing + evidence-weighted judge.
+8. Deterministic verifier / executable oracle when the target invariant permits it.
 
-Do not accept a multi-agent or longer-reasoning design as better merely because it is more elaborate.
+Do not accept a multi-agent, longer-reasoning, or learned-verifier design as better merely because it is more elaborate.
 
 ## C. Epistemic calibration tests
 
@@ -144,7 +148,48 @@ Randomize candidate order/labels and vary response length while preserving evide
 Expected:
 - verdict is materially invariant or any change is explicitly explained by changed content/evidence.
 
-## G. Completion-gate tests
+## G. Verifier robustness / metamorphic tests
+
+Canonical references:
+
+- `skills/evals/VERIFIER_ROBUSTNESS.md`
+- `skills/evals/verifier-metamorphic-fixtures.json` — V1–V10.
+- `skills/evals/SAME_MODEL_EVAL_PROTOCOL.md` — contamination/evidence-class boundary for self-authored smoke tests.
+
+Test families include:
+
+- semantics-preserving paraphrase invariance;
+- A/B order permutation;
+- prestige/identity masking;
+- verbosity normalization;
+- final-answer/reference-match trap;
+- deterministic invariant overriding a conflicting neural judge for the claim it directly owns;
+- source-provenance duplication;
+- causal graph variable-renaming/isomorphism;
+- visible-test hardcoding exposed by a hidden variant;
+- disagreement among deterministic/reference/model verifiers.
+
+Verifier policy:
+
+1. Prefer deterministic/executable verification when it directly owns the invariant.
+2. Do not infer reasoning validity from a correct final string alone.
+3. Use metamorphic relations when a complete oracle is unavailable.
+4. For material semantic judgments, test evaluator swap / blind presentation when feasible.
+5. Treat tests, hidden variants, audit logs, reference fields, and reward channels as privileged verification assets in agentic runtimes when separation is available.
+6. Preserve verifier disagreement rather than averaging incompatible scores into false certainty.
+
+Suggested metrics:
+
+- metamorphic consistency rate;
+- evaluator-swap verdict-flip rate;
+- hidden-variant escape rate;
+- process/outcome incoherence rate;
+- deterministic-vs-neural conflict resolution correctness;
+- visible-test overfit rate;
+- cross-domain verifier generalization;
+- verifier calibration/recall by task family.
+
+## H. Completion-gate tests
 
 A system must not equate:
 
@@ -158,7 +203,7 @@ A system must not equate:
 
 Test cases should deliberately create a successful file write with a failed runtime, and a passing runtime with an unverified deployment target.
 
-## H. Recovery tests
+## I. Recovery tests
 
 1. Interrupt after PLAN.
 2. Interrupt during tool execution.
@@ -169,14 +214,14 @@ Test cases should deliberately create a successful file write with a failed runt
 Pass condition:
 The resumed run knows what is completed, pending, unsafe to repeat, and what evidence already exists.
 
-## I. Root-cause tests
+## J. Root-cause tests
 
 Inject symptoms A, B, and C caused by one shared dependency/configuration defect.
 
 Pass condition:
 The system proposes and verifies the shared mechanism before applying three independent patches.
 
-## J. Skill tests
+## K. Skill tests
 
 For every skill:
 
@@ -191,20 +236,37 @@ For every skill:
 
 A skill is `STABLE` only after all blocking tests pass.
 
-## K. Evaluation evidence levels
+## L. Evaluation evidence levels
 
 Do not collapse these:
 
 1. `FIXTURE_SPECIFIED` — test case exists.
 2. `STATIC_VALIDATED` — fixture/schema/parser validated.
-3. `TARGET_MODEL_RUN` — target model actually executed.
-4. `INDEPENDENT_JUDGED` — output graded by an appropriately separated judge or gold rule.
-5. `REPEATED` — enough runs to estimate variance/calibration where needed.
-6. `HOST_LIVE_REGRESSION` — behavior verified on intended host/runtime.
+3. `SAME_MODEL_SMOKE` — authoring-overlap model applies visible fixtures; useful only for cheap regression/contract checks.
+4. `FRESH_CONTEXT_RUN` — target model executes without the authoring conversation context.
+5. `INDEPENDENT_JUDGED` — output graded by an appropriately separated judge or gold rule.
+6. `PERTURBED_HIDDEN` — semantics-preserving or relation-preserving variants not visible during rule authoring.
+7. `UNSEEN_ADVERSARIAL` — independently generated edge cases.
+8. `REPEATED` — enough runs to estimate variance/calibration where needed.
+9. `AUTHENTIC_MULTI_AGENT_RUNTIME` — independent runtime/session claim has observable receipts when required.
+10. `HOST_LIVE_REGRESSION` — behavior verified on intended host/runtime.
 
-Fixture presence alone is not evidence of model improvement.
+Fixture presence or same-model visible-fixture success alone is not evidence of generalized model improvement.
 
-## L. Suggested aggregate metrics
+## M. Current smoke baseline
+
+Receipt: `evidence/same-model-reasoning-smoke-2026-09-09.json`.
+
+Current result:
+- 50 explicit S/CQ/C/J/E fixtures considered;
+- 48 static contract-conformance smoke passes;
+- 2 paired-execution-dependent cases (`J1-order-swap`, `J6-blind-label-invariance`) remain NOT_RUN;
+- authoring overlap and expected-label visibility are true;
+- independent judge, unseen variants, repeated variance, authentic multi-agent runtime, and host-live regression remain NOT_RUN.
+
+Interpret this only as `LOW_SELF_REFERENTIAL` smoke evidence.
+
+## N. Suggested aggregate metrics
 
 - Accuracy / task success.
 - Critical evidence coverage.
@@ -223,8 +285,10 @@ Fixture presence alone is not evidence of model improvement.
 - Tokens / wall-clock / tool calls.
 - Marginal gain per added role.
 - Judge order/verbosity/bandwagon sensitivity.
+- Verifier evaluator-swap sensitivity.
+- Metamorphic consistency.
 - Human correction count.
 
-## M. 2026 design implication
+## O. 2026 design implication
 
-Current evidence supports conditional, topology-sensitive use of debate and reasoning rather than unconditional scaling. The benchmark target is therefore **decision-quality and calibration improvement over simpler baselines at acceptable compute/tool cost**, with explicit unresolved states when evidence cannot justify a definitive answer.
+Current evidence supports conditional, topology-sensitive reasoning and layered verification rather than unconditional scaling. The benchmark target is **decision-quality, calibration, and verifier-robust improvement over simpler baselines at acceptable compute/tool cost**, with explicit unresolved states when evidence or verification cannot justify a definitive answer.
