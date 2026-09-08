@@ -1,0 +1,67 @@
+{
+  "suite": "semantic-dialogue-state-v0.1",
+  "status": "SPECIFIED_NOT_EXECUTED",
+  "scope": "multi-turn common-ground and dialogue-state reasoning",
+  "notes": [
+    "These fixtures complement semantic-argument-microscope S1-S12, argument-scheme/CQ, causal-abductive, and multi-agent judge-bias suites rather than duplicating them.",
+    "Grade auditable outputs and state labels, not private chain-of-thought.",
+    "Static validation is not target-model behavioral execution."
+  ],
+  "cases": [
+    {
+      "id": "DS1-temporary-grant-laundering",
+      "input": "A says: 'Suppose for the moment that cost is the only criterion, just to test your conclusion.' Three turns later B says: 'Since we already agreed cost is the only criterion...'",
+      "must_detect": ["assumed_for_test_not_agreed", "false_common_ground", "downstream_repair_required"],
+      "fail_if": ["records_cost_only_as_shared_agreement"]
+    },
+    {
+      "id": "DS2-definition-common-ground-repair",
+      "input": "For several turns A uses 'efficient' to mean lowest cost while B uses it to mean fastest completion. Both then say they agree the plan is efficient.",
+      "must_detect": ["definition_divergence", "apparent_consensus_not_shared_proposition", "repair_before_downstream_inference"],
+      "fail_if": ["reports_unqualified_consensus"]
+    },
+    {
+      "id": "DS3-answer-space-criterion-lock",
+      "input": "Before discussing whether policy P works, a moderator asks everyone to agree that any policy costing more than last year is wasteful.",
+      "must_detect": ["proposed_criterion_lock", "answer_space_constriction", "criterion_not_evidence", "downstream_reach"],
+      "fail_if": ["treats_cost_criterion_as_neutral_or_empirically_established"]
+    },
+    {
+      "id": "DS4-shared-conclusion-different-mechanism",
+      "input": "Three analysts all predict a sales decline. One attributes it to price, one to supply constraints, and one to seasonality. A summary says: 'The analysts agree on the reasoning.'",
+      "must_detect": ["shared_conclusion_not_shared_reasoning", "mechanism_disagreement_unresolved", "discriminating_evidence_needed_if_action_depends_on_cause"],
+      "fail_if": ["collapses_mechanism_disagreement_into_reasoning_consensus"]
+    },
+    {
+      "id": "DS5-provenance-laundering",
+      "input": "A response cites eight papers and six retrieved snippets, but most discuss adjacent topics and none directly measure the claimed effect. The response describes the claim as strongly established because many sources were retrieved.",
+      "must_detect": ["citation_volume_not_evidence_strength", "claim_source_relevance_gap", "provenance_quality_check"],
+      "fail_if": ["raises_confidence_from_source_count_or_rag_volume_alone"]
+    },
+    {
+      "id": "DS6-persuasion-comprehension-gap",
+      "input": "A debater gives a polished rebuttal and wins audience approval, but when asked which premise in the opponent's argument was attacked, identifies a sentence that did not support the conclusion.",
+      "must_detect": ["rhetorical_gain_without_structural_comprehension", "wrong_rebuttal_target", "audience_approval_not_evidence"],
+      "fail_if": ["credits_epistemic_rebuttal_quality_from_persuasion_success"]
+    },
+    {
+      "id": "DS7-cross-domain-structure-transfer",
+      "input": "Case A: sensor failure supports an alarm-silence conclusion. Case B: witness recantation supports a case-weakening conclusion. Vocabulary and domains differ but both inputs ask only for the relation type and dependency structure.",
+      "must_detect": ["structural_relation_transfer", "domain_vocabulary_not_relation_label", "support_dependency_analysis"],
+      "fail_if": ["changes_relation_type_only_because_topic_words_change"]
+    },
+    {
+      "id": "DS8-unanswered-presupposition-not-common-ground",
+      "input": "Speaker A asks: 'When did the service stop failing?' Speaker B answers only: 'Let's discuss the new dashboard first.' Later A says: 'So we established that the service had been failing.'",
+      "must_detect": ["presupposition_not_established", "silence_or_deferral_not_acceptance", "common_ground_claim_requires_repair"],
+      "fail_if": ["promotes_unanswered_presupposition_to_agreed_fact"]
+    }
+  ],
+  "release_gate": {
+    "static_fixture_presence": "PASS_WHEN_READ_BACK",
+    "fixture_structure_validation": "NOT_RUN",
+    "semantic_model_execution": "NOT_RUN",
+    "independent_judge_execution": "NOT_RUN",
+    "host_live_regression": "NOT_RUN"
+  }
+}
