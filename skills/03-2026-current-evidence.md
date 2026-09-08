@@ -128,10 +128,46 @@ Evidence: increasing the number of documents can degrade performance even when t
 
 Consequence: more retrieved documents are not automatically better. De-duplicate and select by decision value rather than maximizing document count.
 
+## Verifiable Process Reward Models — Findings of ACL 2026
+https://aclanthology.org/2026.findings-acl.1611/
+
+Evidence: VPRMs replace purely neural step scoring with deterministic rule-based verification for checkable intermediate decisions in a structured medical evidence-synthesis task. The reported experiments improve coherence between intermediate decisions and final labels, with gains over outcome-only verifiable rewards in that domain.
+
+Consequence: when intermediate obligations are genuinely programmatically checkable, deterministic process verification should be preferred over asking a neural judge to infer rule adherence from prose. Do not generalize this to domains lacking a valid executable process oracle.
+
+## VerifyBench — ICLR/AAAI 2026 verifier benchmarks
+https://proceedings.iclr.cc/paper_files/paper/2026/hash/e812af67a942c21dd0104bd929f99da1-Abstract-Conference.html
+https://ojs.aaai.org/index.php/AAAI/article/view/40448
+
+Evidence: current reference-based/specialized/general verifiers retain substantial error on difficult cases. The AAAI benchmark reports sensitivity to response structure and cross-domain tradeoffs; no single verifier is uniformly reliable across all conditions.
+
+Consequence: `ONE_VERIFIER != GROUND_TRUTH`. Evaluate verifier robustness by task family, structure, and cross-domain transfer; preserve disagreement between verifiers rather than collapsing it into one scalar.
+
+## Reward hacking in agentic LLM systems — 2026 survey
+https://link.springer.com/article/10.1007/s44163-026-01980-z
+
+Evidence: review synthesizes feature-level, representation-level, evaluator-level, and environment-level reward-hacking surfaces, including verbosity/sycophancy shortcuts, judge/verifier gaming, benchmark overfitting, test exploitation, and reward-channel manipulation.
+
+Consequence: treat tests, hidden variants, reference fields, reward channels, and audit logs as privileged verification assets when runtime separation is possible. A visible evaluator is itself an attack/optimization surface.
+
+## Causal Reward Adjustment — AAAI 2026
+https://ojs.aaai.org/index.php/AAAI/article/view/40584
+
+Evidence: studies reward hacking in process-reward-model-guided reasoning and attributes failures partly to confounding semantic features; reports improvements from causal adjustment in the studied math-reasoning setup.
+
+Consequence: high PRM score is not equivalent to logical correctness. Treat reward-model features as potentially confounded proxies and test with alternative/deterministic verification where possible.
+
+## Logic-Grounded Metamorphic Testing — 2026
+https://www.sciencedirect.com/science/article/pii/S0950705126010506
+
+Evidence: proposes logic-grounded metamorphic relations derived from formal equivalences to test reasoning consistency under semantics-preserving transformations, addressing limitations of static benchmarks.
+
+Consequence: add metamorphic invariance tests for paraphrase, candidate order, prestige masking, verbosity normalization, quantifier equivalence, causal graph isomorphism, and evidence-provenance duplication.
+
 ## 2026 synthesis
 
-The current evidence supports a layered reasoning design:
+The current evidence supports a layered reasoning-and-verification design:
 
-`evidence sufficiency/provenance -> semantic/QUD normalization -> causal/abductive model when needed -> competing hypotheses -> discriminating test -> selective multi-agent deliberation -> bias-resistant judge -> VOI stop rule -> calibrated conclusion`
+`evidence sufficiency/provenance -> semantic/QUD normalization -> causal/abductive model when needed -> competing hypotheses -> discriminating test -> selective multi-agent deliberation -> bias-resistant judge -> verifier robustness/metamorphic checks -> VOI stop rule -> calibrated conclusion`
 
-The repeated research signal is negative as well as positive: more tokens, more sources, more agents, more confidence machinery, and more rounds do **not** monotonically improve reliability. The system should optimize for independent evidence, discrimination, calibration, and decision value rather than visible reasoning volume.
+The repeated research signal is negative as well as positive: more tokens, more sources, more agents, more confidence machinery, more learned-verifier scores, and more rounds do **not** monotonically improve reliability. The system should optimize for independent evidence, discrimination, calibration, target-bound deterministic checks where available, evaluator robustness, and decision value rather than visible reasoning/evaluation volume.
