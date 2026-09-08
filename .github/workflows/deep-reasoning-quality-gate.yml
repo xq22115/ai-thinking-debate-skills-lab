@@ -44,7 +44,8 @@ jobs:
             control-plane/scripts/run_quality_bound_workflow.py \
             control-plane/scripts/validate_quality_runtime_binding.py \
             control-plane/scripts/install_antigravity_global_goal_lock.py \
-            control-plane/scripts/install_codex_global_quality.py
+            control-plane/scripts/install_codex_global_quality.py \
+            skills/skills/deep-semantic-debate-reasoning/evals/validate_cases.py
       - name: Validate machine-readable quality contracts
         run: |
           python -m json.tool .agents/hooks.json >/dev/null
@@ -66,6 +67,9 @@ jobs:
           python control-plane/scripts/validate_task_goal_intelligence_v31.py
           python control-plane/scripts/validate_global_policy_durability.py
           python control-plane/scripts/validate_quality_runtime_binding.py
+      - name: Validate deep-semantic behavioral fixture assets
+        run: |
+          python skills/skills/deep-semantic-debate-reasoning/evals/validate_cases.py
       - name: Run deep-reasoning and lifecycle regression tests
         working-directory: control-plane
         run: |

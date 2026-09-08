@@ -60,11 +60,12 @@ The runtime package is deliberately split:
 
 | Skill | Specialist use |
 |---|---|
+| `deep-semantic-debate-reasoning` | layered utterance meaning, argument graphs, hinge-premise detection, burden/frame analysis, cross-examination, and persuasion-vs-truth separation when discourse structure can change the answer |
 | `capability-forensics` | model-vs-harness-vs-tool-vs-permission/session/entitlement/environment bottleneck diagnosis |
 | `mcp-surface-engineering` | dynamic tool discovery, schema/version drift, namespace collision, entitlement/context pressure and tool-poisoning controls |
 | `agent-runtime-forensics` | model/tool/process/file/network/artifact/postcondition causal evidence and replay |
 
-These specialists are eligible for implicit invocation only after the routing eligibility layer finds material diagnostic signals. A topic noun such as “MCP” or “runtime” is insufficient by itself.
+These specialists are eligible for implicit invocation only after the routing eligibility layer finds material diagnostic signals. A topic noun such as “MCP”, “debate”, or “runtime” is insufficient by itself.
 
 ### Explicit-only skills
 
@@ -77,6 +78,7 @@ These specialists are eligible for implicit invocation only after the routing el
 ## Canonical combination patterns
 
 - research-heavy → `task-goal-intelligence` + `executive-research` + `evidence-watchdog`
+- dense/ambiguous argument → `task-goal-intelligence` + `deep-semantic-debate-reasoning` + `evidence-watchdog`
 - capability bottleneck → `task-goal-intelligence` + `capability-forensics` + `evidence-watchdog`
 - MCP/tool-surface pressure → `task-goal-intelligence` + `mcp-surface-engineering` + `evidence-watchdog`
 - runtime-effect mismatch → `task-goal-intelligence` + `agent-runtime-forensics` + `evidence-watchdog`
@@ -98,6 +100,7 @@ The following specialists remain useful as direct references or standalone skill
 - `recoverable-state`
 - `compatibility-audit`
 - `multi-agent-deliberation`
+- `deep-semantic-debate-reasoning`
 - `capability-challenge`
 - `durable-agent-control-plane`
 - canonical full-detail `task-goal-intelligence` under `skills/skills/`
