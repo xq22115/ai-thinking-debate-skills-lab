@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
-"""Provider-neutral harness for semantic dialogue-state behavioral evaluation.
+"""Provider-neutral semantic dialogue-state behavioral evaluation harness.
 
-This script does not call any model provider. It prepares reproducible requests,
-validates externally-recorded responses, creates blinded judge tasks, validates
-structured judgments, and summarizes arm-level behavioral results.
-
-Multiple judges may score the same candidate. Aggregation is deliberately
-case-first: judgments are aggregated inside each candidate/task before arm-level
-statistics are computed, so cases with more judges do not receive more weight.
+The harness does not call a model provider. It prepares reproducible requests,
+validates externally recorded candidate outputs, creates blinded judge tasks,
+accepts one or more judgments per candidate, preserves judge disagreement, and
+summarizes case-first arm-level results.
 """
 
 from __future__ import annotations
@@ -63,6 +60,10 @@ def sha256_text(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
+def stable_id(*parts: str) -> str:
+    return hashlib.sha256("\x1f".join(parts).encode("utf-8")).hexdigest()[:20]
+
+
 def read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
@@ -75,28 +76,40 @@ def dump_json(path: Path, value: Any) -> None:
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
-def dump_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
-    with path.open("w", encoding="utf-8") as handle:
-        for row in rows:
-            handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
-
-
 def load_jsonl(path: Path) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     with path.open("r", encoding="utf-8") as handle:
         for line_no, line in enumerate(handle, 1):
-            stripped = line.strip()
-            if not stripped:
+            line = line.strip()
+            if not line:
                 continue
-            value = json.loads(stripped)
+            value = json.loads(line)
             if not isinstance(value, dict):
                 raise ValueError(f"{path}:{line_no}: expected JSON object")
             rows.append(value)
     return rows
 
 
-def stable_id(*parts: str) -> str:
-    return hashlib.sha256("\x1f".join(parts).encode("utf-8")).hexdigest()[:20]
+def dump_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
+    with path.open("w", encoding="utf-8") as handle:
+        for row in rows:
+            handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+
+
+def index_unique(rows: list[dict[str, Any]], key: str, label: str) -> dict[str, dict[str, Any]]:
+    out: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        value = row.get(key)
+        if not isinstance(value, str) or not value:
+            raise ValueError(f"{label}: missing non-empty {key}")
+        if value in out:
+            raise ValueError(f"{label}: duplicate {key}={value}")
+        out[value] = row
+    return out
+
+
+def mean(values: list[float]) -> float | None:
+    return round(sum(values) / len(values), 4) if values else None
 
 
 def arm_bundle_text(arm: str) -> str:
@@ -122,36 +135,41 @@ def prepare(run_dir: Path, repo_ref: str, model_id: str, provider: str, seed: in
     if not cases:
         raise ValueError("fixture suite has no cases")
 
-    run_id = f"ds-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}-{stable_id(repo_ref, model_id, str(seed))[:8]}"
+    run_id = (
+        f"ds-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}-"
+        f"{stable_id(repo_ref, model_id, str(seed))[:8]}"
+    )
+
     bundles: dict[str, dict[str, Any]] = {}
     for arm in ARMS:
         text = arm_bundle_text(arm)
+        sources: list[str] = []
+        if arm not in {"direct", "generic-careful"}:
+            sources.append(str(CORE_SKILL.relative_to(ROOT)))
+        if arm == "microscope-dialogue-state":
+            sources.append(str(DIALOGUE_STATE.relative_to(ROOT)))
         bundles[arm] = {
             "arm": arm,
             "sha256": sha256_text(text),
             "instruction_text": text,
-            "source_paths": (
-                []
-                if arm in {"direct", "generic-careful"}
-                else [str(CORE_SKILL.relative_to(ROOT))]
-                + ([str(DIALOGUE_STATE.relative_to(ROOT))] if arm == "microscope-dialogue-state" else [])
-            ),
+            "source_paths": sources,
         }
 
     requests: list[dict[str, Any]] = []
     for case in cases:
-        case_id = case["id"]
         for arm in ARMS:
-            request_id = stable_id(run_id, case_id, arm)
+            request_id = stable_id(run_id, case["id"], arm)
             requests.append(
                 {
                     "request_id": request_id,
                     "run_id": run_id,
-                    "case_id": case_id,
+                    "case_id": case["id"],
                     "arm": arm,
                     "bundle_sha256": bundles[arm]["sha256"],
                     "input": case["input"],
-                    "required_output": "concise auditable reasoning summary; no private chain-of-thought required",
+                    "required_output": (
+                        "concise auditable reasoning summary; no private chain-of-thought required"
+                    ),
                 }
             )
 
@@ -179,18 +197,6 @@ def prepare(run_dir: Path, repo_ref: str, model_id: str, provider: str, seed: in
     dump_json(run_dir / "bundles.json", bundles)
     dump_jsonl(run_dir / "requests.jsonl", requests)
     print(f"prepared {len(requests)} requests across {len(cases)} cases in {run_dir}")
-
-
-def index_unique(rows: list[dict[str, Any]], key: str, label: str) -> dict[str, dict[str, Any]]:
-    result: dict[str, dict[str, Any]] = {}
-    for row in rows:
-        value = row.get(key)
-        if not isinstance(value, str) or not value:
-            raise ValueError(f"{label}: missing non-empty {key}")
-        if value in result:
-            raise ValueError(f"{label}: duplicate {key}={value}")
-        result[value] = row
-    return result
 
 
 def validate_responses(run_dir: Path, allow_partial: bool = False) -> dict[str, Any]:
@@ -232,15 +238,13 @@ def prepare_judge_tasks(run_dir: Path, blind_seed: int) -> None:
     requests = index_unique(load_jsonl(run_dir / "requests.jsonl"), "request_id", "requests")
     responses = index_unique(load_jsonl(run_dir / "responses.jsonl"), "request_id", "responses")
 
-    rng = random.Random(blind_seed)
     request_ids = list(requests)
-    rng.shuffle(request_ids)
+    random.Random(blind_seed).shuffle(request_ids)
     labels = {request_id: f"candidate-{idx + 1:03d}" for idx, request_id in enumerate(request_ids)}
 
     tasks: list[dict[str, Any]] = []
     for request_id in request_ids:
         request = requests[request_id]
-        response = responses[request_id]
         case = cases[request["case_id"]]
         tasks.append(
             {
@@ -251,7 +255,7 @@ def prepare_judge_tasks(run_dir: Path, blind_seed: int) -> None:
                 "case_input": case["input"],
                 "must_detect": case.get("must_detect", []),
                 "fail_if": case.get("fail_if", []),
-                "candidate_output": response["output"],
+                "candidate_output": responses[request_id]["output"],
                 "dimensions": list(DIMENSIONS),
                 "allowed_scores": [0, 1, 2, None],
                 "known_blocking_error_ids": list(BLOCKING_ERROR_IDS),
@@ -269,7 +273,9 @@ def prepare_judge_tasks(run_dir: Path, blind_seed: int) -> None:
     print(f"prepared {len(tasks)} blinded judge tasks")
 
 
-def normalize_judgments(rows: list[dict[str, Any]], tasks: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
+def normalize_judgments(
+    rows: list[dict[str, Any]], tasks: dict[str, dict[str, Any]]
+) -> list[dict[str, Any]]:
     normalized: list[dict[str, Any]] = []
     seen_ids: set[str] = set()
     seen_slots: set[tuple[str, str, str]] = set()
@@ -320,6 +326,7 @@ def validate_judgments(run_dir: Path, allow_partial: bool = False) -> dict[str, 
     if missing and not allow_partial:
         raise ValueError(f"missing judgments for {len(missing)} judge tasks")
 
+    judges_per_task: dict[str, set[str]] = defaultdict(set)
     for judgment in judgments:
         task_id = judgment["judge_task_id"]
         scores = judgment.get("scores")
@@ -329,9 +336,9 @@ def validate_judgments(run_dir: Path, allow_partial: bool = False) -> dict[str, 
         if unknown_dims:
             raise ValueError(f"judgment {task_id}: unknown dimensions {sorted(unknown_dims)}")
         for dim in DIMENSIONS:
-            value = scores.get(dim)
-            if value not in (0, 1, 2, None):
-                raise ValueError(f"judgment {task_id}: invalid score for {dim}: {value}")
+            if scores.get(dim) not in (0, 1, 2, None):
+                raise ValueError(f"judgment {task_id}: invalid score for {dim}: {scores.get(dim)}")
+
         blocks = judgment.get("blocking_errors", [])
         if not isinstance(blocks, list) or any(not isinstance(item, str) for item in blocks):
             raise ValueError(f"judgment {task_id}: blocking_errors must be a string list")
@@ -340,10 +347,7 @@ def validate_judgments(run_dir: Path, allow_partial: bool = False) -> dict[str, 
             raise ValueError(f"judgment {task_id}: unknown blocking errors {sorted(unknown_blocks)}")
         if judgment.get("request_id") not in (None, tasks[task_id]["request_id"]):
             raise ValueError(f"judgment {task_id}: request_id mismatch")
-
-    judges_per_task: dict[str, set[str]] = defaultdict(set)
-    for judgment in judgments:
-        judges_per_task[judgment["judge_task_id"]].add(str(judgment["judge"]["id"]))
+        judges_per_task[task_id].add(str(judgment["judge"]["id"]))
 
     summary = {
         "judge_tasks": len(tasks),
@@ -358,10 +362,6 @@ def validate_judgments(run_dir: Path, allow_partial: bool = False) -> dict[str, 
     return summary
 
 
-def mean(values: list[float]) -> float | None:
-    return round(sum(values) / len(values), 4) if values else None
-
-
 def aggregate_task_judgments(rows: list[dict[str, Any]]) -> dict[str, Any]:
     dimension_values: dict[str, list[float]] = {dim: [] for dim in DIMENSIONS}
     block_sets: list[set[str]] = []
@@ -370,8 +370,9 @@ def aggregate_task_judgments(rows: list[dict[str, Any]]) -> dict[str, Any]:
 
     for judgment in rows:
         judge_ids.add(str(judgment["judge"]["id"]))
-        if judgment.get("judge", {}).get("same_model_family_as_generator") is True:
-            same_model_exposure = True
+        same_model_exposure = same_model_exposure or (
+            judgment.get("judge", {}).get("same_model_family_as_generator") is True
+        )
         for dim in DIMENSIONS:
             value = judgment.get("scores", {}).get(dim)
             if value is not None:
@@ -379,7 +380,7 @@ def aggregate_task_judgments(rows: list[dict[str, Any]]) -> dict[str, Any]:
         block_sets.append(set(judgment.get("blocking_errors", [])))
 
     mean_by_dimension = {dim: mean(values) for dim, values in dimension_values.items()}
-    applicable_dimension_means = [float(v) for v in mean_by_dimension.values() if v is not None]
+    overall = mean([float(v) for v in mean_by_dimension.values() if v is not None])
     dimension_disagreements = {
         dim: sorted(set(values))
         for dim, values in dimension_values.items()
@@ -393,7 +394,7 @@ def aggregate_task_judgments(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "unique_judge_count": len(judge_ids),
         "same_model_judge_exposure": same_model_exposure,
         "mean_by_dimension": mean_by_dimension,
-        "overall": mean(applicable_dimension_means),
+        "overall": overall,
         "blocked_any": any(block_sets),
         "blocked_all": bool(block_sets) and all(block_sets),
         "blocking_errors_union": blocking_union,
@@ -413,11 +414,8 @@ def summarize(run_dir: Path) -> dict[str, Any]:
     for judgment in judgments:
         grouped[judgment["judge_task_id"]].append(judgment)
 
-    per_arm: dict[str, dict[str, Any]] = {}
-    per_case_arm: dict[tuple[str, str], dict[str, Any]] = {}
-    disagreement_tasks: list[dict[str, Any]] = []
-    for arm in ARMS:
-        per_arm[arm] = {
+    per_arm = {
+        arm: {
             "cases_judged": 0,
             "blocked_cases": 0,
             "blocked_all_judges_cases": 0,
@@ -427,42 +425,46 @@ def summarize(run_dir: Path) -> dict[str, Any]:
             "judge_counts": [],
             "same_model_judge_cases": 0,
         }
+        for arm in ARMS
+    }
+    per_case_arm: dict[tuple[str, str], dict[str, Any]] = {}
+    disagreement_tasks: list[dict[str, Any]] = []
 
     for task_id, task_rows in grouped.items():
         task = tasks[task_id]
         request = requests[task["request_id"]]
         arm = request["arm"]
-        aggregate = aggregate_task_judgments(task_rows)
+        agg = aggregate_task_judgments(task_rows)
         bucket = per_arm[arm]
         bucket["cases_judged"] += 1
-        bucket["blocked_cases"] += int(aggregate["blocked_any"])
-        bucket["blocked_all_judges_cases"] += int(aggregate["blocked_all"])
-        bucket["judge_disagreement_cases"] += int(aggregate["judge_disagreement"])
-        bucket["judge_counts"].append(float(aggregate["judge_count"]))
-        bucket["same_model_judge_cases"] += int(aggregate["same_model_judge_exposure"])
+        bucket["blocked_cases"] += int(agg["blocked_any"])
+        bucket["blocked_all_judges_cases"] += int(agg["blocked_all"])
+        bucket["judge_disagreement_cases"] += int(agg["judge_disagreement"])
+        bucket["judge_counts"].append(float(agg["judge_count"]))
+        bucket["same_model_judge_cases"] += int(agg["same_model_judge_exposure"])
         for dim in DIMENSIONS:
-            value = aggregate["mean_by_dimension"][dim]
+            value = agg["mean_by_dimension"][dim]
             if value is not None:
                 bucket["dimension_values"][dim].append(float(value))
-        if aggregate["overall"] is not None:
-            bucket["overall_values"].append(float(aggregate["overall"]))
+        if agg["overall"] is not None:
+            bucket["overall_values"].append(float(agg["overall"]))
 
         per_case_arm[(request["case_id"], arm)] = {
-            "overall": aggregate["overall"],
-            "blocked": aggregate["blocked_any"],
-            "blocked_all_judges": aggregate["blocked_all"],
-            "blocking_errors": aggregate["blocking_errors_union"],
-            "judge_disagreement": aggregate["judge_disagreement"],
-            "judge_count": aggregate["judge_count"],
+            "overall": agg["overall"],
+            "blocked": agg["blocked_any"],
+            "blocked_all_judges": agg["blocked_all"],
+            "blocking_errors": agg["blocking_errors_union"],
+            "judge_disagreement": agg["judge_disagreement"],
+            "judge_count": agg["judge_count"],
         }
-        if aggregate["judge_disagreement"]:
+        if agg["judge_disagreement"]:
             disagreement_tasks.append(
                 {
                     "case_id": request["case_id"],
                     "arm": arm,
-                    "judge_count": aggregate["judge_count"],
-                    "dimension_disagreements": aggregate["dimension_disagreements"],
-                    "blocking_disagreement": aggregate["blocking_disagreement"],
+                    "judge_count": agg["judge_count"],
+                    "dimension_disagreements": agg["dimension_disagreements"],
+                    "blocking_disagreement": agg["blocking_disagreement"],
                 }
             )
 
@@ -492,8 +494,7 @@ def summarize(run_dir: Path) -> dict[str, Any]:
     treatment = "microscope-dialogue-state"
     regression_cases: list[str] = []
     blocked_regressions: list[str] = []
-    cases = sorted({case_id for case_id, _ in per_case_arm})
-    for case_id in cases:
+    for case_id in sorted({case_id for case_id, _ in per_case_arm}):
         treatment_row = per_case_arm.get((case_id, treatment))
         core_row = per_case_arm.get((case_id, "microscope-core"))
         if not treatment_row or not core_row:
@@ -525,9 +526,13 @@ def summarize(run_dir: Path) -> dict[str, Any]:
         "arms": arm_report,
         "treatment_deltas": {
             "overall_vs_direct": delta(treatment, "direct", "mean_overall_applicable_score"),
-            "overall_vs_microscope_core": delta(treatment, "microscope-core", "mean_overall_applicable_score"),
+            "overall_vs_microscope_core": delta(
+                treatment, "microscope-core", "mean_overall_applicable_score"
+            ),
             "blocking_rate_vs_direct": delta(treatment, "direct", "blocking_error_rate"),
-            "blocking_rate_vs_microscope_core": delta(treatment, "microscope-core", "blocking_error_rate"),
+            "blocking_rate_vs_microscope_core": delta(
+                treatment, "microscope-core", "blocking_error_rate"
+            ),
             "judge_disagreement_rate_vs_core": delta(
                 treatment, "microscope-core", "judge_disagreement_rate"
             ),
@@ -550,34 +555,40 @@ def self_test() -> None:
         run_dir = Path(tmp)
         prepare(run_dir, "self-test-ref", "synthetic-model", "synthetic", 7)
         requests = load_jsonl(run_dir / "requests.jsonl")
-        responses = [
-            {
-                "request_id": row["request_id"],
-                "case_id": row["case_id"],
-                "arm": row["arm"],
-                "output": f"Synthetic auditable output for {row['case_id']} / {row['arm']}",
-            }
-            for row in requests
-        ]
-        dump_jsonl(run_dir / "responses.jsonl", responses)
+        dump_jsonl(
+            run_dir / "responses.jsonl",
+            [
+                {
+                    "request_id": row["request_id"],
+                    "case_id": row["case_id"],
+                    "arm": row["arm"],
+                    "output": f"Synthetic auditable output for {row['case_id']} / {row['arm']}",
+                }
+                for row in requests
+            ],
+        )
         validate_responses(run_dir)
         prepare_judge_tasks(run_dir, blind_seed=11)
         tasks = load_jsonl(run_dir / "judge_tasks.jsonl")
-        judgments: list[dict[str, Any]] = []
         req_index = index_unique(requests, "request_id", "requests")
-        for idx, task in enumerate(tasks):
+
+        judgments: list[dict[str, Any]] = []
+        disagreement_injected = False
+        for task in tasks:
             arm = req_index[task["request_id"]]["arm"]
-            treatment = arm == "microscope-dialogue-state"
-            base_score = 2 if treatment else 1
-            for judge_idx, judge_id in enumerate(("synthetic-independent-judge-a", "synthetic-independent-judge-b")):
+            base_score = 2 if arm == "microscope-dialogue-state" else 1
+            for judge_idx, judge_id in enumerate(
+                ("synthetic-independent-judge-a", "synthetic-independent-judge-b")
+            ):
                 score = base_score
-                # Deliberately create one non-treatment disagreement so the self-test
-                # verifies that disagreement is preserved without changing treatment delta.
-                if idx == 0 and judge_idx == 1 and not treatment:
+                if arm == "direct" and judge_idx == 1 and not disagreement_injected:
                     score = 0
+                    disagreement_injected = True
                 judgments.append(
                     {
-                        "judgment_id": stable_id("self-test-judgment", task["judge_task_id"], judge_id),
+                        "judgment_id": stable_id(
+                            "self-test-judgment", task["judge_task_id"], judge_id
+                        ),
                         "judge_task_id": task["judge_task_id"],
                         "request_id": task["request_id"],
                         "scores": {dim: score for dim in DIMENSIONS},
@@ -588,6 +599,8 @@ def self_test() -> None:
                         },
                     }
                 )
+
+        assert disagreement_injected
         dump_jsonl(run_dir / "judgments.jsonl", judgments)
         validation = validate_judgments(run_dir)
         assert validation["tasks_with_multiple_judges"] == len(tasks)
