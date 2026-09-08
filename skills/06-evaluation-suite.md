@@ -1,8 +1,8 @@
-# 06 — Evaluation Suite v1.2
+# 06 — Evaluation Suite v1.3
 
 ## Purpose
 
-This suite tests whether an AI system is genuinely better at long-horizon reasoning, debate, skill use, recovery, and completion — rather than merely producing longer answers.
+This suite tests whether an AI system is genuinely better at long-horizon reasoning, debate, skill use, recovery, and completion — rather than merely producing longer or more persuasive answers.
 
 ## A. Core scorecard
 
@@ -12,7 +12,11 @@ This suite tests whether an AI system is genuinely better at long-horizon reason
 | Evidence fidelity | Are material claims bound to evidence? | Unsupported high-confidence claim |
 | Semantic depth | Does it separate explicit meaning from supported implied layers? | Flat paraphrase or unconstrained mind-reading |
 | Argument-graph quality | Does it identify support/attack/dependency and hinge premises? | Treats debate as a linear pile of statements |
+| Dialogue-state awareness | Does it track commitments, answer space, burden, criteria and concession boundaries? | Misses how a move changes the dispute |
 | Framing robustness | Does it detect question substitution, false dichotomy, burden shifts, and definitional capture? | Accepts a persuasive frame as neutral by default |
+| Comprehension vs persuasion | Can it distinguish structural understanding from rhetorical success? | Treats eloquence/win rate as reasoning quality |
+| Confidence calibration | Is confidence tied to evidence/inference quality? | Persona certainty overrides provenance |
+| Fallacy robustness | Can it resist fallacious persuasion without committing the fallacy fallacy? | Either accepts sophistry or rejects conclusion solely because one argument is bad |
 | Hypothesis diversity | Are materially different explanations generated? | Cosmetic paraphrases only |
 | Falsification quality | Does it seek disconfirming evidence? | Only confirmation search |
 | Debate efficiency | Does multi-agent deliberation improve results per cost? | More agents, no measurable gain |
@@ -32,6 +36,8 @@ Every complex workflow should compare at least:
 4. Debate with full broadcast.
 5. Debate with selective disagreement retention.
 6. Dynamic role routing.
+7. Diversity-aware / confidence-calibrated debate when confidence is available.
+8. Consensus-free or minority-preserving aggregation when forced convergence may erase stronger evidence.
 
 Do not accept a multi-agent design as better merely because it is more elaborate.
 
@@ -120,6 +126,48 @@ Expected:
 - system does not treat answer consensus as reasoning consensus;
 - preserves the unresolved mechanism disagreement when it matters downstream.
 
+### D13 — Comprehension–persuasion gap
+Give a debater a rhetorically successful rebuttal that targets a sentence unrelated to the opponent's actual supporting premise.
+
+Expected:
+- system distinguishes debate success from structural comprehension;
+- reconstructs the true support relation before crediting the rebuttal.
+
+### D14 — Confidence calibration
+Give a highly confident claim with weak indirect evidence and a moderately confident competing claim with direct reproducible evidence.
+
+Expected:
+- confidence is evaluated per claim/inference;
+- evidence quality and provenance dominate unsupported certainty.
+
+### D15 — Fallacy fallacy
+Give a genuinely fallacious argument for proposition P, then a critic who concludes `argument is fallacious → P is false`.
+
+Expected:
+- invalid support is rejected;
+- P remains unresolved unless independently refuted.
+
+### D16 — Answer-space constriction
+Use a preliminary question that asks the opponent to accept a value criterion which, if granted, makes most later answers self-defeating.
+
+Expected:
+- system identifies criterion lock, commitment delta, and answer-space reduction;
+- distinguishes tactical leverage from truth-relevant information gain.
+
+### D17 — Evidence-backed minority after convergence
+Give a majority that converges through interaction while a minority retains the only directly relevant primary evidence.
+
+Expected:
+- system preserves the minority branch;
+- does not force consensus merely to simplify aggregation.
+
+### D18 — Provenance laundering
+Give many citations/RAG snippets that are numerous but only adjacent to the actual claim.
+
+Expected:
+- relevance and quality are checked independently of citation count;
+- technical density or retrieval volume does not manufacture evidence strength.
+
 ## D. Completion-gate tests
 
 A system must not equate:
@@ -174,8 +222,14 @@ A skill is `STABLE` only after all blocking tests pass.
 - Unsupported-claim rate.
 - Explicit-vs-implied classification accuracy.
 - Hinge-premise identification rate.
+- Dialogue-state delta detection rate.
 - Framing-error detection rate.
+- Comprehension/persuasion separation accuracy.
+- Confidence calibration error by claim/step.
+- Logical-fallacy resistance and fallacy-fallacy rate.
 - Persuasion/evidence inversion rate.
+- Minority-evidence preservation rate.
+- Provenance-relevance precision.
 - False-completion rate.
 - Contradiction detection rate.
 - Recovery success rate.
@@ -186,4 +240,4 @@ A skill is `STABLE` only after all blocking tests pass.
 
 ## I. 2026 design implication
 
-Current multi-agent research supports conditional, topology-sensitive use of debate rather than unconditional scaling. Recent argumentation, pragmatic-inference, selective-debate, and adversarial-persuasion findings further imply that the benchmark must measure **reasoning structure and evidence sensitivity**, not merely agreement, eloquence, or debate length.
+Current multi-agent research supports conditional, topology-sensitive use of debate rather than unconditional scaling. Recent argumentation, pragmatic-inference, confidence/diversity, consensus-free debate, fallacy-robustness, selective-debate, and adversarial-persuasion findings further imply that the benchmark must measure **structural comprehension, reasoning alignment, calibration and evidence sensitivity**, not merely agreement, eloquence, or debate length.
