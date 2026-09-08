@@ -2,7 +2,7 @@
 
 Status: `EXPERIMENTAL / PROVIDER-NEUTRAL HARNESS`
 
-Purpose: turn `semantic-dialogue-state-fixtures.json` and `semantic-dialogue-state-protection-fixtures.json` from static specifications into reproducible behavioral-evaluation workflows without pretending that repository CI is model-behavior evidence.
+Purpose: turn the target, neighboring-capability protection, and lexical/domain generalization suites into reproducible behavioral-evaluation workflows without pretending that repository CI is model-behavior evidence.
 
 ## Evaluation arms
 
@@ -13,13 +13,13 @@ The harness supports four comparable arms:
 3. `microscope-core` — load the canonical `semantic-argument-microscope/SKILL.md` but not `DIALOGUE_STATE.md`.
 4. `microscope-dialogue-state` — load `SKILL.md` plus `DIALOGUE_STATE.md`.
 
-For the target DS1–DS8 suite, normally run all four arms. For the protection DSP1–DSP12 suite, the minimum useful comparison is arms 3 and 4 because the protection claim is whether the new reference regresses the existing semantic core.
+For the target DS1–DS8 suite, normally run all four arms. For protection suites DSP1–DSP12 and DSG1–DSG12, the minimum useful comparison is arms 3 and 4 because the protection claim is whether the new reference regresses the existing semantic core or only succeeds when canonical vocabulary is present.
 
-The treatment claim is not `arm 4 sounds better`. The useful comparison is whether arm 4 improves target dialogue-state dimensions and blocking-error rate without degrading the protection holdout.
+The treatment claim is not `arm 4 sounds better`. The useful comparison is whether arm 4 improves target dialogue-state behavior without degrading neighboring capabilities or losing the same structural relation under paraphrase/domain shifts.
 
 ## Executable preparation
 
-The same provider-neutral runner handles both suites.
+The same provider-neutral runner handles all suites.
 
 Target run:
 
@@ -32,7 +32,7 @@ python skills/evals/run_semantic_dialogue_state_eval.py prepare RUN_DIR \
   --arms direct generic-careful microscope-core microscope-dialogue-state
 ```
 
-Protection run:
+Neighboring-capability protection run:
 
 ```text
 python skills/evals/run_semantic_dialogue_state_eval.py prepare PROTECTION_RUN_DIR \
@@ -43,9 +43,20 @@ python skills/evals/run_semantic_dialogue_state_eval.py prepare PROTECTION_RUN_D
   --arms microscope-core microscope-dialogue-state
 ```
 
-The harness does not make provider calls. Execute the prepared requests through the selected provider/runtime, record the outputs in `responses.jsonl`, then use `prepare-judge`, record `judgments.jsonl`, and run `summarize`.
+Lexical/domain generalization holdout:
 
-`manifest.json` binds the exact fixture path/hash, instruction bundle hashes, model/provider label, arms and repository revision so a target run and a protection run can be reproduced without silently changing the test surface.
+```text
+python skills/evals/run_semantic_dialogue_state_eval.py prepare GENERALIZATION_RUN_DIR \
+  --repo-ref EXACT_SHA \
+  --model-id MODEL_ID \
+  --provider PROVIDER \
+  --fixture skills/evals/semantic-dialogue-state-generalization-holdout.json \
+  --arms microscope-core microscope-dialogue-state
+```
+
+The harness does not make provider calls. Execute the prepared requests through the selected provider/runtime, record outputs in `responses.jsonl`, then use `prepare-judge`, record `judgments.jsonl`, and run `summarize`.
+
+`manifest.json` binds exact fixture path/hash, instruction bundle hashes, model/provider label, arms and repository revision so runs can be reproduced without silently changing the test surface.
 
 ## Run manifest
 
@@ -81,7 +92,7 @@ Grade observable/auditable output, not private chain-of-thought. A candidate res
 - repair or decisive next test;
 - calibrated conclusion/uncertainty.
 
-On protection cases, the absence of unnecessary dialogue-state machinery is itself evidence of correct routing discipline. Do not reward verbosity or ceremonial ledgers.
+On protection cases, the absence of unnecessary dialogue-state machinery is itself evidence of correct routing discipline. On generalization cases, credit the correct relation/state behavior rather than reuse of canonical vocabulary. Do not reward verbosity or ceremonial ledgers.
 
 ## Judge protocol
 
@@ -152,7 +163,9 @@ If judges disagree on a blocking error, preserve that disagreement for review ra
 
 ## Protection baseline
 
-The protection holdout DSP1–DSP12 deliberately samples neighboring capabilities that the new dialogue-state reference must not damage:
+### DSP neighboring-capability holdout
+
+DSP1–DSP12 deliberately sample capabilities the dialogue-state reference must not damage:
 
 - definition/QUD/pragmatic interpretation;
 - defeasible revision and stance freedom;
@@ -160,7 +173,19 @@ The protection holdout DSP1–DSP12 deliberately samples neighboring capabilitie
 - causal association/intervention/global-graph reasoning;
 - simple direct definition application where dialogue-state machinery should remain dormant.
 
-Run the same model/revision under `microscope-core` and `microscope-dialogue-state`. The treatment report records:
+### DSG anti-leakage/generalization holdout
+
+DSG1–DSG12 deliberately reduce canonical words such as `agreed`, `common ground`, `criterion lock`, or familiar domain cues. They use paraphrase, changed domains, loaded formulations, bounded concessions, stale/withdrawn positions and support-graph transfer.
+
+The purpose is to distinguish:
+
+`STRUCTURAL_UNDERSTANDING` from `LEXICAL_CUE_MATCHING`.
+
+A model that performs well only when fixture language resembles the skill text has not demonstrated robust generalization.
+
+### Promotion veto
+
+Run the same model/revision under `microscope-core` and `microscope-dialogue-state`. Protection reports record:
 
 - per-case regressions vs core;
 - new blocking regressions vs core;
@@ -169,20 +194,22 @@ Run the same model/revision under `microscope-core` and `microscope-dialogue-sta
 
 The current veto is conservative: if the treatment has any lower per-case aggregate score than core or introduces a blocking error where core did not, the protection report sets `protection_promotion_veto=true` pending review.
 
-Do not promote the extension merely because DS1–DS8 improves if the protection holdout regresses. A hard-slice regression outranks an aggregate target gain.
+Do not promote the extension merely because DS1–DS8 improves if DSP or DSG regresses. A hard-slice regression outranks an aggregate target gain.
 
 `TARGET_GAIN != SAFE_PROMOTION`.
 
 ## Minimum acceptance report
 
-A behavioral run should report:
+A behavioral evaluation should report:
 
-- cases attempted / completed / invalid;
+- target DS1–DS8 attempted / completed / invalid;
+- DSP1–DSP12 attempted / completed / invalid;
+- DSG1–DSG12 attempted / completed / invalid;
 - blocking-error count and rate per arm;
 - average applicable score by dimension per arm;
 - treatment delta vs `direct` and vs `microscope-core` where those arms exist;
 - cases where treatment regressed;
-- protection promotion veto state for protection runs;
+- protection promotion veto state for both protection suites;
 - judge disagreement / order-swap instability when measured;
 - judge count and same-model-family judge exposure;
 - exact model + repo revision;
@@ -194,7 +221,7 @@ Keep these states separate:
 
 `FIXTURE_SPECIFIED → STATIC_VALIDATED → HARNESS_SELF_TESTED → TARGET_MODEL_RUN → INDEPENDENT_JUDGED → REPEATED → HOST_LIVE_REGRESSION`
 
-Synthetic target/protection self-tests prove harness plumbing only. They do not prove model behavior.
+Synthetic target/protection self-tests prove harness plumbing only. Static DSG validation proves only that the anti-leakage suite is packaged and executable through the generalized harness. Neither proves real model generalization.
 
 ## Status boundary
 
