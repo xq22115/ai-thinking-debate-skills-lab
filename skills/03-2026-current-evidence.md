@@ -1,6 +1,6 @@
 # 2026 Current Evidence
 
-Access date: 2026-09-08
+Access date: 2026-09-09
 
 ## OpenAI — Agents SDK, 2026-04-15
 https://openai.com/index/the-next-evolution-of-the-agents-sdk/
@@ -121,6 +121,36 @@ Evidence: structured pragmatic inference improves reasoning over inference-inten
 
 Consequence: preserve the literal/pragmatic boundary and do not promote a plausible implicature or presupposition into established world evidence.
 
+## Behavioral evaluation / judge reliability evidence
+
+### Judging the Judges: A Systematic Study of Position Bias in LLM-as-a-Judge — IJCNLP-AACL 2025
+https://aclanthology.org/2025.ijcnlp-long.18/
+
+Evidence: across many judges/tasks, answer position can systematically influence LLM-as-a-Judge decisions; the effect is not explainable as random noise alone.
+
+Consequence: pairwise preference claims should use blinded labels and order swaps, and disagreement should be reported rather than silently averaged away.
+
+### Judging with Many Minds: Do More Perspectives Mean Less Prejudice? — Findings of EMNLP 2025
+https://aclanthology.org/2025.findings-emnlp.941/
+
+Evidence: multi-agent judge/debate frameworks can amplify position, verbosity, chain-of-thought and bandwagon biases after interaction instead of automatically canceling them.
+
+Consequence: `more judges` or `judge debate` is not itself a reliability guarantee. Preserve raw judge outputs, independent scores, bias checks, and dissent where material.
+
+### LRBench and Judge-R1: Principled Evaluation and Training of LLM-Based Judges for Long-Context Reasoning — Findings of ACL 2026
+https://aclanthology.org/2026.findings-acl.2029/
+
+Evidence: long-context reasoning evaluation benefits from fine-grained principle-violation labels rather than final-answer preference alone.
+
+Consequence: the dialogue-state harness records dimension-level scores and explicit blocking errors instead of collapsing evaluation immediately to one scalar.
+
+### Don't Judge Code by Its Cover: Exploring Biases in LLM Judges for Code Evaluation — Findings of EACL 2026
+https://aclanthology.org/2026.findings-eacl.70/
+
+Evidence: judges can remain vulnerable to systematic presentation biases even when asked to generate tests before scoring.
+
+Consequence: a judge-generated rationale or test is not sufficient proof of judge reliability. Protect evaluation with structured criteria, independent evidence when available, and explicit judge metadata.
+
 ## Semantic dialogue-state synthesis
 
 The canonical semantic owner remains `semantic-argument-microscope`. Its core handles literal/pragmatic boundaries, warrants, QUD/crux, defeaters, argument relations, stance freedom, and epistemic-vs-rhetorical separation. Progressive references extend it only when needed:
@@ -129,4 +159,6 @@ The canonical semantic owner remains `semantic-argument-microscope`. Its core ha
 - `CAUSAL_ABDUCTIVE_REASONING.md` — causal/explanatory/interventional/counterfactual reasoning;
 - `DIALOGUE_STATE.md` — multi-turn shared commitments, temporary grants, answer-space/criterion shifts, common-ground repair, provenance laundering, and structural-transfer checks.
 
-The important boundary is architectural as well as epistemic: prefer one semantic owner and demand-loaded references rather than multiple overlapping skills. Static fixtures and CI asset validation remain packaging evidence only; target-model behavior and host-live routing require separate execution evidence.
+Behavioral evaluation is also evidence-gated. `semantic-dialogue-state-eval-protocol.md` plus `run_semantic_dialogue_state_eval.py` freeze four comparable arms, prompt/instruction hashes, response identities, blind judge tasks, dimension-level scoring, blocking errors, same-model-judge metadata, and treatment regressions. The harness intentionally does not make provider calls by itself.
+
+The important boundary is architectural as well as epistemic: prefer one semantic owner and demand-loaded references rather than multiple overlapping skills. Static fixtures, CI asset validation, and harness self-tests remain packaging/execution-harness evidence only; target-model behavior, independent judge validity, and host-live routing require separate execution evidence.
