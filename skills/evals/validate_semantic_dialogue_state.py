@@ -12,43 +12,43 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 FIXTURE = HERE / "semantic-dialogue-state-fixtures.json"
+PROTECTION = HERE / "semantic-dialogue-state-protection-fixtures.json"
 RUBRIC = HERE / "semantic-dialogue-state-scoring-rubric.md"
 PROTOCOL = HERE / "semantic-dialogue-state-eval-protocol.md"
 HARNESS = HERE / "run_semantic_dialogue_state_eval.py"
 REFERENCE = ROOT / "skills" / "semantic-argument-microscope" / "DIALOGUE_STATE.md"
-EXPECTED_CASES = 8
+EXPECTED_TARGET_CASES = 8
+EXPECTED_PROTECTION_CASES = 12
 
 
 def fail(message: str) -> None:
     raise SystemExit(f"semantic dialogue-state asset validation failed: {message}")
 
 
-def main() -> None:
-    for path in (FIXTURE, RUBRIC, PROTOCOL, HARNESS, REFERENCE):
-        if not path.is_file():
-            fail(f"missing {path.relative_to(ROOT.parent)}")
-
+def load_cases(path: Path, expected_count: int, prefix: str) -> list[dict]:
     try:
-        payload = json.loads(FIXTURE.read_text(encoding="utf-8"))
+        payload = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
-        fail(f"invalid fixture JSON: {exc}")
-
+        fail(f"invalid fixture JSON in {path.name}: {exc}")
     if not isinstance(payload, dict):
-        fail("fixture root must be an object")
+        fail(f"{path.name}: fixture root must be an object")
     cases = payload.get("cases")
-    if not isinstance(cases, list) or len(cases) != EXPECTED_CASES:
-        fail(f"expected {EXPECTED_CASES} cases, found {len(cases) if isinstance(cases, list) else 'non-list'}")
+    if not isinstance(cases, list) or len(cases) != expected_count:
+        found = len(cases) if isinstance(cases, list) else "non-list"
+        fail(f"{path.name}: expected {expected_count} cases, found {found}")
 
     ids: list[str] = []
     for index, case in enumerate(cases, start=1):
         if not isinstance(case, dict):
-            fail(f"case {index} must be an object")
+            fail(f"{path.name}: case {index} must be an object")
         for key in ("id", "input", "must_detect", "fail_if"):
             if key not in case:
-                fail(f"case {index} missing {key}")
+                fail(f"{path.name}: case {index} missing {key}")
         case_id = case["id"]
         if not isinstance(case_id, str) or not case_id.strip():
-            fail(f"case {index} id must be a non-empty string")
+            fail(f"{path.name}: case {index} id must be a non-empty string")
+        if not case_id.startswith(prefix):
+            fail(f"{path.name}: {case_id} must start with {prefix}")
         ids.append(case_id)
         if not isinstance(case["input"], str) or not case["input"].strip():
             fail(f"{case_id}: input must be a non-empty string")
@@ -60,11 +60,40 @@ def main() -> None:
                 fail(f"{case_id}: {key} items must be non-empty strings")
 
     if len(ids) != len(set(ids)):
-        fail("duplicate fixture ids")
-    expected_prefixes = {f"DS{n}" for n in range(1, EXPECTED_CASES + 1)}
-    observed_prefixes = {case_id.split("-", 1)[0] for case_id in ids}
-    if observed_prefixes != expected_prefixes:
-        fail(f"case prefixes mismatch: expected {sorted(expected_prefixes)}, found {sorted(observed_prefixes)}")
+        fail(f"{path.name}: duplicate fixture ids")
+    return cases
+
+
+def main() -> None:
+    for path in (FIXTURE, PROTECTION, RUBRIC, PROTOCOL, HARNESS, REFERENCE):
+        if not path.is_file():
+            fail(f"missing {path.relative_to(ROOT.parent)}")
+
+    target_cases = load_cases(FIXTURE, EXPECTED_TARGET_CASES, "DS")
+    protection_cases = load_cases(PROTECTION, EXPECTED_PROTECTION_CASES, "DSP")
+    target_ids = {case["id"] for case in target_cases}
+    protection_ids = {case["id"] for case in protection_cases}
+    if target_ids & protection_ids:
+        fail("target/protection fixture ids overlap")
+
+    expected_target_prefixes = {f"DS{n}" for n in range(1, EXPECTED_TARGET_CASES + 1)}
+    observed_target_prefixes = {case_id.split("-", 1)[0] for case_id in target_ids}
+    if observed_target_prefixes != expected_target_prefixes:
+        fail(
+            "target case prefixes mismatch: "
+            f"expected {sorted(expected_target_prefixes)}, found {sorted(observed_target_prefixes)}"
+        )
+
+    expected_protection_prefixes = {
+        f"DSP{n}" for n in range(1, EXPECTED_PROTECTION_CASES + 1)
+    }
+    observed_protection_prefixes = {case_id.split("-", 1)[0] for case_id in protection_ids}
+    if observed_protection_prefixes != expected_protection_prefixes:
+        fail(
+            "protection case prefixes mismatch: "
+            f"expected {sorted(expected_protection_prefixes)}, "
+            f"found {sorted(observed_protection_prefixes)}"
+        )
 
     reference_text = REFERENCE.read_text(encoding="utf-8")
     reference_markers = [
@@ -86,6 +115,9 @@ def main() -> None:
         "Evidence/provenance fidelity",
         "Structural generalization",
         "Blocking errors",
+        "Protection-holdout metrics",
+        "unnecessary_dialogue_state_invention",
+        "promotion veto",
         "Acceptance boundary",
     ]
     missing_rubric = [m for m in rubric_markers if m not in rubric_text]
@@ -97,6 +129,8 @@ def main() -> None:
         "Evaluation arms",
         "Run manifest",
         "Judge protocol",
+        "Multi-judge record identity",
+        "Case-first aggregation",
         "Protection baseline",
         "HARNESS_READY != MODEL_RUN_COMPLETE != JUDGE_VALIDATED != HOST_LIVE",
     ]
@@ -110,7 +144,13 @@ def main() -> None:
         '"generic-careful"',
         '"microscope-core"',
         '"microscope-dialogue-state"',
+        "PROTECTION_FIXTURES",
+        "fixture_path",
+        "normalize_arms",
         "prepare_judge_tasks",
+        "normalize_judgments",
+        "judge_disagreement_tasks",
+        "protection_promotion_veto",
         "validate_judgments",
         "treatment_blocking_regressions_vs_core",
         "self_test",
@@ -119,9 +159,15 @@ def main() -> None:
     if missing_harness:
         fail(f"harness missing markers: {missing_harness}")
 
-    print(f"semantic dialogue-state assets: PASS ({len(cases)} cases, {len(set(ids))} unique ids)")
-    print("harness packaging: PASS — provider-neutral execution + blind judging protocol present")
-    print("behavioral status: NOT EXECUTED — target-model and host-live checks remain separate")
+    print(
+        "semantic dialogue-state assets: PASS "
+        f"({len(target_cases)} target + {len(protection_cases)} protection cases)"
+    )
+    print(
+        "harness packaging: PASS — reusable fixture/arm execution + multi-judge disagreement + "
+        "protection veto present"
+    )
+    print("behavioral status: NOT EXECUTED — real target-model and host-live checks remain separate")
 
 
 if __name__ == "__main__":
