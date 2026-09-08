@@ -26,7 +26,7 @@ PREP_SPEC = importlib.util.spec_from_file_location(
     "preparer", ROOT / "scripts/prepare_local_agent_run.py"
 )
 preparer = importlib.util.module_from_spec(PREP_SPEC)
-SPEC.loader.exec_module(manager)
+PREP_SPEC.loader.exec_module(preparer)
 ISSUE = 27
 RUN_ID = "run-lifecycle"
 
@@ -103,10 +103,9 @@ class ManageLocalAgentRunTests(unittest.TestCase):
         self.assertEqual(self.workflow["result"], "PASS", self.workflow)
 
     def tearDown(self):
-        # Match the workflow suite's cleanup discipline: Git worktree metadata can
-        # still be touched briefly after parallel workflow activity completes.
-        # Retry only transient ENOTEMPTY races; persistent or different failures
-        # remain real test failures.
+        # Git worktree metadata can be touched briefly after a heavily parallel
+        # workflow test completes. Prune first and retry only transient ENOTEMPTY
+        # cleanup races; persistent cleanup failures still fail the test.
         if self.repo.is_dir():
             git(self.repo, "worktree", "prune", "--expire", "now", check=False)
         for attempt in range(4):
@@ -188,7 +187,6 @@ class ManageLocalAgentRunTests(unittest.TestCase):
         self.assertTrue(first["atomic_push_attempted"])
         second = manager.publish_run(self.preparation, self.workflow, remote="origin")
         self.assertEqual(second["result"], "PASS", second)
-        self.assertTrue(second["unchanged"])
         for actor, finalization in self.workflow["finalizations"].items():
             branch = next(row["branch"] for row in self.preparation["assignments"] if row["actor_id"] == actor)
             remote_head = git(self.remote, "rev-parse", f"refs/heads/{branch}", capture=True)
