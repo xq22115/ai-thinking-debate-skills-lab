@@ -1,16 +1,16 @@
 ---
 name: deep-semantic-debate-reasoning
-description: Analyze dense or adversarial language as layered meaning plus an argument graph; identify hinge premises, framing moves, burden shifts, and pragmatic implications before rebutting, while separating rhetorical force from evidential strength.
+description: Analyze dense or adversarial language as layered meaning plus an argument graph; identify hinge premises, framing moves, burden shifts, pragmatic implications, dialogue-state changes, and persuasion/comprehension gaps before rebutting, while separating rhetorical force from evidential strength.
 ---
 
 # Deep Semantic Debate Reasoning
 
-Version: `0.1.0-rc1`
+Version: `0.2.0-rc1`
 Status: `EXPERIMENTAL / NOT HOST-LIVE VERIFIED`
 
 ## Objective
 
-Increase reasoning quality when a short utterance may carry multiple relevant meanings or when debate structure matters. The skill must deepen interpretation without inventing hidden motives, and improve rebuttal without rewarding sophistry.
+Increase reasoning quality when a short utterance may carry multiple relevant meanings or when debate structure matters. The skill must deepen interpretation without inventing hidden motives, improve rebuttal without rewarding sophistry, and distinguish the ability to persuade from the ability to understand an argument.
 
 This is a narrow specialist. It does not replace `task-goal-intelligence`, `evidence-gap-research`, `competing-hypotheses`, or `multi-agent-deliberation`.
 
@@ -24,7 +24,8 @@ Activate when at least one is material:
 - burden of proof is contested or silently shifted;
 - a debate contains multiple support/attack relations that linear summarization would flatten;
 - the user asks for deep interpretation, cross-examination, rebuttal, steelmanning, or hidden assumptions;
-- a persuasive argument looks stronger than its evidence warrants.
+- a persuasive argument looks stronger than its evidence warrants;
+- participants converge on an answer while their underlying reasoning or causal models remain misaligned.
 
 Do not activate for ordinary factual retrieval, mechanical tasks, or clear low-stakes prose where the extra structure cannot change the answer.
 
@@ -82,7 +83,21 @@ Edge types:
 
 Find the **HINGE_PREMISE**: the smallest premise or definition whose change would cause the largest downstream verdict change. Test that before spending effort on peripheral points.
 
-## 4. Cross-Examination Sequence
+## 4. Dialogue-State Delta
+
+A strong debate move is not just a sentence; it changes the conversational state. For each material move, track the delta across:
+
+- **COMMITMENT_SET** — what each side is now committed to if the move is accepted;
+- **ANSWER_SPACE** — which replies remain logically or rhetorically available;
+- **BURDEN_VECTOR** — which side must establish which proposition next;
+- **CRITERION_LOCK** — what metric, definition, or decision rule is now controlling the dispute;
+- **CONCESSION_FRONTIER** — what can be granted without conceding the main conclusion;
+- **EVIDENCE_GATE** — what kind of evidence is now required to advance the argument;
+- **DOWNSTREAM_REACH** — how many later claims depend on this move.
+
+Prefer moves with high discriminative value and low ambiguity. If a question merely narrows the opponent's rhetorical options without increasing truth-relevant information, treat that as a debate tactic rather than an epistemic gain.
+
+## 5. Cross-Examination Sequence
 
 Prefer one decisive question over many decorative questions.
 
@@ -92,9 +107,9 @@ Prefer one decisive question over many decorative questions.
 4. **Test boundary cases** — search for a case that separates rival definitions or causal stories.
 5. **Ask the update question** — “What observation would change this conclusion?”
 
-A question is useful only if possible answers change the argument graph.
+A question is useful only if possible answers change the argument graph or materially reduce uncertainty.
 
-## 5. Debate Moves Worth Learning
+## 6. Debate Moves Worth Learning
 
 Use these when truth-seeking value is positive:
 
@@ -109,7 +124,7 @@ Use these when truth-seeking value is positive:
 - **Concession with boundary**: explicitly grant the valid portion while isolating what remains disputed.
 - **Source challenge**: when a claim depends on text/history/data, inspect translation, provenance, sampling, or measurement rather than debating rhetoric alone.
 
-## 6. Persuasion–Truth Firewall
+## 7. Persuasion–Truth Firewall
 
 Never treat the following as evidence of correctness:
 
@@ -124,7 +139,24 @@ Never treat the following as evidence of correctness:
 
 Score arguments by evidence, logical dependence, falsifiability, and robustness under counterexample — not by how forceful they sound.
 
-## 7. Anti-Sophistry Checks
+### Comprehension–Persuasion Diagnostic
+
+A model or speaker may be persuasive without understanding the structure it is discussing. Before crediting “good debate,” test whether it can:
+
+- identify which premise actually supports which conclusion;
+- name the target of a rebuttal rather than merely produce a counter-slogan;
+- distinguish argument validity from factual truth of premises;
+- state the strongest counterargument fairly;
+- identify what evidence would update its position;
+- preserve unresolved mechanism disagreement even when final answers match.
+
+If persuasion rises while these structural diagnostics fail, classify the improvement as `RHETORICAL_GAIN`, not `REASONING_GAIN`.
+
+### Confidence as Structured Metadata
+
+Confidence must attach to a claim, evidence link, or inference step — not to the speaker's persona. Prefer calibrated confidence tied to provenance and uncertainty. A high-confidence weakly evidenced claim does not outrank a lower-confidence claim backed by direct reproducible evidence.
+
+## 8. Anti-Sophistry Checks
 
 Detect and correct rather than imitate:
 
@@ -136,11 +168,13 @@ Detect and correct rather than imitate:
 - **EXAMPLE_TO_UNIVERSAL** — treating one vivid example as a universal rule;
 - **MOTIVE_MINDREADING** — substituting speculative intent for what the text supports;
 - **CONFIDENCE_SUBSTITUTION** — using certainty/tone as a proxy for evidence;
-- **GISH_DENSITY** — accumulating more claims than can be independently checked and treating unanswered items as wins.
+- **GISH_DENSITY** — accumulating more claims than can be independently checked and treating unanswered items as wins;
+- **PROVENANCE_LAUNDERING** — using many citations, RAG snippets, or technical detail to manufacture credibility without checking relevance/quality;
+- **FALLACY_FALLACY** — correctly identifying a bad argument and then incorrectly concluding that the proposition itself must be false.
 
-When a move is both rhetorically effective and epistemically weak, explicitly separate those two judgments.
+When a move is both rhetorically effective and epistemically weak, explicitly separate those two judgments. Detecting a fallacy weakens that route of support; it does not automatically refute the conclusion if another independent argument could support it.
 
-## 8. Stepwise Critique
+## 9. Stepwise Critique
 
 For complex reasoning, inspect material steps rather than only the final conclusion:
 
@@ -150,10 +184,11 @@ For each step ask:
 - Is the inference deductive, inductive, abductive, or analogical?
 - What is the strongest counterexample?
 - Does the next step require a stronger claim than the previous step established?
+- Is confidence calibrated to the quality of this particular step?
 
 Revise the earliest weak hinge first. Do not repeatedly “rethink” the entire answer when a local repair suffices.
 
-## 9. Debate-on-Demand Routing
+## 10. Debate-on-Demand Routing
 
 Do not invoke a large council merely because the content is argumentative.
 
@@ -161,11 +196,12 @@ Do not invoke a large council merely because the content is argumentative.
 - two materially different readings → independent interpretation check;
 - unresolved support/attack graph or high-impact dispute → adversarial review;
 - persuasive-pressure risk → add evidence auditor / falsifier;
+- same answer but incompatible rationales → preserve diversity until mechanism matters are resolved;
 - stop when another debate round adds less information than targeted evidence or a discriminating test.
 
-Compose with `multi-agent-deliberation` only when distinct roles can contribute unique evidence/methods.
+Compose with `multi-agent-deliberation` only when distinct roles can contribute unique evidence/methods. Do not force consensus when a minority hypothesis remains better supported.
 
-## 10. Output Contract
+## 11. Output Contract
 
 When this skill materially affects the answer, preserve internally or expose when useful:
 
@@ -173,7 +209,9 @@ When this skill materially affects the answer, preserve internally or expose whe
 - strongest alternative interpretation(s);
 - hinge premise/definition;
 - support/attack relationships;
+- dialogue-state delta when it changes the dispute;
 - rhetorical move vs evidential value;
+- calibrated confidence and provenance;
 - decisive discriminator or counterexample;
 - conclusion with explicit uncertainty;
 - what would change the conclusion.
@@ -185,14 +223,18 @@ Do not dump an exhaustive layer table when a concise answer is sufficient.
 - `IMPLICATURE != EXPLICIT_CLAIM`
 - `PLAUSIBLE_INTENT != PROVEN_INTENT`
 - `PERSUASION != TRUTH`
+- `PERSUASION != COMPREHENSION`
 - `DEFINITION != EVIDENCE`
 - `CONSENSUS != REASONING_ALIGNMENT`
+- `CONFIDENCE != EVIDENCE`
+- `FALLACY_DETECTED != CONCLUSION_REFUTED`
+- `RAG_OR_CITATIONS != PROVENANCE_QUALITY`
 - `REBUTTAL != QUESTION_SUBSTITUTION`
 - `MORE_DEBATE != BETTER_REASONING`
 - `DEPTH != VERBOSITY`
 
 ## Provenance / Research Basis
 
-This skill was motivated by close analysis of adversarial public debate patterns (including Cambridge Union Q&A/debate footage, 19 May 2025) and cross-checked against recent work on graph-aware argumentation, pragmatic inference, stepwise natural-language self-critique, selective/evidence-weighted debate, and persuasion-driven failure modes.
+This skill was motivated by close analysis of adversarial public debate patterns (including Cambridge Union Q&A/debate footage, 19 May 2025) and cross-checked against recent work on graph-aware argumentation, pragmatic inference, stepwise natural-language self-critique, selective/evidence-weighted debate, calibrated confidence/diversity, fallacy robustness, progressive argument mining, and persuasion-driven failure modes.
 
 Primary research links are maintained in `skills/03-2026-current-evidence.md`; this file contains portable reasoning rules rather than claims that a hosted model has been retrained.
