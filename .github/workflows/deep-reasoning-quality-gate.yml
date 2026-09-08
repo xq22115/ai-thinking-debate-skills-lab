@@ -48,6 +48,8 @@ jobs:
             skills/evals/validate_semantic_dialogue_state.py \
             skills/evals/validate_semantic_dialogue_state_execution.py \
             skills/evals/run_semantic_dialogue_state_eval.py \
+            skills/evals/prepare_semantic_dialogue_state_campaign.py \
+            skills/evals/test_prepare_semantic_dialogue_state_campaign.py \
             skills/evals/check_semantic_dialogue_state_promotion.py
       - name: Validate machine-readable quality contracts
         run: |
@@ -79,6 +81,9 @@ jobs:
       - name: Self-test semantic target-model execution isolation
         run: |
           python skills/evals/validate_semantic_dialogue_state_execution.py self-test
+      - name: Self-test semantic campaign packet generator
+        run: |
+          python skills/evals/prepare_semantic_dialogue_state_campaign.py self-test
       - name: Contract-test semantic campaign packet generator
         run: |
           python skills/evals/test_prepare_semantic_dialogue_state_campaign.py
