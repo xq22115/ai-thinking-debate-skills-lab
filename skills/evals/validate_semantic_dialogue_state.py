@@ -19,6 +19,8 @@ PROTOCOL = HERE / "semantic-dialogue-state-eval-protocol.md"
 EXECUTION_PROTOCOL = HERE / "semantic-dialogue-state-execution-isolation.md"
 HARNESS = HERE / "run_semantic_dialogue_state_eval.py"
 EXECUTION_VALIDATOR = HERE / "validate_semantic_dialogue_state_execution.py"
+CAMPAIGN_PREPARER = HERE / "prepare_semantic_dialogue_state_campaign.py"
+CAMPAIGN_TEST = HERE / "test_prepare_semantic_dialogue_state_campaign.py"
 PROMOTION_GATE = HERE / "check_semantic_dialogue_state_promotion.py"
 REFERENCE = ROOT / "skills" / "semantic-argument-microscope" / "DIALOGUE_STATE.md"
 EXPECTED_TARGET_CASES = 8
@@ -96,6 +98,8 @@ def main() -> None:
         EXECUTION_PROTOCOL,
         HARNESS,
         EXECUTION_VALIDATOR,
+        CAMPAIGN_PREPARER,
+        CAMPAIGN_TEST,
         PROMOTION_GATE,
         REFERENCE,
     ):
@@ -160,6 +164,9 @@ def main() -> None:
         PROTOCOL,
         [
             "Evaluation arms",
+            "Campaign packet preparation",
+            "campaign_manifest.json",
+            "CAMPAIGN_PACKET_VALID",
             "Run manifest",
             "Judge protocol",
             "Multi-judge record identity",
@@ -217,9 +224,35 @@ def main() -> None:
             "output_sha256_mismatch",
             "CLEAN_COMPLETE",
             "PARTIAL_OR_INVALID",
+            "prepare_template",
             "self_test",
         ],
         "execution receipt validator",
+    )
+
+    require_markers(
+        CAMPAIGN_PREPARER,
+        [
+            "SUITE_CONFIG",
+            "prepare_campaign",
+            "validate_campaign",
+            "execution_receipts.template.jsonl",
+            "identity drift",
+            "PREPARED_NOT_EXECUTED",
+            "CAMPAIGN_PACKET_VALID",
+            "self_test",
+        ],
+        "campaign packet preparer",
+    )
+
+    require_markers(
+        CAMPAIGN_TEST,
+        [
+            "test_prepare_campaign_binds_identity_and_suite_shapes",
+            "test_prepare_campaign_generates_frozen_receipt_templates",
+            "test_validate_campaign_rejects_identity_drift",
+        ],
+        "campaign packet contract test",
     )
 
     require_markers(
@@ -243,12 +276,14 @@ def main() -> None:
         f"{len(generalization_cases)} generalization cases)"
     )
     print(
-        "harness packaging: PASS — reusable fixture/arm execution + isolated execution receipts + "
-        "multi-judge disagreement + protection veto + combined promotion pre-gate present"
+        "harness packaging: PASS — reusable fixture/arm execution + frozen three-suite campaign "
+        "identity + receipt templates + isolated execution validation + multi-judge disagreement + "
+        "protection veto + combined promotion pre-gate present"
     )
     print(
-        "behavioral status: NOT EXECUTED — real target-model, protection/generalization, "
-        "repeated validation and host-live checks remain separate"
+        "behavioral status: NOT EXECUTED — campaign preparation is not target-model evidence; "
+        "real target-model, protection/generalization, repeated validation and host-live checks "
+        "remain separate"
     )
 
 
