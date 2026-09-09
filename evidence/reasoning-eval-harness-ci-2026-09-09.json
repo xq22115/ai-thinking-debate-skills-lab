@@ -2,24 +2,45 @@
   "receipt_type": "REASONING_EVAL_HARNESS_HOSTED_CI",
   "date": "2026-09-09",
   "repository": "xq22115/ai-thinking-debate-skills-lab",
-  "commit_sha": "6f89989bd9423d7af33c2e32eab789726fa68f91",
   "workflow": "Reasoning Eval Harness Gate",
-  "workflow_run_id": 34347021367,
-  "job_id": 102450923651,
-  "status": "PASS_HARNESS_CI",
-  "scope": [
-    "python_compile_provider_neutral_runner",
-    "validate_public_machine_readable_eval_artifacts",
-    "run_public_nonhidden_contract_example",
-    "verify_incomplete_pair_fails_closed",
-    "assert_public_example_cannot_self_promote_to_hidden_or_independent_evidence"
+  "status": "PASS_HARNESS_CI_HARDENED",
+  "runs": [
+    {
+      "phase": "initial_contract_gate",
+      "commit_sha": "6f89989bd9423d7af33c2e32eab789726fa68f91",
+      "workflow_run_id": 34347021367,
+      "job_id": 102450923651,
+      "conclusion": "success",
+      "scope": [
+        "python_compile_provider_neutral_runner",
+        "validate_public_machine_readable_eval_artifacts",
+        "run_public_nonhidden_contract_example",
+        "verify_incomplete_pair_fails_closed",
+        "assert_public_example_cannot_self_promote_to_hidden_or_independent_evidence"
+      ]
+    },
+    {
+      "phase": "hardened_pair_promotion_regression",
+      "commit_sha": "9ee4f9aeff99c6c39e27afd5633174e677b0345f",
+      "workflow_run_id": 34347854340,
+      "job_id": 102453635615,
+      "conclusion": "success",
+      "scope": [
+        "python_compile_hardened_provider_neutral_runner",
+        "validate_public_machine_readable_eval_artifacts",
+        "run_public_nonhidden_contract_example",
+        "verify_incomplete_pair_fails_closed",
+        "assert_public_example_cannot_self_promote_to_hidden_or_independent_evidence",
+        "synthetic_regression_hidden_promotion_requires_actual_scored_pair"
+      ]
+    }
   ],
-  "observed_steps": [
-    {"name": "Compile provider-neutral runner", "conclusion": "success"},
-    {"name": "Validate public machine-readable eval artifacts", "conclusion": "success"},
-    {"name": "Run public NON-HIDDEN contract example", "conclusion": "success"},
-    {"name": "Verify incomplete pair fails closed", "conclusion": "success"},
-    {"name": "Assert public example cannot self-promote to hidden or independent evidence", "conclusion": "success"}
+  "hardened_invariants": [
+    "private_oracle_presence_without_actual_scoring_does_not_earn_PRIVATE_ORACLE_SCORED",
+    "missing_one_side_of_a_pair_produces_UNSCORED_for_the_pair_relation",
+    "unscored_pair_relation_does_not_earn_PERTURBED_HIDDEN",
+    "missing_independent_judge_evidence_blocks_progress_past_PRIVATE_ORACLE_SCORED_in_the_linear_ladder",
+    "public_nonhidden_example_remains_capped_at_SAME_MODEL_SMOKE"
   ],
   "evidence_boundary": {
     "hosted_ci_for_eval_harness": true,
@@ -28,10 +49,11 @@
     "private_holdout_scored": false,
     "independent_model_judge": false,
     "hidden_metamorphic_model_run": false,
+    "unseen_adversarial_model_run": false,
     "repeated_model_variance": false,
     "authentic_multi_agent_reasoning_runtime": false,
     "host_live_reasoning_behavior": false,
     "stable_release_proven": false
   },
-  "interpretation": "GitHub-hosted CI proves the evaluation harness compiles and its public non-hidden contract/fail-closed promotion checks execute successfully at the recorded commit. It does not prove model reasoning quality, hidden generalization, independent judging, or host-live reasoning behavior."
+  "interpretation": "GitHub-hosted CI proves the provider-neutral evaluation harness compiles and its public/non-hidden and fail-closed evidence-promotion regressions execute successfully at the recorded commits. The hardened run specifically proves that a missing paired execution cannot be promoted into PERTURBED_HIDDEN by metadata alone. This remains harness evidence only, not target-model reasoning evidence."
 }
