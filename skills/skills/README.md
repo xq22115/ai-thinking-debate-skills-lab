@@ -7,7 +7,7 @@ The skill folder shape follows the current Agent Skills semantic pattern: each p
 ## RC1 Core Skills
 
 1. `evidence-gap-research` — evidence sufficiency, counterevidence, source-dependence/provenance, contradiction handling, calibrated belief updates, VOI, distribution-shift checks, loss/reversibility/sensitivity analysis, robust action selection, and stop conditions. (`0.3.0-rc1`; consult `EPISTEMIC_CALIBRATION.md` and `DECISION_ROBUSTNESS.md` on demand)
-2. `semantic-argument-microscope` — literal/pragmatic boundary, implicit warrants, presuppositions, QUD/crux control, defeaters, burden/frame shifts, rhetorical-vs-epistemic separation, plus on-demand argument-scheme / critical-question and causal / abductive analysis before debate. (`0.2.0-rc1`)
+2. `semantic-argument-microscope` — literal/pragmatic boundary, implicit warrants, presuppositions, QUD/crux control, defeaters, burden/frame shifts, rhetorical-vs-epistemic separation, plus on-demand argument-scheme / critical-question, causal / abductive, and multi-turn dialogue-state/common-ground analysis before debate. (`0.3.0-rc1`; consult `ARGUMENT_SCHEMES.md`, `CAUSAL_ABDUCTIVE_REASONING.md`, and `DIALOGUE_STATE.md` only when their trigger conditions are material)
 3. `competing-hypotheses` — materially different explanations and discriminating tests.
 4. `root-cause-clustering` — mechanism-level repair instead of symptom patching.
 5. `completion-gate` — prevents false `done` / `verified` / `deployed` claims; exact-revision and infrastructure-state aware. (`0.1.1-rc1`)
@@ -21,9 +21,9 @@ The skill folder shape follows the current Agent Skills semantic pattern: each p
 
 For complex engineering/research/argument tasks, recommended default composition:
 
-`Goal Contract / objective audit → capability-challenge → compatibility-audit → evidence-gap-research (EPISTEMIC_CALIBRATION.md for evidence/belief/VOI; DECISION_ROBUSTNESS.md when loss/reversibility/shift/sensitivity matter) → semantic-argument-microscope (ARGUMENT_SCHEMES.md / CAUSAL_ABDUCTIVE_REASONING.md on demand) → competing-hypotheses → root-cause-clustering → multi-agent-deliberation (only if useful) → verifier/metamorphic checks when consequential → robust action → recoverable-state/TEMPORAL_TRAJECTORY_INTEGRITY.md when execution is long-horizon/stateful/delayed/asynchronous → execution bound to Goal Contract + trajectory state → completion-gate → fresh recoverable-state checkpoint`
+`Goal Contract / objective audit → capability-challenge → compatibility-audit → evidence-gap-research (EPISTEMIC_CALIBRATION.md for evidence/belief/VOI; DECISION_ROBUSTNESS.md when loss/reversibility/shift/sensitivity matter) → semantic-argument-microscope (ARGUMENT_SCHEMES.md / CAUSAL_ABDUCTIVE_REASONING.md on demand; DIALOGUE_STATE.md only when multi-turn shared commitments/common-ground changes can alter the verdict) → competing-hypotheses → root-cause-clustering → multi-agent-deliberation (only if useful) → verifier/metamorphic checks when consequential → robust action → recoverable-state/TEMPORAL_TRAJECTORY_INTEGRITY.md when execution is long-horizon/stateful/delayed/asynchronous → execution bound to Goal Contract + dialogue/trajectory state → completion-gate → fresh recoverable-state checkpoint`
 
-The orchestrator should omit skills and references when their trigger conditions are absent.
+The orchestrator should omit skills and progressive references when their trigger conditions are absent. Do not load dialogue-state machinery for a short self-contained claim if QUD/crux/warrant analysis already resolves it, and do not load temporal-trajectory machinery for a single-step task with no delayed or mutable state.
 
 ## Shared Hard Invariants
 
@@ -68,11 +68,23 @@ The orchestrator should omit skills and references when their trigger conditions
 - `VOTE_COUNT != EVIDENCE_WEIGHT`
 - `VERBOSITY != ARGUMENT_STRENGTH`
 - `RHETORICAL_WIN != EPISTEMIC_WIN`
+- `PERSUASION != COMPREHENSION`
 - `PLAUSIBLE_IMPLICATURE != ASSERTED_FACT`
 - `GENERATIVE_PLAUSIBILITY != CASE_EVIDENCE`
 - `ASSIGNED_STANCE != BELIEF`
 - `NOT_PROVEN != PROVEN_FALSE`
 - `FLUENT_QUESTION != CRITICAL_QUESTION`
+- `TEMPORARY_GRANT != AGREEMENT`
+- `UNANSWERED_PRESUPPOSITION != COMMON_GROUND`
+- `SHARED_CONCLUSION != SHARED_REASONING`
+- `STATE_CHANGE != EVIDENCE`
+- `CITATIONS_OR_RAG != PROVENANCE_QUALITY`
+- `LEXICAL_MATCH != ARGUMENT_UNDERSTANDING`
+- `JUDGE_CONSENSUS != GROUND_TRUTH`
+- `TARGET_GAIN != SAFE_PROMOTION`
+- `PARAPHRASE_SUCCESS != STRUCTURAL_GENERALIZATION` unless relation/state behavior survives lexical/domain shifts
+- `CAMPAIGN_PACKET_VALID != TARGET_MODEL_RUN`
+- `PREPARED_NOT_EXECUTED != OUTPUT_RECORDED`
 - `ASSOCIATION != INTERVENTION`
 - `P_Y_GIVEN_X != P_Y_GIVEN_DO_X`
 - `TEMPORAL_ORDER != CAUSATION`
@@ -95,10 +107,19 @@ The orchestrator should omit skills and references when their trigger conditions
 - `skills/evals/semantic-argument-microscope-fixtures.json` — S1–S12 semantic/pragmatic fixtures.
 - `skills/evals/argument-scheme-critical-question-fixtures.json` — CQ1–CQ8 scheme/CQ fixtures.
 - `skills/evals/causal-abductive-reasoning-fixtures.json` — C1–C10 causal/abductive fixtures.
+- `skills/evals/semantic-dialogue-state-fixtures.json` — DS1–DS8 target dialogue-state/common-ground cases.
+- `skills/evals/semantic-dialogue-state-protection-fixtures.json` — DSP1–DSP12 neighboring-capability protection.
+- `skills/evals/semantic-dialogue-state-generalization-holdout.json` — DSG1–DSG12 lexical/domain anti-leakage holdout.
+- `skills/evals/semantic-dialogue-state-scoring-rubric.md` — observable-output dimensions, blocking errors and promotion veto.
+- `skills/evals/semantic-dialogue-state-eval-protocol.md` — exact run/campaign identity, isolated execution and separated judging protocol.
+- `skills/evals/run_semantic_dialogue_state_eval.py` — provider-neutral run preparation, response/judgment validation, case-first aggregation and protection summaries.
+- `skills/evals/prepare_semantic_dialogue_state_campaign.py` — freezes one repo/model/provider/seed across DS/DSP/DSG and creates linked manifests, requests, receipt templates and `campaign_manifest.json` without model/judge calls.
+- `skills/evals/validate_semantic_dialogue_state_execution.py` — strict execution-receipt and contamination validation.
+- `skills/evals/check_semantic_dialogue_state_promotion.py` — combined already-judged DS/DSP/DSG promotion pre-gate.
 - `skills/evals/multi-agent-judge-bias-fixtures.json` — J1–J8 judge bias / anti-sycophancy fixtures.
 - `skills/evals/verifier-metamorphic-fixtures.json` — V1–V10 evaluator robustness/metamorphic fixtures.
 
-Fixture presence is not generalized model-execution evidence. Visible same-model smoke, hidden variants, independent judging, repeated variance, authentic runtime, and host-live regression remain separate evidence classes.
+Fixture presence is not generalized model-execution evidence. Visible same-model smoke, campaign preparation, hidden variants, independent judging, repeated variance, authentic runtime, and host-live regression remain separate evidence classes.
 
 ## Promotion Rule
 
@@ -110,9 +131,11 @@ For `evidence-gap-research`, minimum regression includes duplicate-source detect
 
 For `recoverable-state`, temporal regression includes local-pass/global-fail, delayed-feedback pending state, first-irrecoverable-error localization, checkpoint staleness, option value, over-parallelization, sunk-cost continuation, stale-feedback/critic handling, long-trajectory judge robustness and feedback-conditioned replanning.
 
-For `semantic-argument-microscope`, minimum regression includes definition mismatch, hidden warrant, QUD substitution, pragmatic context flip, defeaters, stance freedom, claim-strength calibration, scheme/CQ fidelity, causal-direction/intervention/counterfactual checks and graph coherence.
+For `semantic-argument-microscope`, minimum regression includes definition mismatch, hidden warrant, QUD substitution, pragmatic context flip, presupposition-vs-assertion, defeaters, stance freedom, claim-strength calibration, scheme/CQ fidelity, causal-direction/intervention/counterfactual checks, graph coherence, temporary-grant/common-ground integrity, answer-space/criterion changes, reasoning-alignment preservation, provenance relevance, rebuttal-target comprehension, DSP1–DSP12 neighboring protection, and DSG1–DSG12 lexical/domain structural generalization.
 
-For `multi-agent-deliberation`, material judge validation includes order swap, verbosity normalization, bandwagon resistance, minority-correct retention, early-consensus resistance, follow-up persuasion, blind-label invariance, separation from debater self-evaluation, and long-trajectory early-failure retention when relevant.
+For the dialogue-state extension specifically, target-suite gain cannot authorize promotion if `microscope-dialogue-state` regresses against `microscope-core` on either protection holdout, introduces a new blocking error, or loses intended relation/state behavior after lexical/domain cues change. `READY_FOR_REPEATED_VALIDATION` remains a pre-gate decision state, not `STABLE` or `HOST_LIVE`.
+
+For `multi-agent-deliberation`, material judge validation includes order swap, verbosity normalization, bandwagon resistance, minority-correct retention, early-consensus resistance, follow-up persuasion, blind-label invariance, separation from debater self-evaluation, preservation of material disagreement, and long-trajectory early-failure retention when relevant.
 
 ## Portability Boundary
 

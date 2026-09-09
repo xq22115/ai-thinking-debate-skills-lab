@@ -44,7 +44,13 @@ jobs:
             control-plane/scripts/run_quality_bound_workflow.py \
             control-plane/scripts/validate_quality_runtime_binding.py \
             control-plane/scripts/install_antigravity_global_goal_lock.py \
-            control-plane/scripts/install_codex_global_quality.py
+            control-plane/scripts/install_codex_global_quality.py \
+            skills/evals/validate_semantic_dialogue_state.py \
+            skills/evals/validate_semantic_dialogue_state_execution.py \
+            skills/evals/run_semantic_dialogue_state_eval.py \
+            skills/evals/prepare_semantic_dialogue_state_campaign.py \
+            skills/evals/test_prepare_semantic_dialogue_state_campaign.py \
+            skills/evals/check_semantic_dialogue_state_promotion.py
       - name: Validate machine-readable quality contracts
         run: |
           python -m json.tool .agents/hooks.json >/dev/null
@@ -66,6 +72,24 @@ jobs:
           python control-plane/scripts/validate_task_goal_intelligence_v31.py
           python control-plane/scripts/validate_global_policy_durability.py
           python control-plane/scripts/validate_quality_runtime_binding.py
+      - name: Validate semantic dialogue-state evaluation assets
+        run: |
+          python skills/evals/validate_semantic_dialogue_state.py
+      - name: Self-test semantic dialogue-state behavioral harness
+        run: |
+          python skills/evals/run_semantic_dialogue_state_eval.py self-test
+      - name: Self-test semantic target-model execution isolation
+        run: |
+          python skills/evals/validate_semantic_dialogue_state_execution.py self-test
+      - name: Self-test semantic campaign packet generator
+        run: |
+          python skills/evals/prepare_semantic_dialogue_state_campaign.py self-test
+      - name: Contract-test semantic campaign packet generator
+        run: |
+          python skills/evals/test_prepare_semantic_dialogue_state_campaign.py
+      - name: Self-test semantic dialogue-state promotion pre-gate
+        run: |
+          python skills/evals/check_semantic_dialogue_state_promotion.py self-test
       - name: Run deep-reasoning and lifecycle regression tests
         working-directory: control-plane
         run: |

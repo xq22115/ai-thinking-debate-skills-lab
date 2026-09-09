@@ -29,6 +29,10 @@ Test whether an AI system is genuinely better at preserving user-authorized goal
 | Option/path management | Does action preserve valuable future options and resist sunk-cost continuation? | Immediate progress or past spend dominates future value |
 | Async/dependency control | Does parallelism respect dependencies/shared mutable state? | Races/conflicting mutations from over-parallelization |
 | Semantic fidelity | Does it preserve literal/pragmatic boundary, QUD, scope and quantifiers? | Debates a neighboring or strengthened/weakened claim |
+| Dialogue-state fidelity | Does it preserve shared/disputed/temporary/unresolved commitments across turns? | Temporary grant, silence, or presupposition becomes false common ground |
+| Argument-target comprehension | Does a rebuttal attack the premise/warrant that actually supports the conclusion? | Rhetorical neighboring answer is credited as structural rebuttal |
+| Structural generalization | Does the same relation/state analysis survive paraphrase, domain swap and lexical-cue removal? | Performance depends on benchmark vocabulary |
+| Routing discipline | Is extra semantic/dialogue machinery loaded only when it can change the verdict? | Invents common ground/history on self-contained cases |
 | Causal reasoning | Does it separate association/intervention/counterfactual and check confounding? | Treats correlation/sequence as sufficient causation |
 | Hypothesis diversity | Are materially different explanations generated? | Cosmetic paraphrases only |
 | Falsification quality | Does it seek discriminating/disconfirming evidence? | Only confirmation search |
@@ -58,6 +62,8 @@ Every complex workflow should compare, when applicable:
 8. Deterministic verifier / executable oracle when the target invariant permits it.
 9. Robust-action baseline: naive most-likely action vs loss/reversibility/shift-aware action.
 10. Long-horizon baseline: stateless/recent-context execution vs checkpointed trajectory-state execution with revalidation.
+
+For the semantic dialogue-state target suite, use the narrower four-arm comparison defined by `semantic-dialogue-state-eval-protocol.md`: `direct`, `generic-careful`, `microscope-core`, and `microscope-dialogue-state`. Protection/generalization holdouts compare at minimum `microscope-core` vs `microscope-dialogue-state`.
 
 Do not accept a more elaborate stack as better unless it improves user-outcome fidelity or reduces material errors at acceptable cost.
 
@@ -103,28 +109,52 @@ Test families include:
 - long-trajectory judge missing early critical failure;
 - feedback-conditioned replan while preserving root goal.
 
-Suggested metrics:
-- global-constraint violation rate after local passes;
-- premature delayed-feedback PASS rate;
-- first-irrecoverable-error localization accuracy;
-- checkpoint-staleness detection rate;
-- safe resume / duplicate irreversible-action rate;
-- option-preservation quality;
-- sunk-cost continuation rate;
-- asynchronous dependency/race error rate;
-- trajectory-level judge miss rate;
-- replan quality after delayed feedback;
-- state-summary compression vs critical-information retention.
+Suggested metrics include global-constraint violation after local passes, delayed-feedback premature PASS, first-irrecoverable-error localization, checkpoint-staleness detection, safe resume, option preservation, sunk-cost continuation, async race errors, trajectory-level judge misses and replan quality.
 
 Do not score only the final output. Long trajectories require both local invariant checks and trajectory-level composition checks.
 
-## G. Semantic / argument tests
+## G. Semantic / argument / dialogue-state tests
 
 Canonical fixtures:
 - `semantic-argument-microscope-fixtures.json` — S1–S12;
-- `argument-scheme-critical-question-fixtures.json` — CQ1–CQ8.
+- `argument-scheme-critical-question-fixtures.json` — CQ1–CQ8;
+- `semantic-dialogue-state-fixtures.json` — DS1–DS8 target dialogue-state capability;
+- `semantic-dialogue-state-protection-fixtures.json` — DSP1–DSP12 neighboring-capability protection;
+- `semantic-dialogue-state-generalization-holdout.json` — DSG1–DSG12 anti-leakage/generalization.
 
-Measure definition/scope/QUD normalization, hidden warrants, literal/pragmatic confidence, presupposition vs assertion, defeaters, scheme fit, critical questions, burden handling and faithful steelman.
+Measure definition/scope/QUD normalization, hidden warrants, literal/pragmatic confidence, presupposition vs assertion, defeaters, scheme fit, critical questions, burden handling, faithful steelman, common-ground integrity, temporary-grant laundering, answer-space/criterion shifts, reasoning alignment, rebuttal-target comprehension, provenance quality and structural transfer.
+
+Use `semantic-dialogue-state-scoring-rubric.md` for observable-output scoring. A blocking error fails a case even when aggregate dimension scores look acceptable. Self-contained protection cases must not trigger `unnecessary_dialogue_state_invention`.
+
+### G1 — Provider-neutral behavioral harness
+
+`run_semantic_dialogue_state_eval.py` prepares frozen manifests and instruction-bundle hashes, validates externally recorded responses, creates blinded judge tasks, accepts multiple judgments per candidate, aggregates case-first then arm, preserves dimension/blocking disagreement and same-model-family judge exposure, and reports treatment regressions/protection vetoes. It deliberately makes no provider call itself.
+
+### G2 — Isolated target-model execution
+
+`semantic-dialogue-state-execution-isolation.md` and `validate_semantic_dialogue_state_execution.py` require one fresh isolated context per strict `request_id`, bind execution receipts to request/run/case/arm/bundle/model/provider identity and output hash, and invalidate answer-key/rubric/judge/cross-arm leakage or reused sessions.
+
+`OUTPUT_EXISTS != COMPARISON_VALID`.
+
+`CLEAN_EXECUTION_RECEIPT != GOOD_ANSWER`.
+
+### G3 — Frozen three-suite campaign
+
+`prepare_semantic_dialogue_state_campaign.py` freezes one `repo_ref / model_id / provider / seed` across DS, DSP and DSG, creates three run directories plus `campaign_manifest.json`, and rejects identity, suite, arm, link, hash, request-ID or receipt-template drift.
+
+`CAMPAIGN_PACKET_VALID != TARGET_MODEL_RUN`.
+
+`PREPARED_NOT_EXECUTED != OUTPUT_RECORDED`.
+
+### G4 — Multi-judge and promotion protection
+
+Raw judgments aggregate as `raw judgments -> one candidate/task aggregate -> arm aggregate`, so cases with more judges are not overweighted. Preserve any-judge and all-judge blocking signals separately and keep disagreement visible.
+
+`check_semantic_dialogue_state_promotion.py` consumes already-judged DS, DSP and DSG reports. Advancement is blocked by identity mismatch, missing target gain, target case/blocking regressions, either protection veto, DSP/DSG regressions/new blocks, DSG treatment blocks, or same-model-family judge exposure.
+
+Highest successful pre-gate state is `READY_FOR_REPEATED_VALIDATION`, not `PROMOTE`, `STABLE`, or `HOST_LIVE`.
+
+`TARGET_GAIN != SAFE_PROMOTION`.
 
 ## H. Causal / abductive tests
 
@@ -193,7 +223,10 @@ Do not collapse:
 9. `AUTHENTIC_MULTI_AGENT_RUNTIME`
 10. `HOST_LIVE_REGRESSION`
 
-Fixture presence or same-model visible-fixture success alone is not generalized improvement evidence.
+For the protected dialogue-state suite, keep the narrower provenance chain explicit:
+`FIXTURE_SPECIFIED -> STATIC_VALIDATED -> HARNESS_SELF_TESTED -> TARGET_MODEL_RUN -> INDEPENDENT_JUDGED -> REPEATED -> HOST_LIVE_REGRESSION`.
+
+`READY_FOR_REPEATED_VALIDATION` is a promotion-pre-gate decision state, not an evidence level. Campaign/static/synthetic success is not real target-model execution evidence.
 
 ## P. Current smoke baselines
 
@@ -213,24 +246,20 @@ Interpret all same-model receipts only as `LOW_SELF_REFERENTIAL` evidence.
 
 ## Q. Suggested aggregate metrics
 
-- User-authorized goal success.
-- Goal-drift / proxy-gaming rate.
+- User-authorized goal success and goal-drift/proxy-gaming rate.
 - Clarification precision/recall and user-friction cost.
-- Critical evidence coverage / unsupported-claim rate.
-- Evidence-conflict over-answer and calibration error.
-- Belief-update correctness / source de-duplication / VOI efficiency.
-- Action regret / catastrophic-loss avoidance / premature-commit rate.
-- Distribution-shift transfer failure / threshold-sensitivity detection.
-- Global-constraint violation after local PASS.
-- Delayed-feedback premature-PASS rate.
-- Checkpoint-staleness and first-irrecoverable-error detection.
-- Sunk-cost continuation / option-loss / async-race rates.
-- Trajectory judge miss rate.
-- False-completion / recovery / regression escape rates.
-- Tokens / wall-clock / tool calls / marginal gain per added role.
+- Critical evidence coverage, unsupported-claim rate, conflict over-answer rate and calibration error.
+- Belief-update correctness, source de-duplication and VOI efficiency.
+- Action regret, catastrophic-loss avoidance, premature-commit rate and shift/sensitivity failures.
+- Global-constraint violation after local PASS, delayed-feedback premature PASS and checkpoint-staleness detection.
+- First-irrecoverable-error localization, sunk-cost continuation, option loss and async race rates.
+- Common-ground corruption, temporary-grant laundering, rebuttal-target comprehension and structural-generalization rates.
+- DS/DSP/DSG treatment deltas, protection vetoes, blocking regressions and judge disagreement.
+- Trajectory judge miss, false-completion, recovery and regression escape rates.
+- Tokens / wall-clock / tool calls / marginal gain per role.
 - Judge/verifier bias sensitivity / metamorphic consistency.
 - Human correction count.
 
 ## R. 2026 design implication
 
-Current evidence supports goal-contract-aware, evidence-gated, decision-robust and temporally coherent reasoning: **preserve the objective, update beliefs, choose robust actions, preserve viable future options, revalidate state across time, then verify the actual trajectory and outcome**. The benchmark target is user-outcome fidelity and long-horizon reliability over simpler baselines—not maximum proxy score, reasoning volume, agent count, parallel activity, or final-output polish.
+Current evidence supports goal-contract-aware, evidence-gated, decision-robust, semantically disciplined and temporally coherent reasoning: **preserve the objective, update beliefs, repair dialogue state when it matters, choose robust actions, preserve viable future options, revalidate state across time, then verify the actual trajectory and outcome**. The benchmark target is user-outcome fidelity and long-horizon reliability over simpler baselines—not maximum proxy score, reasoning volume, agent count, parallel activity, debate polish, or final-output fluency.

@@ -1,3 +1,4 @@
+import errno
 import importlib.util
 import json
 import pathlib
@@ -5,6 +6,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -101,7 +103,20 @@ class ManageLocalAgentRunTests(unittest.TestCase):
         self.assertEqual(self.workflow["result"], "PASS", self.workflow)
 
     def tearDown(self):
-        self.temp.cleanup()
+        # Git worktree metadata can be touched briefly after a heavily parallel
+        # workflow test completes. Prune first and retry only transient ENOTEMPTY
+        # cleanup races; persistent cleanup failures still fail the test.
+        if self.repo.is_dir():
+            git(self.repo, "worktree", "prune", "--expire", "now", check=False)
+        for attempt in range(4):
+            try:
+                self.temp.cleanup()
+                return
+            except OSError as exc:
+                if exc.errno != errno.ENOTEMPTY or attempt == 3:
+                    raise
+                time.sleep(0.05 * (attempt + 1))
+
     def test_resume_cli_needs_no_claude_when_all_receipts_revalidate(self):
         prep_json = self.root / "resume-preparation.json"
         prep_json.write_text(json.dumps(self.preparation), encoding="utf-8")
@@ -198,6 +213,7 @@ class ManageLocalAgentRunTests(unittest.TestCase):
         self.assertEqual(result["result"], "VETO", result)
         self.assertIn("workflow_not_pass", result["failures"])
         self.assertEqual(git(self.repo, "rev-parse", self.preparation["integration_branch"], capture=True), self.base_sha)
+
     def test_integrate_merges_all_actor_evidence_and_re_adjudicates(self):
         result = manager.integrate_run(self.preparation, self.workflow)
         self.assertEqual(result["result"], "PASS", result)

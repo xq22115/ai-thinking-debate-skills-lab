@@ -1,0 +1,91 @@
+{
+  "suite": "semantic-dialogue-state-protection-v0.1",
+  "status": "SPECIFIED_NOT_EXECUTED",
+  "scope": "protection holdout for neighboring semantic, argument-scheme, and causal reasoning",
+  "notes": [
+    "These cases are not target dialogue-state cases. They protect capabilities that should not regress when DIALOGUE_STATE.md is loaded or over-triggered.",
+    "The strongest comparison is microscope-core versus microscope-dialogue-state; direct/generic arms are optional for this holdout.",
+    "A treatment gain on DS1-DS8 does not justify promotion if this holdout shows material regressions or new blocking errors."
+  ],
+  "cases": [
+    {
+      "id": "DSP1-definition-mismatch",
+      "input": "Speaker A calls a system efficient because it is low cost. Speaker B calls it inefficient because it is slow. Explain the disagreement.",
+      "must_detect": ["definition_mismatch", "not_direct_contradiction", "normalize_criterion_before_verdict"],
+      "fail_if": ["chooses_winner_before_normalizing_definition", "invents_prior_shared_commitments"]
+    },
+    {
+      "id": "DSP2-single-turn-qud",
+      "input": "Question: did the update reduce error rate? Answer offered: the team worked hard and users like the interface. Did the answer resolve the question?",
+      "must_detect": ["original_qud", "neighboring_claims_do_not_answer_qud"],
+      "fail_if": ["marks_original_question_resolved", "adds_unnecessary_common_ground_story"]
+    },
+    {
+      "id": "DSP3-pragmatic-context",
+      "input": "The sentence 'That was quick' is said once after a task finishes in seconds and once after a promised five-minute task takes three hours. Compare the meaning.",
+      "must_detect": ["literal_same", "pragmatic_interpretation_context_dependent", "possible_irony_in_slow_context"],
+      "fail_if": ["assigns_same_hidden_meaning_to_both", "states_private_motive_as_fact"]
+    },
+    {
+      "id": "DSP4-defeater-update",
+      "input": "Deliveries normally arrive the next day, so tomorrow is initially likely. New evidence says tomorrow is a declared service shutdown day. Update the conclusion.",
+      "must_detect": ["defeasible_initial_inference", "new_defeater", "confidence_revision"],
+      "fail_if": ["keeps_original_conclusion_without_update", "treats_revision_as_inconsistency"]
+    },
+    {
+      "id": "DSP5-stance-freedom",
+      "input": "An analyst initially favors H1. A decisive measurement contradicts H1 and supports H2. What should the analyst do?",
+      "must_detect": ["revision_expected", "stance_not_identity", "evidence_over_assignment"],
+      "fail_if": ["continues_defending_H1_because_initially_assigned"]
+    },
+    {
+      "id": "DSP6-critical-question-ranking",
+      "input": "Errors fell after a medication policy was adopted. Candidate questions: A) What color is the policy document? B) Did measurement rules change? C) Do staff like it? D) What other interventions occurred? Rank the most decision-relevant questions.",
+      "must_detect": ["causal_scheme", "B_and_D_high_decision_value", "A_low_value"],
+      "fail_if": ["treats_all_questions_as_equally_critical", "ranks_style_above_confounders"]
+    },
+    {
+      "id": "DSP7-steelman-fidelity",
+      "input": "Speaker says: 'This rule usually helps because it reduces queue time.' A critic changes that to 'This rule always helps everyone' and defeats the stronger claim with one exception. Evaluate the critique.",
+      "must_detect": ["claim_strength_distortion", "faithful_steelman_required", "exception_does_not_refute_usually_by_itself"],
+      "fail_if": ["calls_invented_stronger_version_a_steelman", "claims_original_defeated"]
+    },
+    {
+      "id": "DSP8-correlation-not-causation",
+      "input": "Neighborhoods with more umbrellas also have more traffic accidents, therefore umbrellas cause accidents. Evaluate the inference.",
+      "must_detect": ["association_only", "common_cause_candidate_weather", "causal_claim_not_established"],
+      "fail_if": ["accepts_causation_from_correlation", "replaces_causal_analysis_with_dialogue_state_labels"]
+    },
+    {
+      "id": "DSP9-intervention-vs-observation",
+      "input": "People who choose X tend to have Y. What can we conclude about what happens if X is forced for otherwise comparable people?",
+      "must_detect": ["observational_not_interventional", "need_causal_bridge_or_design"],
+      "fail_if": ["answers_do_X_directly_from_observation", "adds_irrelevant_common_ground_tracking"]
+    },
+    {
+      "id": "DSP10-global-causal-coherence",
+      "input": "Pairwise claims A→B, B→C, and C→A are each locally plausible, but the stated system is known to be acyclic. What follows?",
+      "must_detect": ["global_graph_constraint", "at_least_one_edge_wrong_or_reinterpreted"],
+      "fail_if": ["accepts_all_edges_without_global_consistency_check"]
+    },
+    {
+      "id": "DSP11-simple-definition-application",
+      "input": "A specification explicitly defines acceptable latency as under 100 ms. The measured latency is 80 ms. Does the measurement meet that definition?",
+      "must_detect": ["direct_definition_application", "yes_under_stated_definition", "no_extra_inference_needed"],
+      "fail_if": ["invents_dispute_or_shared_history", "adds_unnecessary_dialogue_state_machinery"]
+    },
+    {
+      "id": "DSP12-burden-not-proven-vs-safe",
+      "input": "No one has proven that the new process is unsafe, therefore it is proven safe. Evaluate the claim.",
+      "must_detect": ["burden_or_absence_of_evidence_move", "not_proven_unsafe_not_equal_proven_safe", "expected_evidence_question"],
+      "fail_if": ["accepts_proven_safe_from_missing_disproof", "uses_dialogue_state_as_substitute_for_evidence"]
+    }
+  ],
+  "release_gate": {
+    "fixture_presence": "PASS_WHEN_READ_BACK",
+    "static_validation": "NOT_RUN",
+    "protection_model_execution": "NOT_RUN",
+    "independent_judge_execution": "NOT_RUN",
+    "promotion_veto": "ACTIVE_WHEN_EXECUTED"
+  }
+}
