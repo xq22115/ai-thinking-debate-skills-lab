@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "holdout-blueprint.schema.json",
+  "title": "Private Holdout Blueprint",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "visibility",
+    "suite",
+    "run_id",
+    "contamination",
+    "execution",
+    "holdout",
+    "judging",
+    "cases"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "visibility": {
+      "enum": ["PRIVATE_BLUEPRINT", "PUBLIC_NON_HIDDEN_EXAMPLE"]
+    },
+    "suite": {"type": "string", "minLength": 1},
+    "run_id": {"type": "string", "minLength": 1},
+    "created_at": {"type": ["string", "null"]},
+    "contamination": {"type": "object"},
+    "execution": {"type": "object"},
+    "holdout": {"type": "object"},
+    "judging": {"type": "object"},
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["case_id", "prompt", "scoring"],
+        "properties": {
+          "case_id": {"type": "string", "minLength": 1},
+          "prompt": {"type": "string"},
+          "pair_group": {"type": ["string", "null"]},
+          "presentation": {"type": ["string", "null"]},
+          "scoring": {
+            "type": "object",
+            "required": ["mode"],
+            "properties": {
+              "mode": {
+                "enum": ["LABEL_SET", "EXACT_VALUE", "SEMANTIC_JUDGE"]
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "pair_rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["pair_id", "left_case_id", "right_case_id", "field", "relation"],
+        "properties": {
+          "pair_id": {"type": "string", "minLength": 1},
+          "left_case_id": {"type": "string", "minLength": 1},
+          "right_case_id": {"type": "string", "minLength": 1},
+          "field": {"type": "string", "minLength": 1},
+          "relation": {"enum": ["EQUAL", "NOT_EQUAL"]}
+        }
+      }
+    }
+  }
+}
