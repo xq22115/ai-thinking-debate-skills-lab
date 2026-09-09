@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "reasoning-eval-result.schema.json",
+  "title": "Reasoning Evaluation Result Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "suite",
+    "run_id",
+    "status",
+    "evidence_class",
+    "contamination",
+    "execution",
+    "judging",
+    "holdout",
+    "summary",
+    "cases",
+    "promotion"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "suite": {"type": "string", "minLength": 1},
+    "run_id": {"type": "string", "minLength": 1},
+    "created_at": {"type": ["string", "null"]},
+    "status": {
+      "enum": ["PASS", "FAIL", "PARTIAL", "NOT_RUN", "UNSCORED_REQUIRES_JUDGE", "INVALID"]
+    },
+    "evidence_class": {
+      "enum": [
+        "FIXTURE_SPECIFIED",
+        "STATIC_VALIDATED",
+        "SAME_MODEL_SMOKE",
+        "FRESH_CONTEXT_RUN",
+        "PRIVATE_ORACLE_SCORED",
+        "INDEPENDENT_JUDGED",
+        "PERTURBED_HIDDEN",
+        "UNSEEN_ADVERSARIAL",
+        "REPEATED",
+        "AUTHENTIC_MULTI_AGENT_RUNTIME",
+        "HOST_LIVE_REGRESSION"
+      ]
+    },
+    "contamination": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authoring_overlap",
+        "fixture_visible_to_generator",
+        "expected_labels_visible_to_generator"
+      ],
+      "properties": {
+        "authoring_overlap": {"type": ["boolean", "null"]},
+        "fixture_visible_to_generator": {"type": ["boolean", "null"]},
+        "expected_labels_visible_to_generator": {"type": ["boolean", "null"]},
+        "notes": {"type": ["string", "null"]}
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_executed",
+        "fresh_context",
+        "runtime_independent",
+        "responses_frozen_before_scoring",
+        "response_count",
+        "repeat_count"
+      ],
+      "properties": {
+        "target_executed": {"type": "boolean"},
+        "fresh_context": {"type": ["boolean", "null"]},
+        "runtime_independent": {"type": ["boolean", "null"]},
+        "responses_frozen_before_scoring": {"type": ["boolean", "null"]},
+        "response_count": {"type": "integer", "minimum": 0},
+        "repeat_count": {"type": "integer", "minimum": 0},
+        "target_id": {"type": ["string", "null"]},
+        "execution_receipts": {
+          "type": "array",
+          "items": {"type": "string"},
+          "uniqueItems": true
+        }
+      }
+    },
+    "judging": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "independent", "judgment_count"],
+      "properties": {
+        "mode": {
+          "enum": ["NONE", "DETERMINISTIC_PRIVATE_ORACLE", "INDEPENDENT_MODEL_JUDGE", "MIXED"]
+        },
+        "independent": {"type": ["boolean", "null"]},
+        "judgment_count": {"type": "integer", "minimum": 0},
+        "judge_id": {"type": ["string", "null"]},
+        "judge_receipts": {
+          "type": "array",
+          "items": {"type": "string"},
+          "uniqueItems": true
+        }
+      }
+    },
+    "holdout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "private_oracle_separated",
+        "hidden_variant",
+        "variant_hidden_from_generator",
+        "oracle_hash_present",
+        "unseen_adversarial"
+      ],
+      "properties": {
+        "private_oracle_separated": {"type": ["boolean", "null"]},
+        "hidden_variant": {"type": ["boolean", "null"]},
+        "variant_hidden_from_generator": {"type": ["boolean", "null"]},
+        "oracle_hash_present": {"type": "boolean"},
+        "unseen_adversarial": {"type": ["boolean", "null"]},
+        "oracle_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+        "public_manifest_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total", "passed", "failed", "partial", "unscored"],
+      "properties": {
+        "total": {"type": "integer", "minimum": 0},
+        "passed": {"type": "integer", "minimum": 0},
+        "failed": {"type": "integer", "minimum": 0},
+        "partial": {"type": "integer", "minimum": 0},
+        "unscored": {"type": "integer", "minimum": 0},
+        "pair_groups": {"type": "integer", "minimum": 0},
+        "pair_failures": {"type": "integer", "minimum": 0}
+      }
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["case_id", "scoring_mode", "result", "reasons"],
+        "properties": {
+          "case_id": {"type": "string", "minLength": 1},
+          "scoring_mode": {
+            "enum": ["LABEL_SET", "EXACT_VALUE", "PAIR_RELATION", "SEMANTIC_JUDGE", "UNSCORED"]
+          },
+          "result": {"enum": ["PASS", "FAIL", "PARTIAL", "UNSCORED"]},
+          "reasons": {"type": "array", "items": {"type": "string"}},
+          "response_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+          "judge_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "promotion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_evidence_class", "blocking_reasons"],
+      "properties": {
+        "max_evidence_class": {
+          "enum": [
+            "FIXTURE_SPECIFIED",
+            "STATIC_VALIDATED",
+            "SAME_MODEL_SMOKE",
+            "FRESH_CONTEXT_RUN",
+            "PRIVATE_ORACLE_SCORED",
+            "INDEPENDENT_JUDGED",
+            "PERTURBED_HIDDEN",
+            "UNSEEN_ADVERSARIAL",
+            "REPEATED",
+            "AUTHENTIC_MULTI_AGENT_RUNTIME",
+            "HOST_LIVE_REGRESSION"
+          ]
+        },
+        "blocking_reasons": {"type": "array", "items": {"type": "string"}},
+        "next_required_evidence": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}
