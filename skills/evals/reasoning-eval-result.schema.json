@@ -65,7 +65,9 @@
         "runtime_independent",
         "responses_frozen_before_scoring",
         "response_count",
-        "repeat_count"
+        "repeat_count",
+        "authentic_multi_agent_runtime",
+        "host_live_verified"
       ],
       "properties": {
         "target_executed": {"type": "boolean"},
@@ -76,6 +78,13 @@
         "repeat_count": {"type": "integer", "minimum": 0},
         "target_id": {"type": ["string", "null"]},
         "execution_receipts": {
+          "type": "array",
+          "items": {"type": "string"},
+          "uniqueItems": true
+        },
+        "authentic_multi_agent_runtime": {"type": ["boolean", "null"]},
+        "host_live_verified": {"type": "boolean"},
+        "host_receipts": {
           "type": "array",
           "items": {"type": "string"},
           "uniqueItems": true
