@@ -39,6 +39,8 @@ jobs:
         run: python plugins/ai-efficiency-operating-system/scripts/validate_plugin.py
       - name: Run primary auto-invoke routing oracle
         run: python plugins/ai-efficiency-operating-system/scripts/route_oracle.py plugins/ai-efficiency-operating-system/evals/routing-cases.jsonl
+      - name: Run Superpowers ordinary-chat pressure cases
+        run: python plugins/ai-efficiency-operating-system/scripts/route_oracle.py plugins/ai-efficiency-operating-system/evals/superpowers-conversation-routing-cases.jsonl
       - name: Run composition and fallback oracle
         run: python plugins/ai-efficiency-operating-system/scripts/composition_oracle.py plugins/ai-efficiency-operating-system/evals/composition-cases.jsonl
       - name: Run Expert Labs known-outcome oracle
@@ -52,6 +54,7 @@ jobs:
           import json, pathlib
           for path in [
               pathlib.Path('plugins/ai-efficiency-operating-system/evals/routing-cases.jsonl'),
+              pathlib.Path('plugins/ai-efficiency-operating-system/evals/superpowers-conversation-routing-cases.jsonl'),
               pathlib.Path('plugins/ai-efficiency-operating-system/evals/composition-cases.jsonl'),
               pathlib.Path('plugins/ai-efficiency-operating-system/evals/behavior-cases.jsonl'),
               pathlib.Path('plugins/ai-efficiency-operating-system/evals/expert-labs-cases.jsonl')]:
