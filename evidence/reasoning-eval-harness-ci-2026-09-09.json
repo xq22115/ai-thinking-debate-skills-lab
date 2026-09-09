@@ -3,47 +3,58 @@
   "date": "2026-09-09",
   "repository": "xq22115/ai-thinking-debate-skills-lab",
   "workflow": "Reasoning Eval Harness Gate",
-  "status": "PASS_HARNESS_CI_HARDENED",
+  "status": "PASS_HARNESS_CI_COMMIT_REVEAL_HARDENED",
   "runs": [
     {
       "phase": "initial_contract_gate",
       "commit_sha": "6f89989bd9423d7af33c2e32eab789726fa68f91",
       "workflow_run_id": 34347021367,
       "job_id": 102450923651,
-      "conclusion": "success",
-      "scope": [
-        "python_compile_provider_neutral_runner",
-        "validate_public_machine_readable_eval_artifacts",
-        "run_public_nonhidden_contract_example",
-        "verify_incomplete_pair_fails_closed",
-        "assert_public_example_cannot_self_promote_to_hidden_or_independent_evidence"
-      ]
+      "conclusion": "success"
     },
     {
       "phase": "hardened_pair_promotion_regression",
       "commit_sha": "9ee4f9aeff99c6c39e27afd5633174e677b0345f",
       "workflow_run_id": 34347854340,
       "job_id": 102453635615,
+      "conclusion": "success"
+    },
+    {
+      "phase": "salted_commit_reveal_and_tamper_regression",
+      "commit_sha": "420536f21a26645c43e6d7efa7045511d6eb155a",
+      "workflow_run_id": 34350465562,
+      "job_id": 102462189384,
       "conclusion": "success",
-      "scope": [
-        "python_compile_hardened_provider_neutral_runner",
-        "validate_public_machine_readable_eval_artifacts",
-        "run_public_nonhidden_contract_example",
-        "verify_incomplete_pair_fails_closed",
-        "assert_public_example_cannot_self_promote_to_hidden_or_independent_evidence",
-        "synthetic_regression_hidden_promotion_requires_actual_scored_pair"
+      "successful_checks": [
+        "compile_four_eval_tools",
+        "validate_public_machine_readable_artifacts",
+        "public_nonhidden_example_capped_at_same_model_smoke",
+        "incomplete_pair_fails_closed",
+        "salted_commitment_prepare_and_reveal_verify",
+        "public_manifest_private_scoring_key_scan",
+        "tampered_oracle_reveal_rejected",
+        "response_mutation_after_freeze_rejected",
+        "missing_reveal_receipt_caps_at_FRESH_CONTEXT_RUN",
+        "unrelated_judgment_cannot_earn_INDEPENDENT_JUDGED",
+        "incomplete_pair_cannot_earn_PERTURBED_HIDDEN",
+        "complete_synthetic_pair_with_designated_semantic_judgment_reaches_only_synthetic_PERTURBED_HIDDEN"
       ]
     }
   ],
   "hardened_invariants": [
-    "private_oracle_presence_without_actual_scoring_does_not_earn_PRIVATE_ORACLE_SCORED",
-    "missing_one_side_of_a_pair_produces_UNSCORED_for_the_pair_relation",
-    "unscored_pair_relation_does_not_earn_PERTURBED_HIDDEN",
-    "missing_independent_judge_evidence_blocks_progress_past_PRIVATE_ORACLE_SCORED_in_the_linear_ladder",
-    "public_nonhidden_example_remains_capped_at_SAME_MODEL_SMOKE"
+    "PLAIN_ORACLE_HASH_IS_NOT_THE_PRIVATE_HOLDOUT_COMMITMENT",
+    "ORACLE_PRESENT_WITHOUT_VERIFIED_COMMIT_REVEAL_DOES_NOT_EARN_PRIVATE_ORACLE_SCORED",
+    "FROZEN_RESPONSE_SET_MUST_MATCH_REVEAL_RECEIPT_AT_SCORING_TIME",
+    "TAMPERED_ORACLE_DOES_NOT_MATCH_PRE_RUN_SALTED_COMMITMENT",
+    "JUDGMENT_ARTIFACT_PRESENT_DOES_NOT_EQUAL_CASE_ACTUALLY_INDEPENDENTLY_JUDGED",
+    "MISSING_ONE_SIDE_OF_A_PAIR_PRODUCES_UNSCORED",
+    "UNSCORED_PAIR_DOES_NOT_EARN_PERTURBED_HIDDEN",
+    "PUBLIC_NONHIDDEN_EXAMPLE_REMAINS_CAPPED_AT_SAME_MODEL_SMOKE"
   ],
   "evidence_boundary": {
     "hosted_ci_for_eval_harness": true,
+    "salted_commit_reveal_harness_verified": true,
+    "tamper_detection_harness_verified": true,
     "model_reasoning_evaluated": false,
     "fresh_context_model_run": false,
     "private_holdout_scored": false,
@@ -55,5 +66,5 @@
     "host_live_reasoning_behavior": false,
     "stable_release_proven": false
   },
-  "interpretation": "GitHub-hosted CI proves the provider-neutral evaluation harness compiles and its public/non-hidden and fail-closed evidence-promotion regressions execute successfully at the recorded commits. The hardened run specifically proves that a missing paired execution cannot be promoted into PERTURBED_HIDDEN by metadata alone. This remains harness evidence only, not target-model reasoning evidence."
+  "interpretation": "GitHub-hosted CI proves the evaluation harness can prepare a salted oracle commitment, freeze a response set, verify the later reveal, reject oracle/response tampering, and fail closed on evidence-level promotion. The synthetic promotion cases test harness logic only. They are not fresh-context target-model, private-holdout, independent-judge, hidden-generalization, multi-agent, or host-live reasoning evidence."
 }
