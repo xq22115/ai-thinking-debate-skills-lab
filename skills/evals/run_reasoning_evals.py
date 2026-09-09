@@ -277,7 +277,7 @@ def infer_status(results: list[dict[str, Any]]) -> str:
 
 
 def promote_evidence(manifest: dict[str, Any], oracle_present: bool, oracle_hash: str | None,
-                     private_scored_count: int, judgment_count: int, scored_pair_count: int,
+                     private_scored_count: int, independent_judged_count: int, scored_pair_count: int,
                      commitment_reveal_verified: bool) -> tuple[str, list[str], list[str]]:
     execution = manifest.get("execution", {})
     contamination = manifest.get("contamination", {})
@@ -320,14 +320,14 @@ def promote_evidence(manifest: dict[str, Any], oracle_present: bool, oracle_hash
 
     independent_judge_ok = (
         judging.get("independent") is True
-        and judgment_count > 0
+        and independent_judged_count > 0
         and bool(judging.get("judge_receipts"))
     )
     if independent_judge_ok:
         level = "INDEPENDENT_JUDGED"
     else:
-        blockers.append("independent judge evidence incomplete")
-        next_required.append("independent judge or equivalent separated adjudication with receipt")
+        blockers.append("independent judge did not score an actual SEMANTIC_JUDGE case with a receipt")
+        next_required.append("independent judge must score at least one designated semantic case and retain a judge receipt")
         return level, blockers, next_required
 
     hidden_ok = (
@@ -412,12 +412,19 @@ def make_result(manifest: dict[str, Any], responses: list[dict[str, Any]], oracl
         if r["result"] in {"PASS", "FAIL"}
         and r["scoring_mode"] in {"LABEL_SET", "EXACT_VALUE", "PAIR_RELATION"}
     )
+    independent_judged_count = sum(
+        1
+        for r in results
+        if r["scoring_mode"] == "SEMANTIC_JUDGE"
+        and r["result"] in {"PASS", "FAIL"}
+        and r.get("judge_sha256") is not None
+    )
     level, blockers, next_required = promote_evidence(
         manifest,
         oracle_present=oracle is not None,
         oracle_hash=oracle_hash,
         private_scored_count=private_scored_count,
-        judgment_count=len(judgments),
+        independent_judged_count=independent_judged_count,
         scored_pair_count=scored_pair_count,
         commitment_reveal_verified=commitment_reveal_verified,
     )
