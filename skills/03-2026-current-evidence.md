@@ -234,10 +234,60 @@ Evidence: a diverse suite of tasks with unintended high-scoring actions finds no
 
 Consequence: powerful reasoning against an imperfect specification can increase optimization pressure on the wrong proxy. Acceptance tests/proxies require outcome-binding, hidden variants, and anti-gaming checks; higher reasoning budget should not be assumed to improve goal fidelity.
 
+## DeepPlanning — long-horizon global constrained planning, ACL 2026
+https://aclanthology.org/2026.acl-long.335/
+
+Evidence: evaluates practical long-horizon planning with proactive information gathering, fine-grained local constraints, and global time/financial constraints. Frontier agentic models still struggle, showing that locally plausible reasoning does not guarantee globally feasible plans.
+
+Consequence: `LOCAL_STEP_SUCCESS != TRAJECTORY_SUCCESS`. Maintain global constraint/budget state across the full plan and evaluate trajectory-level feasibility, not only individual actions.
+
+## YC-Bench — long-term planning, delayed feedback and compounding errors, 2026
+https://arxiv.org/abs/2604.01212
+
+Evidence: simulates a one-year startup trajectory spanning hundreds of turns under partial observability, delayed feedback, adversarial conditions and compounding consequences. The reported analysis finds persistent state/scratchpad use strongly associated with success and identifies distinct long-horizon failure modes including over-parallelization.
+
+Consequence: durable compact state is not just convenience. Track strategy, delayed observations, resource state, irreversible decisions and dependency/parallelism constraints across context truncation and handoffs.
+
+## Plan-RewardBench — trajectory-level reward/judge degradation, ACL 2026
+https://aclanthology.org/2026.acl-long.1062/
+
+Evidence: evaluates generative, discriminative and LLM-as-judge reward models on tool-integrated agent trajectories. Reported performance degrades sharply on longer trajectories and hard-negative variants.
+
+Consequence: `LONGER_TRAJECTORY != MORE_RELIABLE_JUDGMENT`. Use checkpoint/chunk-level deterministic checks plus global trajectory audit; do not ask one judge to reconstruct all latent state from a very long raw transcript.
+
+## STAPO — trajectory neglect under sparse/delayed rewards, ACL 2026
+https://aclanthology.org/2026.acl-long.1308/
+
+Evidence: characterizes trajectory neglect in long-horizon agent training: sparse/delayed reward can lead intermediate actions to lose focus on the task goal and interaction history. The work targets outlier steps associated with such neglect.
+
+Consequence: preserve Goal Contract and compact trajectory state throughout execution, not only at the start and end. Intermediate step quality must be judged against the trajectory, not isolated fluency.
+
+## Robotouille — asynchronous planning with time delays, 2025
+https://portal.cs.cornell.edu/robotouille/
+https://arxiv.org/abs/2502.05227
+
+Evidence: benchmarks asynchronous long-horizon planning where subtasks interact through ordering, concurrency and delays. It exposes gaps in agents' ability to reason over when parallel vs sequential execution is appropriate.
+
+Consequence: `PARALLELISM != FREE_SPEEDUP`. Explicitly model prerequisites, shared state, synchronization points and completion-order effects before parallelizing dependent work.
+
+## Long-Horizon Agent Trajectory Attribution — 2026
+https://arxiv.org/abs/2608.06909
+
+Evidence: introduces trajectory attribution with local/long-range component and chain recovery, showing substantial variation in the difficulty of identifying what earlier trajectory component caused later outcomes.
+
+Consequence: when a late failure appears, distinguish downstream symptom from the earliest material or irrecoverable cause. Preserve enough checkpoint/event structure for causal attribution rather than relying on recency.
+
+## No More Stale Feedback / ECHO — ACL 2026
+https://aclanthology.org/2026.acl-long.576/
+
+Evidence: static/offline critics can become stale as the policy and trajectory distribution evolve, reducing feedback utility; the work co-evolves critic and policy in its training setting.
+
+Consequence: `OLD_FEEDBACK != CURRENT_ORACLE`. Revalidate critic/evaluator assumptions when policy, environment, target distribution or task state changes materially.
+
 ## 2026 synthesis
 
-The current evidence supports a layered goal-reasoning-verification-decision design:
+The current evidence supports a layered goal-reasoning-verification-decision-trajectory design:
 
-`Goal Contract / specification audit -> capability/compatibility -> evidence sufficiency/provenance -> semantic/QUD normalization -> causal/abductive model when needed -> competing hypotheses -> discriminating test -> selective multi-agent deliberation -> bias-resistant judge -> verifier robustness/metamorphic checks -> VOI stop rule -> loss/reversibility/shift/sensitivity check -> COMMIT / PROBE / PILOT / DEFER / ABSTAIN / ROBUST_FALLBACK -> outcome-bound completion check`
+`Goal Contract / specification audit -> capability/compatibility -> evidence sufficiency/provenance -> semantic/QUD normalization -> causal/abductive model when needed -> competing hypotheses -> discriminating test -> selective multi-agent deliberation -> bias-resistant judge -> verifier robustness/metamorphic checks -> VOI stop rule -> loss/reversibility/shift/sensitivity check -> temporal/trajectory gate (global constraints, checkpoint freshness, delayed feedback, option value, dependency graph) -> COMMIT / PROBE / PILOT / DEFER / ABSTAIN / ROBUST_FALLBACK -> execution/revalidation -> outcome-bound trajectory completion check`
 
-The repeated research signal is negative as well as positive: more tokens, sources, agents, confidence machinery, verifier scores, preference ratings, or rounds do **not** monotonically improve reliability. A better probability estimate does not automatically imply a better action, and a higher proxy/preference score does not automatically imply user success. The system should optimize for user-authorized goal fidelity, independent evidence, discrimination, calibration, target-bound verification, evaluator robustness, distribution-shift awareness, reversible learning, sensitivity/regret, and outcome-bound completion rather than visible reasoning/evaluation volume.
+The repeated research signal is negative as well as positive: more tokens, sources, agents, confidence machinery, verifier scores, preference ratings, parallel activity, or rounds do **not** monotonically improve reliability. A better probability estimate does not automatically imply a better action; a higher proxy/preference score does not imply user success; and a sequence of local successes does not imply a valid long-horizon trajectory. The system should optimize for user-authorized goal fidelity, independent evidence, discrimination, calibration, target-bound verification, evaluator robustness, distribution-shift awareness, reversible learning, sensitivity/regret, temporal coherence, durable state, global-constraint satisfaction and outcome-bound completion rather than visible reasoning/evaluation volume.
