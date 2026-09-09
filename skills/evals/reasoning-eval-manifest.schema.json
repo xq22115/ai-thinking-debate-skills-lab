@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "reasoning-eval-manifest.schema.json",
+  "title": "Reasoning Evaluation Public Run Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "suite",
+    "run_id",
+    "contamination",
+    "execution",
+    "holdout",
+    "judging"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "suite": {"type": "string", "minLength": 1},
+    "run_id": {"type": "string", "minLength": 1},
+    "created_at": {"type": ["string", "null"]},
+    "contamination": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["authoring_overlap", "fixture_visible_to_generator", "expected_labels_visible_to_generator"],
+      "properties": {
+        "authoring_overlap": {"type": ["boolean", "null"]},
+        "fixture_visible_to_generator": {"type": ["boolean", "null"]},
+        "expected_labels_visible_to_generator": {"type": ["boolean", "null"]}
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["target_executed", "fresh_context", "runtime_independent", "responses_frozen_before_scoring", "repeat_count"],
+      "properties": {
+        "target_executed": {"type": "boolean"},
+        "fresh_context": {"type": ["boolean", "null"]},
+        "runtime_independent": {"type": ["boolean", "null"]},
+        "responses_frozen_before_scoring": {"type": ["boolean", "null"]},
+        "repeat_count": {"type": "integer", "minimum": 0},
+        "target_id": {"type": ["string", "null"]},
+        "execution_receipts": {"type": "array", "items": {"type": "string"}},
+        "authentic_multi_agent_runtime": {"type": ["boolean", "null"]},
+        "host_live_verified": {"type": "boolean"},
+        "host_receipts": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "holdout": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["private_oracle_separated", "hidden_variant", "variant_hidden_from_generator", "unseen_adversarial"],
+      "properties": {
+        "private_oracle_separated": {"type": ["boolean", "null"]},
+        "hidden_variant": {"type": ["boolean", "null"]},
+        "variant_hidden_from_generator": {"type": ["boolean", "null"]},
+        "unseen_adversarial": {"type": ["boolean", "null"]}
+      }
+    },
+    "judging": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["mode", "independent"],
+      "properties": {
+        "mode": {"enum": ["NONE", "DETERMINISTIC_PRIVATE_ORACLE", "INDEPENDENT_MODEL_JUDGE", "MIXED"]},
+        "independent": {"type": ["boolean", "null"]},
+        "judge_id": {"type": ["string", "null"]},
+        "judge_receipts": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["case_id"],
+        "properties": {
+          "case_id": {"type": "string", "minLength": 1},
+          "prompt": {"type": ["string", "null"]},
+          "pair_group": {"type": ["string", "null"]},
+          "presentation": {"type": ["string", "null"]}
+        }
+      }
+    }
+  }
+}
