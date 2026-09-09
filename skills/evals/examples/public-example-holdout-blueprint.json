@@ -1,0 +1,84 @@
+{
+  "schema_version": "1.0",
+  "visibility": "PUBLIC_NON_HIDDEN_EXAMPLE",
+  "suite": "public-runner-contract-example",
+  "run_id": "public-example-001",
+  "created_at": "2026-09-09T00:00:00Z",
+  "contamination": {
+    "authoring_overlap": true,
+    "fixture_visible_to_generator": true,
+    "expected_labels_visible_to_generator": true,
+    "notes": "PUBLIC NON-HIDDEN CI CONTRACT EXAMPLE. Never use as reasoning-generalization evidence."
+  },
+  "execution": {
+    "target_executed": true,
+    "fresh_context": false,
+    "runtime_independent": false,
+    "responses_frozen_before_scoring": true,
+    "repeat_count": 1,
+    "target_id": "deterministic-public-example",
+    "execution_receipts": ["ci-public-example"],
+    "authentic_multi_agent_runtime": false,
+    "host_live_verified": false,
+    "host_receipts": []
+  },
+  "holdout": {
+    "private_oracle_separated": false,
+    "hidden_variant": false,
+    "variant_hidden_from_generator": false,
+    "unseen_adversarial": false
+  },
+  "judging": {
+    "mode": "NONE",
+    "independent": false,
+    "judge_id": null,
+    "judge_receipts": []
+  },
+  "cases": [
+    {
+      "case_id": "public-label-001",
+      "prompt": "Return labels alpha and beta.",
+      "pair_group": null,
+      "presentation": "single",
+      "scoring": {
+        "mode": "LABEL_SET",
+        "must_detect": ["alpha", "beta"],
+        "fail_if": ["forbidden"]
+      }
+    },
+    {
+      "case_id": "public-exact-001",
+      "prompt": "Return decision DEFER.",
+      "pair_group": null,
+      "presentation": "single",
+      "scoring": {
+        "mode": "EXACT_VALUE",
+        "field": "decision",
+        "expected": "DEFER"
+      }
+    },
+    {
+      "case_id": "public-pair-a",
+      "prompt": "Select the stronger underlying candidate; presentation A.",
+      "pair_group": "public-pair",
+      "presentation": "A/B",
+      "scoring": {"mode": "PAIR_ONLY"}
+    },
+    {
+      "case_id": "public-pair-b",
+      "prompt": "Select the stronger underlying candidate; presentation B with order swapped.",
+      "pair_group": "public-pair",
+      "presentation": "B/A",
+      "scoring": {"mode": "PAIR_ONLY"}
+    }
+  ],
+  "pair_rules": [
+    {
+      "pair_id": "public-order-invariance",
+      "left_case_id": "public-pair-a",
+      "right_case_id": "public-pair-b",
+      "field": "winner_id",
+      "relation": "EQUAL"
+    }
+  ]
+}
