@@ -2,13 +2,15 @@
 """Provider-neutral reasoning evaluation scorer.
 
 This runner DOES NOT call a model. It consumes already-produced target responses
-plus an optional private oracle and optional independent-judge results. It scores
-only what the supplied artifacts justify and computes the highest evidence class
-supported by explicit separation/receipt metadata.
+plus an optional private oracle, verified commit-reveal receipt, and optional
+independent-judge results. It scores only what the supplied artifacts justify and
+computes the highest evidence class supported by explicit separation/receipt
+metadata.
 
-This design intentionally keeps target execution, private scoring, and evidence
-promotion separate so a repository harness cannot pretend it created fresh-context,
-independent-judge, hidden-holdout, multi-agent, or host-live evidence.
+This design intentionally keeps target execution, response freezing, private
+scoring, commitment verification, and evidence promotion separate so a repository
+harness cannot pretend it created fresh-context, private-oracle, independent-judge,
+hidden-holdout, multi-agent, or host-live evidence.
 """
 from __future__ import annotations
 
@@ -115,6 +117,32 @@ def validate_judgment_rows(manifest: dict[str, Any], rows: list[dict[str, Any]])
         require(row.get("run_id") == run_id, f"judgments[{case_id}].run_id mismatch")
         require(isinstance(row.get("pass"), bool), f"judgments[{case_id}].pass must be boolean")
     return indexed
+
+
+def validate_reveal_receipt(manifest: dict[str, Any], responses: list[dict[str, Any]],
+                            oracle: dict[str, Any], receipt: dict[str, Any]) -> bool:
+    require(receipt.get("schema_version") == "1.0", "reveal receipt schema_version must be 1.0")
+    require(receipt.get("status") == "PASS_COMMITMENT_REVEAL", "reveal receipt must be PASS_COMMITMENT_REVEAL")
+    require(receipt.get("verified") is True, "reveal receipt verified must be true")
+    require(receipt.get("commitment_algorithm") == "SHA256-SALTED-CANONICAL-JSON-v1",
+            "reveal receipt commitment algorithm mismatch")
+    require(receipt.get("suite") == manifest["suite"], "reveal receipt suite mismatch")
+    require(receipt.get("run_id") == manifest["run_id"], "reveal receipt run_id mismatch")
+    require(receipt.get("manifest_sha256") == canonical_hash(manifest),
+            "reveal receipt manifest hash mismatch")
+    require(receipt.get("oracle_canonical_sha256") == canonical_hash(oracle),
+            "reveal receipt oracle hash mismatch")
+    normalized = sorted(responses, key=lambda row: row.get("case_id", ""))
+    require(receipt.get("responses_canonical_sha256") == canonical_hash(normalized),
+            "reveal receipt response-set hash mismatch")
+    require(receipt.get("response_count") == len(responses), "reveal receipt response_count mismatch")
+    freeze_hash = receipt.get("freeze_receipt_sha256")
+    commitment_hash = receipt.get("commitment_receipt_sha256")
+    require(isinstance(freeze_hash, str) and len(freeze_hash) == 64,
+            "reveal receipt freeze_receipt_sha256 missing")
+    require(isinstance(commitment_hash, str) and len(commitment_hash) == 64,
+            "reveal receipt commitment_receipt_sha256 missing")
+    return True
 
 
 def score_label_set(case_id: str, output: dict[str, Any], scoring: dict[str, Any]) -> dict[str, Any]:
@@ -249,8 +277,8 @@ def infer_status(results: list[dict[str, Any]]) -> str:
 
 
 def promote_evidence(manifest: dict[str, Any], oracle_present: bool, oracle_hash: str | None,
-                     private_scored_count: int, judgment_count: int,
-                     scored_pair_count: int) -> tuple[str, list[str], list[str]]:
+                     private_scored_count: int, judgment_count: int, scored_pair_count: int,
+                     commitment_reveal_verified: bool) -> tuple[str, list[str], list[str]]:
     execution = manifest.get("execution", {})
     contamination = manifest.get("contamination", {})
     holdout = manifest.get("holdout", {})
@@ -281,12 +309,13 @@ def promote_evidence(manifest: dict[str, Any], oracle_present: bool, oracle_hash
         and holdout.get("private_oracle_separated") is True
         and execution.get("responses_frozen_before_scoring") is True
         and private_scored_count > 0
+        and commitment_reveal_verified
     )
     if oracle_ok:
         level = "PRIVATE_ORACLE_SCORED"
     else:
-        blockers.append("private oracle separation/frozen-response/actual-scoring proof incomplete")
-        next_required.append("score at least one frozen response or pair with a separated private oracle")
+        blockers.append("private oracle separation/frozen-response/actual-scoring/commit-reveal proof incomplete")
+        next_required.append("verify salted pre-run commitment against frozen responses and revealed oracle, then score at least one case")
         return level, blockers, next_required
 
     independent_judge_ok = (
@@ -351,10 +380,16 @@ def promote_evidence(manifest: dict[str, Any], oracle_present: bool, oracle_hash
 
 
 def make_result(manifest: dict[str, Any], responses: list[dict[str, Any]], oracle: dict[str, Any] | None,
-                judgments: list[dict[str, Any]], oracle_hash: str | None) -> dict[str, Any]:
+                judgments: list[dict[str, Any]], oracle_hash: str | None,
+                reveal_receipt: dict[str, Any] | None) -> dict[str, Any]:
     normalize_manifest(manifest)
     response_index = validate_response_rows(manifest, responses)
     judgment_index = validate_judgment_rows(manifest, judgments) if judgments else {}
+
+    commitment_reveal_verified = False
+    if reveal_receipt is not None:
+        require(oracle is not None, "reveal receipt supplied without private oracle")
+        commitment_reveal_verified = validate_reveal_receipt(manifest, responses, oracle, reveal_receipt)
 
     results: list[dict[str, Any]] = []
     if oracle is not None:
@@ -384,6 +419,7 @@ def make_result(manifest: dict[str, Any], responses: list[dict[str, Any]], oracl
         private_scored_count=private_scored_count,
         judgment_count=len(judgments),
         scored_pair_count=scored_pair_count,
+        commitment_reveal_verified=commitment_reveal_verified,
     )
 
     execution_in = manifest.get("execution", {})
@@ -429,9 +465,12 @@ def make_result(manifest: dict[str, Any], responses: list[dict[str, Any]], oracl
             "hidden_variant": holdout_in.get("hidden_variant"),
             "variant_hidden_from_generator": holdout_in.get("variant_hidden_from_generator"),
             "oracle_hash_present": bool(oracle_hash),
+            "commitment_reveal_verified": commitment_reveal_verified,
             "unseen_adversarial": holdout_in.get("unseen_adversarial"),
             "oracle_sha256": oracle_hash,
+            "oracle_canonical_sha256": canonical_hash(oracle) if oracle is not None else None,
             "public_manifest_sha256": canonical_hash(manifest),
+            "reveal_receipt_sha256": canonical_hash(reveal_receipt) if reveal_receipt is not None else None,
         },
         "summary": {
             "total": len(results),
@@ -457,6 +496,8 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--manifest", type=Path, required=True, help="public generation/run manifest JSON")
     parser.add_argument("--responses", type=Path, required=True, help="frozen target responses JSONL")
     parser.add_argument("--oracle", type=Path, help="private oracle JSON; keep outside public repo for reusable holdouts")
+    parser.add_argument("--reveal-receipt", type=Path,
+                        help="verified commit-reveal receipt binding manifest, frozen responses and oracle")
     parser.add_argument("--judgments", type=Path, help="independent judge results JSONL")
     parser.add_argument("--out", type=Path, help="write result receipt JSON instead of stdout only")
     return parser.parse_args(argv)
@@ -471,9 +512,12 @@ def main(argv: list[str] | None = None) -> int:
         oracle = load_json(args.oracle) if args.oracle else None
         if oracle is not None:
             require(isinstance(oracle, dict), "oracle must be object")
+        reveal_receipt = load_json(args.reveal_receipt) if args.reveal_receipt else None
+        if reveal_receipt is not None:
+            require(isinstance(reveal_receipt, dict), "reveal receipt must be object")
         judgments = load_jsonl(args.judgments) if args.judgments else []
         oracle_hash = sha256_bytes(args.oracle.read_bytes()) if args.oracle else None
-        result = make_result(manifest, responses, oracle, judgments, oracle_hash)
+        result = make_result(manifest, responses, oracle, judgments, oracle_hash, reveal_receipt)
     except EvalError as exc:
         print(json.dumps({"status": "INVALID", "error": str(exc)}, ensure_ascii=False, indent=2))
         return 2
