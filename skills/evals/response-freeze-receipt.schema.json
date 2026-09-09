@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "response-freeze-receipt.schema.json",
+  "title": "Reasoning Eval Response Freeze Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "suite",
+    "run_id",
+    "frozen_at",
+    "manifest_sha256",
+    "responses_canonical_sha256",
+    "response_count",
+    "case_ids",
+    "oracle_seen_by_freezer"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "status": {"const": "FROZEN"},
+    "suite": {"type": "string", "minLength": 1},
+    "run_id": {"type": "string", "minLength": 1},
+    "frozen_at": {"type": "string", "minLength": 1},
+    "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "responses_canonical_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "response_count": {"type": "integer", "minimum": 1},
+    "case_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "oracle_seen_by_freezer": {"const": false}
+  }
+}
