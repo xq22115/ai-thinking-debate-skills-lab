@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "status": "PASS_HARNESS_CI_TARGET_EXECUTION_ATTESTATION_HARDENED",
+  "evidence_class": "DETERMINISTIC_HOSTED_CI",
+  "date": "2026-09-10",
+  "repository": "xq22115/ai-thinking-debate-skills-lab",
+  "commit": "299464a86e46de445b34af1aa0c2f173d98f84fd",
+  "workflow": "Reasoning Eval Harness Gate",
+  "run_id": 34405063072,
+  "job_id": 102645943704,
+  "conclusion": "success",
+  "verified_checks": [
+    "compile evaluation tools",
+    "validate machine-readable contracts",
+    "public NON-HIDDEN example remains SAME_MODEL_SMOKE",
+    "synthetic owning-runtime receipt can be constructed for regression only",
+    "manifest-only fresh-context claim fails closed at SAME_MODEL_SMOKE",
+    "correct hash-bound execution receipt unlocks only FRESH_CONTEXT_RUN",
+    "execution receipt rejects response tampering",
+    "execution receipt rejects target/manifest mismatch",
+    "salted commit-reveal still rejects oracle tampering",
+    "contract invariants"
+  ],
+  "boundaries": {
+    "model_reasoning_evaluated": false,
+    "real_fresh_context_target_run": false,
+    "private_holdout_scored": false,
+    "independent_judge_run": false,
+    "authentic_five_agent_runtime": false,
+    "local_rdc_runtime": false,
+    "host_live_regression": false,
+    "semantic_truth_of_runtime_attestations_proven_by_ci": false
+  },
+  "interpretation": "This receipt proves the hosted harness rejects self-asserted fresh-context promotion and verifies artifact binding. It does not prove that any real target model was executed in a fresh context."
+}
