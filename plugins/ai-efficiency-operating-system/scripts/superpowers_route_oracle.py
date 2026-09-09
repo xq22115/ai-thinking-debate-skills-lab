@@ -2,12 +2,11 @@
 """Ordinary-chat Superpowers bridge layered over the canonical route oracle.
 
 The base router remains authoritative for research, capability, memory, planning,
-convergence and completion. This shadow oracle only fills the implementation-process
-gap: debugging, behavior changes, review feedback and skill authoring.
+convergence and completion. This shadow oracle fills implementation-process and
+cross-locale routing gaps without mutating the canonical baseline.
 """
 
 import json
-import re
 import sys
 from pathlib import Path
 
@@ -34,6 +33,23 @@ LOCKED_BASE_ROUTES = {
 
 def _has(text, phrases):
     return any(p in text for p in phrases)
+
+
+def ordinary_chat_signals(prompt):
+    """Protect common zh-Hans/zh-Hant/en intent that the baseline may miss."""
+    text = " ".join(prompt.lower().split())
+    return {
+        "text": text,
+        "memory": _has(text, [
+            "记住", "記住", "长期偏好", "長期偏好", "以后都沿用", "以後都沿用",
+            "永久记忆", "永久記憶", "remember this", "from now on",
+        ]),
+        "goal_ambiguity": _has(text, [
+            "歧义", "歧義", "验收条件", "驗收條件", "成功条件", "成功條件",
+            "真正目标", "真正目標", "任务目标", "任務目標", "目标漂移", "目標漂移",
+            "不要曲解", "不同理解", "different interpretation", "acceptance criteria",
+        ]),
+    }
 
 
 def process_signals(prompt):
@@ -104,6 +120,10 @@ def route(prompt, explicit=None, host_capabilities=None):
     if explicit:
         return base_primary
 
+    locale = ordinary_chat_signals(prompt)
+    if base_primary == "none" and locale["memory"]:
+        return "memory-policy"
+
     process = upstream_process(prompt)
     if process is None:
         return base_primary
@@ -111,19 +131,23 @@ def route(prompt, explicit=None, host_capabilities=None):
         return base_primary
 
     # Implementation-process signals are more discriminating than generic research
-    # or goal wording. The bridge owns them while preserving the base router for all
-    # higher-specificity domains above.
+    # or goal wording. The bridge owns them while preserving higher-specificity
+    # base routes such as capability, planning, completion and runtime forensics.
     return BRIDGE
 
 
 def route_bundle(prompt, explicit=None, host_capabilities=None):
     primary = route(prompt, explicit, host_capabilities)
+    base_primary = base.route(prompt, explicit, host_capabilities)
     if primary != BRIDGE:
+        if primary != base_primary:
+            return [primary]
         return base.route_bundle(prompt, explicit, host_capabilities)
 
     _, signals = base.analyze(prompt)
+    locale = ordinary_chat_signals(prompt)
     bundle = []
-    if signals.get("goal_ambiguity") or signals.get("complex"):
+    if signals.get("goal_ambiguity") or signals.get("complex") or locale["goal_ambiguity"]:
         bundle.append("task-goal-intelligence")
     bundle.append(BRIDGE)
     return bundle[:3]
@@ -133,10 +157,12 @@ def decision(prompt, explicit=None, host_capabilities=None):
     base_primary = base.route(prompt, explicit, host_capabilities)
     primary = route(prompt, explicit, host_capabilities)
     _, signals = base.analyze(prompt)
+    locale = ordinary_chat_signals(prompt)
     process = upstream_process(prompt)
-    ceremony = "ARCHITECTURAL" if primary == BRIDGE and (signals.get("goal_ambiguity") or signals.get("complex")) else (
-        "BOUNDED" if primary == BRIDGE else "BASE"
+    architectural = primary == BRIDGE and (
+        signals.get("goal_ambiguity") or signals.get("complex") or locale["goal_ambiguity"]
     )
+    ceremony = "ARCHITECTURAL" if architectural else ("BOUNDED" if primary == BRIDGE else "BASE")
     return {
         "primary": primary,
         "bundle": route_bundle(prompt, explicit, host_capabilities),
@@ -144,6 +170,7 @@ def decision(prompt, explicit=None, host_capabilities=None):
         "base_primary": base_primary,
         "ceremony": ceremony,
         "presentation": "quiet-by-default",
+        "locale_protection": {k: v for k, v in locale.items() if k != "text"},
     }
 
 
