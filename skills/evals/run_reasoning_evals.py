@@ -526,7 +526,11 @@ def main(argv: list[str] | None = None) -> int:
         oracle_hash = sha256_bytes(args.oracle.read_bytes()) if args.oracle else None
         result = make_result(manifest, responses, oracle, judgments, oracle_hash, reveal_receipt)
     except EvalError as exc:
-        print(json.dumps({"status": "INVALID", "error": str(exc)}, ensure_ascii=False, indent=2))
+        invalid = {"status": "INVALID", "error": str(exc)}
+        rendered = json.dumps(invalid, ensure_ascii=False, indent=2, sort_keys=True)
+        if args.out:
+            args.out.write_text(rendered + "\n", encoding="utf-8")
+        print(rendered)
         return 2
 
     rendered = json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True)
