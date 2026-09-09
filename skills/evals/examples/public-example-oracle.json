@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "suite": "public-runner-contract-example",
+  "run_id": "public-example-001",
+  "cases": [
+    {
+      "case_id": "public-label-001",
+      "scoring": {
+        "mode": "LABEL_SET",
+        "must_detect": ["alpha", "beta"],
+        "fail_if": ["forbidden"]
+      }
+    },
+    {
+      "case_id": "public-exact-001",
+      "scoring": {
+        "mode": "EXACT_VALUE",
+        "field": "decision",
+        "expected": "DEFER"
+      }
+    }
+  ],
+  "pair_rules": [
+    {
+      "pair_id": "public-order-invariance",
+      "left_case_id": "public-pair-a",
+      "right_case_id": "public-pair-b",
+      "field": "winner_id",
+      "relation": "EQUAL"
+    }
+  ]
+}
