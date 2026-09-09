@@ -44,7 +44,7 @@
             "required": ["mode"],
             "properties": {
               "mode": {
-                "enum": ["LABEL_SET", "EXACT_VALUE", "SEMANTIC_JUDGE"]
+                "enum": ["LABEL_SET", "EXACT_VALUE", "SEMANTIC_JUDGE", "PAIR_ONLY"]
               }
             },
             "additionalProperties": true
