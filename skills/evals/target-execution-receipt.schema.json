@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "target-execution-receipt.schema.json",
+  "title": "Target Execution Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "suite",
+    "run_id",
+    "target_id",
+    "execution_id",
+    "created_at",
+    "provenance",
+    "binding",
+    "boundary"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "status": {"const": "PASS_TARGET_EXECUTION"},
+    "suite": {"type": "string", "minLength": 1},
+    "run_id": {"type": "string", "minLength": 1},
+    "target_id": {"type": "string", "minLength": 1},
+    "execution_id": {"type": "string", "minLength": 1},
+    "created_at": {"type": "string", "minLength": 1},
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_class",
+        "source_name",
+        "receipt_locator",
+        "target_executed_verified",
+        "fresh_context_verified",
+        "runtime_independent_verified",
+        "expected_labels_hidden_verified"
+      ],
+      "properties": {
+        "source_class": {"enum": ["OWNING_RUNTIME", "EXTERNAL_JOB"]},
+        "source_name": {"type": "string", "minLength": 1},
+        "receipt_locator": {"type": "string", "minLength": 1},
+        "target_executed_verified": {"const": true},
+        "fresh_context_verified": {"type": "boolean"},
+        "runtime_independent_verified": {"type": "boolean"},
+        "expected_labels_hidden_verified": {"type": "boolean"},
+        "notes": {"type": ["string", "null"]}
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifest_canonical_sha256",
+        "responses_canonical_sha256",
+        "response_count"
+      ],
+      "properties": {
+        "manifest_canonical_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "responses_canonical_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "response_count": {"type": "integer", "minimum": 1},
+        "request_set_canonical_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "oracle_quality_verified",
+        "judge_independence_verified",
+        "holdout_privacy_verified"
+      ],
+      "properties": {
+        "oracle_quality_verified": {"const": false},
+        "judge_independence_verified": {"const": false},
+        "holdout_privacy_verified": {"type": "boolean"}
+      }
+    }
+  }
+}
