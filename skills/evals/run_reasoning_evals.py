@@ -249,7 +249,8 @@ def infer_status(results: list[dict[str, Any]]) -> str:
 
 
 def promote_evidence(manifest: dict[str, Any], oracle_present: bool, oracle_hash: str | None,
-                     judgment_count: int, pair_result_count: int) -> tuple[str, list[str], list[str]]:
+                     private_scored_count: int, judgment_count: int,
+                     scored_pair_count: int) -> tuple[str, list[str], list[str]]:
     execution = manifest.get("execution", {})
     contamination = manifest.get("contamination", {})
     holdout = manifest.get("holdout", {})
@@ -279,12 +280,13 @@ def promote_evidence(manifest: dict[str, Any], oracle_present: bool, oracle_hash
         and bool(oracle_hash)
         and holdout.get("private_oracle_separated") is True
         and execution.get("responses_frozen_before_scoring") is True
+        and private_scored_count > 0
     )
     if oracle_ok:
         level = "PRIVATE_ORACLE_SCORED"
     else:
-        blockers.append("private oracle separation/frozen-response proof incomplete")
-        next_required.append("score frozen responses with separated private oracle")
+        blockers.append("private oracle separation/frozen-response/actual-scoring proof incomplete")
+        next_required.append("score at least one frozen response or pair with a separated private oracle")
         return level, blockers, next_required
 
     independent_judge_ok = (
@@ -297,17 +299,18 @@ def promote_evidence(manifest: dict[str, Any], oracle_present: bool, oracle_hash
     else:
         blockers.append("independent judge evidence incomplete")
         next_required.append("independent judge or equivalent separated adjudication with receipt")
+        return level, blockers, next_required
 
     hidden_ok = (
         holdout.get("hidden_variant") is True
         and holdout.get("variant_hidden_from_generator") is True
-        and pair_result_count > 0
+        and scored_pair_count > 0
     )
     if hidden_ok:
         level = "PERTURBED_HIDDEN"
     else:
-        blockers.append("hidden perturbation relation not executed")
-        next_required.append("execute hidden paired/metamorphic relation")
+        blockers.append("hidden perturbation relation not actually scored")
+        next_required.append("execute both sides of at least one hidden paired/metamorphic relation and score it")
         return level, blockers, next_required
 
     if holdout.get("unseen_adversarial") is True:
@@ -367,12 +370,20 @@ def make_result(manifest: dict[str, Any], responses: list[dict[str, Any]], oracl
 
     counts = {name: sum(1 for r in results if r["result"] == name) for name in ["PASS", "FAIL", "PARTIAL", "UNSCORED"]}
     pair_failures = sum(1 for r in pair_results if r["result"] == "FAIL")
+    scored_pair_count = sum(1 for r in pair_results if r["result"] in {"PASS", "FAIL"})
+    private_scored_count = sum(
+        1
+        for r in results
+        if r["result"] in {"PASS", "FAIL"}
+        and r["scoring_mode"] in {"LABEL_SET", "EXACT_VALUE", "PAIR_RELATION"}
+    )
     level, blockers, next_required = promote_evidence(
         manifest,
         oracle_present=oracle is not None,
         oracle_hash=oracle_hash,
+        private_scored_count=private_scored_count,
         judgment_count=len(judgments),
-        pair_result_count=len(pair_results),
+        scored_pair_count=scored_pair_count,
     )
 
     execution_in = manifest.get("execution", {})
