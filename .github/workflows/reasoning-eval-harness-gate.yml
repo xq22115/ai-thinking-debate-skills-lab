@@ -116,3 +116,96 @@ jobs:
           }
           assert result['evidence_class'] not in forbidden, result
           PY
+
+      - name: Synthetic regression - hidden promotion requires a scored pair
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest = json.loads(Path('skills/evals/examples/public-example-manifest.json').read_text())
+          manifest['run_id'] = 'synthetic-promotion-regression-001'
+          manifest['contamination']['expected_labels_visible_to_generator'] = False
+          manifest['execution']['fresh_context'] = True
+          manifest['holdout']['private_oracle_separated'] = True
+          manifest['holdout']['hidden_variant'] = True
+          manifest['holdout']['variant_hidden_from_generator'] = True
+          manifest['judging']['mode'] = 'MIXED'
+          manifest['judging']['independent'] = True
+          manifest['judging']['judge_id'] = 'synthetic-independent-judge'
+          manifest['judging']['judge_receipts'] = ['synthetic-ci-judge-receipt']
+          Path('/tmp/synthetic-manifest.json').write_text(json.dumps(manifest))
+
+          responses = []
+          for line in Path('skills/evals/examples/public-example-responses.jsonl').read_text().splitlines():
+              if not line.strip() or 'public-pair-b' in line:
+                  continue
+              row = json.loads(line)
+              row['run_id'] = manifest['run_id']
+              responses.append(row)
+          Path('/tmp/synthetic-incomplete.jsonl').write_text('\n'.join(json.dumps(r) for r in responses) + '\n')
+
+          oracle = json.loads(Path('skills/evals/examples/public-example-oracle.json').read_text())
+          oracle['run_id'] = manifest['run_id']
+          Path('/tmp/synthetic-oracle.json').write_text(json.dumps(oracle))
+
+          judgment = {
+              'run_id': manifest['run_id'],
+              'case_id': 'public-label-001',
+              'pass': True,
+              'reasons': ['synthetic independent judgment for promotion-logic regression only']
+          }
+          Path('/tmp/synthetic-judgments.jsonl').write_text(json.dumps(judgment) + '\n')
+          PY
+
+          python skills/evals/run_reasoning_evals.py \
+            --manifest /tmp/synthetic-manifest.json \
+            --responses /tmp/synthetic-incomplete.jsonl \
+            --oracle /tmp/synthetic-oracle.json \
+            --judgments /tmp/synthetic-judgments.jsonl \
+            --out /tmp/synthetic-incomplete-result.json
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          result = json.loads(Path('/tmp/synthetic-incomplete-result.json').read_text())
+          assert result['status'] == 'PARTIAL', result
+          assert result['evidence_class'] == 'INDEPENDENT_JUDGED', result
+          assert result['promotion']['max_evidence_class'] == 'INDEPENDENT_JUDGED', result
+          assert 'hidden perturbation relation not actually scored' in result['promotion']['blocking_reasons'], result
+          pair = [c for c in result['cases'] if c['case_id'] == 'PAIR::public-order-invariance']
+          assert pair and pair[0]['result'] == 'UNSCORED', result
+          PY
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest = json.loads(Path('/tmp/synthetic-manifest.json').read_text())
+          rows = []
+          for line in Path('skills/evals/examples/public-example-responses.jsonl').read_text().splitlines():
+              if line.strip():
+                  row = json.loads(line)
+                  row['run_id'] = manifest['run_id']
+                  rows.append(row)
+          Path('/tmp/synthetic-complete.jsonl').write_text('\n'.join(json.dumps(r) for r in rows) + '\n')
+          PY
+
+          python skills/evals/run_reasoning_evals.py \
+            --manifest /tmp/synthetic-manifest.json \
+            --responses /tmp/synthetic-complete.jsonl \
+            --oracle /tmp/synthetic-oracle.json \
+            --judgments /tmp/synthetic-judgments.jsonl \
+            --out /tmp/synthetic-complete-result.json
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          result = json.loads(Path('/tmp/synthetic-complete-result.json').read_text())
+          assert result['status'] == 'PASS', result
+          assert result['evidence_class'] == 'PERTURBED_HIDDEN', result
+          assert result['summary']['pair_groups'] == 1, result
+          assert result['summary']['pair_failures'] == 0, result
+          PY
