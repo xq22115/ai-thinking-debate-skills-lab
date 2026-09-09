@@ -1,0 +1,4 @@
+{"run_id":"public-example-001","case_id":"public-label-001","output":{"labels":["alpha","beta"]}}
+{"run_id":"public-example-001","case_id":"public-exact-001","output":{"decision":"DEFER"}}
+{"run_id":"public-example-001","case_id":"public-pair-a","output":{"winner_id":"candidate-X"}}
+{"run_id":"public-example-001","case_id":"public-pair-b","output":{"winner_id":"candidate-X"}}
