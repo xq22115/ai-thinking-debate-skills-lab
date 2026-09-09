@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "holdout-reveal-receipt.schema.json",
+  "title": "Verified Holdout Reveal Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "verified",
+    "suite",
+    "run_id",
+    "commitment_algorithm",
+    "manifest_sha256",
+    "oracle_canonical_sha256",
+    "oracle_commitment_sha256",
+    "salt_sha256",
+    "responses_canonical_sha256",
+    "response_count",
+    "freeze_receipt_sha256",
+    "commitment_receipt_sha256",
+    "boundary"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "status": {"const": "PASS_COMMITMENT_REVEAL"},
+    "verified": {"const": true},
+    "suite": {"type": "string", "minLength": 1},
+    "run_id": {"type": "string", "minLength": 1},
+    "commitment_algorithm": {"const": "SHA256-SALTED-CANONICAL-JSON-v1"},
+    "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "oracle_canonical_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "oracle_commitment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "salt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "responses_canonical_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "response_count": {"type": "integer", "minimum": 1},
+    "freeze_receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "commitment_receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commitment_matches_reveal",
+        "manifest_matches_commitment",
+        "responses_frozen_before_reveal_contract",
+        "oracle_quality_verified",
+        "model_freshness_verified",
+        "judge_independence_verified"
+      ],
+      "properties": {
+        "commitment_matches_reveal": {"const": true},
+        "manifest_matches_commitment": {"const": true},
+        "responses_frozen_before_reveal_contract": {"const": true},
+        "oracle_quality_verified": {"const": false},
+        "model_freshness_verified": {"const": false},
+        "judge_independence_verified": {"const": false}
+      }
+    }
+  }
+}
