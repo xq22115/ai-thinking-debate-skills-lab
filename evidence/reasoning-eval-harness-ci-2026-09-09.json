@@ -1,0 +1,37 @@
+{
+  "receipt_type": "REASONING_EVAL_HARNESS_HOSTED_CI",
+  "date": "2026-09-09",
+  "repository": "xq22115/ai-thinking-debate-skills-lab",
+  "commit_sha": "6f89989bd9423d7af33c2e32eab789726fa68f91",
+  "workflow": "Reasoning Eval Harness Gate",
+  "workflow_run_id": 34347021367,
+  "job_id": 102450923651,
+  "status": "PASS_HARNESS_CI",
+  "scope": [
+    "python_compile_provider_neutral_runner",
+    "validate_public_machine_readable_eval_artifacts",
+    "run_public_nonhidden_contract_example",
+    "verify_incomplete_pair_fails_closed",
+    "assert_public_example_cannot_self_promote_to_hidden_or_independent_evidence"
+  ],
+  "observed_steps": [
+    {"name": "Compile provider-neutral runner", "conclusion": "success"},
+    {"name": "Validate public machine-readable eval artifacts", "conclusion": "success"},
+    {"name": "Run public NON-HIDDEN contract example", "conclusion": "success"},
+    {"name": "Verify incomplete pair fails closed", "conclusion": "success"},
+    {"name": "Assert public example cannot self-promote to hidden or independent evidence", "conclusion": "success"}
+  ],
+  "evidence_boundary": {
+    "hosted_ci_for_eval_harness": true,
+    "model_reasoning_evaluated": false,
+    "fresh_context_model_run": false,
+    "private_holdout_scored": false,
+    "independent_model_judge": false,
+    "hidden_metamorphic_model_run": false,
+    "repeated_model_variance": false,
+    "authentic_multi_agent_reasoning_runtime": false,
+    "host_live_reasoning_behavior": false,
+    "stable_release_proven": false
+  },
+  "interpretation": "GitHub-hosted CI proves the evaluation harness compiles and its public non-hidden contract/fail-closed promotion checks execute successfully at the recorded commit. It does not prove model reasoning quality, hidden generalization, independent judging, or host-live reasoning behavior."
+}
