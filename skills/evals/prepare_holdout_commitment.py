@@ -69,6 +69,7 @@ def validate_blueprint(bp: dict[str, Any]) -> None:
     cases = bp.get("cases")
     require(isinstance(cases, list) and cases, "blueprint.cases must be non-empty array")
     seen: set[str] = set()
+    pair_only_ids: set[str] = set()
     for case in cases:
         require(isinstance(case, dict), "blueprint case must be object")
         case_id = case.get("case_id")
@@ -78,10 +79,16 @@ def validate_blueprint(bp: dict[str, Any]) -> None:
         require(isinstance(case.get("prompt"), str), f"{case_id}.prompt must be string")
         scoring = case.get("scoring")
         require(isinstance(scoring, dict), f"{case_id}.scoring required")
-        require(scoring.get("mode") in {"LABEL_SET", "EXACT_VALUE", "SEMANTIC_JUDGE"},
+        mode = scoring.get("mode")
+        require(mode in {"LABEL_SET", "EXACT_VALUE", "SEMANTIC_JUDGE", "PAIR_ONLY"},
                 f"{case_id}.scoring.mode unsupported")
+        if mode == "PAIR_ONLY":
+            pair_only_ids.add(case_id)
+            require(set(scoring.keys()) == {"mode"},
+                    f"{case_id}.PAIR_ONLY must not contain single-case expected labels")
     pair_rules = bp.get("pair_rules", [])
     require(isinstance(pair_rules, list), "blueprint.pair_rules must be array")
+    paired_ids: set[str] = set()
     for rule in pair_rules:
         require(isinstance(rule, dict), "pair rule must be object")
         for key in ["pair_id", "left_case_id", "right_case_id", "field"]:
@@ -90,6 +97,9 @@ def validate_blueprint(bp: dict[str, Any]) -> None:
                 f"pair rule {rule.get('pair_id')} references unknown case")
         require(rule.get("relation") in {"EQUAL", "NOT_EQUAL"},
                 f"pair rule {rule.get('pair_id')} relation unsupported")
+        paired_ids.update({rule["left_case_id"], rule["right_case_id"]})
+    require(pair_only_ids <= paired_ids,
+            "every PAIR_ONLY case must participate in at least one pair rule")
 
 
 def make_public_manifest(bp: dict[str, Any]) -> dict[str, Any]:
