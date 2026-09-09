@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "holdout-commitment.schema.json",
+  "title": "Public Holdout Commitment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "suite",
+    "run_id",
+    "commitment_algorithm",
+    "domain",
+    "manifest_sha256",
+    "oracle_commitment_sha256",
+    "salt_revealed",
+    "oracle_revealed",
+    "blueprint_visibility",
+    "public_manifest_private_key_scan_passed"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "suite": {"type": "string", "minLength": 1},
+    "run_id": {"type": "string", "minLength": 1},
+    "commitment_algorithm": {"const": "SHA256-SALTED-CANONICAL-JSON-v1"},
+    "domain": {"const": "reasoning-holdout-oracle-v1"},
+    "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "oracle_commitment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "salt_revealed": {"const": false},
+    "oracle_revealed": {"const": false},
+    "blueprint_visibility": {"enum": ["PRIVATE_BLUEPRINT", "PUBLIC_NON_HIDDEN_EXAMPLE"]},
+    "public_manifest_private_key_scan_passed": {"const": true}
+  }
+}
