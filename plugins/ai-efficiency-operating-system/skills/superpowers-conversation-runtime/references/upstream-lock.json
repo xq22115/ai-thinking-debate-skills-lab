@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "profile": "superpowers-conversation-runtime-upstream-lock-v1",
+  "captured_at": "2026-09-10",
+  "source": {
+    "repo": "obra/superpowers",
+    "commit": "b36e0829c6d0140e93cfef2ca599b1b07d4a7797",
+    "paths": [
+      "skills/using-superpowers/SKILL.md",
+      "skills/brainstorming/SKILL.md",
+      "skills/systematic-debugging/SKILL.md",
+      "skills/test-driven-development/SKILL.md",
+      "skills/writing-plans/SKILL.md",
+      "skills/executing-plans/SKILL.md",
+      "skills/receiving-code-review/SKILL.md",
+      "skills/writing-skills/SKILL.md",
+      "skills/verification-before-completion/SKILL.md",
+      "RELEASE-NOTES.md",
+      "docs/superpowers/plans/2026-07-30-codex-efficiency-fixes.md",
+      "docs/superpowers/specs/2026-07-30-codex-efficiency-fixes-design.md"
+    ]
+  },
+  "adaptation_policy": {
+    "mechanism_level_only": true,
+    "vendor_upstream_prose": false,
+    "progressive_ceremony": true,
+    "quiet_presentation_default": true,
+    "host_capability_truth_required": true,
+    "explicit_bounded_request_counts_as_action_intent": true,
+    "completion_requires_fresh_evidence": true
+  }
+}
