@@ -50,6 +50,8 @@ A reusable private oracle/hidden expected label set must not be published to the
 
 Provider-neutral scorer. It intentionally does **not** call a model. It consumes already-produced response/judgment artifacts, performs deterministic label/exact/pair scoring where available, and computes the maximum evidence class supported by explicit separation/receipt metadata.
 
+The hardened runner requires actual scored private evidence before `PRIVATE_ORACLE_SCORED`, and an actual scored pair relation before `PERTURBED_HIDDEN`. Metadata/file presence alone is insufficient.
+
 ### Machine-readable contracts
 
 - `skills/evals/reasoning-eval-manifest.schema.json`
@@ -112,22 +114,33 @@ Receipt:
 
 ### Hosted reasoning-eval harness CI — 2026-09-09
 
-Exact evidence:
+Two GitHub-hosted passes are recorded.
 
-- repository: `xq22115/ai-thinking-debate-skills-lab`
+Initial contract gate:
+
 - commit: `6f89989bd9423d7af33c2e32eab789726fa68f91`
-- workflow: `Reasoning Eval Harness Gate`
 - workflow run: `34347021367`
 - job: `102450923651`
-- job conclusion: `success`
+- conclusion: `success`
 
-Observed successful steps:
+Hardened pair-promotion regression:
+
+- commit: `9ee4f9aeff99c6c39e27afd5633174e677b0345f`
+- workflow: `Reasoning Eval Harness Gate`
+- workflow run: `34347854340`
+- job: `102453635615`
+- conclusion: `success`
+
+The hardened job successfully executed:
 
 1. Compile provider-neutral runner.
 2. Validate public machine-readable eval artifacts.
 3. Run public NON-HIDDEN contract example.
 4. Verify incomplete pair fails closed.
 5. Assert public example cannot self-promote to hidden or independent evidence.
+6. Synthetic regression: hidden promotion requires a genuinely scored pair relation.
+
+The synthetic regression confirmed that a run with fresh/private/independent metadata but one missing member of the pair remains `PARTIAL`, with the pair `UNSCORED`, and cannot rise above `INDEPENDENT_JUDGED`; only the complete paired execution can reach the synthetic `PERTURBED_HIDDEN` rung.
 
 Machine-readable receipt:
 
@@ -135,7 +148,7 @@ Machine-readable receipt:
 
 Interpretation:
 
-`PASS_HARNESS_CI` proves the evaluation harness executable contract on GitHub-hosted CI at the recorded revision. It does **not** prove target-model reasoning quality, fresh-context execution, private holdout success, independent judging, hidden generalization, authentic multi-agent reasoning, or host-live reasoning behavior.
+`PASS_HARNESS_CI_HARDENED` proves the evaluation harness executable and fail-closed promotion contract on GitHub-hosted CI at the recorded revisions. It does **not** prove target-model reasoning quality, fresh-context execution, private holdout success, independent judging, hidden generalization, authentic multi-agent reasoning, or host-live reasoning behavior.
 
 ## Explicit fixture inventory
 
@@ -184,7 +197,7 @@ A later level does not retroactively upgrade the meaning of an earlier receipt.
 
 - deterministic policy harness: PASS for recorded cases;
 - visible same-model smoke: PARTIAL/LOW_SELF_REFERENTIAL as recorded;
-- provider-neutral eval harness hosted GitHub CI: PASS;
+- provider-neutral eval harness hosted GitHub CI: `PASS_HARNESS_CI_HARDENED`;
 - fresh-context target reasoning: NOT_RUN;
 - private-oracle target scoring: NOT_RUN;
 - J1/J6 true paired target execution: NOT_RUN;
