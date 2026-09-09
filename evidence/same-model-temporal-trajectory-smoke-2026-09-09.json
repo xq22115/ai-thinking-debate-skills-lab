@@ -1,0 +1,55 @@
+{
+  "receipt_type": "SAME_MODEL_TEMPORAL_TRAJECTORY_SMOKE",
+  "date": "2026-09-09",
+  "status": "SMOKE_BASELINE_PASS",
+  "evidence_class": "LOW_SELF_REFERENTIAL",
+  "method": "current ChatGPT session applies visible TT1-TT10 fixture contracts and records observable output summaries",
+  "contamination": {
+    "authoring_overlap": true,
+    "fixture_visibility": "expected labels and fail conditions were visible in conversation/repository context",
+    "judge_independence": "same-model same-session",
+    "runtime_independence": false,
+    "host_live": false
+  },
+  "summary": {
+    "total_fixtures": 10,
+    "static_smoke_pass": 10,
+    "partial": 0,
+    "fail": 0,
+    "not_run": 0
+  },
+  "cases": [
+    {"id":"TT1-local-pass-global-fail","result":"PASS","output_summary":"Detected that locally valid bookings jointly violate the global budget and required trajectory-level replanning."},
+    {"id":"TT2-delayed-feedback-pending","result":"PASS","output_summary":"Kept the action in PENDING_OBSERVATION and refused to convert absence of an immediate error into verification."},
+    {"id":"TT3-first-irrecoverable-error","result":"PASS","output_summary":"Attributed the late visible failure to the earlier step that destroyed the final viable rollback path and separated root temporal cause from symptom."},
+    {"id":"TT4-checkpoint-staleness","result":"PASS","output_summary":"Treated the checkpoint as historical state, revalidated target version/dependency, and selected stale-replan rather than blind replay."},
+    {"id":"TT5-option-value","result":"PASS","output_summary":"Recognized the value of preserving both branches until decisive evidence arrives rather than maximizing immediate progress."},
+    {"id":"TT6-over-parallelization","result":"PASS","output_summary":"Detected shared-state dependency conflict and rejected uncontrolled parallel dependent mutations."},
+    {"id":"TT7-sunk-cost-branch","result":"PASS","output_summary":"Compared branches from the current state and rejected past spend as a reason to continue a now-dominated path."},
+    {"id":"TT8-stale-critic-feedback","result":"PASS","output_summary":"Flagged critic/policy-environment drift and required revalidation instead of treating old feedback as a permanent oracle."},
+    {"id":"TT9-long-trajectory-judge","result":"PASS","output_summary":"Required trajectory-level audit preserving the early critical violation despite many later polished steps."},
+    {"id":"TT10-feedback-conditioned-replan","result":"PASS","output_summary":"Preserved the root goal, classified the change as world-state feedback, and required strategy revalidation/local repair or replan."}
+  ],
+  "interpretation": {
+    "what_this_supports": "The current temporal-trajectory rules can be applied consistently to the 10 visible authored fixtures in the same authoring context.",
+    "what_this_does_not_support": [
+      "independent long-horizon planning improvement",
+      "real delayed-feedback credit assignment",
+      "asynchronous execution robustness",
+      "accurate first-irrecoverable-error attribution in live environments",
+      "long-trajectory evaluator robustness",
+      "host-live recovery quality",
+      "STABLE release status"
+    ]
+  },
+  "release_gate": {
+    "same_model_static_smoke": "10_PASS",
+    "fresh_context_run": "NOT_RUN",
+    "delayed_feedback_execution": "NOT_RUN",
+    "trajectory_attribution_eval": "NOT_RUN",
+    "asynchronous_planning_eval": "NOT_RUN",
+    "independent_judge": "NOT_RUN",
+    "repeated_variance": "NOT_RUN",
+    "host_live_regression": "NOT_RUN"
+  }
+}
