@@ -1,0 +1,118 @@
+name: Reasoning Eval Harness Gate
+
+on:
+  push:
+    paths:
+      - 'skills/evals/**'
+      - '.github/workflows/reasoning-eval-harness-gate.yml'
+  pull_request:
+    paths:
+      - 'skills/evals/**'
+      - '.github/workflows/reasoning-eval-harness-gate.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  reasoning-eval-harness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact revision
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Compile provider-neutral runner
+        run: |
+          python -m py_compile skills/evals/run_reasoning_evals.py
+
+      - name: Validate public machine-readable eval artifacts
+        run: |
+          python -m json.tool skills/evals/reasoning-eval-result.schema.json >/dev/null
+          python -m json.tool skills/evals/reasoning-eval-manifest.schema.json >/dev/null
+          python -m json.tool skills/evals/paired-judge-execution-plan.json >/dev/null
+          python -m json.tool skills/evals/examples/public-example-manifest.json >/dev/null
+          python -m json.tool skills/evals/examples/public-example-oracle.json >/dev/null
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          for line_no, line in enumerate(Path('skills/evals/examples/public-example-responses.jsonl').read_text().splitlines(), 1):
+              if line.strip():
+                  value = json.loads(line)
+                  assert isinstance(value, dict), line_no
+          PY
+
+      - name: Run public NON-HIDDEN contract example
+        run: |
+          python skills/evals/run_reasoning_evals.py \
+            --manifest skills/evals/examples/public-example-manifest.json \
+            --responses skills/evals/examples/public-example-responses.jsonl \
+            --oracle skills/evals/examples/public-example-oracle.json \
+            --out /tmp/public-reasoning-eval-result.json
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          result = json.loads(Path('/tmp/public-reasoning-eval-result.json').read_text())
+          assert result['status'] == 'PASS', result
+          assert result['evidence_class'] == 'SAME_MODEL_SMOKE', result
+          assert result['promotion']['max_evidence_class'] == 'SAME_MODEL_SMOKE', result
+          assert result['summary']['passed'] == 3, result
+          assert result['summary']['failed'] == 0, result
+          assert result['summary']['pair_groups'] == 1, result
+          assert result['summary']['pair_failures'] == 0, result
+          assert result['contamination']['expected_labels_visible_to_generator'] is True, result
+          assert result['holdout']['private_oracle_separated'] is False, result
+          PY
+
+      - name: Verify incomplete pair fails closed
+        run: |
+          grep -v 'public-pair-b' skills/evals/examples/public-example-responses.jsonl > /tmp/incomplete-responses.jsonl
+          set +e
+          python skills/evals/run_reasoning_evals.py \
+            --manifest skills/evals/examples/public-example-manifest.json \
+            --responses /tmp/incomplete-responses.jsonl \
+            --oracle skills/evals/examples/public-example-oracle.json \
+            --out /tmp/incomplete-result.json
+          rc=$?
+          set -e
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          result = json.loads(Path('/tmp/incomplete-result.json').read_text())
+          assert result['status'] == 'PARTIAL', result
+          pair = [c for c in result['cases'] if c['case_id'] == 'PAIR::public-order-invariance']
+          assert len(pair) == 1, result
+          assert pair[0]['result'] == 'UNSCORED', result
+          assert 'both paired executions are required' in pair[0]['reasons'], result
+          PY
+
+          test "$rc" -eq 0
+
+      - name: Assert public example cannot self-promote to hidden or independent evidence
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          result = json.loads(Path('/tmp/public-reasoning-eval-result.json').read_text())
+          forbidden = {
+              'FRESH_CONTEXT_RUN',
+              'PRIVATE_ORACLE_SCORED',
+              'INDEPENDENT_JUDGED',
+              'PERTURBED_HIDDEN',
+              'UNSEEN_ADVERSARIAL',
+              'REPEATED',
+              'AUTHENTIC_MULTI_AGENT_RUNTIME',
+              'HOST_LIVE_REGRESSION',
+          }
+          assert result['evidence_class'] not in forbidden, result
+          PY
