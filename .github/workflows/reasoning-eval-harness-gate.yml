@@ -26,17 +26,25 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Compile provider-neutral runner
+      - name: Compile evaluation tools
         run: |
           python -m py_compile skills/evals/run_reasoning_evals.py
+          python -m py_compile skills/evals/prepare_holdout_commitment.py
+          python -m py_compile skills/evals/freeze_eval_responses.py
+          python -m py_compile skills/evals/verify_holdout_reveal.py
 
       - name: Validate public machine-readable eval artifacts
         run: |
           python -m json.tool skills/evals/reasoning-eval-result.schema.json >/dev/null
           python -m json.tool skills/evals/reasoning-eval-manifest.schema.json >/dev/null
+          python -m json.tool skills/evals/holdout-blueprint.schema.json >/dev/null
+          python -m json.tool skills/evals/holdout-commitment.schema.json >/dev/null
+          python -m json.tool skills/evals/response-freeze-receipt.schema.json >/dev/null
+          python -m json.tool skills/evals/holdout-reveal-receipt.schema.json >/dev/null
           python -m json.tool skills/evals/paired-judge-execution-plan.json >/dev/null
           python -m json.tool skills/evals/examples/public-example-manifest.json >/dev/null
           python -m json.tool skills/evals/examples/public-example-oracle.json >/dev/null
+          python -m json.tool skills/evals/examples/public-example-holdout-blueprint.json >/dev/null
           python - <<'PY'
           import json
           from pathlib import Path
@@ -69,19 +77,17 @@ jobs:
           assert result['summary']['pair_failures'] == 0, result
           assert result['contamination']['expected_labels_visible_to_generator'] is True, result
           assert result['holdout']['private_oracle_separated'] is False, result
+          assert result['holdout']['commitment_reveal_verified'] is False, result
           PY
 
       - name: Verify incomplete pair fails closed
         run: |
           grep -v 'public-pair-b' skills/evals/examples/public-example-responses.jsonl > /tmp/incomplete-responses.jsonl
-          set +e
           python skills/evals/run_reasoning_evals.py \
             --manifest skills/evals/examples/public-example-manifest.json \
             --responses /tmp/incomplete-responses.jsonl \
             --oracle skills/evals/examples/public-example-oracle.json \
             --out /tmp/incomplete-result.json
-          rc=$?
-          set -e
 
           python - <<'PY'
           import json
@@ -95,9 +101,7 @@ jobs:
           assert 'both paired executions are required' in pair[0]['reasons'], result
           PY
 
-          test "$rc" -eq 0
-
-      - name: Assert public example cannot self-promote to hidden or independent evidence
+      - name: Assert public example cannot self-promote to stronger evidence
         run: |
           python - <<'PY'
           import json
@@ -117,95 +121,285 @@ jobs:
           assert result['evidence_class'] not in forbidden, result
           PY
 
-      - name: Synthetic regression - hidden promotion requires a scored pair
+      - name: Exercise public NON-HIDDEN salted commit-reveal tooling
+        run: |
+          python skills/evals/prepare_holdout_commitment.py \
+            --blueprint skills/evals/examples/public-example-holdout-blueprint.json \
+            --manifest-out /tmp/generated-public-manifest.json \
+            --oracle-out /tmp/generated-public-oracle.json \
+            --salt-out /tmp/generated-public-salt.txt \
+            --commitment-out /tmp/generated-public-commitment.json \
+            --salt-hex 000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f
+
+          python skills/evals/freeze_eval_responses.py \
+            --manifest /tmp/generated-public-manifest.json \
+            --responses skills/evals/examples/public-example-responses.jsonl \
+            --out /tmp/generated-public-freeze.json
+
+          python skills/evals/verify_holdout_reveal.py \
+            --commitment /tmp/generated-public-commitment.json \
+            --manifest /tmp/generated-public-manifest.json \
+            --freeze-receipt /tmp/generated-public-freeze.json \
+            --oracle /tmp/generated-public-oracle.json \
+            --salt /tmp/generated-public-salt.txt \
+            --out /tmp/generated-public-reveal.json
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          commitment = json.loads(Path('/tmp/generated-public-commitment.json').read_text())
+          manifest = json.loads(Path('/tmp/generated-public-manifest.json').read_text())
+          reveal = json.loads(Path('/tmp/generated-public-reveal.json').read_text())
+
+          assert commitment['salt_revealed'] is False, commitment
+          assert commitment['oracle_revealed'] is False, commitment
+          assert commitment['public_manifest_private_key_scan_passed'] is True, commitment
+          assert reveal['status'] == 'PASS_COMMITMENT_REVEAL', reveal
+          assert reveal['verified'] is True, reveal
+          assert reveal['boundary']['oracle_quality_verified'] is False, reveal
+          assert reveal['boundary']['model_freshness_verified'] is False, reveal
+          assert reveal['boundary']['judge_independence_verified'] is False, reveal
+
+          forbidden = {'scoring', 'must_detect', 'fail_if', 'expected', 'expected_answer', 'gold_label', 'oracle', 'pair_rules'}
+          def walk(value):
+              if isinstance(value, dict):
+                  for key, child in value.items():
+                      assert key not in forbidden, (key, value)
+                      walk(child)
+              elif isinstance(value, list):
+                  for child in value:
+                      walk(child)
+          walk(manifest)
+          PY
+
+      - name: Tampered oracle reveal fails closed
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
 
-          manifest = json.loads(Path('skills/evals/examples/public-example-manifest.json').read_text())
-          manifest['run_id'] = 'synthetic-promotion-regression-001'
-          manifest['contamination']['expected_labels_visible_to_generator'] = False
-          manifest['execution']['fresh_context'] = True
-          manifest['holdout']['private_oracle_separated'] = True
-          manifest['holdout']['hidden_variant'] = True
-          manifest['holdout']['variant_hidden_from_generator'] = True
-          manifest['judging']['mode'] = 'MIXED'
-          manifest['judging']['independent'] = True
-          manifest['judging']['judge_id'] = 'synthetic-independent-judge'
-          manifest['judging']['judge_receipts'] = ['synthetic-ci-judge-receipt']
-          Path('/tmp/synthetic-manifest.json').write_text(json.dumps(manifest))
+          oracle = json.loads(Path('/tmp/generated-public-oracle.json').read_text())
+          for case in oracle['cases']:
+              if case['case_id'] == 'public-exact-001':
+                  case['scoring']['expected'] = 'COMMIT'
+          Path('/tmp/tampered-oracle.json').write_text(json.dumps(oracle))
+          PY
 
-          responses = []
+          set +e
+          python skills/evals/verify_holdout_reveal.py \
+            --commitment /tmp/generated-public-commitment.json \
+            --manifest /tmp/generated-public-manifest.json \
+            --freeze-receipt /tmp/generated-public-freeze.json \
+            --oracle /tmp/tampered-oracle.json \
+            --salt /tmp/generated-public-salt.txt \
+            --out /tmp/tampered-reveal-result.json
+          rc=$?
+          set -e
+          test "$rc" -eq 2
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          result = json.loads(Path('/tmp/tampered-reveal-result.json').read_text())
+          assert result['status'] == 'INVALID', result
+          assert result['verified'] is False, result
+          assert 'does not match pre-run commitment' in result['error'], result
+          PY
+
+      - name: Response mutation after freeze invalidates reveal binding at scoring
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          rows = []
           for line in Path('skills/evals/examples/public-example-responses.jsonl').read_text().splitlines():
-              if not line.strip() or 'public-pair-b' in line:
+              if line.strip():
+                  row = json.loads(line)
+                  if row['case_id'] == 'public-exact-001':
+                      row['output']['decision'] = 'COMMIT'
+                  rows.append(row)
+          Path('/tmp/mutated-after-freeze.jsonl').write_text('\n'.join(json.dumps(r) for r in rows) + '\n')
+          PY
+
+          set +e
+          python skills/evals/run_reasoning_evals.py \
+            --manifest /tmp/generated-public-manifest.json \
+            --responses /tmp/mutated-after-freeze.jsonl \
+            --oracle /tmp/generated-public-oracle.json \
+            --reveal-receipt /tmp/generated-public-reveal.json \
+            --out /tmp/mutated-after-freeze-result.json
+          rc=$?
+          set -e
+          test "$rc" -eq 2
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          result = json.loads(Path('/tmp/mutated-after-freeze-result.json').read_text())
+          assert result['status'] == 'INVALID', result
+          assert 'response-set hash mismatch' in result['error'], result
+          PY
+
+      - name: Synthetic regression - commit-reveal and pair promotion are fail-closed
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          bp = json.loads(Path('skills/evals/examples/public-example-holdout-blueprint.json').read_text())
+          bp['run_id'] = 'synthetic-promotion-regression-002'
+          bp['contamination']['authoring_overlap'] = False
+          bp['contamination']['fixture_visible_to_generator'] = False
+          bp['contamination']['expected_labels_visible_to_generator'] = False
+          bp['execution']['fresh_context'] = True
+          bp['execution']['runtime_independent'] = True
+          bp['holdout']['private_oracle_separated'] = True
+          bp['holdout']['hidden_variant'] = True
+          bp['holdout']['variant_hidden_from_generator'] = True
+          bp['judging']['mode'] = 'MIXED'
+          bp['judging']['independent'] = True
+          bp['judging']['judge_id'] = 'synthetic-independent-judge'
+          bp['judging']['judge_receipts'] = ['synthetic-ci-judge-receipt']
+          for case in bp['cases']:
+              if case['case_id'] == 'public-label-001':
+                  case['scoring'] = {'mode': 'SEMANTIC_JUDGE'}
+          Path('/tmp/synthetic-blueprint.json').write_text(json.dumps(bp))
+          PY
+
+          python skills/evals/prepare_holdout_commitment.py \
+            --blueprint /tmp/synthetic-blueprint.json \
+            --manifest-out /tmp/synthetic-manifest.json \
+            --oracle-out /tmp/synthetic-oracle.json \
+            --salt-out /tmp/synthetic-salt.txt \
+            --commitment-out /tmp/synthetic-commitment.json \
+            --salt-hex 101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          run_id = 'synthetic-promotion-regression-002'
+          full = []
+          incomplete = []
+          for line in Path('skills/evals/examples/public-example-responses.jsonl').read_text().splitlines():
+              if not line.strip():
                   continue
               row = json.loads(line)
-              row['run_id'] = manifest['run_id']
-              responses.append(row)
-          Path('/tmp/synthetic-incomplete.jsonl').write_text('\n'.join(json.dumps(r) for r in responses) + '\n')
-
-          oracle = json.loads(Path('skills/evals/examples/public-example-oracle.json').read_text())
-          oracle['run_id'] = manifest['run_id']
-          Path('/tmp/synthetic-oracle.json').write_text(json.dumps(oracle))
-
+              row['run_id'] = run_id
+              full.append(row)
+              if row['case_id'] != 'public-pair-b':
+                  incomplete.append(row)
+          Path('/tmp/synthetic-complete.jsonl').write_text('\n'.join(json.dumps(r) for r in full) + '\n')
+          Path('/tmp/synthetic-incomplete.jsonl').write_text('\n'.join(json.dumps(r) for r in incomplete) + '\n')
           judgment = {
-              'run_id': manifest['run_id'],
+              'run_id': run_id,
               'case_id': 'public-label-001',
               'pass': True,
-              'reasons': ['synthetic independent judgment for promotion-logic regression only']
+              'reasons': ['synthetic semantic judgment for promotion-logic regression only']
           }
           Path('/tmp/synthetic-judgments.jsonl').write_text(json.dumps(judgment) + '\n')
+          unrelated = {
+              'run_id': run_id,
+              'case_id': 'public-pair-a',
+              'pass': True,
+              'reasons': ['synthetic unrelated judgment; must not earn independent promotion']
+          }
+          Path('/tmp/synthetic-unrelated-judgment.jsonl').write_text(json.dumps(unrelated) + '\n')
           PY
+
+          python skills/evals/freeze_eval_responses.py \
+            --manifest /tmp/synthetic-manifest.json \
+            --responses /tmp/synthetic-incomplete.jsonl \
+            --out /tmp/synthetic-incomplete-freeze.json
+          python skills/evals/verify_holdout_reveal.py \
+            --commitment /tmp/synthetic-commitment.json \
+            --manifest /tmp/synthetic-manifest.json \
+            --freeze-receipt /tmp/synthetic-incomplete-freeze.json \
+            --oracle /tmp/synthetic-oracle.json \
+            --salt /tmp/synthetic-salt.txt \
+            --out /tmp/synthetic-incomplete-reveal.json
 
           python skills/evals/run_reasoning_evals.py \
             --manifest /tmp/synthetic-manifest.json \
             --responses /tmp/synthetic-incomplete.jsonl \
             --oracle /tmp/synthetic-oracle.json \
             --judgments /tmp/synthetic-judgments.jsonl \
+            --out /tmp/synthetic-no-reveal-result.json
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          result = json.loads(Path('/tmp/synthetic-no-reveal-result.json').read_text())
+          assert result['evidence_class'] == 'FRESH_CONTEXT_RUN', result
+          assert result['holdout']['commitment_reveal_verified'] is False, result
+          assert 'commit-reveal proof incomplete' in result['promotion']['blocking_reasons'][0], result
+          PY
+
+          python skills/evals/run_reasoning_evals.py \
+            --manifest /tmp/synthetic-manifest.json \
+            --responses /tmp/synthetic-incomplete.jsonl \
+            --oracle /tmp/synthetic-oracle.json \
+            --reveal-receipt /tmp/synthetic-incomplete-reveal.json \
+            --judgments /tmp/synthetic-judgments.jsonl \
             --out /tmp/synthetic-incomplete-result.json
 
           python - <<'PY'
           import json
           from pathlib import Path
-
           result = json.loads(Path('/tmp/synthetic-incomplete-result.json').read_text())
           assert result['status'] == 'PARTIAL', result
           assert result['evidence_class'] == 'INDEPENDENT_JUDGED', result
-          assert result['promotion']['max_evidence_class'] == 'INDEPENDENT_JUDGED', result
-          assert 'hidden perturbation relation not actually scored' in result['promotion']['blocking_reasons'], result
+          assert result['holdout']['commitment_reveal_verified'] is True, result
           pair = [c for c in result['cases'] if c['case_id'] == 'PAIR::public-order-invariance']
           assert pair and pair[0]['result'] == 'UNSCORED', result
+          assert 'hidden perturbation relation not actually scored' in result['promotion']['blocking_reasons'], result
           PY
+
+          python skills/evals/freeze_eval_responses.py \
+            --manifest /tmp/synthetic-manifest.json \
+            --responses /tmp/synthetic-complete.jsonl \
+            --out /tmp/synthetic-complete-freeze.json
+          python skills/evals/verify_holdout_reveal.py \
+            --commitment /tmp/synthetic-commitment.json \
+            --manifest /tmp/synthetic-manifest.json \
+            --freeze-receipt /tmp/synthetic-complete-freeze.json \
+            --oracle /tmp/synthetic-oracle.json \
+            --salt /tmp/synthetic-salt.txt \
+            --out /tmp/synthetic-complete-reveal.json
+
+          python skills/evals/run_reasoning_evals.py \
+            --manifest /tmp/synthetic-manifest.json \
+            --responses /tmp/synthetic-complete.jsonl \
+            --oracle /tmp/synthetic-oracle.json \
+            --reveal-receipt /tmp/synthetic-complete-reveal.json \
+            --judgments /tmp/synthetic-unrelated-judgment.jsonl \
+            --out /tmp/synthetic-unrelated-judge-result.json
 
           python - <<'PY'
           import json
           from pathlib import Path
-
-          manifest = json.loads(Path('/tmp/synthetic-manifest.json').read_text())
-          rows = []
-          for line in Path('skills/evals/examples/public-example-responses.jsonl').read_text().splitlines():
-              if line.strip():
-                  row = json.loads(line)
-                  row['run_id'] = manifest['run_id']
-                  rows.append(row)
-          Path('/tmp/synthetic-complete.jsonl').write_text('\n'.join(json.dumps(r) for r in rows) + '\n')
+          result = json.loads(Path('/tmp/synthetic-unrelated-judge-result.json').read_text())
+          assert result['evidence_class'] == 'PRIVATE_ORACLE_SCORED', result
+          assert 'independent judge did not score an actual SEMANTIC_JUDGE case with a receipt' in result['promotion']['blocking_reasons'], result
           PY
 
           python skills/evals/run_reasoning_evals.py \
             --manifest /tmp/synthetic-manifest.json \
             --responses /tmp/synthetic-complete.jsonl \
             --oracle /tmp/synthetic-oracle.json \
+            --reveal-receipt /tmp/synthetic-complete-reveal.json \
             --judgments /tmp/synthetic-judgments.jsonl \
             --out /tmp/synthetic-complete-result.json
 
           python - <<'PY'
           import json
           from pathlib import Path
-
           result = json.loads(Path('/tmp/synthetic-complete-result.json').read_text())
           assert result['status'] == 'PASS', result
           assert result['evidence_class'] == 'PERTURBED_HIDDEN', result
+          assert result['holdout']['commitment_reveal_verified'] is True, result
           assert result['summary']['pair_groups'] == 1, result
           assert result['summary']['pair_failures'] == 0, result
           PY
