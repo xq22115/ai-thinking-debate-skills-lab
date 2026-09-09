@@ -80,25 +80,52 @@ The orchestrator should omit skills and references when their trigger conditions
 - `NARRATIVE_FIT != BEST_CAUSAL_EXPLANATION`
 - `VERIFIER_PASS != TASK_TRUTH`
 - `VISIBLE_TEST_PASS != GENERALIZATION`
+- `PUBLIC_FIXTURE_PASS != HIDDEN_GENERALIZATION`
+- `FRESH_CONTEXT != PRIVATE_ORACLE`
+- `PRIVATE_ORACLE != INDEPENDENT_MODEL_JUDGE`
+- `PAIR_TEST_REQUIRES_BOTH_EXECUTIONS`
+- `METAMORPHIC_CLAIM_REQUIRES_RELATION_CHECK`
+- `HIDDEN_LABELS_IN_PUBLIC_REPO != HIDDEN_LABELS`
+- `CONTAMINATION_DETECTION_PASS != PROOF_OF_NO_CONTAMINATION`
 - `SELF_CRITIQUE_WITHOUT_INFORMATION_GAIN != VERIFICATION`
 - `LOCAL_TEST_PASS != HOSTED_CI_PASS`
+- `HOSTED_EVAL_HARNESS_CI != TARGET_MODEL_PASS`
 - `REPOSITORY_ARTIFACT != PROVIDER_LIVE_EXECUTION`
 - `TOOL_SUCCESS != TASK_COMPLETE`
 - `PRE_STEP_INFRA_FAILURE != TEST_FAILURE`
 
 ## Evaluation References
 
+### Fixture families
+
 - `skills/evals/goal-objective-audit-fixtures.json` — GO1–GO10 goal/specification/proxy fixtures.
 - `skills/evals/epistemic-calibration-fixtures.json` — E1–E12 evidence/calibration/VOI fixtures.
 - `skills/evals/decision-robustness-fixtures.json` — DR1–DR10 robust-action/shift/regret fixtures.
-- `skills/evals/temporal-trajectory-integrity-fixtures.json` — TT1–TT10 global constraints, delayed feedback, checkpoint staleness, first irrecoverable error, option value, over-parallelization, sunk cost, stale critics and trajectory judge fixtures.
+- `skills/evals/temporal-trajectory-integrity-fixtures.json` — TT1–TT10 long-horizon/trajectory fixtures.
 - `skills/evals/semantic-argument-microscope-fixtures.json` — S1–S12 semantic/pragmatic fixtures.
 - `skills/evals/argument-scheme-critical-question-fixtures.json` — CQ1–CQ8 scheme/CQ fixtures.
 - `skills/evals/causal-abductive-reasoning-fixtures.json` — C1–C10 causal/abductive fixtures.
 - `skills/evals/multi-agent-judge-bias-fixtures.json` — J1–J8 judge bias / anti-sycophancy fixtures.
 - `skills/evals/verifier-metamorphic-fixtures.json` — V1–V10 evaluator robustness/metamorphic fixtures.
 
-Fixture presence is not generalized model-execution evidence. Visible same-model smoke, hidden variants, independent judging, repeated variance, authentic runtime, and host-live regression remain separate evidence classes.
+Total explicit fixtures specified: `90`.
+
+Visible same-model receipts currently cover 80 fixtures: `78 PASS / 2 paired NOT_RUN`; V1–V10 remain `SPECIFIED_NOT_EXECUTED`.
+
+### Evaluation infrastructure
+
+- `skills/evals/SAME_MODEL_EVAL_PROTOCOL.md` — visible-fixture contamination boundary.
+- `skills/evals/HOLDOUT_EVAL_PROTOCOL.md` — public manifest / frozen responses / private oracle separation.
+- `skills/evals/reasoning-eval-manifest.schema.json` — public run metadata contract.
+- `skills/evals/reasoning-eval-result.schema.json` — machine-readable evidence/result contract.
+- `skills/evals/run_reasoning_evals.py` — provider-neutral artifact scorer; does not call a model.
+- `skills/evals/paired-judge-execution-plan.json` — true paired execution requirements for J1/J6.
+
+Canonical evidence ladder:
+
+`FIXTURE_SPECIFIED → STATIC_VALIDATED → SAME_MODEL_SMOKE → FRESH_CONTEXT_RUN → PRIVATE_ORACLE_SCORED → INDEPENDENT_JUDGED → PERTURBED_HIDDEN → UNSEEN_ADVERSARIAL → REPEATED → AUTHENTIC_MULTI_AGENT_RUNTIME → HOST_LIVE_REGRESSION`
+
+GitHub-hosted `Reasoning Eval Harness Gate` has passed for the evaluator harness at the recorded receipt `evidence/reasoning-eval-harness-ci-2026-09-09.json`. This is infrastructure evidence only; fresh-context/private-holdout/independent/hidden target-model evaluation remains NOT_RUN.
 
 ## Promotion Rule
 
@@ -112,7 +139,9 @@ For `recoverable-state`, temporal regression includes local-pass/global-fail, de
 
 For `semantic-argument-microscope`, minimum regression includes definition mismatch, hidden warrant, QUD substitution, pragmatic context flip, defeaters, stance freedom, claim-strength calibration, scheme/CQ fidelity, causal-direction/intervention/counterfactual checks and graph coherence.
 
-For `multi-agent-deliberation`, material judge validation includes order swap, verbosity normalization, bandwagon resistance, minority-correct retention, early-consensus resistance, follow-up persuasion, blind-label invariance, separation from debater self-evaluation, and long-trajectory early-failure retention when relevant.
+For `multi-agent-deliberation`, material judge validation includes true paired order swap, verbosity normalization, bandwagon resistance, minority-correct retention, early-consensus resistance, follow-up persuasion, true paired blind-label invariance, separation from debater self-evaluation, and long-trajectory early-failure retention when relevant.
+
+A visible/public fixture cannot satisfy a hidden-generalization promotion gate merely by being scored correctly.
 
 ## Portability Boundary
 
