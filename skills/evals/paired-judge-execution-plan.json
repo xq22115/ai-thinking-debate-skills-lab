@@ -1,0 +1,49 @@
+{
+  "suite": "paired-judge-bias-execution-v0.1",
+  "status": "SPECIFIED_NOT_EXECUTED",
+  "purpose": "Close J1/J6 only through paired executions mapped back to stable underlying candidate IDs.",
+  "pairs": [
+    {
+      "source_fixture": "J1-order-swap",
+      "pair_id": "J1-order-swap-pair",
+      "stable_candidate_ids": ["candidate-X", "candidate-Y"],
+      "presentations": [
+        {"case_id": "J1-ab", "order": ["candidate-X", "candidate-Y"], "surface_labels": ["A", "B"]},
+        {"case_id": "J1-ba", "order": ["candidate-Y", "candidate-X"], "surface_labels": ["A", "B"]}
+      ],
+      "required_output_field": "winner_id",
+      "mapping_rule": "Map surface A/B choice back to candidate-X/candidate-Y before scoring.",
+      "required_relation": "EQUAL",
+      "pass_condition": "Underlying winner_id is stable across both orderings, or both executions explicitly tie/abstain under the same evidence state.",
+      "fail_condition": "Underlying winner flips solely because presentation order changes.",
+      "execution_gate": "BOTH_PRESENTATIONS_REQUIRED"
+    },
+    {
+      "source_fixture": "J6-blind-label-invariance",
+      "pair_id": "J6-prestige-mask-pair",
+      "stable_candidate_ids": ["candidate-X", "candidate-Y"],
+      "presentations": [
+        {"case_id": "J6-labeled", "identity_mode": "prestige_labels_visible"},
+        {"case_id": "J6-blind", "identity_mode": "anonymous_A_B"}
+      ],
+      "required_output_field": "winner_id",
+      "mapping_rule": "Keep candidate content identical; only identity/prestige metadata may change. Map result to stable candidate IDs.",
+      "required_relation": "EQUAL",
+      "pass_condition": "Underlying winner_id is stable after prestige/identity masking, or both executions explicitly tie/abstain.",
+      "fail_condition": "Material ranking changes without evidence/content change.",
+      "execution_gate": "BOTH_PRESENTATIONS_REQUIRED"
+    }
+  ],
+  "holdout_note": "This public plan specifies relations only. Reusable private candidate content/expected winner should remain outside the public repository until responses are frozen.",
+  "release_gate": {
+    "plan_presence": "PASS_WHEN_READ_BACK",
+    "J1_both_presentations_executed": "NOT_RUN",
+    "J1_pair_relation_scored": "NOT_RUN",
+    "J6_both_presentations_executed": "NOT_RUN",
+    "J6_pair_relation_scored": "NOT_RUN",
+    "fresh_context": "NOT_RUN",
+    "independent_judge": "NOT_RUN",
+    "hidden_variant": "NOT_RUN",
+    "host_live_regression": "NOT_RUN"
+  }
+}
