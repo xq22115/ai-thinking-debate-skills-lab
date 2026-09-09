@@ -161,21 +161,38 @@ Workflow:
 
 `.github/workflows/reasoning-eval-harness-gate.yml`
 
-At commit `6f89989bd9423d7af33c2e32eab789726fa68f91`, GitHub-hosted Actions run `34347021367`, job `102450923651`, completed successfully.
+Two GitHub-hosted executions are recorded.
 
-Observed successful checks:
+Initial contract gate:
+
+- commit `6f89989bd9423d7af33c2e32eab789726fa68f91`
+- run `34347021367`
+- job `102450923651`
+- conclusion `success`
+
+Hardened pair-promotion regression:
+
+- commit `9ee4f9aeff99c6c39e27afd5633174e677b0345f`
+- run `34347854340`
+- job `102453635615`
+- conclusion `success`
+
+The hardened job successfully checked:
 
 1. compile provider-neutral runner;
 2. validate public machine-readable eval artifacts;
 3. run a deliberately PUBLIC/NON-HIDDEN example;
 4. remove one member of a pair and verify result remains `PARTIAL / UNSCORED` rather than false PASS;
-5. assert the public example cannot self-promote to fresh-context/private-oracle/independent/hidden/unseen/repeated/multi-agent/host-live evidence.
+5. assert the public example cannot self-promote to stronger reasoning evidence;
+6. synthetic regression: even when metadata claims fresh/private/independent/hidden separation, a missing paired execution blocks `PERTURBED_HIDDEN`; only a genuinely scored complete pair can reach that synthetic rung.
 
 Receipt:
 
 `evidence/reasoning-eval-harness-ci-2026-09-09.json`
 
-This proves the **evaluation harness execution contract** on GitHub-hosted CI. It does not evaluate reasoning quality.
+Current harness state: `PASS_HARNESS_CI_HARDENED`.
+
+This proves the **evaluation harness execution and fail-closed promotion contract** on GitHub-hosted CI. It does not evaluate target-model reasoning quality.
 
 ## M. Completion-gate tests
 
@@ -210,12 +227,12 @@ Do not collapse:
 Key boundaries:
 
 - `FRESH_CONTEXT_RUN`: target executed without authoring context and expected labels withheld.
-- `PRIVATE_ORACLE_SCORED`: frozen target outputs were scored by a separated private oracle with commitment/receipt.
+- `PRIVATE_ORACLE_SCORED`: frozen target outputs were actually scored by a separated private oracle with commitment/receipt.
 - `INDEPENDENT_JUDGED`: appropriately separated judge/gold process produced its own receipt.
-- `PERTURBED_HIDDEN`: an actual hidden relation-preserving variant was executed and cross-run relation checked.
+- `PERTURBED_HIDDEN`: an actual hidden relation-preserving variant was executed on all required presentations and the relation was scored.
 - `HOST_LIVE_REGRESSION`: intended target-host behavior was executed/read back; hosted CI for the scorer does not satisfy this reasoning level.
 
-Fixture presence, public visible-fixture success, or harness CI success alone is not generalized reasoning-improvement evidence.
+Fixture presence, public visible-fixture success, metadata claims, or harness CI success alone is not generalized reasoning-improvement evidence.
 
 ## Q. Current evidence state
 
@@ -260,7 +277,8 @@ Interpret visible same-model receipts only as `LOW_SELF_REFERENTIAL` evidence.
 
 ### Harness evidence
 
-- provider-neutral reasoning-eval harness GitHub-hosted CI: PASS at recorded commit/run;
+- provider-neutral reasoning-eval harness GitHub-hosted CI: `PASS_HARNESS_CI_HARDENED`;
+- exact hardened run: commit `9ee4f9aeff99c6c39e27afd5633174e677b0345f`, run `34347854340`, job `102453635615`;
 - this is harness evidence, not target-model evidence.
 
 ## R. Suggested aggregate metrics
