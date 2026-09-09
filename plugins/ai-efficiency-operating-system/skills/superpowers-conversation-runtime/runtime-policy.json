@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "name": "superpowers-conversation-runtime",
+  "mode": "ordinary-chat-progressive-ceremony",
+  "presentation": {
+    "default": "quiet",
+    "announce_skill_names": false,
+    "surface_internal_phase_names": false,
+    "answer_first": true,
+    "show_only_material_evidence": true
+  },
+  "ceremony": {
+    "levels": ["DIRECT", "BOUNDED", "ARCHITECTURAL"],
+    "default": "DIRECT",
+    "one_way_complexity_ratchet": true,
+    "bounded_goal_contract": "latent-unless-action-divergence",
+    "architectural_goal_contract": "required",
+    "formal_spec_default": false
+  },
+  "process_priority": [
+    "writing-skills",
+    "receiving-code-review",
+    "systematic-debugging",
+    "executing-plans",
+    "brainstorming",
+    "test-driven-development",
+    "verification-before-completion"
+  ],
+  "process_map": {
+    "debugging": "systematic-debugging",
+    "behavior_change": "brainstorming",
+    "settled_design_implementation": "test-driven-development",
+    "approved_plan_execution": "executing-plans",
+    "review_feedback": "receiving-code-review",
+    "skill_authoring": "writing-skills",
+    "completion_claim": "verification-before-completion"
+  },
+  "host_adaptation": {
+    "explicit_bounded_reversible_request_counts_as_action_intent": true,
+    "extra_confirmation_only_for_material_design_fork_or_host_requirement": true,
+    "never_invent_subagents": true,
+    "never_invent_worktrees": true,
+    "never_invent_background_execution": true,
+    "never_claim_tests_without_execution": true,
+    "use_runtime_features_only_when_available": true
+  },
+  "evidence_owner": {
+    "library_framework_sdk_api": "Context7-first",
+    "repository_pr_issue_actions": "GitHub",
+    "user_files": "Files",
+    "connected_private_data": "owning-connector",
+    "current_public_fact": "web",
+    "stateful_change_completion": "owning-system-readback"
+  },
+  "recovery": {
+    "same_route_retry_without_new_evidence_limit": 1,
+    "route_failure_changes_method_not_goal": true,
+    "preserve_still_valid_evidence": true,
+    "prefer_discriminating_observation_over_speculative_patch": true
+  }
+}
