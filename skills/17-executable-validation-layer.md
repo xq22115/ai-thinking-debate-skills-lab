@@ -6,44 +6,57 @@ Date: 2026-09-09
 
 Move the project from specification-only artifacts toward evidence-producing validation without overstating what has been tested.
 
-This layer distinguishes deterministic policy execution from model-reasoning smoke tests, decision-robustness smoke tests, goal-objective smoke tests, **temporal-trajectory smoke tests**, independent judging, hidden/adversarial evaluation, repeated evaluation, authentic multi-agent runtime, and host-live verification.
+This layer now distinguishes:
+
+- deterministic policy execution;
+- visible same-model reasoning smoke;
+- evaluation-harness hosted CI;
+- fresh-context target execution;
+- separated private-oracle scoring;
+- independent judging;
+- hidden/metamorphic execution;
+- unseen adversarial evaluation;
+- repeated variance/calibration;
+- authentic independent multi-agent runtime;
+- host-live reasoning regression.
 
 ## Components
 
 ### `tools/validate_rc1_package.py`
 
-Deterministic static package validator.
+Deterministic static package validator. It validates package shape/contracts and explicitly does not establish host-live/model behavior.
 
-Checks include:
-- required research/governance/eval files exist;
-- canonical skills/references are present;
-- every `SKILL.md` has matching `name` plus non-empty `description` frontmatter;
-- key JSON ledgers/fixtures parse successfully;
-- STATUS does not contain an unqualified terminal status such as `STABLE`, `DEPLOYED`, `HEALTHY`, or `HOST_LIVE_VERIFIED`;
-- role activation policy retains escalation/de-escalation/coverage-pool signals.
+### `skills/evals/run_policy_evals.py`
 
-Output status is limited to `PASS_STATIC` / `FAIL_STATIC` and explicitly sets `host_live_verified=false`.
+Executable deterministic fail-closed policy harness. Previously executed cases cover false completion, pre-step infrastructure classification, role-label vs runtime independence, visibility/auth/write verification, recovery after irreversible action receipt, and status separation.
 
-### `evals/run_policy_evals.py`
-
-Executable fail-closed policy test harness.
-
-Previously executed deterministic cases cover:
-1. false completion after file write only;
-2. pre-step CI infrastructure failure;
-3. role labels without runtime independence receipts;
-4. visible tool action without observed authorization;
-5. read/permission evidence without successful mutation read-back;
-6. recovery after irreversible action receipt;
-7. separation of VERIFIED from HOST_LIVE/DEPLOYED/HEALTHY.
+`PASS_POLICY` means only that the executed deterministic policy cases passed.
 
 ### `skills/evals/SAME_MODEL_EVAL_PROTOCOL.md`
 
-Governance contract for cheap smoke tests performed by the same model/session that helped author rules or fixtures.
+Governance for cheap contaminated visible-fixture smoke tests.
 
-`SAME_MODEL_PASS != INDEPENDENT_VALIDATION`
+`SAME_MODEL_PASS != INDEPENDENT_VALIDATION`.
 
-Same-model results may expose obvious contract failures/regressions, but cannot establish unseen generalization, unbiased judging, runtime independence, distribution-shift robustness, objective fidelity on hidden/mixed goals, **real long-horizon temporal robustness**, or host-live behavior.
+### `skills/evals/HOLDOUT_EVAL_PROTOCOL.md`
+
+Defines stronger artifact separation:
+
+`PUBLIC GENERATION MANIFEST -> FROZEN TARGET RESPONSES -> PRIVATE SCORING ARTIFACT`
+
+A reusable private oracle/hidden expected label set must not be published to the target-generation path before responses freeze.
+
+### `skills/evals/run_reasoning_evals.py`
+
+Provider-neutral scorer. It intentionally does **not** call a model. It consumes already-produced response/judgment artifacts, performs deterministic label/exact/pair scoring where available, and computes the maximum evidence class supported by explicit separation/receipt metadata.
+
+### Machine-readable contracts
+
+- `skills/evals/reasoning-eval-manifest.schema.json`
+- `skills/evals/reasoning-eval-result.schema.json`
+- `skills/evals/paired-judge-execution-plan.json`
+
+The J1/J6 pair plan requires both presentations, stable underlying candidate IDs, frozen responses, and relation scoring. One presentation cannot close an invariance gate.
 
 ## Executed receipts
 
@@ -52,109 +65,149 @@ Same-model results may expose obvious contract failures/regressions, but cannot 
 - 7 passed
 - 0 failed
 - `PASS_POLICY`
-- `authentic_multi_agent_runtime = NOT_RUN`
-- `host_live_verified = false`
+- authentic multi-agent runtime: NOT_RUN
+- host-live verified: false
 
-Receipt: `evidence/rc1-policy-eval-2026-08-18.json`
+Receipt:
 
-### Same-model reasoning smoke — 2026-09-09
+`evidence/rc1-policy-eval-2026-08-18.json`
 
-- 50 explicit S/CQ/C/J/E fixtures considered
-- 48 static smoke pass
-- 2 paired/runtime-dependent NOT_RUN (`J1-order-swap`, `J6-blind-label-invariance`)
+### Visible same-model reasoning smoke — 2026-09-09
+
+S/CQ/C/J/E:
+
+- total explicit fixtures considered: 50
+- static smoke PASS: 48
+- paired/runtime-dependent NOT_RUN: 2 (`J1-order-swap`, `J6-blind-label-invariance`)
 - static fail: 0
 - evidence class: `LOW_SELF_REFERENTIAL`
-- independent judge / hidden variants / repeated variance / host-live: NOT_RUN
 
-Receipt: `evidence/same-model-reasoning-smoke-2026-09-09.json`
+Receipt:
 
-### Same-model decision-robustness smoke — 2026-09-09
+`evidence/same-model-reasoning-smoke-2026-09-09.json`
 
-- DR1–DR10: 10/10 visible static smoke PASS
-- evidence class: `LOW_SELF_REFERENTIAL`
-- hidden shift variants / independent judge / repeated variance / host-live: NOT_RUN
+### Visible same-model decision-robustness smoke — 2026-09-09
 
-Receipt: `evidence/same-model-decision-robustness-smoke-2026-09-09.json`
+DR1–DR10: 10/10 visible static PASS; hidden shift, independent judge, repeated variance and host-live remain NOT_RUN.
 
-### Same-model goal-objective smoke — 2026-09-09
+Receipt:
 
-- GO1–GO10: 10/10 visible static smoke PASS
-- evidence class: `LOW_SELF_REFERENTIAL`
-- authoring overlap: true
-- expected labels visible: true
-- fresh-context run: NOT_RUN
-- hidden ambiguity/mixed-goal variants: NOT_RUN
-- real proxy-gaming runtime: NOT_RUN
-- independent judge: NOT_RUN
-- repeated variance: NOT_RUN
-- host-live: false
+`evidence/same-model-decision-robustness-smoke-2026-09-09.json`
 
-Receipt: `evidence/same-model-goal-objective-smoke-2026-09-09.json`
+### Visible same-model goal-objective smoke — 2026-09-09
 
-Interpretation: the visible Goal Contract / objective-audit rules are internally applicable to the authored GO fixtures. This does **not** establish real intent-understanding gains, real-user helpfulness improvement, hidden-goal inference, or resistance to specification gaming in a live agent runtime.
+GO1–GO10: 10/10 visible static PASS; hidden ambiguity/proxy-gaming runtime, independent judge, repeated variance and host-live remain NOT_RUN.
 
-### Same-model temporal-trajectory smoke — 2026-09-09
+Receipt:
 
-- TT1–TT10: 10/10 visible static smoke PASS
-- evidence class: `LOW_SELF_REFERENTIAL`
-- authoring overlap: true
-- expected labels visible: true
-- fresh-context run: NOT_RUN
-- delayed-feedback execution: NOT_RUN
-- first-irrecoverable-error / trajectory-attribution execution: NOT_RUN
-- asynchronous planning execution: NOT_RUN
-- checkpoint-staleness recovery execution: NOT_RUN
-- independent judge: NOT_RUN
-- repeated variance: NOT_RUN
-- host-live: false
+`evidence/same-model-goal-objective-smoke-2026-09-09.json`
 
-Receipt: `evidence/same-model-temporal-trajectory-smoke-2026-09-09.json`
+### Visible same-model temporal-trajectory smoke — 2026-09-09
 
-Interpretation: the visible temporal/trajectory rules are internally applicable to TT1–TT10 in the same authoring context. This does **not** establish real delayed-feedback credit assignment, long-horizon planning improvement, asynchronous execution robustness, long-trajectory judge reliability, or host-live recovery quality.
+TT1–TT10: 10/10 visible static PASS; delayed-feedback execution, trajectory attribution, async planning, independent judge, repeated variance and host-live remain NOT_RUN.
 
-## Validation ladder
+Receipt:
 
-Do not collapse:
+`evidence/same-model-temporal-trajectory-smoke-2026-09-09.json`
+
+### Hosted reasoning-eval harness CI — 2026-09-09
+
+Exact evidence:
+
+- repository: `xq22115/ai-thinking-debate-skills-lab`
+- commit: `6f89989bd9423d7af33c2e32eab789726fa68f91`
+- workflow: `Reasoning Eval Harness Gate`
+- workflow run: `34347021367`
+- job: `102450923651`
+- job conclusion: `success`
+
+Observed successful steps:
+
+1. Compile provider-neutral runner.
+2. Validate public machine-readable eval artifacts.
+3. Run public NON-HIDDEN contract example.
+4. Verify incomplete pair fails closed.
+5. Assert public example cannot self-promote to hidden or independent evidence.
+
+Machine-readable receipt:
+
+`evidence/reasoning-eval-harness-ci-2026-09-09.json`
+
+Interpretation:
+
+`PASS_HARNESS_CI` proves the evaluation harness executable contract on GitHub-hosted CI at the recorded revision. It does **not** prove target-model reasoning quality, fresh-context execution, private holdout success, independent judging, hidden generalization, authentic multi-agent reasoning, or host-live reasoning behavior.
+
+## Explicit fixture inventory
+
+Currently specified:
+
+- S1–S12 = 12
+- CQ1–CQ8 = 8
+- C1–C10 = 10
+- J1–J8 = 8
+- E1–E12 = 12
+- DR1–DR10 = 10
+- GO1–GO10 = 10
+- TT1–TT10 = 10
+- V1–V10 = 10
+
+Total: `90`.
+
+Visible same-model receipts currently cover 80 fixtures:
+
+- 78 visible static PASS
+- 2 paired execution NOT_RUN (J1/J6)
+
+V1–V10 remain `SPECIFIED_NOT_EXECUTED`.
+
+## Canonical evaluation ladder
+
+Do not collapse these evidence levels:
 
 1. `FIXTURE_SPECIFIED`
 2. `STATIC_VALIDATED`
 3. `SAME_MODEL_SMOKE`
 4. `FRESH_CONTEXT_RUN`
-5. `INDEPENDENT_JUDGED`
-6. `PERTURBED_HIDDEN`
-7. `UNSEEN_ADVERSARIAL`
-8. `REPEATED_VARIANCE`
-9. `AUTHENTIC_MULTI_AGENT_RUNTIME`
-10. `HOST_LIVE_REGRESSION`
+5. `PRIVATE_ORACLE_SCORED`
+6. `INDEPENDENT_JUDGED`
+7. `PERTURBED_HIDDEN`
+8. `UNSEEN_ADVERSARIAL`
+9. `REPEATED`
+10. `AUTHENTIC_MULTI_AGENT_RUNTIME`
+11. `HOST_LIVE_REGRESSION`
 
-A later level does not retroactively upgrade an earlier receipt.
+A later level does not retroactively upgrade the meaning of an earlier receipt.
+
+`HOSTED_EVAL_HARNESS_CI` is an orthogonal infrastructure state, not a replacement for any target-model reasoning level above.
+
+## Current truth state
+
+- deterministic policy harness: PASS for recorded cases;
+- visible same-model smoke: PARTIAL/LOW_SELF_REFERENTIAL as recorded;
+- provider-neutral eval harness hosted GitHub CI: PASS;
+- fresh-context target reasoning: NOT_RUN;
+- private-oracle target scoring: NOT_RUN;
+- J1/J6 true paired target execution: NOT_RUN;
+- independent judge: NOT_RUN;
+- hidden/metamorphic target execution: NOT_RUN;
+- unseen adversarial target evaluation: NOT_RUN;
+- repeated target variance/calibration: NOT_RUN;
+- authentic independent multi-agent reasoning runtime: NOT_RUN;
+- host-live reasoning regression: NOT_RUN;
+- STABLE release: NOT_CLAIMED.
 
 ## Important boundary
 
-`PASS_POLICY` proves only deterministic fail-closed policy behavior for the executed policy cases.
+Do not infer any of these from policy, fixture, same-model, or harness-CI evidence alone:
 
-`SAME_MODEL_SMOKE` proves only visible contract conformance in a contaminated authoring context.
-
-Neither proves:
-- general model reasoning quality;
+- generalized reasoning improvement;
 - independent intent understanding;
-- performance on hidden ambiguity/mixed-goal/adversarial distributions;
-- preference/helpfulness alignment in real user outcomes;
-- specification-gaming resistance in live agents;
-- calibrated confidence over repeated trials;
-- natural distribution-shift robustness;
-- optimal utility/loss modeling;
-- genuine epistemic diversity;
-- authentic 10/30-agent execution;
-- long-horizon global constraint satisfaction;
-- real delayed-feedback or temporal credit assignment;
-- reliable first-irrecoverable-error localization;
-- asynchronous shared-state execution robustness;
-- checkpoint freshness/recovery under live mutable environments;
-- long-trajectory evaluator robustness;
+- calibration across repeated trials;
+- hidden/adversarial robustness;
+- real distribution-shift robustness;
+- authentic multi-agent epistemic diversity;
 - host adapter compatibility;
-- hosted GitHub CI health;
-- deployment;
+- deployment/health;
 - stable release status.
 
 Those remain separate release gates.
