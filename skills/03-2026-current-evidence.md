@@ -160,9 +160,23 @@ Consequence: high PRM score is not equivalent to logical correctness. Treat rewa
 ## Logic-Grounded Metamorphic Testing — 2026
 https://www.sciencedirect.com/science/article/pii/S0950705126010506
 
-Evidence: proposes logic-grounded metamorphic relations derived from formal equivalences to test reasoning consistency under semantics-preserving transformations, addressing limitations of static benchmarks.
+Evidence: proposes logic-grounded metamorphic relations derived from formal equivalences to test reasoning consistency under semantics-preserving transformations, addressing limitations of static benchmarks. The reported experiments expose reasoning inconsistencies missed by ordinary reference-based evaluation.
 
-Consequence: add metamorphic invariance tests for paraphrase, candidate order, prestige masking, verbosity normalization, quantifier equivalence, causal graph isomorphism, and evidence-provenance duplication.
+Consequence: add metamorphic invariance tests only when the transformation relation is defensible. Prefer formal/deterministic relations where possible rather than informal paraphrases that may introduce semantic drift.
+
+## BeyondBench — contamination-resistant dynamic reasoning evaluation, ICLR 2026
+https://proceedings.iclr.cc/paper_files/paper/2026/hash/22b4e30a7a660b17f1fb58ab49671e77-Abstract-Conference.html
+
+Evidence: replaces reliance on a fixed static benchmark with algorithmic on-the-fly problem generation over very large combinatorial spaces, deterministic solution verification, and isomorphic transformations. This reduces the value of memorizing a fixed public item set and allows fresh test instances to be generated repeatedly.
+
+Consequence: for reasoning capabilities with constructible deterministic oracles, prefer procedural/dynamic holdouts over treating secrecy of one static item list as sufficient contamination protection. Public generation code can coexist with private run instances/oracles when target responses are frozen before scoring.
+
+## Fragility of benchmark contamination detection — ICLR 2026
+https://proceedings.iclr.cc/paper_files/paper/2026/hash/a3860475ddbfb8c644c43f0dcd266b66-Abstract-Conference.html
+
+Evidence: reports that contamination-detection methods for reasoning models can be evaded under realistic training/evolution settings; a detector's failure to flag contamination is therefore not a reliable certificate that evaluation items were unseen.
+
+Consequence: `CONTAMINATION_DETECTION_PASS != PROOF_OF_NO_CONTAMINATION`. Prefer structural separation: expected labels withheld from the generation path, frozen responses before scoring, private-oracle commitments, dynamic/hidden variants, and explicit contamination metadata.
 
 ## LENS — natural prompt distribution shift, ACL 2026
 https://aclanthology.org/2026.acl-long.1508/
@@ -286,8 +300,8 @@ Consequence: `OLD_FEEDBACK != CURRENT_ORACLE`. Revalidate critic/evaluator assum
 
 ## 2026 synthesis
 
-The current evidence supports a layered goal-reasoning-verification-decision-trajectory design:
+The current evidence supports a layered goal-reasoning-verification-decision-trajectory-evaluation design:
 
-`Goal Contract / specification audit -> capability/compatibility -> evidence sufficiency/provenance -> semantic/QUD normalization -> causal/abductive model when needed -> competing hypotheses -> discriminating test -> selective multi-agent deliberation -> bias-resistant judge -> verifier robustness/metamorphic checks -> VOI stop rule -> loss/reversibility/shift/sensitivity check -> temporal/trajectory gate (global constraints, checkpoint freshness, delayed feedback, option value, dependency graph) -> COMMIT / PROBE / PILOT / DEFER / ABSTAIN / ROBUST_FALLBACK -> execution/revalidation -> outcome-bound trajectory completion check`
+`Goal Contract / specification audit -> capability/compatibility -> evidence sufficiency/provenance -> semantic/QUD normalization -> causal/abductive model when needed -> competing hypotheses -> discriminating test -> selective multi-agent deliberation -> bias-resistant judge -> verifier robustness -> VOI stop rule -> loss/reversibility/shift/sensitivity check -> temporal/trajectory gate -> execution/revalidation -> outcome-bound completion -> contamination-aware evaluation (fresh context -> frozen responses -> private oracle / independent judge -> hidden relation checks)`
 
-The repeated research signal is negative as well as positive: more tokens, sources, agents, confidence machinery, verifier scores, preference ratings, parallel activity, or rounds do **not** monotonically improve reliability. A better probability estimate does not automatically imply a better action; a higher proxy/preference score does not imply user success; and a sequence of local successes does not imply a valid long-horizon trajectory. The system should optimize for user-authorized goal fidelity, independent evidence, discrimination, calibration, target-bound verification, evaluator robustness, distribution-shift awareness, reversible learning, sensitivity/regret, temporal coherence, durable state, global-constraint satisfaction and outcome-bound completion rather than visible reasoning/evaluation volume.
+The repeated research signal is negative as well as positive: more tokens, sources, agents, confidence machinery, verifier scores, preference ratings, parallel activity, or rounds do **not** monotonically improve reliability. A better probability estimate does not automatically imply a better action; a higher proxy/preference score does not imply user success; a sequence of local successes does not imply a valid long-horizon trajectory; and a pass on a public/static benchmark does not establish uncontaminated reasoning generalization. The system should optimize for user-authorized goal fidelity, independent evidence, discrimination, calibration, target-bound verification, evaluator robustness, distribution-shift awareness, reversible learning, sensitivity/regret, temporal coherence, durable state, global-constraint satisfaction, outcome-bound completion, and contamination-aware holdout evidence rather than visible reasoning/evaluation volume.
