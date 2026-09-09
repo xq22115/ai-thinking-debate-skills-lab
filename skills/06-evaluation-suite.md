@@ -228,6 +228,14 @@ For the protected dialogue-state suite, keep the narrower provenance chain expli
 
 `READY_FOR_REPEATED_VALIDATION` is a promotion-pre-gate decision state, not an evidence level. Campaign/static/synthetic success is not real target-model execution evidence.
 
+### Formal dialectical reference gate
+
+The demand-loaded formal layer is protected by `skills/evals/formal-dialectical-fixtures.json` (F1-F12), `formal_dialectical_reference.py`, `test_formal_dialectical_reference.py`, and `validate_formal_dialectical.py`.
+
+The gate checks typed attacks, attack-vs-defeat, conservative grounded cycles, collective premises, `UNKNOWN != FALSE`, warrant uncertainty propagation, parser-vs-solver separation, minimal verdict-flip sensitivity, bounded belief revision, rhetoric/formal separation, and value-sensitive disagreement. The dedicated source ledger must also retain at least 100 unique counted CORE/SUPPORTING sources from the 2026-06-01..2026-09-09 priority window.
+
+Passing this gate proves only `STATIC/REFERENCE VERIFIED`. Target-model execution, independent judging, repeated validation, and host-live routing remain separate evidence levels.
+
 ## P. Current smoke baselines
 
 ### Reasoning smoke

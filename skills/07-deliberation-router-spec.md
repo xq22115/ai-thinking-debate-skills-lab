@@ -85,6 +85,14 @@ Before leaving Gate D on a material multi-turn dispute preserve the smallest use
 
 Do not spend multiple agents debating different questions or different remembered commitment states unknowingly.
 
+### Gate D2 — formal dialectical escalation
+
+After semantic/dialogue-state normalization, demand-load `semantic-argument-microscope/FORMAL_DIALECTICAL_REASONING.md` only when the verdict materially depends on cycles, typed attack location, collective premise sets, preference-sensitive attack-to-defeat resolution, incomplete/uncertain graph state, or minimal verdict-flip analysis.
+
+Keep the direct semantic path for simple premise attacks. `MORE_DECOMPOSITION != BETTER_REASONING`; formalism must earn its cost by changing a decision, exposing an unresolved state, or producing a discriminating test.
+
+Do not let a formal solver hide parser uncertainty: `SOLVER_CORRECTNESS != PARSER_CORRECTNESS`.
+
 ### Gate E — causal/abductive normalization
 
 If the live crux is causal, explanatory, interventional, or counterfactual, use the causal/abductive reference before assigning debate roles.

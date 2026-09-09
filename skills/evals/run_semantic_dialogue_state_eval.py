@@ -125,6 +125,9 @@ def repo_path(path: Path) -> Path:
         raise ValueError(f"fixture path does not exist: {resolved}")
     return resolved
 
+def repo_rel_posix(path: Path) -> str:
+    return path.relative_to(ROOT).as_posix()
+
 
 def normalize_arms(arms: list[str] | tuple[str, ...]) -> tuple[str, ...]:
     if not arms:
@@ -172,7 +175,7 @@ def prepare(
 
     run_id = (
         f"ds-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}-"
-        f"{stable_id(repo_ref, model_id, str(seed), str(fixture_path.relative_to(ROOT)))[:8]}"
+        f"{stable_id(repo_ref, model_id, str(seed), repo_rel_posix(fixture_path))[:8]}"
     )
 
     bundles: dict[str, dict[str, Any]] = {}
@@ -180,9 +183,9 @@ def prepare(
         text = arm_bundle_text(arm)
         sources: list[str] = []
         if arm not in {"direct", "generic-careful"}:
-            sources.append(str(CORE_SKILL.relative_to(ROOT)))
+            sources.append(repo_rel_posix(CORE_SKILL))
         if arm == "microscope-dialogue-state":
-            sources.append(str(DIALOGUE_STATE.relative_to(ROOT)))
+            sources.append(repo_rel_posix(DIALOGUE_STATE))
         bundles[arm] = {
             "arm": arm,
             "sha256": sha256_text(text),
@@ -219,7 +222,7 @@ def prepare(
         "provider": provider,
         "seed": seed,
         "fixture_suite": suite_name,
-        "fixture_path": str(fixture_path.relative_to(ROOT)),
+        "fixture_path": repo_rel_posix(fixture_path),
         "fixture_sha256": sha256_text(read_text(fixture_path)),
         "suite_role": suite_role,
         "rubric_sha256": sha256_text(read_text(RUBRIC)),
@@ -312,7 +315,7 @@ def prepare_judge_tasks(run_dir: Path, blind_seed: int) -> None:
                 "dimensions": list(DIMENSIONS),
                 "allowed_scores": [0, 1, 2, None],
                 "known_blocking_error_ids": list(BLOCKING_ERROR_IDS),
-                "rubric_path": str(RUBRIC.relative_to(ROOT)),
+                "rubric_path": repo_rel_posix(RUBRIC),
                 "judge_instruction": (
                     "Score observable output only. Use 0/1/2 or null per dimension. "
                     "List blocking error IDs only when the rubric condition is actually met. "

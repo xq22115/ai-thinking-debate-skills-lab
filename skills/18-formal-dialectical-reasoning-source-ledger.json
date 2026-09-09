@@ -1,0 +1,2921 @@
+{
+  "generated_at": "2026-09-09",
+  "purpose": "AI reasoning/debate/formal dialectical research evidence index",
+  "method": {
+    "provider": "OpenAlex API",
+    "query_families": [
+      "large language model argumentation debate reasoning",
+      "computational argumentation LLM argument mining",
+      "large language model judge evaluation debate",
+      "LLM uncertainty calibration epistemic reasoning",
+      "LLM belief revision defeasible nonmonotonic reasoning",
+      "LLM pragmatics dialogue commitment inference",
+      "causal reasoning counterfactual large language models",
+      "multi agent debate LLM diversity consensus"
+    ],
+    "date_range": "2026-06-01..2026-09-09",
+    "priority_window": "2026-06-01..2026-09-09",
+    "dedupe_key": "DOI else OpenAlex ID else normalized title",
+    "minimum_keyword_hits": 3,
+    "warning": "Candidate evidence index, not automatic endorsement. Decision-critical claims require primary-paper inspection and independent corroboration."
+  },
+  "raw_unique_relevant_count": 229,
+  "selected_count": 143,
+  "priority_window_count": 143,
+  "sources": [
+    {
+      "openalex_id": "https://openalex.org/W7165639480",
+      "doi": "https://doi.org/10.3389/frobt.2026.1781874",
+      "title": "From vision–language models to structure-aware visual reasoning: foundations, representations, and consistency checking",
+      "publication_date": "2026-06-24",
+      "type": "article",
+      "venue": "Frontiers in Robotics and AI",
+      "url": "https://doi.org/10.3389/frobt.2026.1781874",
+      "cited_by_count": 0,
+      "relevance_score": 10,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7168362381",
+      "doi": "https://doi.org/10.1145/3805712.3808508",
+      "title": "CSMAD: Hallucination Detection via Multi-Agent Debate with NLI-Verified Contradictory Statements",
+      "publication_date": "2026-07-15",
+      "type": "conference-paper",
+      "venue": null,
+      "url": "https://doi.org/10.1145/3805712.3808508",
+      "cited_by_count": 0,
+      "relevance_score": 10,
+      "matched_queries": [
+        "large language model argumentation debate reasoning",
+        "large language model judge evaluation debate"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7164446537",
+      "doi": null,
+      "title": "Decoupling Thought from Speech: Knowledge-Grounded Counterfactual Reasoning for Resilient Multi-Agent Argumentation",
+      "publication_date": "2026-06-09",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.10475",
+      "cited_by_count": 0,
+      "relevance_score": 9,
+      "matched_queries": [
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "direct formal/computational argumentation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7164371378",
+      "doi": "https://doi.org/10.5281/zenodo.20636938",
+      "title": "Impact of Heterogeneous Retrieval Integration in Multi-Agent Debate on Adversarial QA Answer Consistency",
+      "publication_date": "2026-06-11",
+      "type": "report",
+      "venue": "Zenodo (CERN European Organization for Nuclear Research)",
+      "url": "https://doi.org/10.5281/zenodo.20636938",
+      "cited_by_count": 0,
+      "relevance_score": 9,
+      "matched_queries": [
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7164306870",
+      "doi": "https://doi.org/10.5281/zenodo.20640185",
+      "title": "Dynamic Retrieval Scheduling in Multi-Agent Debate Frameworks versus Fixed-Context Augmentation for FEVER-LC Verification Accuracy",
+      "publication_date": "2026-06-11",
+      "type": "report",
+      "venue": "Zenodo (CERN European Organization for Nuclear Research)",
+      "url": "https://doi.org/10.5281/zenodo.20640185",
+      "cited_by_count": 0,
+      "relevance_score": 9,
+      "matched_queries": [
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7164569097",
+      "doi": "https://doi.org/10.5281/zenodo.20673434",
+      "title": "Diminishing Returns in Verification Accuracy from Scaling Diverse Debating Agents on the FEVER-LC Benchmark",
+      "publication_date": "2026-06-13",
+      "type": "report",
+      "venue": "Zenodo (CERN European Organization for Nuclear Research)",
+      "url": "https://doi.org/10.5281/zenodo.20673434",
+      "cited_by_count": 0,
+      "relevance_score": 9,
+      "matched_queries": [
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7164818741",
+      "doi": "https://doi.org/10.5281/zenodo.20706793",
+      "title": "Adaptive Retrieval in Tool-MAD for Enhanced Robustness Against Adversarial Evidence in Fact Verification",
+      "publication_date": "2026-06-15",
+      "type": "report",
+      "venue": "Zenodo (CERN European Organization for Nuclear Research)",
+      "url": "https://doi.org/10.5281/zenodo.20706793",
+      "cited_by_count": 0,
+      "relevance_score": 9,
+      "matched_queries": [
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7169077009",
+      "doi": "https://doi.org/10.48448/vgtc-pb03",
+      "title": "Prior Beliefs Prejudice LLM-as-Judge: Evidence from Persuasion Evaluation",
+      "publication_date": "2026-06-03",
+      "type": "other",
+      "venue": "Underline Science Inc.",
+      "url": "https://doi.org/10.48448/vgtc-pb03",
+      "cited_by_count": 0,
+      "relevance_score": 8,
+      "matched_queries": [
+        "large language model judge evaluation debate"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7166400124",
+      "doi": null,
+      "title": "Narration-of-Thought: Inference-Time Scaffolding for Defeasible Ethical Reasoning in Large Language Models",
+      "publication_date": "2026-06-24",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.26366",
+      "cited_by_count": 0,
+      "relevance_score": 8,
+      "matched_queries": [
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7167354416",
+      "doi": "https://doi.org/10.5281/zenodo.21188399",
+      "title": "From Generative Capability to Assertability: Epistemic Self-Regulation Training for Large Language Models",
+      "publication_date": "2026-07-04",
+      "type": "preprint",
+      "venue": "Zenodo (CERN European Organization for Nuclear Research)",
+      "url": "https://doi.org/10.5281/zenodo.21188399",
+      "cited_by_count": 0,
+      "relevance_score": 8,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7202219605",
+      "doi": "https://doi.org/10.3389/fpls.2026.1890016",
+      "title": "A multi-agent vision-language debate framework for zero-shot crop disease diagnosis",
+      "publication_date": "2026-08-11",
+      "type": "article",
+      "venue": "Frontiers in Plant Science",
+      "url": "https://doi.org/10.3389/fpls.2026.1890016",
+      "cited_by_count": 0,
+      "relevance_score": 8,
+      "matched_queries": [
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "application-domain/education hit without enough mechanism signal"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7203980511",
+      "doi": "https://doi.org/10.1007/s10462-026-11652-0",
+      "title": "Large language models as judges: recent advances in LLM-based evaluation, critique, preference modeling, and feedback for text and code",
+      "publication_date": "2026-08-22",
+      "type": "article",
+      "venue": "Artificial Intelligence Review",
+      "url": "https://doi.org/10.1007/s10462-026-11652-0",
+      "cited_by_count": 0,
+      "relevance_score": 8,
+      "matched_queries": [
+        "large language model judge evaluation debate"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7168421943",
+      "doi": "https://doi.org/10.48448/42df-dp51",
+      "title": "Agentic Oversight via Dialectic Reasoning",
+      "publication_date": "2026-06-03",
+      "type": "other",
+      "venue": "Underline Science Inc.",
+      "url": "https://doi.org/10.48448/42df-dp51",
+      "cited_by_count": 0,
+      "relevance_score": 7,
+      "matched_queries": [
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7165933306",
+      "doi": "https://doi.org/10.38035/gijes.v4i2.1024",
+      "title": "Dynamics of Sincerity Echo: A New Paradigm in Large Language Model Alignment Based on Cognitive Proportionality",
+      "publication_date": "2026-06-25",
+      "type": "article",
+      "venue": "Greenation International Journal of Engineering Science",
+      "url": "https://doi.org/10.38035/gijes.v4i2.1024",
+      "cited_by_count": 0,
+      "relevance_score": 7,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7172557689",
+      "doi": null,
+      "title": "More Debate, Same Evidence: Structural Limits of Homogeneous Multi-Agent Groundedness",
+      "publication_date": "2026-07-31",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2608.00243",
+      "cited_by_count": 0,
+      "relevance_score": 7,
+      "matched_queries": [
+        "large language model judge evaluation debate"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7166432456",
+      "doi": "https://doi.org/10.1186/s40862-026-00413-9",
+      "title": "Assessed academic writing outcomes in an AI-permitted research methodology course: evidence from EFL university students in Palestine",
+      "publication_date": "2026-06-28",
+      "type": "article",
+      "venue": "Asian-Pacific Journal of Second and Foreign Language Education",
+      "url": "https://doi.org/10.1186/s40862-026-00413-9",
+      "cited_by_count": 1,
+      "relevance_score": 6,
+      "matched_queries": [
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "application-domain/education hit without enough mechanism signal"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7168832416",
+      "doi": "https://doi.org/10.48448/wk0n-tb07",
+      "title": "MADRA: Multi-Agent Debate for Risk-Aware Embodied Planning",
+      "publication_date": "2026-06-03",
+      "type": "other",
+      "venue": "Underline Science Inc.",
+      "url": "https://doi.org/10.48448/wk0n-tb07",
+      "cited_by_count": 0,
+      "relevance_score": 6,
+      "matched_queries": [
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7168960601",
+      "doi": "https://doi.org/10.48448/byet-d837",
+      "title": "Can LLMs Really Judge? A Progressive Argumentation-Mining Framework for Distinguishing Understanding from Aggregation",
+      "publication_date": "2026-06-03",
+      "type": "other",
+      "venue": "Underline Science Inc.",
+      "url": "https://doi.org/10.48448/byet-d837",
+      "cited_by_count": 0,
+      "relevance_score": 6,
+      "matched_queries": [
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7168404908",
+      "doi": "https://doi.org/10.48448/j417-fw52",
+      "title": "Causal-ESC: Reliable Policy Learning for Emotional Support Conversation via Causal Inference",
+      "publication_date": "2026-06-03",
+      "type": "other",
+      "venue": "Underline Science Inc.",
+      "url": "https://doi.org/10.48448/j417-fw52",
+      "cited_by_count": 0,
+      "relevance_score": 6,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7165063765",
+      "doi": null,
+      "title": "From Argument Components to Graphs: A Multi-Agent Debate with Confidence Gating for Argument Relations",
+      "publication_date": "2026-06-14",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.16047",
+      "cited_by_count": 0,
+      "relevance_score": 6,
+      "matched_queries": [
+        "computational argumentation LLM argument mining",
+        "large language model argumentation debate reasoning",
+        "large language model judge evaluation debate",
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7166400053",
+      "doi": null,
+      "title": "Staying VIGILant: Mitigating Visual Laziness via Counterfactual Visual Alignment in MLLMs",
+      "publication_date": "2026-06-24",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.26387",
+      "cited_by_count": 0,
+      "relevance_score": 6,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7167932174",
+      "doi": "https://doi.org/10.5281/zenodo.21283931",
+      "title": "From Tokens to Trust: Understanding Uncertainty in Autoregressive Large Language Models",
+      "publication_date": "2026-07-09",
+      "type": "peer-review",
+      "venue": "Zenodo (CERN European Organization for Nuclear Research)",
+      "url": "https://doi.org/10.5281/zenodo.21283931",
+      "cited_by_count": 0,
+      "relevance_score": 6,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7170112483",
+      "doi": null,
+      "title": "Debate-on-Graph: Reliable and Adaptive Reasoning of Large Language Model on Uncertain Knowledge Graph",
+      "publication_date": "2026-07-19",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2607.17266",
+      "cited_by_count": 0,
+      "relevance_score": 6,
+      "matched_queries": [
+        "large language model argumentation debate reasoning",
+        "large language model judge evaluation debate"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7170111587",
+      "doi": null,
+      "title": "MADA-RL: Multi-Agent Debate-Aware Reinforcement Learning for Parameter-Efficient Reasoning in Compact Models",
+      "publication_date": "2026-07-20",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2607.18006",
+      "cited_by_count": 0,
+      "relevance_score": 6,
+      "matched_queries": [
+        "large language model argumentation debate reasoning",
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7172068203",
+      "doi": null,
+      "title": "A Reference-Free Score for Detecting Silent Reasoning Failures in Large Language Models",
+      "publication_date": "2026-07-28",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2607.26102",
+      "cited_by_count": 0,
+      "relevance_score": 6,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7154254683",
+      "doi": "https://doi.org/10.1109/chase69719.2026.00043",
+      "title": "CARE-ECG: Causal Agent-based Reasoning for Explainable and Counterfactual ECG Interpretation",
+      "publication_date": "2026-08-01",
+      "type": "conference-paper",
+      "venue": null,
+      "url": "https://doi.org/10.1109/chase69719.2026.00043",
+      "cited_by_count": 0,
+      "relevance_score": 6,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7197053126",
+      "doi": null,
+      "title": "Group Perspective Matters: Regulating Debate Relationships Can Mitigate Blind Conformity in Multi-Agent Debate",
+      "publication_date": "2026-08-04",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2608.03648",
+      "cited_by_count": 0,
+      "relevance_score": 6,
+      "matched_queries": [
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7196945743",
+      "doi": "https://doi.org/10.1145/3770855.3818025",
+      "title": "MAR: Metacognitive Agentic Reasoning for Multimodal Fake News Detection",
+      "publication_date": "2026-08-07",
+      "type": "conference-paper",
+      "venue": null,
+      "url": "https://doi.org/10.1145/3770855.3818025",
+      "cited_by_count": 0,
+      "relevance_score": 6,
+      "matched_queries": [
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7203955310",
+      "doi": "https://doi.org/10.5281/zenodo.22043449",
+      "title": "Operationalizing Global Workspace Theory for Metacognitive Multi-Agent LLM Architecture",
+      "publication_date": "2026-08-21",
+      "type": "preprint",
+      "venue": "Zenodo (CERN European Organization for Nuclear Research)",
+      "url": "https://doi.org/10.5281/zenodo.22043449",
+      "cited_by_count": 0,
+      "relevance_score": 6,
+      "matched_queries": [
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7204145125",
+      "doi": "https://doi.org/10.48550/arxiv.2608.20777",
+      "title": "Tree-of-Concerns: Hierarchical Multi-Agent Debate for Unstated-Limitation Extraction in Scientific Critique",
+      "publication_date": "2026-08-21",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://doi.org/10.48550/arxiv.2608.20777",
+      "cited_by_count": 0,
+      "relevance_score": 6,
+      "matched_queries": [
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7204160111",
+      "doi": "https://doi.org/10.48550/arxiv.2608.23244",
+      "title": "Credal Large Language Models for Semantic Commitment under Uncertainty",
+      "publication_date": "2026-08-24",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://doi.org/10.48550/arxiv.2608.23244",
+      "cited_by_count": 0,
+      "relevance_score": 6,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7204460734",
+      "doi": "https://doi.org/10.48550/arxiv.2608.25500",
+      "title": "CaSKG: Counterfactual-Causal Skill Graphs for Scalable Agent Skill Retrieval",
+      "publication_date": "2026-08-26",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://doi.org/10.48550/arxiv.2608.25500",
+      "cited_by_count": 0,
+      "relevance_score": 6,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7204870315",
+      "doi": "https://doi.org/10.64898/2026.08.27.26361497",
+      "title": "Novel Entropy-Based Framework for Quantifying Dynamic Epistemic Uncertainty in Clinical Medicine",
+      "publication_date": "2026-08-31",
+      "type": "preprint",
+      "venue": "medRxiv",
+      "url": "https://doi.org/10.64898/2026.08.27.26361497",
+      "cited_by_count": 0,
+      "relevance_score": 6,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7207752096",
+      "doi": "https://doi.org/10.1007/s10503-026-09728-w",
+      "title": "Biased Reasoning, Argument Analysis, and the Principle of Charity",
+      "publication_date": "2026-09-03",
+      "type": "article",
+      "venue": "Argumentation",
+      "url": "https://doi.org/10.1007/s10503-026-09728-w",
+      "cited_by_count": 0,
+      "relevance_score": 6,
+      "matched_queries": [
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7163560273",
+      "doi": "https://doi.org/10.2196/93710",
+      "title": "AI-Assisted Formative Assessment in Clinical Education: From Algorithms to Agency",
+      "publication_date": "2026-06-04",
+      "type": "article",
+      "venue": "JMIR Medical Education",
+      "url": "https://doi.org/10.2196/93710",
+      "cited_by_count": 1,
+      "relevance_score": 5,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7165856418",
+      "doi": "https://doi.org/10.3390/technologies14070386",
+      "title": "Trustworthy Companion AI for Human-Aware Transition of Control: Motivation, Architecture, and Research Roadmap",
+      "publication_date": "2026-06-24",
+      "type": "article",
+      "venue": "Technologies",
+      "url": "https://doi.org/10.3390/technologies14070386",
+      "cited_by_count": 1,
+      "relevance_score": 5,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7163596340",
+      "doi": null,
+      "title": "DECK: A Consistency x Confidence Taxonomy of LLM Hallucinations",
+      "publication_date": "2026-06-01",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.02289",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7163595871",
+      "doi": null,
+      "title": "Dynamic Trust-Aware Sparse Communication Topology for LLM-Based Multi-Agent Consensus",
+      "publication_date": "2026-06-01",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.01828",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7168510860",
+      "doi": "https://doi.org/10.48448/g8kt-az79",
+      "title": "Debate-of-Thoughts: Resolving Knowledge Conflicts in LLMs Through Internal Deliberation",
+      "publication_date": "2026-06-03",
+      "type": "other",
+      "venue": "Underline Science Inc.",
+      "url": "https://doi.org/10.48448/g8kt-az79",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "large language model argumentation debate reasoning",
+        "large language model judge evaluation debate"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7163720504",
+      "doi": null,
+      "title": "SMADE-IE: Sparse Multi-Agent Framework with Evidence-Driven Debate for Zero-Shot Information Extraction",
+      "publication_date": "2026-06-03",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.04691",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7168416550",
+      "doi": "https://doi.org/10.48448/9d6j-tz72",
+      "title": "CEDAR: A Chinese Evaluation Dataset for Computational Argumentation",
+      "publication_date": "2026-06-03",
+      "type": "other",
+      "venue": "Underline Science Inc.",
+      "url": "https://doi.org/10.48448/9d6j-tz72",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "computational argumentation LLM argument mining"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "direct formal/computational argumentation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7163777754",
+      "doi": null,
+      "title": "ReasoningFlow: Discourse Structures for Understanding LLM Reasoning Traces",
+      "publication_date": "2026-06-03",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.05402",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "computational argumentation LLM argument mining"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7168386194",
+      "doi": "https://doi.org/10.48448/3va8-7c09",
+      "title": "EpiCaR: Knowing What You Don't Know Matters for Better Reasoning in LLMs",
+      "publication_date": "2026-06-03",
+      "type": "other",
+      "venue": "Underline Science Inc.",
+      "url": "https://doi.org/10.48448/3va8-7c09",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7164233815",
+      "doi": null,
+      "title": "SLMJury: Can Small Language Models Judge as Well as Large Ones?",
+      "publication_date": "2026-06-05",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.07810",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "large language model judge evaluation debate"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7163752921",
+      "doi": "https://doi.org/10.38124/ijisrt/26may1714",
+      "title": "LegalMind: A Multi-Agent Legal Reasoning Framework Leveraging Fine-Tuning of Large Language Models and Retrieval-Augmented Generation to Reduce Hallucinations",
+      "publication_date": "2026-06-06",
+      "type": "article",
+      "venue": "International Journal of Innovative Science and Research Technology (IJISRT)",
+      "url": "https://doi.org/10.38124/ijisrt/26may1714",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7164312563",
+      "doi": "https://doi.org/10.1117/12.3094607",
+      "title": "ARMOR: adaptive reasoning for mitigation of operational risk",
+      "publication_date": "2026-06-11",
+      "type": "conference-abstract",
+      "venue": null,
+      "url": "https://doi.org/10.1117/12.3094607",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7165261403",
+      "doi": null,
+      "title": "Statistical Inference for Image Classification, Language Reasoning, and Counterfactual Estimation",
+      "publication_date": "2026-06-15",
+      "type": "dissertation",
+      "venue": "VTechWorks (Virginia Tech)",
+      "url": "https://hdl.handle.net/10919/143407",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7164897437",
+      "doi": "https://doi.org/10.26190/unsworks/32397",
+      "title": "Bridging Evidence and Uncertainty: From Explainable Weighting to Uncertainty Calibration in Fact Checking",
+      "publication_date": "2026-06-16",
+      "type": "dissertation",
+      "venue": "UNSWorks (University of New South Wales, Sydney, Australia)",
+      "url": "https://doi.org/10.26190/unsworks/32397",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7165218560",
+      "doi": null,
+      "title": "DeFAb: A Verifiable Benchmark for Defeasible Abduction in Foundation Models",
+      "publication_date": "2026-06-17",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.18557",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "LLM belief revision defeasible nonmonotonic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7165389918",
+      "doi": "https://doi.org/10.5281/zenodo.20767870",
+      "title": "The Causal Validity Gap in LLM Reasoning A Release-Gated Framework for Intervention, Counterfactual, and Transfer-Stable Reasoning Claims",
+      "publication_date": "2026-06-20",
+      "type": "dataset",
+      "venue": "Zenodo (CERN European Organization for Nuclear Research)",
+      "url": "https://doi.org/10.5281/zenodo.20767870",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7165817815",
+      "doi": null,
+      "title": "Confident but Conflicted: Internal Uncertainty and Cognitive Dissonance Resolution in LLMs",
+      "publication_date": "2026-06-21",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.22633",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7165815832",
+      "doi": null,
+      "title": "CFPO: Counterfactual Policy Optimization for Multimodal Reasoning",
+      "publication_date": "2026-06-22",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.23206",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7166900512",
+      "doi": null,
+      "title": "ECHO: Learning Epistemically Adaptive Language Agents with Turn-Level Credit",
+      "publication_date": "2026-06-29",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.29745",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7167155112",
+      "doi": null,
+      "title": "Truth or Sophistry? LoFa: A Benchmark for LLM Robustness Against Logical Fallacies",
+      "publication_date": "2026-06-30",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.31039",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "computational argumentation LLM argument mining",
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7168687912",
+      "doi": "https://doi.org/10.24963/kr.2026/69",
+      "title": "Evaluating LLM-Driven Summarisation of Parliamentary Debates with Computational Argumentation",
+      "publication_date": "2026-07-01",
+      "type": "conference-paper",
+      "venue": null,
+      "url": "https://doi.org/10.24963/kr.2026/69",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "computational argumentation LLM argument mining",
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7171296507",
+      "doi": "https://doi.org/10.5281/zenodo.21583437",
+      "title": "Calibrated Uncertainty in Large Language Models",
+      "publication_date": "2026-07-01",
+      "type": "article",
+      "venue": "Zenodo (CERN European Organization for Nuclear Research)",
+      "url": "https://doi.org/10.5281/zenodo.21583437",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7167379701",
+      "doi": null,
+      "title": "Diverse Evidence, Better Forecasts: Multi-Agent Deliberation Under Information Asymmetry",
+      "publication_date": "2026-07-02",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2607.01661",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7168054027",
+      "doi": null,
+      "title": "Who Broke the System? Failure Localization in LLM-Based Multi-Agent Systems",
+      "publication_date": "2026-07-08",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2607.07989",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7169474080",
+      "doi": null,
+      "title": "TRACE: An Operational Reasoning Schema for Auditable Agentic Commitments",
+      "publication_date": "2026-07-14",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2607.12480",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "LLM belief revision defeasible nonmonotonic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7170111193",
+      "doi": null,
+      "title": "UPAIR: Diagnosing Reasoning States via Uncertainty-Progress Alignment for Selective Intervention",
+      "publication_date": "2026-07-19",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2607.17188",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7171903048",
+      "doi": null,
+      "title": "CHILL-Harness: Counterfactual Harness Learning for Efficient Reasoning in Long-Horizon Agents",
+      "publication_date": "2026-07-28",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2607.25825",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7171846710",
+      "doi": "https://doi.org/10.17645/mac.12442",
+      "title": "A Research Agenda for Studying LLM-Powered Persuasion Technology to Mitigate Misinformation",
+      "publication_date": "2026-07-30",
+      "type": "article",
+      "venue": "Media and Communication",
+      "url": "https://doi.org/10.17645/mac.12442",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "LLM pragmatics dialogue commitment inference"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7172473407",
+      "doi": null,
+      "title": "Think2Go: Generative Next POI Recommendation with LLM Reasoning",
+      "publication_date": "2026-07-31",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2607.28997",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7204150502",
+      "doi": "https://doi.org/10.48550/arxiv.2608.20405",
+      "title": "ARGUS: Theory-of-Mind Guided Argument Generation with Strategy-Aware Planning and Knowledge Grounding",
+      "publication_date": "2026-08-06",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://doi.org/10.48550/arxiv.2608.20405",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "computational argumentation LLM argument mining"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7202375921",
+      "doi": "https://doi.org/10.1007/s10844-026-01086-z",
+      "title": "Multi-Agent debate system based on large language models: structured deliberation and validation in satellite communications",
+      "publication_date": "2026-08-13",
+      "type": "article",
+      "venue": "Journal of Intelligent Information Systems",
+      "url": "https://doi.org/10.1007/s10844-026-01086-z",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "large language model argumentation debate reasoning",
+        "large language model judge evaluation debate",
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "application-domain/education hit without enough mechanism signal"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7203470611",
+      "doi": "https://doi.org/10.48550/arxiv.2608.13167",
+      "title": "TRAPSBench: Vision-Language Models Encode but Fail to Express Epistemic Restraint",
+      "publication_date": "2026-08-13",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://doi.org/10.48550/arxiv.2608.13167",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7203608204",
+      "doi": "https://doi.org/10.48550/arxiv.2608.13706",
+      "title": "CLAIR-Fin: An Adversarial Multi-Agent Framework for Claim-Level Verification and Adaptive Debate in Cross-Modal Financial QA",
+      "publication_date": "2026-08-13",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://doi.org/10.48550/arxiv.2608.13706",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7170174436",
+      "doi": "https://doi.org/10.1007/s11023-026-09795-8",
+      "title": "Are Attributions of Consciousness to AI Chatbots Epistemically Innocent?",
+      "publication_date": "2026-08-18",
+      "type": "article",
+      "venue": "Minds and Machines",
+      "url": "https://doi.org/10.1007/s11023-026-09795-8",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "LLM pragmatics dialogue commitment inference"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7203745202",
+      "doi": "https://doi.org/10.2196/preprints.109941",
+      "title": "CausalNHANES: An Automated Benchmark for Evaluating Large Language Models' Causal Reasoning in Epidemiology (Preprint)",
+      "publication_date": "2026-08-18",
+      "type": "preprint",
+      "venue": null,
+      "url": "https://doi.org/10.2196/preprints.109941",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7203908841",
+      "doi": "https://doi.org/10.48550/arxiv.2608.19009",
+      "title": "Grading the Graders: Verification Autonomy Levels (L0-L5) for LLM Reasoning",
+      "publication_date": "2026-08-19",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://doi.org/10.48550/arxiv.2608.19009",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7203859779",
+      "doi": "https://doi.org/10.48550/arxiv.2608.19002",
+      "title": "A Theory of Post-hoc Debate Judgement",
+      "publication_date": "2026-08-19",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://doi.org/10.48550/arxiv.2608.19002",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7203790303",
+      "doi": "https://doi.org/10.1007/s11841-026-01171-4",
+      "title": "Is Design Inference Epistemically Special?",
+      "publication_date": "2026-08-20",
+      "type": "article",
+      "venue": "Sophia",
+      "url": "https://doi.org/10.1007/s11841-026-01171-4",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "LLM pragmatics dialogue commitment inference",
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7204186639",
+      "doi": "https://doi.org/10.48550/arxiv.2608.22785",
+      "title": "OmicSync: Reliability-Aware Spatial Multi-Omics Clustering with Evidence-Constrained LLM Reasoning",
+      "publication_date": "2026-08-24",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://doi.org/10.48550/arxiv.2608.22785",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7204161377",
+      "doi": "https://doi.org/10.48550/arxiv.2608.23029",
+      "title": "Meta-Moderator: Empowering Multi-Agent Debate with Meta-Cognition",
+      "publication_date": "2026-08-24",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://doi.org/10.48550/arxiv.2608.23029",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7204443600",
+      "doi": "https://doi.org/10.48550/arxiv.2608.25152",
+      "title": "Belief Cascades Drive Persuasion in LLM Agent Networks",
+      "publication_date": "2026-08-25",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://doi.org/10.48550/arxiv.2608.25152",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "computational argumentation LLM argument mining"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7204452572",
+      "doi": "https://doi.org/10.48550/arxiv.2608.25937",
+      "title": "Candidate supply and answer selection shape the value of LLM judging in multi-agent systems",
+      "publication_date": "2026-08-26",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://doi.org/10.48550/arxiv.2608.25937",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7211867988",
+      "doi": "https://doi.org/10.48550/arxiv.2609.04749",
+      "title": "DCFA: Dual-view Causal-inspired Attribution for Failure Reasoning in LLM-based Multi-agent Systems",
+      "publication_date": "2026-09-04",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://doi.org/10.48550/arxiv.2609.04749",
+      "cited_by_count": 0,
+      "relevance_score": 5,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7163341066",
+      "doi": "https://doi.org/10.3389/frai.2026.1818128",
+      "title": "Evidence-based AI: from trailblazer to trustblazer?",
+      "publication_date": "2026-06-03",
+      "type": "article",
+      "venue": "Frontiers in Artificial Intelligence",
+      "url": "https://doi.org/10.3389/frai.2026.1818128",
+      "cited_by_count": 1,
+      "relevance_score": 4,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning",
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7165027829",
+      "doi": "https://doi.org/10.1017/s0003055426101622",
+      "title": "Beyond Belief Change: The Persuasive Returns of Targeting Attitude–Relevant Beliefs",
+      "publication_date": "2026-06-17",
+      "type": "article",
+      "venue": "American Political Science Review",
+      "url": "https://doi.org/10.1017/s0003055426101622",
+      "cited_by_count": 1,
+      "relevance_score": 4,
+      "matched_queries": [
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7165897944",
+      "doi": "https://doi.org/10.1007/s10515-026-00638-5",
+      "title": "Are LLMs reliable code reviewers? systematic overcorrection in requirement conformance judgement",
+      "publication_date": "2026-06-26",
+      "type": "article",
+      "venue": "Automated Software Engineering",
+      "url": "https://doi.org/10.1007/s10515-026-00638-5",
+      "cited_by_count": 1,
+      "relevance_score": 4,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7167817509",
+      "doi": "https://doi.org/10.1007/s40647-026-00473-8",
+      "title": "Piercing a Methodological Bubble: Large Language Models and the Social Sciences",
+      "publication_date": "2026-07-09",
+      "type": "article",
+      "venue": "Fudan Journal of the Humanities and Social Sciences",
+      "url": "https://doi.org/10.1007/s40647-026-00473-8",
+      "cited_by_count": 1,
+      "relevance_score": 4,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning",
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7163598658",
+      "doi": null,
+      "title": "POIROT: Interrogating Agents for Failure Detection in Multi-Agent Systems",
+      "publication_date": "2026-06-01",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.02282",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7163595183",
+      "doi": null,
+      "title": "The Deliberative Illusion: Diagnosing Factual Attrition and Stance Homogenization in Multi-Agent LLM Deliberation",
+      "publication_date": "2026-06-02",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.03032",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7163778471",
+      "doi": null,
+      "title": "Trust, but Don't Verify: Epistemic Blind Spots in LLM Source Evaluation",
+      "publication_date": "2026-06-03",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.05403",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7163586832",
+      "doi": "https://doi.org/10.3390/bs16060907",
+      "title": "Counterfactual Reasoning as the Missing Link Between Statistical AI and Human Cognition: A Cognitive Science Perspective",
+      "publication_date": "2026-06-03",
+      "type": "article",
+      "venue": "Behavioral Sciences",
+      "url": "https://doi.org/10.3390/bs16060907",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7164090027",
+      "doi": null,
+      "title": "CAF-Gen: A Multi-Agent System for Enriching Argumentation Structures",
+      "publication_date": "2026-06-04",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.06646",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "computational argumentation LLM argument mining"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "direct formal/computational argumentation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7163778345",
+      "doi": null,
+      "title": "Staying with the Uncertainty: Uncertainty-Scaffolding Strategies for Artificial Moral Advisors in LLM-to-LLM Simulated Conversations",
+      "publication_date": "2026-06-04",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.05890",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning",
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7163777756",
+      "doi": null,
+      "title": "LLM Explainability with Counterfactual Chains and Causal Graphs",
+      "publication_date": "2026-06-04",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.05972",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7164090761",
+      "doi": null,
+      "title": "CRAFT: A Unified Counterfactual Reasoning Framework for Tabular Question Answering and Fact Verification",
+      "publication_date": "2026-06-05",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.06842",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7164234495",
+      "doi": null,
+      "title": "Artificial Intelligence for Mathematical Reasoning: An Integrated Survey of Language Models, Neuro-symbolic Systems, and Verified Discovery",
+      "publication_date": "2026-06-07",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.08728",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7164234754",
+      "doi": null,
+      "title": "TruthSplit: Operationalizing Conditional Validity in Arguments Through Multi-Perspective Reasoning",
+      "publication_date": "2026-06-08",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.09251",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "computational argumentation LLM argument mining",
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7164234670",
+      "doi": null,
+      "title": "Counterfactual Reasoning for Fine-Grained Evidence Disentanglement in VideoQA",
+      "publication_date": "2026-06-08",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.09181",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7164446907",
+      "doi": null,
+      "title": "Dep-LLM: Training-Free Depression Diagnosis via Evidence-Guided Structured Multi-factor with Reliable LLM Reasoning",
+      "publication_date": "2026-06-09",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.10796",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "application-domain/education hit without enough mechanism signal"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7164615184",
+      "doi": null,
+      "title": "The Periodic Table of LLM Reasoning: A Structured Survey of Reasoning Paradigms, Methods, and Failure Modes",
+      "publication_date": "2026-06-09",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.11470",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7165032936",
+      "doi": "https://doi.org/10.52783/dxjb.v38.348",
+      "title": "Evaluating the Performance of Large Language Models in Academic Writing Tasks",
+      "publication_date": "2026-06-10",
+      "type": "article",
+      "venue": "Dandao Xuebao/Journal of Ballistics",
+      "url": "https://doi.org/10.52783/dxjb.v38.348",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7165064575",
+      "doi": null,
+      "title": "A Large-Scale Multi-Dimensional Empirical Study of LLMs for Conversation Summarization",
+      "publication_date": "2026-06-14",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.15974",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7164848384",
+      "doi": "https://doi.org/10.5281/zenodo.20702392",
+      "title": "The Paradox of Revision A Measurement Pipeline for Studying Argument Change and Conclusion",
+      "publication_date": "2026-06-15",
+      "type": "preprint",
+      "venue": "Zenodo (CERN European Organization for Nuclear Research)",
+      "url": "https://doi.org/10.5281/zenodo.20702392",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7165219916",
+      "doi": null,
+      "title": "Quantifying Consistency in LLM Logical Reasoning via Structural Uncertainty",
+      "publication_date": "2026-06-15",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.17312",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7164842681",
+      "doi": "https://doi.org/10.5281/zenodo.20703533",
+      "title": "LLM Persuasiveness Evaluation: A Structured Review of Automated Methods",
+      "publication_date": "2026-06-15",
+      "type": "other",
+      "venue": "Ghent University Academic Bibliography (Ghent University)",
+      "url": "https://doi.org/10.5281/zenodo.20703533",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "LLM pragmatics dialogue commitment inference"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7165423791",
+      "doi": null,
+      "title": "LLM Doesn't Know What It Doesn't Know: Detecting Epistemic Blind Spots via Cross-Model Attribution Divergence on Clinical Tabular Data",
+      "publication_date": "2026-06-17",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.19509",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7166252586",
+      "doi": null,
+      "title": "Are Text-to-Image Models Inductivist Turkeys? A Counterfactual Benchmark for Causal Reasoning",
+      "publication_date": "2026-06-23",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.24548",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7171203916",
+      "doi": "https://doi.org/10.5281/zenodo.21560187",
+      "title": "Artificial General Reasoning",
+      "publication_date": "2026-06-27",
+      "type": "other",
+      "venue": "Zenodo (CERN European Organization for Nuclear Research)",
+      "url": "https://doi.org/10.5281/zenodo.21560187",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7166902791",
+      "doi": null,
+      "title": "Evidence-Informed LLM Beliefs for Continual Scientific Discovery",
+      "publication_date": "2026-06-28",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.29182",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7166441737",
+      "doi": "https://doi.org/10.1007/s44163-026-01640-2",
+      "title": "Interpretable root-cause analysis of construction defects via knowledge-enhanced causal reasoning with large language models",
+      "publication_date": "2026-06-28",
+      "type": "article",
+      "venue": "Discover Artificial Intelligence",
+      "url": "https://doi.org/10.1007/s44163-026-01640-2",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7166899890",
+      "doi": null,
+      "title": "Minority Sentinel: When to Overturn Majority Voting in Multi-Agent LLM Debates",
+      "publication_date": "2026-06-28",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2606.29270",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7167290105",
+      "doi": null,
+      "title": "Testing Frontier Large Language Models' Physics Literacy in Parallel Physical Worlds",
+      "publication_date": "2026-06-30",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2607.00276",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "large language model judge evaluation debate"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7166725011",
+      "doi": "https://doi.org/10.3389/feduc.2026.1857036",
+      "title": "Reasoning under uncertainty in graduate health education: a scaffolded framework using large language models",
+      "publication_date": "2026-06-30",
+      "type": "article",
+      "venue": "Frontiers in Education",
+      "url": "https://doi.org/10.3389/feduc.2026.1857036",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "LLM pragmatics dialogue commitment inference",
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7167290295",
+      "doi": null,
+      "title": "Understanding Large Language Models",
+      "publication_date": "2026-07-01",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2607.01006",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "large language model argumentation debate reasoning",
+        "large language model judge evaluation debate"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7168625564",
+      "doi": "https://doi.org/10.24963/kr.2026/86",
+      "title": "Argumentation for Explainable and Globally Contestable Decision Support with LLMs",
+      "publication_date": "2026-07-01",
+      "type": "conference-paper",
+      "venue": null,
+      "url": "https://doi.org/10.24963/kr.2026/86",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "computational argumentation LLM argument mining"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7202189701",
+      "doi": "https://doi.org/10.1109/icdh72779.2026.00043",
+      "title": "When Confidence Fails: Overconfidence in LLMS Under Uncertainty and Missing Clinical Information",
+      "publication_date": "2026-07-01",
+      "type": "conference-paper",
+      "venue": null,
+      "url": "https://doi.org/10.1109/icdh72779.2026.00043",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7167746933",
+      "doi": null,
+      "title": "Teaching Code LLMs to Reason with Intermediate Formal Specifications",
+      "publication_date": "2026-07-05",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2607.04232",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "computational argumentation LLM argument mining"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7168054497",
+      "doi": null,
+      "title": "CausalDS: Benchmarking Causal Reasoning in Data-Science Agents",
+      "publication_date": "2026-07-09",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2607.08093",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7168433071",
+      "doi": null,
+      "title": "LLMs as a Jury: Cross-Model Consensus Can Outperform Process Reward Models for LLM Reasoning",
+      "publication_date": "2026-07-11",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2607.10139",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7168130575",
+      "doi": "https://doi.org/10.3390/make8070203",
+      "title": "Compact Models for Structured Argument and Stance Analysis: A Framing-Aware, Retrieval-Augmented Pipeline",
+      "publication_date": "2026-07-12",
+      "type": "article",
+      "venue": "Machine Learning and Knowledge Extraction",
+      "url": "https://doi.org/10.3390/make8070203",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "computational argumentation LLM argument mining"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7169633486",
+      "doi": null,
+      "title": "Discourse-Aware Policy Analysis with Argumentation: A Hybrid LLM-Symbolic Framework for Disaster Governance",
+      "publication_date": "2026-07-14",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2607.13260",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "computational argumentation LLM argument mining"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "direct formal/computational argumentation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7202185889",
+      "doi": "https://doi.org/10.1093/pq/pqag050",
+      "title": "Computing machinery and causal intelligence",
+      "publication_date": "2026-07-16",
+      "type": "article",
+      "venue": "The Philosophical Quarterly",
+      "url": "https://doi.org/10.1093/pq/pqag050",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7169923304",
+      "doi": null,
+      "title": "The Honest Quorum Problem: Epistemic Byzantine Fault Tolerance for Agentic Infrastructure",
+      "publication_date": "2026-07-17",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2607.16109",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7170112943",
+      "doi": null,
+      "title": "An Explicit World Model Based on Data-First Ontology: DaoQL Multimodal Storage Validation and Counterfactual Reasoning Evaluation",
+      "publication_date": "2026-07-19",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2607.17269",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7171834661",
+      "doi": "https://doi.org/10.37899/journallaedusci.v7i5.3386",
+      "title": "The Effect of Integrating the Claim–Evidence–Reasoning Framework into the Argument-Driven Inquiry Model on Students’ Scientific Argumentation Skills and Green Chemistry Learning Outcomes",
+      "publication_date": "2026-07-30",
+      "type": "article",
+      "venue": "Journal La Edusci",
+      "url": "https://doi.org/10.37899/journallaedusci.v7i5.3386",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "direct formal/computational argumentation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7172334575",
+      "doi": "https://doi.org/10.70175/innovationjournal.2026.1.1.4",
+      "title": "Epistemic Transformations: Large Language Models and the Reconfiguration of Scholarly Knowledge Production",
+      "publication_date": "2026-08-01",
+      "type": "article",
+      "venue": "Innovation The Journal of Knowledge Work Creativity and Organizational Advancement",
+      "url": "https://doi.org/10.70175/innovationjournal.2026.1.1.4",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7197052977",
+      "doi": null,
+      "title": "GoT-CD: Graph-of-Thoughts Causal Discovery and the Fragility of Post-hoc Path-Specific Fairness Audits",
+      "publication_date": "2026-08-03",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2608.02877",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7197054231",
+      "doi": null,
+      "title": "Emergence of Biased Consensus in Multi-Agent LLM Debates",
+      "publication_date": "2026-08-03",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2608.02827",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7172441344",
+      "doi": "https://doi.org/10.3390/electronics15153453",
+      "title": "Consensus-Gated Execution: A Multi-Agent LLM Architecture for Autonomous Cryptocurrency Trading",
+      "publication_date": "2026-08-04",
+      "type": "article",
+      "venue": "Electronics",
+      "url": "https://doi.org/10.3390/electronics15153453",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "computational argumentation LLM argument mining",
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7202005893",
+      "doi": null,
+      "title": "Certifying Collective Reasoning in Multi-Agent Systems via Koopman Spectral Analysis",
+      "publication_date": "2026-08-06",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://arxiv.org/abs/2608.05956",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7202189693",
+      "doi": "https://doi.org/10.48550/arxiv.2608.07688",
+      "title": "IntelliAudit: Using Large Language Models to Evaluate Audit Controls",
+      "publication_date": "2026-08-07",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://doi.org/10.48550/arxiv.2608.07688",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "large language model judge evaluation debate"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7204592886",
+      "doi": "https://doi.org/10.48550/arxiv.2608.26187",
+      "title": "When the Canonical Completion Is Wrong: Formalizing and Measuring the Jump in Large Language Models",
+      "publication_date": "2026-08-22",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://doi.org/10.48550/arxiv.2608.26187",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7204855746",
+      "doi": "https://doi.org/10.48550/arxiv.2608.28283",
+      "title": "Embedding Models for Stance-Aware Argument Retrieval",
+      "publication_date": "2026-08-28",
+      "type": "preprint",
+      "venue": "arXiv (Cornell University)",
+      "url": "https://doi.org/10.48550/arxiv.2608.28283",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "computational argumentation LLM argument mining"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W4413743401",
+      "doi": "https://doi.org/10.1016/j.chbr.2026.101291",
+      "title": "Should Businesses Trust AI Advice? A Methodology to Audit the Ethical Integrity of Chatbots",
+      "publication_date": "2026-09-01",
+      "type": "article",
+      "venue": "Computers in Human Behavior Reports",
+      "url": "https://doi.org/10.1016/j.chbr.2026.101291",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "LLM pragmatics dialogue commitment inference"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7204923696",
+      "doi": "https://doi.org/10.1038/s41598-026-69332-6",
+      "title": "Causal-aware training with counterfactual supervision and structural causal models improves the robustness of LLM-based vulnerability detection",
+      "publication_date": "2026-09-01",
+      "type": "article",
+      "venue": "Scientific Reports",
+      "url": "https://doi.org/10.1038/s41598-026-69332-6",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "AI-system + multiple reasoning/evaluation mechanisms in title"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7211899590",
+      "doi": "https://doi.org/10.20944/preprints202609.0308.v1",
+      "title": "Theory of Agent: The Science of Internalization and Externalization for LLM-Based Agents",
+      "publication_date": "2026-09-03",
+      "type": "preprint",
+      "venue": "Preprints.org",
+      "url": "https://doi.org/10.20944/preprints202609.0308.v1",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7207823118",
+      "doi": "https://doi.org/10.47485/2767-5416.1162",
+      "title": "Digital Distrust: Patient-Centred Communication and the Calibration of Epistemic Reliance in the Era of Online Self-Diagnosis and AI Symptom Checkers",
+      "publication_date": "2026-09-03",
+      "type": "article",
+      "venue": "Journal of Medical Clinical Case Reports",
+      "url": "https://doi.org/10.47485/2767-5416.1162",
+      "cited_by_count": 0,
+      "relevance_score": 4,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": "https://openalex.org/W7165400518",
+      "doi": "https://doi.org/10.1016/j.cosrev.2026.101008",
+      "title": "Simulating students with large language models: A review of architecture, mechanisms, and role modeling in education with generative AI",
+      "publication_date": "2026-06-20",
+      "type": "article",
+      "venue": "Computer Science Review",
+      "url": "https://doi.org/10.1016/j.cosrev.2026.101008",
+      "cited_by_count": 2,
+      "relevance_score": 3,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning",
+        "large language model judge evaluation debate",
+        "multi agent debate LLM diversity consensus"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W4406879616",
+      "doi": "https://doi.org/10.1371/journal.pone.0355458",
+      "title": "Unmasking conversational bias in AI multiagent systems",
+      "publication_date": "2026-08-18",
+      "type": "article",
+      "venue": "PLoS ONE",
+      "url": "https://doi.org/10.1371/journal.pone.0355458",
+      "cited_by_count": 2,
+      "relevance_score": 3,
+      "matched_queries": [
+        "large language model argumentation debate reasoning",
+        "large language model judge evaluation debate"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7165677279",
+      "doi": "https://doi.org/10.66053/aillce.v1i2.35",
+      "title": "Teachers' Attitudes Toward the Use of Artificial Intelligence in English Language Teaching: A Scoping Review With Implications for Bangladesh",
+      "publication_date": "2026-06-14",
+      "type": "article",
+      "venue": "Artificial Intelligence in Lifelong and Life-Course Education",
+      "url": "https://doi.org/10.66053/aillce.v1i2.35",
+      "cited_by_count": 1,
+      "relevance_score": 3,
+      "matched_queries": [
+        "large language model judge evaluation debate"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W4416287376",
+      "doi": "https://doi.org/10.1007/s44163-026-01543-2",
+      "title": "Macie a multi-agent causal intelligence explainer for collective behavior understanding",
+      "publication_date": "2026-06-18",
+      "type": "article",
+      "venue": "Discover Artificial Intelligence",
+      "url": "https://doi.org/10.1007/s44163-026-01543-2",
+      "cited_by_count": 1,
+      "relevance_score": 3,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7165671726",
+      "doi": "https://doi.org/10.30935/scimath/18798",
+      "title": "AI-supported hybrid learning in exploratory geometry: For higher education",
+      "publication_date": "2026-06-23",
+      "type": "article",
+      "venue": "European Journal of Science and Mathematics Education",
+      "url": "https://doi.org/10.30935/scimath/18798",
+      "cited_by_count": 1,
+      "relevance_score": 3,
+      "matched_queries": [
+        "large language model argumentation debate reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "application-domain/education hit without enough mechanism signal"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7160912064",
+      "doi": "https://doi.org/10.1145/3805689.3812242",
+      "title": "Toward Individual Fairness Without Centralized Data: Selective Counterfactual Consistency for Vertical Federated Learning",
+      "publication_date": "2026-06-23",
+      "type": "conference-paper",
+      "venue": null,
+      "url": "https://doi.org/10.1145/3805689.3812242",
+      "cited_by_count": 1,
+      "relevance_score": 3,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7167587726",
+      "doi": "https://doi.org/10.1007/s13347-026-01140-2",
+      "title": "Judgment Cannot Be Delegated: A Subject-Preserving Framework for AI Governance",
+      "publication_date": "2026-07-07",
+      "type": "article",
+      "venue": "Philosophy & Technology",
+      "url": "https://doi.org/10.1007/s13347-026-01140-2",
+      "cited_by_count": 1,
+      "relevance_score": 3,
+      "matched_queries": [
+        "large language model judge evaluation debate"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W7170052052",
+      "doi": "https://doi.org/10.3390/systems14070881",
+      "title": "Cognitive-Reflective Equilibration Model: An Ethical Decision-Making Framework for LLM-Based AI Systems",
+      "publication_date": "2026-07-22",
+      "type": "article",
+      "venue": "Systems",
+      "url": "https://doi.org/10.3390/systems14070881",
+      "cited_by_count": 1,
+      "relevance_score": 3,
+      "matched_queries": [
+        "LLM uncertainty calibration epistemic reasoning"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "EXCLUDE",
+      "quality_reasons": [
+        "insufficient direct mechanism relevance after title audit"
+      ],
+      "counted_for_100_source_gate": false
+    },
+    {
+      "openalex_id": "https://openalex.org/W4414190075",
+      "doi": "https://doi.org/10.1007/s11633-026-1659-4",
+      "title": "Aligning Clinical Needs and AI Capabilities: A Survey on LLMs for Medical Reasoning",
+      "publication_date": "2026-07-31",
+      "type": "article",
+      "venue": "Machine Intelligence Research",
+      "url": "https://doi.org/10.1007/s11633-026-1659-4",
+      "cited_by_count": 1,
+      "relevance_score": 3,
+      "matched_queries": [
+        "causal reasoning counterfactual large language models"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "evidence_tier": "SUPPORTING",
+      "quality_reasons": [
+        "direct supporting reasoning/evaluation relevance"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": null,
+      "doi": "https://doi.org/10.24963/kr.2026/16",
+      "title": "Splitting Argumentation Frameworks with Collective Attacks and Supports",
+      "publication_date": "2026-07-20",
+      "type": "conference-paper",
+      "venue": "KR 2026",
+      "url": "https://proceedings.kr.org/2026/16/",
+      "cited_by_count": 0,
+      "relevance_score": 10,
+      "matched_queries": [
+        "hand-verified formal argumentation"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "verification": "hand-verified KR 2026 proceedings",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "direct formal argumentation: collective attacks/supports"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": null,
+      "doi": "https://doi.org/10.24963/kr.2026/59",
+      "title": "Belief Function Propagation in Quantitative Bipolar Argumentation Frameworks",
+      "publication_date": "2026-07-20",
+      "type": "conference-paper",
+      "venue": "KR 2026",
+      "url": "https://proceedings.kr.org/2026/59/",
+      "cited_by_count": 0,
+      "relevance_score": 10,
+      "matched_queries": [
+        "hand-verified formal argumentation"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "verification": "hand-verified KR 2026 proceedings",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "direct formal argumentation: uncertainty propagation"
+      ],
+      "counted_for_100_source_gate": true
+    },
+    {
+      "openalex_id": null,
+      "doi": "https://doi.org/10.24963/kr.2026/64",
+      "title": "Contestability in Edge-Weighted Quantitative Bipolar Argumentation Frameworks",
+      "publication_date": "2026-07-20",
+      "type": "conference-paper",
+      "venue": "KR 2026",
+      "url": "https://proceedings.kr.org/2026/64/",
+      "cited_by_count": 0,
+      "relevance_score": 10,
+      "matched_queries": [
+        "hand-verified formal argumentation"
+      ],
+      "priority_window": "2026-06_to_2026-09",
+      "verification": "hand-verified KR 2026 proceedings",
+      "evidence_tier": "CORE",
+      "quality_reasons": [
+        "direct formal argumentation: edge-weight sensitivity and contestability"
+      ],
+      "counted_for_100_source_gate": true
+    }
+  ],
+  "quality_gate": {
+    "classification": "title/mechanism audit; decision-critical claims still require paper-level inspection",
+    "core_count": 40,
+    "supporting_count": 60,
+    "exclude_count": 43,
+    "counted_unique_count": 100,
+    "required_minimum": 100,
+    "passed": true
+  }
+}

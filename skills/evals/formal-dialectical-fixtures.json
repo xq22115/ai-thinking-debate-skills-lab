@@ -1,0 +1,78 @@
+{
+  "suite": "formal-dialectical-v1",
+  "status": "EXPERIMENTAL_REFERENCE",
+  "cases": [
+    {
+      "id": "F1",
+      "name": "typed attack locus",
+      "input": "One objection denies a premise, one attacks the inference rule, and one supports an incompatible conclusion.",
+      "must_detect": ["UNDERMINE", "UNDERCUT", "REBUT", "ATTACK != DEFEAT"]
+    },
+    {
+      "id": "F2",
+      "name": "bare two cycle",
+      "input": "A defeats B and B defeats A; neither has an external defender or priority.",
+      "must_detect": ["A=UNDEC", "B=UNDEC", "no arbitrary winner"]
+    },
+    {
+      "id": "F3",
+      "name": "preference blocks attack",
+      "input": "A attacks B, but the governing preference says A is strictly less preferred than B for this conflict.",
+      "must_detect": ["attack remains recorded", "no effective defeat"]
+    },
+    {
+      "id": "F4",
+      "name": "collective support",
+      "input": "P and Q are both required for C. P is supported; Q is unknown.",
+      "must_detect": ["joint premise set", "C support route=UNKNOWN", "UNKNOWN != FALSE"]
+    },
+    {
+      "id": "F5",
+      "name": "rejected collective member",
+      "input": "P and Q are both required for C. P is supported; Q is refuted.",
+      "must_detect": ["joint support route=REJECTED", "do not count P as independent sufficient support"]
+    },
+    {
+      "id": "F6",
+      "name": "uncertain warrant",
+      "input": "P and Q are established, but the rule that would jointly imply C is unresolved.",
+      "must_detect": ["warrant is first-class", "derived support=UNKNOWN", "uncertainty propagates"]
+    },
+    {
+      "id": "F7",
+      "name": "parser versus solver",
+      "input": "The same objection could be parsed as a rebuttal to C or as an undercutter of P->C; those parses produce different downstream effects.",
+      "must_detect": ["parser hypothesis is uncertain", "test alternate graph", "SOLVER_CORRECTNESS != PARSER_CORRECTNESS"]
+    },
+    {
+      "id": "F8",
+      "name": "minimal verdict flip",
+      "input": "Several claims are disputed, but only weakening one warrant changes the target verdict.",
+      "must_detect": ["decision crux", "minimal verdict flip set", "salience is not hinge centrality"]
+    },
+    {
+      "id": "F9",
+      "name": "order invariance",
+      "input": "The same argument graph is narrated in a different sentence order.",
+      "must_detect": ["same formal verdict", "no recency winner"]
+    },
+    {
+      "id": "F10",
+      "name": "bounded belief revision",
+      "input": "New evidence refutes P. Q depends on P, R depends on Q, and unrelated X has no dependency on them.",
+      "must_detect": ["revise P/Q/R", "leave X unchanged", "minimal sufficient revision"]
+    },
+    {
+      "id": "F11",
+      "name": "persuasion formal split",
+      "input": "Argument A is vivid and confident but its warrant is defeated; argument B is dry but formally defended.",
+      "must_detect": ["separate rhetorical score", "separate formal acceptability", "PERSUASION != FORMAL_ARGUMENT_STRENGTH"]
+    },
+    {
+      "id": "F12",
+      "name": "value-sensitive defeat",
+      "input": "Both sides accept the empirical facts but rank privacy and convenience differently, changing which practical argument prevails.",
+      "must_detect": ["value disagreement", "do not resolve by more factual search alone", "record value ordering"]
+    }
+  ]
+}

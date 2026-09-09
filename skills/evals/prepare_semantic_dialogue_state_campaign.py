@@ -216,7 +216,7 @@ def validate_campaign(campaign_dir: Path) -> dict[str, Any]:
                     f"!= campaign {expected!r}"
                 )
 
-        expected_fixture = str(config["fixture"].relative_to(ROOT))
+        expected_fixture = config["fixture"].relative_to(ROOT).as_posix()
         if manifest.get("fixture_path") != expected_fixture:
             raise ValueError(
                 f"suite fixture drift: {role}={manifest.get('fixture_path')!r} "

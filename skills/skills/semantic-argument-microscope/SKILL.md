@@ -272,6 +272,14 @@ Add edges for:
 
 Merge nodes only when they are semantically equivalent. Preserve disagreements that rely on different warrants even when their surface conclusions match.
 
+## Demand-loaded formal dialectical escalation
+
+Use `FORMAL_DIALECTICAL_REASONING.md` when semantic reconstruction alone is insufficient because cycles, typed attacks, collective premises, preference-sensitive defeat, incomplete graph state, or verdict sensitivity can change the conclusion.
+
+Keep this off for ordinary self-contained claims where a direct warrant/premise check is sufficient. Preserve `ATTACK != DEFEAT`, `UNKNOWN != FALSE`, and `SOLVER_CORRECTNESS != PARSER_CORRECTNESS`.
+
+The executable reference under `skills/evals/formal_dialectical_reference.py` is a regression oracle for conservative formal behavior; it is not evidence that a hosted model has adopted the behavior.
+
 ## Failure Modes
 
 - **Mind-reading:** inferring hidden motives without evidence.

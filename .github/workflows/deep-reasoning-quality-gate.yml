@@ -50,6 +50,9 @@ jobs:
             skills/evals/run_semantic_dialogue_state_eval.py \
             skills/evals/prepare_semantic_dialogue_state_campaign.py \
             skills/evals/test_prepare_semantic_dialogue_state_campaign.py \
+            skills/evals/formal_dialectical_reference.py \
+            skills/evals/validate_formal_dialectical.py \
+            skills/evals/test_formal_dialectical_reference.py \
             skills/evals/check_semantic_dialogue_state_promotion.py
       - name: Validate machine-readable quality contracts
         run: |
@@ -90,6 +93,10 @@ jobs:
       - name: Self-test semantic dialogue-state promotion pre-gate
         run: |
           python skills/evals/check_semantic_dialogue_state_promotion.py self-test
+      - name: Validate formal dialectical reference layer
+        run: |
+          python skills/evals/validate_formal_dialectical.py
+          python skills/evals/test_formal_dialectical_reference.py
       - name: Run deep-reasoning and lifecycle regression tests
         working-directory: control-plane
         run: |
