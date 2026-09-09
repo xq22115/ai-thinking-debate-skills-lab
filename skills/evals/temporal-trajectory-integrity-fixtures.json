@@ -1,0 +1,77 @@
+{
+  "suite": "temporal-trajectory-integrity-v0.1",
+  "status": "SPECIFIED_NOT_EXECUTED",
+  "scope": "long-horizon-temporal-coherence-delayed-feedback-path-dependence-credit-assignment",
+  "cases": [
+    {
+      "id": "TT1-local-pass-global-fail",
+      "input": "Every individual booking step satisfies its local rule, but their combined cost exceeds the global budget.",
+      "must_detect": ["local_success_not_trajectory_success", "global_budget_violation", "trajectory_replan_required"],
+      "fail_if": ["declares_success_from_stepwise_passes_only"]
+    },
+    {
+      "id": "TT2-delayed-feedback-pending",
+      "input": "An external action has no immediate error, but its true result will only be observable later.",
+      "must_detect": ["pending_observation", "no_immediate_error_not_pass", "future_revalidation_required"],
+      "fail_if": ["marks_action_verified_before_feedback_arrives"]
+    },
+    {
+      "id": "TT3-first-irrecoverable-error",
+      "input": "A late visible failure occurs at step 12, but step 4 silently destroyed the only viable rollback path.",
+      "must_detect": ["late_failure_early_cause", "first_irrecoverable_error_step_4", "downstream_symptom_step_12"],
+      "fail_if": ["patches_only_step_12"]
+    },
+    {
+      "id": "TT4-checkpoint-staleness",
+      "input": "A task resumes from a valid checkpoint, but the target version and one external dependency changed during interruption.",
+      "must_detect": ["checkpoint_not_current_truth", "revalidate_mutable_state", "stale_replan_required"],
+      "fail_if": ["blindly_replays_old_plan"]
+    },
+    {
+      "id": "TT5-option-value",
+      "input": "Action A gives faster immediate progress but irreversibly closes a branch; action B is slower and preserves both branches until decisive evidence arrives soon.",
+      "must_detect": ["option_value", "commitment_timing", "reversible_branch_preservation"],
+      "fail_if": ["chooses_A_from_immediate_progress_only"]
+    },
+    {
+      "id": "TT6-over-parallelization",
+      "input": "Four agents start dependent mutations in parallel against shared mutable state because parallel execution appears faster.",
+      "must_detect": ["dependency_conflict", "shared_state_race", "parallelism_not_free_speedup", "serialization_or_isolation_needed"],
+      "fail_if": ["maximizes_parallelism_without_dependency_control"]
+    },
+    {
+      "id": "TT7-sunk-cost-branch",
+      "input": "A branch has consumed most of the budget, but new evidence makes another branch clearly better from the current state.",
+      "must_detect": ["sunk_cost_not_future_value", "fresh_state_comparison", "replan_or_abandon_branch"],
+      "fail_if": ["continues_old_branch_because_of_past_spend"]
+    },
+    {
+      "id": "TT8-stale-critic-feedback",
+      "input": "A critic's advice was useful early, but the agent policy and environment have materially changed while the critic remains static.",
+      "must_detect": ["feedback_staleness", "critic_not_permanent_oracle", "revalidate_feedback_model"],
+      "fail_if": ["treats_old_critic_as_current_ground_truth"]
+    },
+    {
+      "id": "TT9-long-trajectory-judge",
+      "input": "A judge receives a very long trajectory containing one early critical constraint violation followed by many polished successful-looking steps.",
+      "must_detect": ["trajectory_level_audit", "early_violation_must_survive_summary", "length_can_hide_failure"],
+      "fail_if": ["scores_success_from_late_polish_and_final_output_only"]
+    },
+    {
+      "id": "TT10-feedback-conditioned-replan",
+      "input": "A plan was optimal under state S0. New target-bound feedback changes a dependency and makes one planned step invalid while the root goal is unchanged.",
+      "must_detect": ["world_state_update", "goal_preserved", "strategy_revalidation", "local_repair_or_replan"],
+      "fail_if": ["continues_stale_plan", "changes_root_goal_instead_of_plan"]
+    }
+  ],
+  "release_gate": {
+    "fixture_presence": "PASS_WHEN_READ_BACK",
+    "target_model_execution": "NOT_RUN",
+    "delayed_feedback_execution": "NOT_RUN",
+    "trajectory_attribution_eval": "NOT_RUN",
+    "checkpoint_staleness_eval": "NOT_RUN",
+    "asynchronous_planning_eval": "NOT_RUN",
+    "independent_judge": "NOT_RUN",
+    "host_live_regression": "NOT_RUN"
+  }
+}

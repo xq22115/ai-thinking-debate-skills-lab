@@ -6,7 +6,7 @@ Date: 2026-09-09
 
 Move the project from specification-only artifacts toward evidence-producing validation without overstating what has been tested.
 
-This layer distinguishes deterministic policy execution from model-reasoning smoke tests, decision-robustness smoke tests, goal-objective smoke tests, independent judging, hidden/adversarial evaluation, repeated evaluation, authentic multi-agent runtime, and host-live verification.
+This layer distinguishes deterministic policy execution from model-reasoning smoke tests, decision-robustness smoke tests, goal-objective smoke tests, **temporal-trajectory smoke tests**, independent judging, hidden/adversarial evaluation, repeated evaluation, authentic multi-agent runtime, and host-live verification.
 
 ## Components
 
@@ -43,7 +43,7 @@ Governance contract for cheap smoke tests performed by the same model/session th
 
 `SAME_MODEL_PASS != INDEPENDENT_VALIDATION`
 
-Same-model results may expose obvious contract failures/regressions, but cannot establish unseen generalization, unbiased judging, runtime independence, distribution-shift robustness, objective fidelity on hidden/mixed goals, or host-live behavior.
+Same-model results may expose obvious contract failures/regressions, but cannot establish unseen generalization, unbiased judging, runtime independence, distribution-shift robustness, objective fidelity on hidden/mixed goals, **real long-horizon temporal robustness**, or host-live behavior.
 
 ## Executed receipts
 
@@ -93,6 +93,25 @@ Receipt: `evidence/same-model-goal-objective-smoke-2026-09-09.json`
 
 Interpretation: the visible Goal Contract / objective-audit rules are internally applicable to the authored GO fixtures. This does **not** establish real intent-understanding gains, real-user helpfulness improvement, hidden-goal inference, or resistance to specification gaming in a live agent runtime.
 
+### Same-model temporal-trajectory smoke — 2026-09-09
+
+- TT1–TT10: 10/10 visible static smoke PASS
+- evidence class: `LOW_SELF_REFERENTIAL`
+- authoring overlap: true
+- expected labels visible: true
+- fresh-context run: NOT_RUN
+- delayed-feedback execution: NOT_RUN
+- first-irrecoverable-error / trajectory-attribution execution: NOT_RUN
+- asynchronous planning execution: NOT_RUN
+- checkpoint-staleness recovery execution: NOT_RUN
+- independent judge: NOT_RUN
+- repeated variance: NOT_RUN
+- host-live: false
+
+Receipt: `evidence/same-model-temporal-trajectory-smoke-2026-09-09.json`
+
+Interpretation: the visible temporal/trajectory rules are internally applicable to TT1–TT10 in the same authoring context. This does **not** establish real delayed-feedback credit assignment, long-horizon planning improvement, asynchronous execution robustness, long-trajectory judge reliability, or host-live recovery quality.
+
 ## Validation ladder
 
 Do not collapse:
@@ -127,6 +146,12 @@ Neither proves:
 - optimal utility/loss modeling;
 - genuine epistemic diversity;
 - authentic 10/30-agent execution;
+- long-horizon global constraint satisfaction;
+- real delayed-feedback or temporal credit assignment;
+- reliable first-irrecoverable-error localization;
+- asynchronous shared-state execution robustness;
+- checkpoint freshness/recovery under live mutable environments;
+- long-trajectory evaluator robustness;
 - host adapter compatibility;
 - hosted GitHub CI health;
 - deployment;

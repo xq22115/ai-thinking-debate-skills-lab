@@ -234,101 +234,60 @@ Evidence: a diverse suite of tasks with unintended high-scoring actions finds no
 
 Consequence: powerful reasoning against an imperfect specification can increase optimization pressure on the wrong proxy. Acceptance tests/proxies require outcome-binding, hidden variants, and anti-gaming checks; higher reasoning budget should not be assumed to improve goal fidelity.
 
+## DeepPlanning — long-horizon global constrained planning, ACL 2026
+https://aclanthology.org/2026.acl-long.335/
+
+Evidence: evaluates practical long-horizon planning with proactive information gathering, fine-grained local constraints, and global time/financial constraints. Frontier agentic models still struggle, showing that locally plausible reasoning does not guarantee globally feasible plans.
+
+Consequence: `LOCAL_STEP_SUCCESS != TRAJECTORY_SUCCESS`. Maintain global constraint/budget state across the full plan and evaluate trajectory-level feasibility, not only individual actions.
+
+## YC-Bench — long-term planning, delayed feedback and compounding errors, 2026
+https://arxiv.org/abs/2604.01212
+
+Evidence: simulates a one-year startup trajectory spanning hundreds of turns under partial observability, delayed feedback, adversarial conditions and compounding consequences. The reported analysis finds persistent state/scratchpad use strongly associated with success and identifies distinct long-horizon failure modes including over-parallelization.
+
+Consequence: durable compact state is not just convenience. Track strategy, delayed observations, resource state, irreversible decisions and dependency/parallelism constraints across context truncation and handoffs.
+
+## Plan-RewardBench — trajectory-level reward/judge degradation, ACL 2026
+https://aclanthology.org/2026.acl-long.1062/
+
+Evidence: evaluates generative, discriminative and LLM-as-judge reward models on tool-integrated agent trajectories. Reported performance degrades sharply on longer trajectories and hard-negative variants.
+
+Consequence: `LONGER_TRAJECTORY != MORE_RELIABLE_JUDGMENT`. Use checkpoint/chunk-level deterministic checks plus global trajectory audit; do not ask one judge to reconstruct all latent state from a very long raw transcript.
+
+## STAPO — trajectory neglect under sparse/delayed rewards, ACL 2026
+https://aclanthology.org/2026.acl-long.1308/
+
+Evidence: characterizes trajectory neglect in long-horizon agent training: sparse/delayed reward can lead intermediate actions to lose focus on the task goal and interaction history. The work targets outlier steps associated with such neglect.
+
+Consequence: preserve Goal Contract and compact trajectory state throughout execution, not only at the start and end. Intermediate step quality must be judged against the trajectory, not isolated fluency.
+
+## Robotouille — asynchronous planning with time delays, 2025
+https://portal.cs.cornell.edu/robotouille/
+https://arxiv.org/abs/2502.05227
+
+Evidence: benchmarks asynchronous long-horizon planning where subtasks interact through ordering, concurrency and delays. It exposes gaps in agents' ability to reason over when parallel vs sequential execution is appropriate.
+
+Consequence: `PARALLELISM != FREE_SPEEDUP`. Explicitly model prerequisites, shared state, synchronization points and completion-order effects before parallelizing dependent work.
+
+## Long-Horizon Agent Trajectory Attribution — 2026
+https://arxiv.org/abs/2608.06909
+
+Evidence: introduces trajectory attribution with local/long-range component and chain recovery, showing substantial variation in the difficulty of identifying what earlier trajectory component caused later outcomes.
+
+Consequence: when a late failure appears, distinguish downstream symptom from the earliest material or irrecoverable cause. Preserve enough checkpoint/event structure for causal attribution rather than relying on recency.
+
+## No More Stale Feedback / ECHO — ACL 2026
+https://aclanthology.org/2026.acl-long.576/
+
+Evidence: static/offline critics can become stale as the policy and trajectory distribution evolve, reducing feedback utility; the work co-evolves critic and policy in its training setting.
+
+Consequence: `OLD_FEEDBACK != CURRENT_ORACLE`. Revalidate critic/evaluator assumptions when policy, environment, target distribution or task state changes materially.
+
 ## 2026 synthesis
 
-The current evidence supports a layered goal-reasoning-verification-decision design:
+The current evidence supports a layered goal-reasoning-verification-decision-trajectory design:
 
-`Goal Contract / specification audit -> capability/compatibility -> evidence sufficiency/provenance -> semantic/QUD normalization -> causal/abductive model when needed -> competing hypotheses -> discriminating test -> selective multi-agent deliberation -> bias-resistant judge -> verifier robustness/metamorphic checks -> VOI stop rule -> loss/reversibility/shift/sensitivity check -> COMMIT / PROBE / PILOT / DEFER / ABSTAIN / ROBUST_FALLBACK -> outcome-bound completion check`
+`Goal Contract / specification audit -> capability/compatibility -> evidence sufficiency/provenance -> semantic/QUD normalization -> causal/abductive model when needed -> competing hypotheses -> discriminating test -> selective multi-agent deliberation -> bias-resistant judge -> verifier robustness/metamorphic checks -> VOI stop rule -> loss/reversibility/shift/sensitivity check -> temporal/trajectory gate (global constraints, checkpoint freshness, delayed feedback, option value, dependency graph) -> COMMIT / PROBE / PILOT / DEFER / ABSTAIN / ROBUST_FALLBACK -> execution/revalidation -> outcome-bound trajectory completion check`
 
-The repeated research signal is negative as well as positive: more tokens, sources, agents, confidence machinery, verifier scores, preference ratings, or rounds do **not** monotonically improve reliability. A better probability estimate does not automatically imply a better action, and a higher proxy/preference score does not automatically imply user success. The system should optimize for user-authorized goal fidelity, independent evidence, discrimination, calibration, target-bound verification, evaluator robustness, distribution-shift awareness, reversible learning, sensitivity/regret, and outcome-bound completion rather than visible reasoning/evaluation volume.
-
-## PR #50 semantic argument / dialogue-state evidence extension
-
-The following evidence and implications are retained from the semantic-dialogue-state work and compose with, rather than replace, the broader goal/decision/verifier architecture above.
-
-### Selective/evidence-weighted debate and adversarial persuasion
-
-- SELENE — Selective and Evidence-Weighted LLM Debating (EACL 2026): https://aclanthology.org/2026.eacl-industry.7/
-- Persuasion-driven adversarial influence in multi-agent LLM debate (Scientific Reports 2026): https://www.nature.com/articles/s41598-026-42705-7
-- Demystifying Multi-Agent Debate: The Role of Confidence and Diversity (Findings of ACL 2026): https://aclanthology.org/2026.findings-acl.1694/
-- Free-MAD: Consensus-Free Multi-Agent Debate (Findings of ACL 2026): https://aclanthology.org/2026.findings-acl.1600/
-
-Consequence: raw agent count or debate duration is not the objective. Selective initiation, calibrated confidence, evidence-weighted adjudication, minority preservation, and resistance to persuasive-but-wrong agents matter more than forced consensus.
-
-### Dialogue is the Plan: From Interface to Joint Action in Agentic AI — ACL 2026
-https://aclanthology.org/2026.acl-short.63/
-
-Evidence: treating language only as an interface misses common ground, grounding, repair, and shared commitments involved in joint action.
-
-Consequence: when later reasoning depends on what earlier turns actually established, preserve explicit common-ground state rather than relying on a flat transcript summary.
-
-### Multi-Agent LLM Debate Unveils the Premise Left Unsaid — ArgMining 2025
-https://aclanthology.org/2025.argmining-1.6/
-
-Evidence: structured debate can improve implicit-premise recovery by exposing alternative warrants, while forced assigned stances can degrade performance.
-
-Consequence: use debate as a challenger for ambiguous bridges, not as a command to defend a role after its evidence collapses.
-
-### Critical Questions Generation Shared Task — ArgMining 2025
-https://aclanthology.org/2025.argmining-1.23/
-https://aclanthology.org/2025.argmining-1.31/
-https://aclanthology.org/2025.argmining-1.29/
-
-Evidence: critical-question generation remains difficult; scheme information and usefulness-based candidate selection improve question quality.
-
-Consequence: generate candidate critical questions and rank a small number by decision value instead of rewarding question volume.
-
-### The Thin Line Between Comprehension and Persuasion in LLMs — Findings of ACL 2026
-https://aclanthology.org/2026.findings-acl.329/
-
-Evidence: models can sustain coherent persuasive dialogue while still failing on deeper dialogical/argument comprehension such as supporting-premise structure and argument quality.
-
-Consequence: `PERSUASION != COMPREHENSION`; rhetorical success cannot substitute for correct support/attack targeting or common-ground tracking.
-
-### Can LLMs Judge Debates? Evaluating Non-Linear Reasoning via Argumentation Theory Semantics — Findings of EMNLP 2025
-https://aclanthology.org/2025.findings-emnlp.1159/
-
-Evidence: natural debate is non-linear and is better represented through support/attack relations than flat turn ordering alone; longer/disrupted discourse raises reasoning errors.
-
-Consequence: use argument graphs/QUD/crux plus dialogue-state repair when turn history changes available premises.
-
-### Limited Generalizability in Argument Mining — ACL 2025
-https://aclanthology.org/2025.acl-long.1164/
-
-Evidence: strong benchmark scores can rely on lexical/dataset shortcuts and degrade on unseen domains.
-
-Consequence: semantic/argument reasoning must survive paraphrase, domain swaps, style changes, and familiar-cue removal before being treated as structural generalization.
-
-### Relation-based and end-to-end Argument Mining — COLING 2025
-https://aclanthology.org/2025.coling-main.569/
-https://aclanthology.org/2025.coling-main.442/
-
-Evidence: identifying argumentative units and classifying support/attack/neither relations are distinct capabilities.
-
-Consequence: a rebuttal is structurally successful only if it attacks a proposition/warrant that materially supports the target conclusion.
-
-### Pragmatic Inference Chain — EMNLP 2025
-https://aclanthology.org/2025.emnlp-main.296/
-
-Evidence: structured pragmatic inference improves reasoning over inference-intensive implicit language.
-
-Consequence: preserve literal/pragmatic boundaries; do not promote plausible implicature or presupposition into established world evidence.
-
-### Judge reliability evidence
-
-- Judging the Judges — IJCNLP-AACL 2025: https://aclanthology.org/2025.ijcnlp-long.18/
-- Judging with Many Minds — Findings of EMNLP 2025: https://aclanthology.org/2025.findings-emnlp.941/
-- LRBench and Judge-R1 — Findings of ACL 2026: https://aclanthology.org/2026.findings-acl.2029/
-- Don't Judge Code by Its Cover — Findings of EACL 2026: https://aclanthology.org/2026.findings-eacl.70/
-
-Consequence: blinded labels, order swaps, case-first multi-judge aggregation, explicit blocking errors, and preserved disagreement are stronger evidence than a single fluent judge rationale.
-
-### Integrated semantic path
-
-Within the broader architecture above, the semantic path is:
-
-`semantic/QUD normalization -> DIALOGUE_STATE common-ground repair only when multi-turn commitment state can change the verdict -> causal/abductive reference when needed -> competing hypotheses -> discriminating test -> selective deliberation -> separated judging`
-
-The canonical semantic owner remains `semantic-argument-microscope`. `ARGUMENT_SCHEMES.md`, `CAUSAL_ABDUCTIVE_REASONING.md`, and `DIALOGUE_STATE.md` are progressive references, not competing owners.
-
-Static fixtures, campaign packaging, CI asset validation, and synthetic harness self-tests are preparation/plumbing evidence only. They do not prove target-model improvement, independent judge validity, repeated robustness, or host-live routing.
+The repeated research signal is negative as well as positive: more tokens, sources, agents, confidence machinery, verifier scores, preference ratings, parallel activity, or rounds do **not** monotonically improve reliability. A better probability estimate does not automatically imply a better action; a higher proxy/preference score does not imply user success; and a sequence of local successes does not imply a valid long-horizon trajectory. The system should optimize for user-authorized goal fidelity, independent evidence, discrimination, calibration, target-bound verification, evaluator robustness, distribution-shift awareness, reversible learning, sensitivity/regret, temporal coherence, durable state, global-constraint satisfaction and outcome-bound completion rather than visible reasoning/evaluation volume.
