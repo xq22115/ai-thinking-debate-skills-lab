@@ -1,0 +1,17 @@
+{"id":"SP01","prompt":"这个 bug 会随机超时，先找根因再修，不要直接猜一个补丁。","expected":"superpowers-conversation-runtime","expected_upstream_process":"systematic-debugging","expected_bundle":["superpowers-conversation-runtime"]}
+{"id":"SP02","prompt":"测试突然失败但昨天还会过，帮我系统化 debug 到真正原因。","expected":"superpowers-conversation-runtime","expected_upstream_process":"systematic-debugging","expected_bundle":["superpowers-conversation-runtime"]}
+{"id":"SP03","prompt":"给现有功能新增导出 CSV 的能力，直接做到可测试。","expected":"superpowers-conversation-runtime","expected_upstream_process":"brainstorming","expected_bundle":["superpowers-conversation-runtime"]}
+{"id":"SP04","prompt":"修改现有行为：保存后要自动刷新，但不要破坏原来的错误处理。","expected":"superpowers-conversation-runtime","expected_upstream_process":"brainstorming","expected_bundle":["superpowers-conversation-runtime"]}
+{"id":"SP05","prompt":"这是 PR review 的反馈，先判断建议是否正确，再按正确部分修改。","expected":"superpowers-conversation-runtime","expected_upstream_process":"receiving-code-review","expected_bundle":["superpowers-conversation-runtime"]}
+{"id":"SP06","prompt":"帮我修改这个 agent skill，让它更可靠，而且要先做失败案例验证。","expected":"superpowers-conversation-runtime","expected_upstream_process":"writing-skills","expected_bundle":["superpowers-conversation-runtime"]}
+{"id":"SP07","prompt":"把这封邮件改得更专业一点。","expected":"none"}
+{"id":"SP08","prompt":"请解释什么是 test-driven development。","expected":"none"}
+{"id":"SP09","prompt":"查最新 React 官方文档里 useEffect cleanup 的当前写法。","expected":"executive-research"}
+{"id":"SP10","prompt":"比较两个 architecture，先选风险最低而且最好验证的方案。","expected":"plan-arbiter"}
+{"id":"SP11","prompt":"代码已经改好了，先确认测试和实际 postcondition 都通过再告诉我完成。","expected":"evidence-watchdog","expected_upstream_process":"verification-before-completion"}
+{"id":"SP12","prompt":"把这个长期偏好记住，以后都沿用。","expected":"memory-policy"}
+{"id":"SP13","prompt":"这个需求有歧义，而且会修改现有行为；不同理解会改变验收条件，先锁定后再改。","expected":"superpowers-conversation-runtime","expected_upstream_process":"brainstorming","expected_bundle":["task-goal-intelligence","superpowers-conversation-runtime"]}
+{"id":"SP14","prompt":"设计已经确认，按既定设计实现这个新功能，并用测试驱动完成。","expected":"superpowers-conversation-runtime","expected_upstream_process":"test-driven-development","expected_bundle":["superpowers-conversation-runtime"]}
+{"id":"SP15","prompt":"按已确认的计划执行这个实现，不要重新规划。","expected":"superpowers-conversation-runtime","expected_upstream_process":"executing-plans","expected_bundle":["superpowers-conversation-runtime"]}
+{"id":"SP16","prompt":"研究最近几个框架的 regression benchmark 和 issue 趋势，只做资料比较。","expected":"executive-research"}
+{"id":"SP17","prompt":"请解释 bug 和 regression 有什么区别，不要修改代码。","expected":"none"}

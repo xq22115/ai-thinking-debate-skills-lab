@@ -1,0 +1,5 @@
+interface:
+  display_name: "Superpowers Conversation Runtime"
+  short_description: "Apply Superpowers process discipline selectively in ordinary ChatGPT conversations"
+policy:
+  allow_implicit_invocation: true

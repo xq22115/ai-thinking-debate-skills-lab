@@ -32,13 +32,19 @@ jobs:
         run: |
           python -m py_compile \
             plugins/ai-efficiency-operating-system/scripts/validate_plugin.py \
+            plugins/ai-efficiency-operating-system/scripts/validate_superpowers_runtime.py \
             plugins/ai-efficiency-operating-system/scripts/route_oracle.py \
+            plugins/ai-efficiency-operating-system/scripts/superpowers_route_oracle.py \
             plugins/ai-efficiency-operating-system/scripts/composition_oracle.py \
             plugins/ai-efficiency-operating-system/scripts/expert_labs_oracle.py
       - name: Validate package, routing and migration contracts
         run: python plugins/ai-efficiency-operating-system/scripts/validate_plugin.py
+      - name: Validate Superpowers ordinary-chat runtime contract
+        run: python plugins/ai-efficiency-operating-system/scripts/validate_superpowers_runtime.py
       - name: Run primary auto-invoke routing oracle
         run: python plugins/ai-efficiency-operating-system/scripts/route_oracle.py plugins/ai-efficiency-operating-system/evals/routing-cases.jsonl
+      - name: Run Superpowers ordinary-chat pressure cases
+        run: python plugins/ai-efficiency-operating-system/scripts/superpowers_route_oracle.py plugins/ai-efficiency-operating-system/evals/superpowers-conversation-routing-cases.jsonl
       - name: Run composition and fallback oracle
         run: python plugins/ai-efficiency-operating-system/scripts/composition_oracle.py plugins/ai-efficiency-operating-system/evals/composition-cases.jsonl
       - name: Run Expert Labs known-outcome oracle
@@ -47,11 +53,15 @@ jobs:
         run: |
           python -m json.tool plugins/ai-efficiency-operating-system/.codex-plugin/plugin.json >/dev/null
           python -m json.tool plugins/ai-efficiency-operating-system/settings.json >/dev/null
+          python -m json.tool plugins/ai-efficiency-operating-system/host-adapters.json >/dev/null
+          python -m json.tool plugins/ai-efficiency-operating-system/skills/superpowers-conversation-runtime/runtime-policy.json >/dev/null
+          python -m json.tool plugins/ai-efficiency-operating-system/skills/superpowers-conversation-runtime/references/upstream-lock.json >/dev/null
           python -m json.tool .agents/plugins/marketplace.json >/dev/null
           python - <<'PY'
           import json, pathlib
           for path in [
               pathlib.Path('plugins/ai-efficiency-operating-system/evals/routing-cases.jsonl'),
+              pathlib.Path('plugins/ai-efficiency-operating-system/evals/superpowers-conversation-routing-cases.jsonl'),
               pathlib.Path('plugins/ai-efficiency-operating-system/evals/composition-cases.jsonl'),
               pathlib.Path('plugins/ai-efficiency-operating-system/evals/behavior-cases.jsonl'),
               pathlib.Path('plugins/ai-efficiency-operating-system/evals/expert-labs-cases.jsonl')]:

@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "adapters": [
+    {
+      "name": "superpowers-conversation-runtime",
+      "host": "ordinary-chatgpt",
+      "skill_path": "skills/superpowers-conversation-runtime",
+      "allow_implicit_invocation": true,
+      "canonical_router_membership": false,
+      "shadow_oracle": "scripts/superpowers_route_oracle.py",
+      "runtime_policy": "skills/superpowers-conversation-runtime/runtime-policy.json",
+      "upstream_lock": "skills/superpowers-conversation-runtime/references/upstream-lock.json",
+      "reason": "Fills the implementation-process gap for ordinary ChatGPT without changing the canonical research/goal/evidence router inventory."
+    }
+  ]
+}
