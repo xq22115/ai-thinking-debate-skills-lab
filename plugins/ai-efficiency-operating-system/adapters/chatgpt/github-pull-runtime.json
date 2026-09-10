@@ -21,7 +21,7 @@
   "source_of_truth": {
     "package_version": "../../.codex-plugin/plugin.json#version",
     "github_app_binding": "../../.app.json#apps.github.id",
-    "marketplace_entry": "../../../.agents/plugins/marketplace.json#plugins[name=ai-efficiency-operating-system]",
+    "marketplace_entry": "../../../../.agents/plugins/marketplace.json#plugins[name=ai-efficiency-operating-system]",
     "repository_revision": "observed_exact_imported_or_synced_revision"
   },
   "pull_resolution": {
