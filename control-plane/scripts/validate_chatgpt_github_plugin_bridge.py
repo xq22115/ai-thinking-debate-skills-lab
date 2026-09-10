@@ -105,8 +105,16 @@ def validate() -> list[str]:
     _require(bridge.get("profile_id") == "ordinary-chatgpt-github-pull-v1", "bridge_profile_id_invalid", failures)
     _require(bridge.get("host") == "ordinary-chatgpt", "bridge_host_invalid", failures)
     _require(bridge.get("plugin") == EXPECTED_PLUGIN, "bridge_plugin_invalid", failures)
+    _require(bridge.get("plugin_manifest") == "../../.codex-plugin/plugin.json", "bridge_plugin_manifest_path_invalid", failures)
+    _require(bridge.get("app_manifest") == "../../.app.json", "bridge_app_manifest_path_invalid", failures)
     _require(bridge.get("app_alias") == "github", "bridge_app_alias_invalid", failures)
     _require(bridge.get("connector_id") == EXPECTED_CONNECTOR, "bridge_connector_id_mismatch", failures)
+    source_truth = bridge.get("source_of_truth") or {}
+    _require(source_truth.get("package_version") == "../../.codex-plugin/plugin.json#version", "bridge_package_version_source_invalid", failures)
+    _require(source_truth.get("github_app_binding") == "../../.app.json#apps.github.id", "bridge_app_binding_source_invalid", failures)
+    _require(source_truth.get("marketplace_entry") == "../../../../.agents/plugins/marketplace.json#plugins[name=ai-efficiency-operating-system]", "bridge_marketplace_source_path_invalid", failures)
+    _require(source_truth.get("repository_revision") == "observed_exact_imported_or_synced_revision", "bridge_repository_revision_source_invalid", failures)
+
     activation = bridge.get("activation_chain") or []
     for stage in ("marketplace_imported_or_synced", "github_app_connected", "tool_namespace_visible", "tool_invoked", "response_classified", "requested_effect_verified"):
         _require(stage in activation, f"bridge_activation_stage_missing:{stage}", failures)
