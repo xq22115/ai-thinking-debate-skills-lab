@@ -30,7 +30,9 @@
     "target_surfaces": ["chatgpt_web", "chatgpt_desktop"],
     "same_plugin_revision_required": true,
     "plugin_name": "ai-efficiency-operating-system",
-    "plugin_version": "1.2.0",
+    "plugin_manifest": "plugins/ai-efficiency-operating-system/.codex-plugin/plugin.json",
+    "plugin_version_source": "plugin_manifest.version",
+    "github_bridge_profile": "plugins/ai-efficiency-operating-system/adapters/chatgpt/github-pull-runtime.json",
     "repository_revision_mode": "observed_exact_installed_revision",
     "static_merge_sha_forbidden": true,
     "surface_evidence_required_before_agent_pass": true,
@@ -40,7 +42,8 @@
     "conditional_specialist_activation_required": true,
     "bounded_composition_required": true,
     "fallback_behavior_required": true,
-    "postcondition_evidence_required": true
+    "postcondition_evidence_required": true,
+    "github_bridge_required_when_github_task": true
   },
   "ten_validation_lanes": [
     "plugin_identity_and_exact_observed_revision",
