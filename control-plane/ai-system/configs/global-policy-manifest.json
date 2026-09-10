@@ -58,6 +58,15 @@
       ]
     },
     {
+      "path": "control-plane/scripts/evaluate_execution_integrity_receipt.py",
+      "role": "execution_integrity_receipt_evaluator",
+      "required_markers": [
+        "SUPPORTED_SCENARIOS",
+        "SCENARIO_GI_MAP",
+        "evaluate_receipt"
+      ]
+    },
+    {
       "path": "control-plane/scripts/validate_task_goal_intelligence_v3.py",
       "role": "task_goal_intelligence_v3_runtime_validator",
       "required_markers": [
