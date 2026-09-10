@@ -2,11 +2,11 @@
 
 ## Canonical orchestration plugin
 
-### ai-efficiency-operating-system — `1.3.0`
+### ai-efficiency-operating-system — `1.4.0`
 
 Canonical path: `plugins/ai-efficiency-operating-system/`.
 
-Version 1.3 routes through **Task Goal Intelligence 4.0 Native** while preserving the v2/v2.2/v3 semantic protections. The goal capability is now a native harness package rather than one large prompt: host-neutral spec, thin implicit router, runtime preamble, phase machine, progressive references, executable state oracle, fresh verification and recovery, plus a pressure holdout for hosted behavior.
+Version 1.4 keeps **Task Goal Intelligence 4.0 Native** and the v2/v2.2/v3 semantic protections, while adding an isolated ordinary-ChatGPT Superpowers host adapter. The canonical research/goal/evidence router inventory is intentionally unchanged; implementation-process discipline is demand-loaded through a separate bridge so stronger execution does not force coding-agent ceremony into ordinary conversation.
 
 ### Native Task Goal configuration
 
@@ -25,11 +25,28 @@ The runtime package is deliberately split:
 - `references/runtime-preamble.md` — machine status protocol / degraded mode;
 - `references/evidence-and-optimization.md` — root cause, verification, rare evidence and failure-trace optimizer;
 - `references/upstream-lock.json` — exact OpenAI Plugins, Superpowers, GStack, Anthropic Skills and DSPy/GEPA revisions;
+- `host-adapters.json` — machine-readable host-specific adapters kept outside the canonical router inventory;
+- `skills/superpowers-conversation-runtime/` — thin ordinary-ChatGPT Superpowers bridge with progressive disclosure;
 - `scripts/goal_skill_start.py` — executable `GOAL_*`/`GATE_*` preamble;
 - `scripts/quick_validate.py` — package-local conformance check;
+- `scripts/superpowers_route_oracle.py` — isolated process-routing oracle for ordinary ChatGPT;
+- `scripts/validate_superpowers_runtime.py` — adapter/upstream/process-coverage/size contract;
 - `spec/task-goal-intelligence-spec.md` — host-neutral spec;
 - `evals/task-goal-native-state-cases.jsonl` — 30 executable state/gate cases;
-- `evals/task-goal-native-pressure-holdout.jsonl` — 24 hosted pressure cases; packaging is verified, HOST_LIVE pass is not preclaimed.
+- `evals/task-goal-native-pressure-holdout.jsonl` — 24 hosted pressure cases; packaging is verified, HOST_LIVE pass is not preclaimed;
+- `evals/superpowers-conversation-routing-cases.jsonl` — ordinary-chat positive and hard-negative process-routing pressure cases.
+
+### Ordinary ChatGPT Superpowers host adapter
+
+`superpowers-conversation-runtime` is registered as a host adapter, not silently counted as a new canonical router member. It uses progressive ceremony:
+
+- `DIRECT` — ordinary explanation/rewriting/simple work stays direct;
+- `BOUNDED` — debugging, behavior/feature changes, review feedback and skill authoring load only the relevant Superpowers process;
+- `ARCHITECTURAL` — only materially architectural work adds goal locking, design/planning and verification.
+
+The bridge maps bugs/failing tests to `systematic-debugging`, new/changed behavior to `brainstorming`, settled implementation to `test-driven-development`, approved plans to `executing-plans`, review feedback to `receiving-code-review`, skill authoring to `writing-skills`, and completion claims to `verification-before-completion` while preserving local `evidence-watchdog` ownership. It stays quiet by default and never invents unavailable worktrees, subagents, background execution, filesystem access or test runs.
+
+Evidence owner routing is host-aware: current library/framework/API facts prefer Context7 when available; repository/PR/Actions facts use GitHub; user files use Files; connected private data uses its owning connector; other current public facts use web; stateful completion uses owning-system readback.
 
 ### Core durability rules
 
@@ -85,7 +102,7 @@ These specialists are eligible for implicit invocation only after the routing el
 - cross-session context → `task-goal-intelligence` + `memory-policy`
 - complex multi-stage → `task-goal-intelligence` + `chief-of-staff-core` + `evidence-watchdog`
 
-Implicit bundles are bounded to three skills per phase. Discover many, load few.
+Implicit canonical bundles are bounded to three skills per phase. Host adapters are orthogonal process overlays and do not consume a canonical router slot merely by being installed. Discover many, load few.
 
 ## Portable specialist library
 
