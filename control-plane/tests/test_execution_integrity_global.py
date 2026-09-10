@@ -124,7 +124,7 @@ class ExecutionIntegrityGlobalProfileTests(unittest.TestCase):
     def test_workflow_cannot_stop_running_the_validator(self) -> None:
         failures = self._mutated_text_failures(
             "WORKFLOW_PATH",
-            lambda text: text.replace("python control-plane/scripts/validate_execution_integrity_global.py", "true # removed-integrity-validator"),
+            lambda text: text.replace("validate_execution_integrity_global.py", "removed_execution_integrity_validator.py"),
         )
         self.assertIn("workflow_missing:validate_execution_integrity_global.py", failures)
 
