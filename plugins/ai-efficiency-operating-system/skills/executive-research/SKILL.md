@@ -26,8 +26,22 @@ After two materially equivalent no-delta attempts, change the discriminator, sou
 
 Track support/refute/context-only, authority, date/version/surface, lineage/origin, independence, freshness/supersession and the obligation affected. Mirrored reports of one origin are one corroboration family.
 
-Use current primary sources for volatile claims when available. Community material is valuable for terminology and failure discovery, not automatic final proof.
+Choose source authority **by the claim being tested**, not by a universal prestige order:
+
+- target behavior / “does it actually work here?” → owning-runtime observation and reproducible postcondition/read-back;
+- implementation mechanism → exact source code, commit/blob, package/manifest and maintainer implementation evidence;
+- operational failure modes → high-signal independent practitioner/tooling evidence, issue/PR reproductions and maintainer discussions;
+- documented support and normative semantics → current official product/developer documentation;
+- popularity or copied recipes → discovery signals only, never proof.
+
+Official documentation alone must not be promoted into execution proof. Likewise, community or third-party reports alone must not be promoted into target-runtime proof. If official guidance says a path is unsupported but exact current runtime evidence demonstrates it, report the distinction as `unsupported/undocumented but observed working` rather than rewriting either side. If an actually enforced authorization/platform boundary blocks the path, record the concrete boundary and continue evaluating other allowed mechanisms instead of generalizing one blocked route into universal impossibility.
+
+For GitHub and other indexed code systems, a zero-result search is not proof of absence. If exact owner/repository/path/ref or another independent locator exists, pivot to exact lookup, direct fetch, tree/contents, manifest, release/tag, or other causally distinct resolution before closing the hypothesis. Keep search-hit revision, repository HEAD, file/blob revision, package/marketplace version and installed revision separate.
 
 For evolving systems, distinguish event, publication, effective, observed and version time. Search origin → transition → current rather than only newest-first.
+
+## Root-cause requirement
+
+When the same symptom recurs across commands, repositories, tools, versions, or retries, stop patching the visible error one occurrence at a time. Build the smallest causal model that can explain the shared failures, such as target-identity drift, stale discovery/indexing, version-state collapse, configured-vs-loaded layer collapse, persistence false positives, permission/entitlement drift, dependency failure, or a broken verification mechanism. A proposed root cause must predict at least one discriminating test; otherwise it remains a hypothesis.
 
 Read `references/deep-task-integrity.md` for the full search map and research audit. For AI models, agent harnesses, plugins, MCP/tooling, desktop AI clients, skills or eval systems, read `references/ai-ecosystem-recon.md`. Read `references/strict-deeplock-profile.md` only when the user explicitly selects the strict profile.

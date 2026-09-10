@@ -6,6 +6,8 @@ Global policy kernel: `docs/GLOBAL_POLICY_KERNEL.md`.
 Global policy manifest: `control-plane/ai-system/configs/global-policy-manifest.json`.
 Canonical operating model: `docs/CONTINUOUS_THINKING_QUALITY_OS.md`.
 Machine-enforced deep-thinking profile: `control-plane/ai-system/configs/continuous-thinking-global.json`.
+GitHub execution integrity policy: `docs/GITHUB_EXECUTION_INTEGRITY_POLICY.md`.
+Machine-enforced execution integrity profile: `control-plane/ai-system/configs/execution-integrity-global.json`.
 Capability interpretation layer: `docs/CAPABILITY_ACCESS_AND_FLEXIBILITY_POLICY.md`.
 Machine-enforced capability routing: `control-plane/ai-system/configs/context-first-capability-routing.json`.
 Desktop execution policy: `docs/DESKTOP_AGENT_EXECUTION_POLICY.md`.
@@ -139,6 +141,8 @@ Record the observed failure, evidence delta, what the attempt disproved, and whi
 
 ## Execution and verification
 
+For GitHub repository, plugin, skill, dependency-pull, or persisted-tool tasks, load `docs/GITHUB_EXECUTION_INTEGRITY_POLICY.md` and `control-plane/ai-system/configs/execution-integrity-global.json` before material action. Declare the applicable `GI-01` through `GI-12` system invariants, preserve the exact rollback target, and do not release until every applicable invariant is retested on the exact reported revision.
+
 - Preserve working behavior unless the task explicitly changes it.
 - Prefer rollback-friendly, scoped changes.
 - Test the requested behavior on the exact revision that will be reported.
@@ -146,6 +150,9 @@ Record the observed failure, evidence delta, what the attempt disproved, and whi
 - Use read-back after writes when the task depends on persisted state.
 - Add a negative/adversarial check for material fixes: try to falsify the result, exercise a relevant edge case, or reproduce the original failure.
 - For layered systems, distinguish `configured → registered → loaded → executed → observable effect`; do not claim the highest layer from evidence of a lower layer.
+- A GitHub search miss is not proof of absence when exact lookup, direct fetch, code search, contents/tree lookup, or known-ref resolution remains available.
+- Keep repository HEAD commit, search-hit commit, file blob SHA, package/marketplace version, and installed revision separate; never collapse them into one “version”.
+- For material GitHub writes, use `base revision → write → read-back → exact-revision behavior test → invariant/regression test → CI/runtime verification` as the minimum closure chain when those layers are available.
 
 For material or critical work, the builder should not be the sole final evaluator when separation is practical. Prefer a **fresh-context evaluator** that receives the predeclared acceptance contract plus the actual diff/artifacts/evidence, not the builder's confidence or narrative. The evaluator should inspect the real output and should preferably lack Write/Edit access while grading.
 
@@ -180,4 +187,4 @@ After a successful repair or informative failure, keep only durable lessons that
 
 Use the maximum **useful** reasoning and verification effort, not maximum ceremony. Simple tasks should stay simple. Increase decomposition, research, independent evaluation, testing, and continuity scaffolding only as task uncertainty, impact, novelty, or failure history increases.
 
-The machine-readable invariants for this contract are in `control-plane/ai-system/configs/continuous-thinking-global.json` and are validated by `control-plane/scripts/validate_continuous_thinking_global.py`. Capability routing invariants are in `control-plane/ai-system/configs/context-first-capability-routing.json` and are validated by `control-plane/scripts/validate_context_first_capability_router.py`. Desktop automation invariants are in `control-plane/ai-system/configs/desktop-agent-execution-global.json` and are validated by `control-plane/scripts/validate_desktop_agent_execution_global.py`. Global policy durability and rehydration are registered in `control-plane/ai-system/configs/global-policy-manifest.json` and validated by `control-plane/scripts/validate_global_policy_durability.py`.
+The machine-readable invariants for this contract are in `control-plane/ai-system/configs/continuous-thinking-global.json` and are validated by `control-plane/scripts/validate_continuous_thinking_global.py`. GitHub/execution integrity invariants are in `control-plane/ai-system/configs/execution-integrity-global.json` and are validated by `control-plane/scripts/validate_execution_integrity_global.py`. Capability routing invariants are in `control-plane/ai-system/configs/context-first-capability-routing.json` and are validated by `control-plane/scripts/validate_context_first_capability_router.py`. Desktop automation invariants are in `control-plane/ai-system/configs/desktop-agent-execution-global.json` and are validated by `control-plane/scripts/validate_desktop_agent_execution_global.py`. Global policy durability and rehydration are registered in `control-plane/ai-system/configs/global-policy-manifest.json` and validated by `control-plane/scripts/validate_global_policy_durability.py`.

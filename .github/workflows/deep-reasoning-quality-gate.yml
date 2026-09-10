@@ -32,6 +32,7 @@ jobs:
             control-plane/scripts/adjudicate_agent_receipts.py \
             control-plane/scripts/verify_snapshot_bound_execution.py \
             control-plane/scripts/validate_continuous_thinking_global.py \
+            control-plane/scripts/validate_execution_integrity_global.py \
             control-plane/scripts/validate_goal_fidelity_global.py \
             control-plane/scripts/validate_goal_intelligence_extension.py \
             control-plane/scripts/validate_task_goal_intelligence_v22.py \
@@ -53,12 +54,14 @@ jobs:
           python -m json.tool control-plane/ai-system/control-plane/gates.json >/dev/null
           python -m json.tool control-plane/ai-system/control-plane/acceptance-contract.schema.json >/dev/null
           python -m json.tool control-plane/ai-system/configs/continuous-thinking-global.json >/dev/null
+          python -m json.tool control-plane/ai-system/configs/execution-integrity-global.json >/dev/null
           python -m json.tool control-plane/ai-system/configs/goal-fidelity-global.json >/dev/null
           python -m json.tool control-plane/ai-system/configs/task-goal-intelligence-v3-extension.json >/dev/null
           python -m json.tool control-plane/ai-system/configs/task-goal-intelligence-v3-sources.json >/dev/null
           python -m json.tool control-plane/ai-system/configs/task-goal-intelligence-v31-truth-maintenance.json >/dev/null
           python -m json.tool control-plane/ai-system/configs/global-policy-manifest.json >/dev/null
           python control-plane/scripts/validate_continuous_thinking_global.py
+          python control-plane/scripts/validate_execution_integrity_global.py
           python control-plane/scripts/validate_goal_fidelity_global.py
           python control-plane/scripts/validate_goal_intelligence_extension.py
           python control-plane/scripts/validate_task_goal_intelligence_v22.py
@@ -67,6 +70,8 @@ jobs:
           python control-plane/scripts/validate_global_policy_durability.py
           python control-plane/scripts/validate_quality_runtime_binding.py
       - name: Run deep-reasoning and lifecycle regression tests
+        id: focused_regression
+        continue-on-error: true
         working-directory: control-plane
         run: |
           python -m unittest \
@@ -75,6 +80,7 @@ jobs:
             tests/test_antigravity_goal_lock_projection.py \
             tests/test_antigravity_global_goal_lock_installer.py \
             tests/test_continuous_thinking_global.py \
+            tests/test_execution_integrity_global.py \
             tests/test_continuous_thinking_runtime_binding.py \
             tests/test_quality_bound_workflow.py \
             tests/test_research_tool_attestation_hook.py \
@@ -134,3 +140,9 @@ jobs:
               print(head_text)
               sys.exit(1)
           PY
+      - name: Preserve focused regression failure after baseline diagnosis
+        if: ${{ always() && steps.focused_regression.outcome != 'success' }}
+        run: |
+          echo "Focused regression outcome: ${{ steps.focused_regression.outcome }}"
+          echo "The baseline comparison above was allowed to run for diagnosis, but the original focused failure remains blocking."
+          exit 1

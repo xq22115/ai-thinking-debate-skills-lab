@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "profile_id": "execution-integrity-v1",
+  "scope": "repository-wide",
+  "default_enabled": true,
+  "purpose": "Prevent false completion, symptom-only repairs, GitHub retrieval false negatives, version-state collapse, weak read-back, and regressions caused by untested edge conditions.",
+  "system_invariants": {
+    "GI-01": "existing_capability_preserved",
+    "GI-02": "no_silent_permission_downgrade",
+    "GI-03": "input_output_contract_stable_unless_migration_accepted",
+    "GI-04": "failure_detectable_and_not_silently_swallowed",
+    "GI-05": "success_requires_target_readback",
+    "GI-06": "local_change_preserves_adjacent_supported_paths",
+    "GI-07": "rollback_target_recorded_before_material_write",
+    "GI-08": "evidence_bound_to_exact_reported_revision",
+    "GI-09": "search_miss_is_not_absence_without_distinct_fallback",
+    "GI-10": "configured_registered_loaded_executed_observable_are_distinct",
+    "GI-11": "write_or_install_success_is_not_task_success",
+    "GI-12": "technical_feasibility_requires_evidence_not_single_authority"
+  },
+  "invariant_gate": {
+    "declare_before_material_change": true,
+    "retest_after_change": true,
+    "any_applicable_violation_blocks_pass": true,
+    "unknown_is_not_pass": true,
+    "protected_capability_regression_is_fail": true
+  },
+  "root_cause_classes": [
+    "target_identity_drift",
+    "discovery_false_negative",
+    "version_state_collapse",
+    "configured_to_observable_layer_collapse",
+    "persistence_false_positive",
+    "happy_path_bias",
+    "single_authority_lock_in",
+    "stagnant_retry"
+  ],
+  "source_triangulation": {
+    "material_work_requires_multiple_evidence_families_when_practical": true,
+    "evidence_families": [
+      "target_runtime_or_owning_installation_readback",
+      "exact_github_object_and_revision_metadata",
+      "source_repository_files_commits_manifests_releases_workflows",
+      "maintainer_discussions_or_implementation_source",
+      "high_signal_third_party_practitioner_or_tooling_evidence",
+      "official_documentation"
+    ],
+    "official_documentation_alone_is_not_execution_proof": true,
+    "third_party_instruction_alone_is_not_execution_proof": true,
+    "popularity_alone_is_not_proof": true,
+    "unsupported_or_undocumented_must_not_be_rewritten_as_impossible_without_corroboration": true,
+    "conflicts_require_discriminating_runtime_or_revision_test": true,
+    "higher_priority_platform_authorization_and_safety_constraints_remain_binding": true
+  },
+  "github_source_resolution": {
+    "exact_target_identity_required": true,
+    "ranked_search_not_sufficient_when_exact_identity_is_known": true,
+    "search_miss_requires_distinct_fallback_before_absence_claim": true,
+    "fallback_routes": [
+      "exact_repository_lookup",
+      "direct_file_fetch",
+      "code_search",
+      "tree_or_contents_lookup",
+      "known_url_or_ref_resolution"
+    ],
+    "required_version_dimensions": [
+      "default_branch",
+      "head_commit_sha",
+      "source_path",
+      "file_blob_sha",
+      "release_tag_or_package_marketplace_version_when_applicable",
+      "installed_revision_when_applicable"
+    ],
+    "search_hit_commit_and_default_branch_head_must_not_be_conflated": true,
+    "wrapper_cli_or_marketplace_source_must_be_cross_checked_against_repository": true,
+    "reproducible_install_prefers_tag_or_commit_pin": true
+  },
+  "github_write_integrity": {
+    "record_base_commit_before_material_write": true,
+    "record_prewrite_blob_sha": true,
+    "isolated_branch_preferred_for_nontrivial_repair": true,
+    "readback_after_each_material_write": true,
+    "compare_intended_and_returned_content": true,
+    "inspect_complete_changed_file_set": true,
+    "test_exact_repair_revision": true,
+    "adjacent_path_regression_required": true,
+    "workflow_verification_must_bind_exact_run_and_commit": true,
+    "commit_pr_or_green_ci_alone_cannot_satisfy_behavior": true,
+    "same_path_dependent_writes_must_not_run_in_parallel": true
+  },
+  "skill_plugin_integrity": {
+    "layers": [
+      "source_resolved",
+      "registration_resolved",
+      "version_resolved",
+      "installed",
+      "read_back",
+      "discovered_or_registered",
+      "executed",
+      "observable_effect",
+      "regression_preserved"
+    ],
+    "lower_layer_must_not_claim_higher_layer": true,
+    "implementation_file_and_manifest_both_verified_when_manifest_exists": true,
+    "installed_bytes_or_state_must_match_intended_source_identity": true,
+    "representative_execution_required_for_activation_claim": true
+  },
+  "runtime_behavior_projections": {
+    "required": true,
+    "owners": [
+      {
+        "path": "plugins/ai-efficiency-operating-system/skills/evidence-watchdog/SKILL.md",
+        "role": "completion_readback_and_invariant_gate",
+        "required_markers": [
+          "SOURCE_RESOLVED",
+          "System invariants for material mutations",
+          "search miss is not treated as absence",
+          "write/install success is not task success"
+        ]
+      },
+      {
+        "path": "plugins/ai-efficiency-operating-system/skills/executive-research/SKILL.md",
+        "role": "root_cause_and_source_triangulation",
+        "required_markers": [
+          "Choose source authority **by the claim being tested**",
+          "unsupported/undocumented but observed working",
+          "zero-result search is not proof of absence",
+          "Root-cause requirement"
+        ]
+      }
+    ]
+  },
+  "adversarial_scenarios": {
+    "select_by_causal_relevance_not_ceremony": true,
+    "families": [
+      "normal_valid_input",
+      "invalid_input",
+      "empty_or_missing_input",
+      "idempotent_repeat",
+      "rapid_consecutive_operations",
+      "reordered_operations",
+      "permission_loss_or_scope_reduction",
+      "network_interruption_timeout_retry",
+      "dependency_unavailable_or_version_mismatch",
+      "stale_cache_state_or_old_installation_residue",
+      "partial_success_then_failure",
+      "stale_search_index_vs_direct_lookup",
+      "exact_revision_mismatch",
+      "rollback_and_recovery"
+    ],
+    "record_fields": [
+      "precondition",
+      "action",
+      "expected_result",
+      "actual_result",
+      "evidence",
+      "invariant_violations"
+    ]
+  },
+  "tool_maturity": {
+    "prefer_exact_identifiers_once_known": true,
+    "pivot_from_search_to_exact_lookup_on_false_negative_signal": true,
+    "two_similar_failures_require_mechanism_change": true,
+    "permissions_must_come_from_returned_repository_metadata_when_available": true,
+    "update_delete_requires_current_blob_sha": true,
+    "truncated_response_requires_targeted_refetch": true,
+    "readback_required_before_persistence_claim": true
+  },
+  "release": {
+    "statuses": [
+      "PASS",
+      "FAIL",
+      "BLOCKED",
+      "NOT_RUN"
+    ],
+    "pass_requires_all_hard_criteria_and_applicable_invariants": true,
+    "not_run_cannot_be_pass": true,
+    "symptom_removed_but_invariant_broken_is_fail": true,
+    "contradictory_evidence_overrides_pass": true
+  }
+}
