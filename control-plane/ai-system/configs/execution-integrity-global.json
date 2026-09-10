@@ -48,7 +48,7 @@
     "official_documentation_alone_is_not_execution_proof": true,
     "third_party_instruction_alone_is_not_execution_proof": true,
     "popularity_alone_is_not_proof": true,
-    "unsupported_or_undocumented_must_not_be_rewritten_as_impossible_without_corrobation": true,
+    "unsupported_or_undocumented_must_not_be_rewritten_as_impossible_without_corroboration": true,
     "conflicts_require_discriminating_runtime_or_revision_test": true,
     "higher_priority_platform_authorization_and_safety_constraints_remain_binding": true
   },
