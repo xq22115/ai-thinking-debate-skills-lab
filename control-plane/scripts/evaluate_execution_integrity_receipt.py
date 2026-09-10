@@ -35,6 +35,7 @@ SUPPORTED_SCENARIOS = {
 DISTINCT_FALLBACKS = {
     "exact_repository_lookup",
     "direct_file_fetch",
+    "code_search",
     "tree_or_contents_lookup",
     "known_url_or_ref_resolution",
 }
@@ -313,15 +314,18 @@ def evaluate_receipt(receipt: dict) -> dict[str, object]:
     else:
         attempts = source.get("attempts")
         attempts = attempts if isinstance(attempts, list) else []
-        search_miss = any(
-            isinstance(item, dict)
+        missed_search_mechanisms = {
+            str(item.get("mechanism"))
+            for item in attempts
+            if isinstance(item, dict)
             and item.get("mechanism") in {"ranked_repository_search", "code_search"}
             and item.get("result") == "miss"
-            for item in attempts
-        )
+        }
+        search_miss = bool(missed_search_mechanisms)
         distinct_fallback = any(
             isinstance(item, dict)
             and item.get("mechanism") in DISTINCT_FALLBACKS
+            and item.get("mechanism") not in missed_search_mechanisms
             and item.get("result") in {"found", "confirmed_absent"}
             for item in attempts
         )
