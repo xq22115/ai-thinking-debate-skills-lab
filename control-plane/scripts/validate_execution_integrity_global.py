@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Validate repository-wide GitHub and execution-integrity invariants.
 
-The enforced system-invariant range is GI-01 through GI-12.
+The enforced system-invariant range is GI-01 through GI-12. The validator also
+requires an executable receipt evaluator and executable fault-injection tests;
+scenario names in configuration are not verification by themselves.
 """
 from __future__ import annotations
 
@@ -15,6 +17,8 @@ POLICY_PATH = REPO_ROOT / "docs/GITHUB_EXECUTION_INTEGRITY_POLICY.md"
 MANIFEST_PATH = REPO_ROOT / "control-plane/ai-system/configs/global-policy-manifest.json"
 AGENTS_PATH = REPO_ROOT / "AGENTS.md"
 WORKFLOW_PATH = REPO_ROOT / ".github/workflows/deep-reasoning-quality-gate.yml"
+EVALUATOR_PATH = REPO_ROOT / "control-plane/scripts/evaluate_execution_integrity_receipt.py"
+FAULT_TEST_PATH = REPO_ROOT / "control-plane/tests/test_execution_integrity_faults.py"
 
 REQUIRED_INVARIANTS = {f"GI-{n:02d}" for n in range(1, 13)}
 REQUIRED_FALLBACKS = {
@@ -63,6 +67,17 @@ REQUIRED_SCENARIOS = {
     "exact_revision_mismatch",
     "rollback_and_recovery",
 }
+REQUIRED_SCENARIO_FIELDS = {
+    "family",
+    "executed",
+    "precondition",
+    "action",
+    "expected_result",
+    "actual_result",
+    "evidence",
+    "invariant_violations",
+    "observations",
+}
 
 
 def _load_json(path: pathlib.Path) -> dict:
@@ -84,10 +99,20 @@ def _all_true(section: dict, keys: set[str], failures: list[str], prefix: str) -
 
 def validate() -> list[str]:
     failures: list[str] = []
-    required_paths = [CONFIG_PATH, POLICY_PATH, MANIFEST_PATH, AGENTS_PATH, WORKFLOW_PATH]
+    required_paths = [
+        CONFIG_PATH,
+        POLICY_PATH,
+        MANIFEST_PATH,
+        AGENTS_PATH,
+        WORKFLOW_PATH,
+        EVALUATOR_PATH,
+        FAULT_TEST_PATH,
+    ]
     for path in required_paths:
         if not path.is_file():
-            failures.append(f"missing:{path.relative_to(REPO_ROOT) if path.is_relative_to(REPO_ROOT) else path}")
+            failures.append(
+                f"missing:{path.relative_to(REPO_ROOT) if path.is_relative_to(REPO_ROOT) else path}"
+            )
     if failures:
         return sorted(set(failures))
 
@@ -135,8 +160,16 @@ def validate() -> list[str]:
         "source_triangulation",
     )
     evidence_families = set(triangulation.get("evidence_families") or [])
-    _require("target_runtime_or_owning_installation_readback" in evidence_families, "runtime_evidence_family_missing", failures)
-    _require("high_signal_third_party_practitioner_or_tooling_evidence" in evidence_families, "third_party_evidence_family_missing", failures)
+    _require(
+        "target_runtime_or_owning_installation_readback" in evidence_families,
+        "runtime_evidence_family_missing",
+        failures,
+    )
+    _require(
+        "high_signal_third_party_practitioner_or_tooling_evidence" in evidence_families,
+        "third_party_evidence_family_missing",
+        failures,
+    )
     _require("official_documentation" in evidence_families, "official_evidence_family_missing", failures)
 
     source = config.get("github_source_resolution") or {}
@@ -153,7 +186,11 @@ def validate() -> list[str]:
         failures,
         "github_source",
     )
-    _require(REQUIRED_FALLBACKS.issubset(set(source.get("fallback_routes") or [])), "github_fallback_routes_incomplete", failures)
+    _require(
+        REQUIRED_FALLBACKS.issubset(set(source.get("fallback_routes") or [])),
+        "github_fallback_routes_incomplete",
+        failures,
+    )
     _require(
         REQUIRED_VERSION_DIMENSIONS.issubset(set(source.get("required_version_dimensions") or [])),
         "github_version_dimensions_incomplete",
@@ -181,7 +218,11 @@ def validate() -> list[str]:
     )
 
     skill = config.get("skill_plugin_integrity") or {}
-    _require(REQUIRED_SKILL_LAYERS.issubset(set(skill.get("layers") or [])), "skill_plugin_layers_incomplete", failures)
+    _require(
+        REQUIRED_SKILL_LAYERS.issubset(set(skill.get("layers") or [])),
+        "skill_plugin_layers_incomplete",
+        failures,
+    )
     _all_true(
         skill,
         {
@@ -198,7 +239,11 @@ def validate() -> list[str]:
     _require(projections.get("required") is True, "runtime_behavior_projections_not_required", failures)
     owners = projections.get("owners") or []
     roles = {item.get("role") for item in owners if isinstance(item, dict)}
-    _require(REQUIRED_PROJECTION_ROLES.issubset(roles), "runtime_behavior_projection_roles_incomplete", failures)
+    _require(
+        REQUIRED_PROJECTION_ROLES.issubset(roles),
+        "runtime_behavior_projection_roles_incomplete",
+        failures,
+    )
     for item in owners:
         if not isinstance(item, dict):
             failures.append("runtime_behavior_projection_invalid")
@@ -219,14 +264,53 @@ def validate() -> list[str]:
                 failures.append(f"runtime_behavior_projection_marker_missing:{role}:{marker}")
 
     scenarios = config.get("adversarial_scenarios") or {}
-    _require(scenarios.get("select_by_causal_relevance_not_ceremony") is True, "scenario_selection_rule_missing", failures)
-    _require(REQUIRED_SCENARIOS.issubset(set(scenarios.get("families") or [])), "adversarial_scenarios_incomplete", failures)
+    _all_true(
+        scenarios,
+        {
+            "select_by_causal_relevance_not_ceremony",
+            "executable_fault_injection_required",
+            "scenario_listing_alone_is_not_verification",
+            "material_pass_requires_normal_and_one_adversarial",
+        },
+        failures,
+        "adversarial_scenarios",
+    )
     _require(
-        {"precondition", "action", "expected_result", "actual_result", "evidence", "invariant_violations"}.issubset(
-            set(scenarios.get("record_fields") or [])
-        ),
+        REQUIRED_SCENARIOS.issubset(set(scenarios.get("families") or [])),
+        "adversarial_scenarios_incomplete",
+        failures,
+    )
+    _require(
+        REQUIRED_SCENARIO_FIELDS.issubset(set(scenarios.get("record_fields") or [])),
         "scenario_record_fields_incomplete",
         failures,
+    )
+
+    runtime_contract = config.get("runtime_evidence_contract") or {}
+    _require(
+        runtime_contract.get("receipt_schema_version") == 1,
+        "runtime_evidence_receipt_schema_version_invalid",
+        failures,
+    )
+    _require(
+        runtime_contract.get("evaluator_path")
+        == "control-plane/scripts/evaluate_execution_integrity_receipt.py",
+        "runtime_evidence_evaluator_path_invalid",
+        failures,
+    )
+    _all_true(
+        runtime_contract,
+        {
+            "scenario_records_must_be_executed",
+            "scenario_evidence_required",
+            "family_specific_assertions_required",
+            "pass_requires_task_outcome_verified",
+            "pass_requires_exact_revision_readback",
+            "pass_requires_cross_source_evidence",
+            "pass_requires_adjacent_regression",
+        },
+        failures,
+        "runtime_evidence",
     )
 
     maturity = config.get("tool_maturity") or {}
@@ -246,7 +330,11 @@ def validate() -> list[str]:
     )
 
     release = config.get("release") or {}
-    _require(set(release.get("statuses") or []) == {"PASS", "FAIL", "BLOCKED", "NOT_RUN"}, "release_statuses_invalid", failures)
+    _require(
+        set(release.get("statuses") or []) == {"PASS", "FAIL", "BLOCKED", "NOT_RUN"},
+        "release_statuses_invalid",
+        failures,
+    )
     _all_true(
         release,
         {
@@ -262,7 +350,8 @@ def validate() -> list[str]:
     canonical = manifest.get("canonical_policies") or []
     policy_index = {item.get("id"): item for item in canonical if isinstance(item, dict)}
     _require(
-        (policy_index.get("github-execution-integrity") or {}).get("path") == "docs/GITHUB_EXECUTION_INTEGRITY_POLICY.md",
+        (policy_index.get("github-execution-integrity") or {}).get("path")
+        == "docs/GITHUB_EXECUTION_INTEGRITY_POLICY.md",
         "manifest_github_execution_policy_missing",
         failures,
     )
@@ -285,6 +374,8 @@ def validate() -> list[str]:
     agents_text = AGENTS_PATH.read_text(encoding="utf-8")
     policy_text = POLICY_PATH.read_text(encoding="utf-8")
     workflow_text = WORKFLOW_PATH.read_text(encoding="utf-8")
+    evaluator_text = EVALUATOR_PATH.read_text(encoding="utf-8")
+    fault_test_text = FAULT_TEST_PATH.read_text(encoding="utf-8")
 
     for token in ["GITHUB_EXECUTION_INTEGRITY_POLICY.md", "execution-integrity-global.json"]:
         _require(token in agents_text, f"agents_missing_reference:{token}", failures)
@@ -292,10 +383,20 @@ def validate() -> list[str]:
         _require(invariant in policy_text, f"policy_missing:{invariant}", failures)
     for token in [
         "validate_execution_integrity_global.py",
+        "evaluate_execution_integrity_receipt.py",
         "execution-integrity-global.json",
         "tests/test_execution_integrity_global.py",
+        "tests/test_execution_integrity_faults.py",
     ]:
         _require(token in workflow_text, f"workflow_missing:{token}", failures)
+    for token in ["SUPPORTED_SCENARIOS", "evaluate_receipt", "SCENARIO_GI_MAP"]:
+        _require(token in evaluator_text, f"evaluator_missing:{token}", failures)
+    for token in [
+        "test_every_scenario_family_executes_and_passes_when_handled",
+        "test_every_scenario_family_fails_closed_when_its_observation_is_broken",
+        "test_scenario_name_without_execution_is_not_evidence",
+    ]:
+        _require(token in fault_test_text, f"fault_test_missing:{token}", failures)
 
     return sorted(set(failures))
 
@@ -306,7 +407,7 @@ def main() -> int:
         for failure in failures:
             print(f"FAIL {failure}")
         return 1
-    print("PASS execution-integrity-v1 global invariants")
+    print("PASS execution-integrity-v1 global invariants and executable fault contract")
     return 0
 
 

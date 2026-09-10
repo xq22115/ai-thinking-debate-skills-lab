@@ -31,6 +31,7 @@ jobs:
             control-plane/scripts/finalize_local_agent_execution.py \
             control-plane/scripts/adjudicate_agent_receipts.py \
             control-plane/scripts/verify_snapshot_bound_execution.py \
+            control-plane/scripts/evaluate_execution_integrity_receipt.py \
             control-plane/scripts/validate_continuous_thinking_global.py \
             control-plane/scripts/validate_execution_integrity_global.py \
             control-plane/scripts/validate_goal_fidelity_global.py \
@@ -81,6 +82,7 @@ jobs:
             tests/test_antigravity_global_goal_lock_installer.py \
             tests/test_continuous_thinking_global.py \
             tests/test_execution_integrity_global.py \
+            tests/test_execution_integrity_faults.py \
             tests/test_continuous_thinking_runtime_binding.py \
             tests/test_quality_bound_workflow.py \
             tests/test_research_tool_attestation_hook.py \
@@ -95,7 +97,7 @@ jobs:
             tests/test_snapshot_bound_execution.py \
             tests/test_run_local_agent_workflow.py \
             tests/test_manage_local_agent_run.py
-      - name: Compare full control-plane suite against main baseline
+      - name: Compare full control-plane suite against causal baseline
         run: |
           set -u
           HEAD_LOG=/tmp/head-control-plane-tests.log
@@ -105,7 +107,21 @@ jobs:
             python -m unittest discover -s tests -p 'test_*.py'
           ) >"$HEAD_LOG" 2>&1 || true
 
-          git worktree add --detach /tmp/main-baseline origin/main
+          EVENT_NAME='${{ github.event_name }}'
+          REF_NAME='${{ github.ref_name }}'
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            BASE_SHA='${{ github.event.pull_request.base.sha }}'
+          elif [ "$REF_NAME" = "main" ]; then
+            BASE_SHA='${{ github.event.before }}'
+          else
+            BASE_SHA="$(git rev-parse origin/main)"
+          fi
+          if ! git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null; then
+            echo "Configured causal baseline is not a resolvable commit: ${BASE_SHA}"
+            exit 1
+          fi
+          echo "Causal baseline revision: ${BASE_SHA}"
+          git worktree add --detach /tmp/main-baseline "$BASE_SHA"
           (
             cd /tmp/main-baseline/control-plane
             python -m unittest discover -s tests -p 'test_*.py'
@@ -124,19 +140,19 @@ jobs:
           new_failures = sorted(head_failures - base_failures)
           fixed_failures = sorted(base_failures - head_failures)
 
-          print(f"main baseline failing/error tests: {len(base_failures)}")
-          print(f"PR head failing/error tests: {len(head_failures)}")
-          print(f"new failures introduced by PR: {len(new_failures)}")
-          print(f"baseline failures removed by PR: {len(fixed_failures)}")
+          print(f"causal baseline failing/error tests: {len(base_failures)}")
+          print(f"candidate head failing/error tests: {len(head_failures)}")
+          print(f"new failures introduced by candidate: {len(new_failures)}")
+          print(f"baseline failures removed by candidate: {len(fixed_failures)}")
           if fixed_failures:
               print("Removed baseline failures:")
               for item in fixed_failures:
                   print(f"  - {item}")
           if new_failures:
-              print("New PR failures:")
+              print("New candidate failures:")
               for item in new_failures:
                   print(f"  - {item}")
-              print("\n--- PR head full-suite log ---")
+              print("\n--- candidate head full-suite log ---")
               print(head_text)
               sys.exit(1)
           PY
