@@ -61,8 +61,8 @@ def main():
             fail(errors, "description must be trigger-only and start with Use when")
 
     body_words = len(skill.split())
-    if body_words > 260:
-        fail(errors, f"high-frequency bridge skill too large: {body_words} words > 260")
+    if body_words > 200:
+        fail(errors, f"high-frequency bridge skill too large: {body_words} words > 200")
     for marker in ["Stay quiet by default", "DIRECT", "BOUNDED", "ARCHITECTURAL", "Never invent", "Do the work first"]:
         if marker.lower() not in skill.lower():
             fail(errors, f"missing bridge marker: {marker}")
