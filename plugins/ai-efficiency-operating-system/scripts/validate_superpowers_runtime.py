@@ -25,6 +25,15 @@ REQUIRED_UPSTREAM_PATHS = {
     "skills/writing-skills/SKILL.md",
     "skills/verification-before-completion/SKILL.md",
 }
+REQUIRED_PROCESS_COVERAGE = {
+    "systematic-debugging",
+    "brainstorming",
+    "test-driven-development",
+    "executing-plans",
+    "receiving-code-review",
+    "writing-skills",
+    "verification-before-completion",
+}
 
 
 def fail(errors, message):
@@ -36,6 +45,7 @@ def main():
     skill = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
     policy = json.loads((SKILL_DIR / "runtime-policy.json").read_text(encoding="utf-8"))
     lock = json.loads((SKILL_DIR / "references" / "upstream-lock.json").read_text(encoding="utf-8"))
+    host_adapters = json.loads((ROOT / "host-adapters.json").read_text(encoding="utf-8"))
     agent = (SKILL_DIR / "agents" / "openai.yaml").read_text(encoding="utf-8")
     eval_path = ROOT / "evals" / "superpowers-conversation-routing-cases.jsonl"
     rows = [json.loads(line) for line in eval_path.read_text(encoding="utf-8").splitlines() if line.strip()]
@@ -59,6 +69,27 @@ def main():
 
     if "allow_implicit_invocation: true" not in agent:
         fail(errors, "ordinary-chat bridge must allow implicit invocation")
+
+    adapters = host_adapters.get("adapters") or []
+    matches = [item for item in adapters if item.get("name") == "superpowers-conversation-runtime"]
+    if host_adapters.get("schema") != 1:
+        fail(errors, "host-adapter schema must be 1")
+    if len(matches) != 1:
+        fail(errors, "Superpowers host adapter must be registered exactly once")
+    else:
+        adapter = matches[0]
+        expected_adapter = {
+            "host": "ordinary-chatgpt",
+            "skill_path": "skills/superpowers-conversation-runtime",
+            "allow_implicit_invocation": True,
+            "canonical_router_membership": False,
+            "shadow_oracle": "scripts/superpowers_route_oracle.py",
+            "runtime_policy": "skills/superpowers-conversation-runtime/runtime-policy.json",
+            "upstream_lock": "skills/superpowers-conversation-runtime/references/upstream-lock.json",
+        }
+        for key, expected in expected_adapter.items():
+            if adapter.get(key) != expected:
+                fail(errors, f"host-adapter registration drift: {key}")
 
     if policy.get("mode") != "ordinary-chat-progressive-ceremony":
         fail(errors, "wrong runtime mode")
@@ -105,14 +136,14 @@ def main():
         fail(errors, "upstream lock misses required Superpowers process skills")
 
     ids = [row["id"] for row in rows]
-    if len(rows) < 13:
+    if len(rows) < 17:
         fail(errors, "insufficient ordinary-chat pressure cases")
     if len(ids) != len(set(ids)):
         fail(errors, "duplicate ordinary-chat pressure case ids")
     covered = {row.get("expected_upstream_process") for row in rows if row.get("expected_upstream_process")}
-    for required in ["systematic-debugging", "brainstorming", "receiving-code-review", "writing-skills"]:
-        if required not in covered:
-            fail(errors, f"missing routing coverage for {required}")
+    missing_process = REQUIRED_PROCESS_COVERAGE - covered
+    if missing_process:
+        fail(errors, f"missing Superpowers process coverage: {sorted(missing_process)}")
 
     if errors:
         print("SUPERPOWERS RUNTIME VALIDATION FAILED")
@@ -121,7 +152,10 @@ def main():
         return 1
 
     print("SUPERPOWERS RUNTIME VALIDATION PASS")
-    print(f"cases={len(rows)} skill_words={body_words} upstream={source.get('commit')[:12]}")
+    print(
+        f"cases={len(rows)} skill_words={body_words} upstream={source.get('commit')[:12]} "
+        f"adapter=registered-isolated process_coverage={len(covered)}"
+    )
     return 0
 
 
