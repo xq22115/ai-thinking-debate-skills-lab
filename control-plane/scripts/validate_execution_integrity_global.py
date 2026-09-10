@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Validate repository-wide GitHub and execution-integrity invariants."""
+"""Validate repository-wide GitHub and execution-integrity invariants.
+
+The enforced system-invariant range is GI-01 through GI-12.
+"""
 from __future__ import annotations
 
 import json
@@ -120,7 +123,7 @@ def validate() -> list[str]:
             "official_documentation_alone_is_not_execution_proof",
             "third_party_instruction_alone_is_not_execution_proof",
             "popularity_alone_is_not_proof",
-            "unsupported_or_undocumented_must_not_be_rewritten_as_impossible_without_corrobation",
+            "unsupported_or_undocumented_must_not_be_rewritten_as_impossible_without_corroboration",
             "conflicts_require_discriminating_runtime_or_revision_test",
             "higher_priority_platform_authorization_and_safety_constraints_remain_binding",
         },
