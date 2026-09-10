@@ -303,6 +303,28 @@ class ExecutionIntegrityRuntimeFaultTests(unittest.TestCase):
         }
         self.assertPass(receipt)
 
+    def test_repository_search_miss_can_recover_via_code_search(self) -> None:
+        receipt = good_receipt()
+        receipt["source_resolution"] = {
+            "resolved": True,
+            "attempts": [
+                {"mechanism": "ranked_repository_search", "result": "miss"},
+                {"mechanism": "code_search", "result": "found"},
+            ],
+        }
+        self.assertPass(receipt)
+
+    def test_repeating_same_failed_search_mechanism_is_not_distinct_fallback(self) -> None:
+        receipt = good_receipt()
+        receipt["source_resolution"] = {
+            "resolved": True,
+            "attempts": [
+                {"mechanism": "code_search", "result": "miss"},
+                {"mechanism": "code_search", "result": "found"},
+            ],
+        }
+        self.assertFail(receipt, "GI-09")
+
     def test_lifecycle_cannot_promote_higher_layer_over_missing_lower_layer(self) -> None:
         receipt = good_receipt()
         receipt["lifecycle"] = {
