@@ -53,6 +53,7 @@ jobs:
         run: |
           python -m json.tool plugins/ai-efficiency-operating-system/.codex-plugin/plugin.json >/dev/null
           python -m json.tool plugins/ai-efficiency-operating-system/settings.json >/dev/null
+          python -m json.tool plugins/ai-efficiency-operating-system/host-adapters.json >/dev/null
           python -m json.tool plugins/ai-efficiency-operating-system/skills/superpowers-conversation-runtime/runtime-policy.json >/dev/null
           python -m json.tool plugins/ai-efficiency-operating-system/skills/superpowers-conversation-runtime/references/upstream-lock.json >/dev/null
           python -m json.tool .agents/plugins/marketplace.json >/dev/null
