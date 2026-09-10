@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "profile_id": "ordinary-chatgpt-github-pull-v1",
+  "host": "ordinary-chatgpt",
+  "plugin": "ai-efficiency-operating-system",
+  "plugin_manifest": "../../.codex-plugin/plugin.json",
+  "app_manifest": "../../.app.json",
+  "app_alias": "github",
+  "connector_id": "connector_76869538009648d5b282a4bb21c3d157",
+  "purpose": "Make GitHub-backed plugin and skill pulls from ordinary ChatGPT fail-closed, version-aware, read-back verified, and resilient to discovery and response-shape failures.",
+  "activation_chain": [
+    "marketplace_imported_or_synced",
+    "plugin_discovered",
+    "github_app_bound",
+    "github_app_connected",
+    "tool_namespace_visible",
+    "tool_invoked",
+    "response_classified",
+    "requested_effect_verified"
+  ],
+  "source_of_truth": {
+    "package_version": "../../.codex-plugin/plugin.json#version",
+    "github_app_binding": "../../.app.json#apps.github.id",
+    "marketplace_entry": "../../../../.agents/plugins/marketplace.json#plugins[name=ai-efficiency-operating-system]",
+    "repository_revision": "observed_exact_imported_or_synced_revision"
+  },
+  "pull_resolution": {
+    "known_identity_prefers_exact_lookup": true,
+    "ranked_search_is_not_authoritative": true,
+    "search_miss_is_not_absence": true,
+    "fallback_routes": [
+      "exact_repository_lookup",
+      "direct_file_fetch",
+      "code_search",
+      "tree_or_contents_lookup",
+      "known_url_or_ref_resolution"
+    ],
+    "two_same_mechanism_failures_require_route_change": true,
+    "exact_ref_required_before_version_sensitive_completion": true
+  },
+  "response_contract": {
+    "accepted_terminal_states": ["PASS", "FAIL", "BLOCKED", "NOT_RUN"],
+    "transport_success_is_not_task_success": true,
+    "empty_or_truncated_response_requires_targeted_refetch": true,
+    "tool_error_must_preserve_error_code_and_target_identity": true,
+    "partial_success_must_not_be_promoted_to_pass": true,
+    "unknown_fields_or_response_shape_change_must_be_classified_before_retry": true
+  },
+  "write_contract": {
+    "prewrite_read_required": true,
+    "current_blob_sha_required_for_update_or_delete": true,
+    "dependent_same_path_writes_must_be_sequential": true,
+    "stale_blob_sha_conflict_is_expected_detectable_failure": true,
+    "readback_after_material_write": true,
+    "readback_must_match_target_branch_and_intended_content": true,
+    "commit_sha_alone_is_not_completion": true,
+    "rollback_revision_recorded_before_first_write": true
+  },
+  "plugin_skill_pull_contract": {
+    "required_layers": [
+      "source_resolved",
+      "registration_resolved",
+      "version_resolved",
+      "installed_or_synced",
+      "read_back",
+      "discovered_or_registered",
+      "executed",
+      "observable_effect",
+      "regression_preserved"
+    ],
+    "lower_layer_must_not_claim_higher_layer": true,
+    "implementation_and_manifest_must_be_checked_when_both_exist": true,
+    "host_import_or_sync_state_required_for_host_live_claim": true
+  },
+  "error_classes": [
+    "plugin_manifest_invalid",
+    "plugin_not_imported_or_synced",
+    "github_app_binding_missing",
+    "github_app_not_connected",
+    "github_permission_insufficient",
+    "tool_namespace_missing",
+    "tool_schema_mismatch",
+    "discovery_false_negative",
+    "stale_version_or_revision",
+    "truncated_or_empty_response",
+    "stale_blob_sha_conflict",
+    "partial_success_then_failure",
+    "host_state_not_read_back"
+  ],
+  "release_gate": {
+    "plugin_manifest_valid": true,
+    "github_binding_matches_connector": true,
+    "marketplace_entry_valid": true,
+    "package_version_has_single_source_of_truth": true,
+    "normal_pull_probe_required": true,
+    "one_failure_or_fallback_probe_required": true,
+    "material_write_requires_readback": true,
+    "ordinary_chat_host_live_not_inferred_from_repository_ci": true
+  }
+}

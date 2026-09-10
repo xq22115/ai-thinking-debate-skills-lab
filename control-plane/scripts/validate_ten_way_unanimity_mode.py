@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import pathlib
+import re
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -10,6 +11,12 @@ CONFIG = ROOT / "control-plane/ai-system/configs/ten-way-unanimity-mode.json"
 EXECUTOR = ROOT / "control-plane/scripts/local_agent_executor.py"
 HOST_DOC = ROOT / "plugins/ai-efficiency-operating-system/adapters/chatgpt/HOST_LIVE_10WAY.md"
 RUNTIME_DOC = ROOT / "plugins/ai-efficiency-operating-system/adapters/chatgpt/RUNTIME_PROBE.md"
+PLUGIN_MANIFEST_REL = "plugins/ai-efficiency-operating-system/.codex-plugin/plugin.json"
+GITHUB_BRIDGE_REL = "plugins/ai-efficiency-operating-system/adapters/chatgpt/github-pull-runtime.json"
+PLUGIN_MANIFEST = ROOT / PLUGIN_MANIFEST_REL
+GITHUB_APP_MANIFEST = ROOT / "plugins/ai-efficiency-operating-system/.app.json"
+GITHUB_BRIDGE = ROOT / GITHUB_BRIDGE_REL
+SEMVER = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$")
 
 
 def require(condition: bool, code: str, failures: list[str]) -> None:
@@ -17,12 +24,32 @@ def require(condition: bool, code: str, failures: list[str]) -> None:
         failures.append(code)
 
 
+def load_object(path: pathlib.Path, code: str, failures: list[str]) -> dict:
+    if not path.is_file():
+        failures.append(f"{code}_missing")
+        return {}
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        failures.append(f"{code}_invalid_json")
+        return {}
+    if not isinstance(value, dict):
+        failures.append(f"{code}_not_object")
+        return {}
+    return value
+
+
 def main() -> int:
     failures: list[str] = []
-    if not CONFIG.is_file():
-        print("FAIL ten_way_config_missing")
+    cfg = load_object(CONFIG, "ten_way_config", failures)
+    plugin = load_object(PLUGIN_MANIFEST, "ten_way_plugin_manifest", failures)
+    app_manifest = load_object(GITHUB_APP_MANIFEST, "ten_way_github_app_manifest", failures)
+    bridge = load_object(GITHUB_BRIDGE, "ten_way_github_bridge", failures)
+    if not cfg:
+        for failure in failures:
+            print("FAIL", failure)
         return 1
-    cfg = json.loads(CONFIG.read_text(encoding="utf-8"))
+
     require(cfg.get("schema_version") == 1, "ten_way_schema_version", failures)
     require(cfg.get("default_enabled") is False, "ten_way_must_be_explicit", failures)
     require(cfg.get("activation") == "explicit_user_request", "ten_way_activation_drift", failures)
@@ -54,7 +81,11 @@ def main() -> int:
     require(host.get("target_surfaces") == ["chatgpt_web", "chatgpt_desktop"], "ten_way_surface_set_drift", failures)
     require(host.get("same_plugin_revision_required") is True, "ten_way_same_revision_not_required", failures)
     require(host.get("plugin_name") == "ai-efficiency-operating-system", "ten_way_plugin_name_drift", failures)
-    require(host.get("plugin_version") == "1.2.0", "ten_way_plugin_version_drift", failures)
+    require(host.get("plugin_manifest") == PLUGIN_MANIFEST_REL, "ten_way_plugin_manifest_source_drift", failures)
+    require(host.get("plugin_version_source") == "plugin_manifest.version", "ten_way_plugin_version_source_drift", failures)
+    require("plugin_version" not in host, "ten_way_duplicate_plugin_version_present", failures)
+    require(host.get("github_bridge_profile") == GITHUB_BRIDGE_REL, "ten_way_github_bridge_profile_drift", failures)
+    require(host.get("github_bridge_required_when_github_task") is True, "ten_way_github_bridge_not_required", failures)
     require(host.get("repository_revision_mode") == "observed_exact_installed_revision", "ten_way_revision_mode_drift", failures)
     require(host.get("static_merge_sha_forbidden") is True, "ten_way_static_sha_not_forbidden", failures)
     require("repository_merge_commit" not in host, "ten_way_stale_static_commit_present", failures)
@@ -69,6 +100,21 @@ def main() -> int:
     ]:
         require(host.get(key) is True, f"ten_way_host_requirement_missing:{key}", failures)
     require(host.get("repository_or_ci_success_alone_is_host_live") is False, "ten_way_repo_can_fake_host_live", failures)
+
+    plugin_version = plugin.get("version")
+    require(plugin.get("name") == host.get("plugin_name"), "ten_way_manifest_name_mismatch", failures)
+    require(isinstance(plugin_version, str) and SEMVER.fullmatch(plugin_version) is not None, "ten_way_manifest_version_invalid", failures)
+    require(plugin.get("apps") == "./.app.json", "ten_way_manifest_github_app_path_missing", failures)
+
+    apps = app_manifest.get("apps") if isinstance(app_manifest, dict) else None
+    github_app = apps.get("github") if isinstance(apps, dict) else None
+    require(isinstance(github_app, dict), "ten_way_github_app_binding_missing", failures)
+    bridge_connector = bridge.get("connector_id") if isinstance(bridge, dict) else None
+    if isinstance(github_app, dict):
+        require(github_app.get("id") == bridge_connector, "ten_way_github_connector_binding_mismatch", failures)
+    require(bridge.get("host") == "ordinary-chatgpt", "ten_way_github_bridge_host_drift", failures)
+    require(bridge.get("app_alias") == "github", "ten_way_github_bridge_alias_drift", failures)
+    require(bridge.get("plugin") == host.get("plugin_name"), "ten_way_github_bridge_plugin_mismatch", failures)
 
     lanes = cfg.get("ten_validation_lanes") or []
     require(len(lanes) == 10, "ten_way_lane_count_drift", failures)
@@ -110,6 +156,8 @@ def main() -> int:
         for marker in [
             "ChatGPT Web",
             "ChatGPT Desktop",
+            "duplicated hard-coded package version is forbidden",
+            "Required GitHub bridge probe",
             "conditional specialist implicit activation",
             "bounded composition",
             "fallback/self-repair",
@@ -121,14 +169,20 @@ def main() -> int:
         failures.append("ten_way_runtime_doc_missing")
     else:
         runtime = RUNTIME_DOC.read_text(encoding="utf-8")
-        for marker in ["1.2.0", "without explicit skill names", "deep-use markers", "fallback/self-repair"]:
+        for marker in [
+            "single package-version source of truth",
+            "CHATGPT_GITHUB_BRIDGE_VERIFIED",
+            "Without explicit skill names",
+            "deep-use markers",
+            "fallback/self-repair",
+        ]:
             require(marker.lower() in runtime.lower(), f"ten_way_runtime_doc_marker_missing:{marker}", failures)
 
     if failures:
-        for failure in failures:
+        for failure in sorted(set(failures)):
             print("FAIL", failure)
         return 1
-    print("PASS ten-way-concurrent-unanimity-v1 semantic-routing-v1.2")
+    print(f"PASS ten-way-concurrent-unanimity-v1 plugin={plugin.get('name')} version={plugin_version} github-bridge=bound")
     return 0
 
 

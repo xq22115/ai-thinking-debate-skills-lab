@@ -2,8 +2,13 @@
   "name": "ai-efficiency-operating-system",
   "version": "1.3.0",
   "description": "Native goal-first agent harness with runtime preamble, phase-gated semantic routing, progressive skill disclosure, ordinary-ChatGPT Superpowers adaptation, deep research, capability/MCP/runtime forensics, fresh verification, recovery and failure-trace optimization for complex ChatGPT and Codex tasks.",
+  "author": {
+    "name": "xq22115",
+    "url": "https://github.com/xq22115"
+  },
   "repository": "https://github.com/xq22115/ai-thinking-debate-skills-lab",
   "skills": "./skills/",
+  "apps": "./.app.json",
   "license": "MIT",
   "keywords": [
     "task-goal-intelligence",
@@ -15,6 +20,7 @@
     "auto-invoke",
     "ordinary-chatgpt",
     "superpowers",
+    "github",
     "deep-research",
     "reasoning",
     "verification",
@@ -30,14 +36,13 @@
     "displayName": "AI Efficiency Operating System",
     "developerName": "xq22115",
     "category": "Productivity",
-    "shortDescription": "Native goal harness, adaptive process routing and verified execution",
-    "longDescription": "A goal-first harness with a thin implicit router, deterministic runtime preamble, progressive specialist disclosure, an isolated ordinary-ChatGPT Superpowers host adapter, bounded composition, failure-trace optimization and fresh owning-system verification. The design adapts native control structures from leading public agent harnesses without vendoring their prompt text.",
-    "capabilities": ["Interactive", "Read"],
+    "shortDescription": "Native goal harness, GitHub bridge and verified execution",
+    "longDescription": "A goal-first harness with a thin implicit router, deterministic runtime preamble, progressive specialist disclosure, an isolated ordinary-ChatGPT Superpowers host adapter, an explicit GitHub app binding for repository workflows, bounded composition, failure-trace optimization and fresh owning-system verification.",
+    "capabilities": ["Interactive", "Read", "Write"],
     "defaultPrompt": [
       "Recover my actual goal, run the smallest useful native workflow, and verify the result with current owning evidence.",
       "Treat route failures as recovery signals rather than permission to reduce the goal or acceptance criteria.",
-      "Use progressive disclosure: load only the phase reference and specialist needed for the current decision.",
-      "Before any completion claim, reverse-walk the claim through acceptance, owning evidence, current goal version and causal path."
+      "For GitHub work, execute through the bound GitHub app and prove persisted changes with read-back."
     ]
   }
 }

@@ -10,7 +10,15 @@ on:
       - 'control-plane/ai-system/configs/ten-way-unanimity-mode.json'
       - 'control-plane/scripts/validate_desktop_agent_execution_global.py'
       - 'control-plane/scripts/validate_ten_way_unanimity_mode.py'
+      - 'control-plane/scripts/validate_chatgpt_github_plugin_bridge.py'
       - 'control-plane/scripts/local_agent_executor.py'
+      - 'control-plane/tests/test_chatgpt_github_plugin_bridge.py'
+      - '.agents/plugins/marketplace.json'
+      - 'plugins/ai-efficiency-operating-system/.codex-plugin/plugin.json'
+      - 'plugins/ai-efficiency-operating-system/.app.json'
+      - 'plugins/ai-efficiency-operating-system/host-adapters.json'
+      - 'plugins/ai-efficiency-operating-system/adapters/chatgpt/github-pull-runtime.json'
+      - 'plugins/ai-efficiency-operating-system/adapters/chatgpt/RUNTIME_PROBE.md'
       - 'plugins/ai-efficiency-operating-system/adapters/chatgpt/HOST_LIVE_10WAY.md'
       - '.github/workflows/desktop-agent-execution-gate.yml'
   pull_request:
@@ -21,7 +29,15 @@ on:
       - 'control-plane/ai-system/configs/ten-way-unanimity-mode.json'
       - 'control-plane/scripts/validate_desktop_agent_execution_global.py'
       - 'control-plane/scripts/validate_ten_way_unanimity_mode.py'
+      - 'control-plane/scripts/validate_chatgpt_github_plugin_bridge.py'
       - 'control-plane/scripts/local_agent_executor.py'
+      - 'control-plane/tests/test_chatgpt_github_plugin_bridge.py'
+      - '.agents/plugins/marketplace.json'
+      - 'plugins/ai-efficiency-operating-system/.codex-plugin/plugin.json'
+      - 'plugins/ai-efficiency-operating-system/.app.json'
+      - 'plugins/ai-efficiency-operating-system/host-adapters.json'
+      - 'plugins/ai-efficiency-operating-system/adapters/chatgpt/github-pull-runtime.json'
+      - 'plugins/ai-efficiency-operating-system/adapters/chatgpt/RUNTIME_PROBE.md'
       - 'plugins/ai-efficiency-operating-system/adapters/chatgpt/HOST_LIVE_10WAY.md'
       - '.github/workflows/desktop-agent-execution-gate.yml'
 
@@ -41,8 +57,14 @@ jobs:
           python -m py_compile \
             control-plane/scripts/validate_desktop_agent_execution_global.py \
             control-plane/scripts/validate_ten_way_unanimity_mode.py \
+            control-plane/scripts/validate_chatgpt_github_plugin_bridge.py \
             control-plane/scripts/local_agent_executor.py
       - name: Validate desktop agent execution invariants
         run: python control-plane/scripts/validate_desktop_agent_execution_global.py
+      - name: Validate ordinary ChatGPT GitHub plugin bridge
+        run: python control-plane/scripts/validate_chatgpt_github_plugin_bridge.py
+      - name: Run ordinary ChatGPT GitHub bridge regression tests
+        working-directory: control-plane
+        run: python -m unittest tests/test_chatgpt_github_plugin_bridge.py
       - name: Validate explicit 10-way concurrent unanimity profile
         run: python control-plane/scripts/validate_ten_way_unanimity_mode.py
