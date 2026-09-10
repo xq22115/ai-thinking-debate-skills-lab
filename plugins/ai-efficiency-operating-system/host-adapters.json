@@ -11,6 +11,17 @@
       "runtime_policy": "skills/superpowers-conversation-runtime/runtime-policy.json",
       "upstream_lock": "skills/superpowers-conversation-runtime/references/upstream-lock.json",
       "reason": "Fills the implementation-process gap for ordinary ChatGPT without changing the canonical research/goal/evidence router inventory."
+    },
+    {
+      "name": "github-pull-runtime",
+      "host": "ordinary-chatgpt",
+      "app_manifest": ".app.json",
+      "app_alias": "github",
+      "connector_id": "connector_76869538009648d5b282a4bb21c3d157",
+      "allow_implicit_invocation": true,
+      "canonical_router_membership": false,
+      "runtime_policy": "adapters/chatgpt/github-pull-runtime.json",
+      "reason": "Binds GitHub-backed repository, plugin and skill work to the actual ordinary-ChatGPT GitHub app and requires exact-version, fallback, response classification and read-back closure."
     }
   ]
 }
