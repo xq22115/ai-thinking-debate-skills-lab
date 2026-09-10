@@ -70,6 +70,8 @@ jobs:
           python control-plane/scripts/validate_global_policy_durability.py
           python control-plane/scripts/validate_quality_runtime_binding.py
       - name: Run deep-reasoning and lifecycle regression tests
+        id: focused_regression
+        continue-on-error: true
         working-directory: control-plane
         run: |
           python -m unittest \
@@ -138,3 +140,9 @@ jobs:
               print(head_text)
               sys.exit(1)
           PY
+      - name: Preserve focused regression failure after baseline diagnosis
+        if: ${{ always() && steps.focused_regression.outcome != 'success' }}
+        run: |
+          echo "Focused regression outcome: ${{ steps.focused_regression.outcome }}"
+          echo "The baseline comparison above was allowed to run for diagnosis, but the original focused failure remains blocking."
+          exit 1
