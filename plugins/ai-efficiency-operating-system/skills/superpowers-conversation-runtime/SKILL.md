@@ -1,35 +1,35 @@
 ---
 name: superpowers-conversation-runtime
-description: Use when an ordinary ChatGPT task involves debugging, changing implemented behavior, implementing a feature, applying code-review feedback, or creating/editing an agent skill.
+description: Use when ordinary ChatGPT work involves debugging, implemented behavior changes, feature implementation, code-review feedback, or creating/editing an agent skill.
 ---
 
 # Superpowers Conversation Runtime
 
-A thin host adapter for `obra/superpowers`. Preserve Superpowers discipline without importing coding-agent ceremony into ordinary chat.
+Thin adapter for `obra/superpowers`: keep its discipline without coding-agent ceremony.
 
-## Dispatch
+## Route
 
-Stay quiet by default; do not announce skill names unless the user asks.
+Stay quiet by default.
 
-- bug, failing test, unexpected behavior -> `systematic-debugging`
-- new or changed behavior -> `brainstorming`; after design is settled -> `test-driven-development`
-- approved implementation plan -> `executing-plans` only when the host can actually execute it
+- bug/failing test/unexpected behavior -> `systematic-debugging`
+- new/changed behavior -> `brainstorming`; settled design -> `test-driven-development`
+- approved implementation plan -> `executing-plans` when executable here
 - review feedback -> `receiving-code-review`
 - skill creation/edit -> `writing-skills`
-- completion/fixed/passing claim -> `verification-before-completion`
+- completion/fixed/passing -> `verification-before-completion`
 
-## Ceremony scaling
+## Scale
 
-- `DIRECT`: no Superpowers process skill.
-- `BOUNDED`: one process skill; keep the Goal Contract latent unless ambiguity changes the action or acceptance test.
-- `ARCHITECTURAL`: combine `task-goal-intelligence` with the needed Superpowers process and verification. Complexity may upgrade, never silently downgrade.
+- `DIRECT`: no process skill.
+- `BOUNDED`: one process skill; Goal Contract stays latent unless ambiguity changes action or acceptance.
+- `ARCHITECTURAL`: add `task-goal-intelligence`, required process, and verification. Complexity may only upgrade.
 
 ## Host truth
 
-Never invent worktrees, subagents, background execution, filesystem access, or tests that did not run. An explicit request to perform bounded reversible work counts as action intent; extra confirmation is only for a material design fork or host/tool requirement.
+Never invent worktrees, subagents, background execution, filesystem access, or test runs. An explicit bounded reversible request supplies action intent; re-confirm only for a material design fork or host requirement.
 
 ## Output
 
-Do the work first. Surface decisions, evidence, blockers, and results—not process theater.
+Do the work first. Surface results, evidence, blockers, and decisions—not process theater.
 
-Read `references/ordinary-chat-bridge.md` when routing, capability adaptation, or evidence ownership is non-obvious.
+Load `references/ordinary-chat-bridge.md` only when routing, host adaptation, or evidence ownership is non-obvious.
