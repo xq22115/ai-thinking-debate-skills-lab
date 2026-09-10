@@ -2,11 +2,11 @@
 
 ## Canonical orchestration plugin
 
-### ai-efficiency-operating-system — `1.4.0`
+### ai-efficiency-operating-system — `1.3.0`
 
 Canonical path: `plugins/ai-efficiency-operating-system/`.
 
-Version 1.4 keeps **Task Goal Intelligence 4.0 Native** and the v2/v2.2/v3 semantic protections, while adding an isolated ordinary-ChatGPT Superpowers host adapter. The canonical research/goal/evidence router inventory is intentionally unchanged; implementation-process discipline is demand-loaded through a separate bridge so stronger execution does not force coding-agent ceremony into ordinary conversation.
+The protected 1.3 package contract keeps **Task Goal Intelligence 4.0 Native** and the v2/v2.2/v3 semantic protections, while this revision adds an isolated ordinary-ChatGPT Superpowers host adapter. The canonical research/goal/evidence router inventory is intentionally unchanged; implementation-process discipline is demand-loaded through a separate bridge so stronger execution does not force coding-agent ceremony into ordinary conversation.
 
 ### Native Task Goal configuration
 
