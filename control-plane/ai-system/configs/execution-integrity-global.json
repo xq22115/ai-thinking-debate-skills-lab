@@ -132,6 +132,9 @@
   },
   "adversarial_scenarios": {
     "select_by_causal_relevance_not_ceremony": true,
+    "executable_fault_injection_required": true,
+    "scenario_listing_alone_is_not_verification": true,
+    "material_pass_requires_normal_and_one_adversarial": true,
     "families": [
       "normal_valid_input",
       "invalid_input",
@@ -149,13 +152,27 @@
       "rollback_and_recovery"
     ],
     "record_fields": [
+      "family",
+      "executed",
       "precondition",
       "action",
       "expected_result",
       "actual_result",
       "evidence",
-      "invariant_violations"
+      "invariant_violations",
+      "observations"
     ]
+  },
+  "runtime_evidence_contract": {
+    "receipt_schema_version": 1,
+    "evaluator_path": "control-plane/scripts/evaluate_execution_integrity_receipt.py",
+    "scenario_records_must_be_executed": true,
+    "scenario_evidence_required": true,
+    "family_specific_assertions_required": true,
+    "pass_requires_task_outcome_verified": true,
+    "pass_requires_exact_revision_readback": true,
+    "pass_requires_cross_source_evidence": true,
+    "pass_requires_adjacent_regression": true
   },
   "tool_maturity": {
     "prefer_exact_identifiers_once_known": true,
