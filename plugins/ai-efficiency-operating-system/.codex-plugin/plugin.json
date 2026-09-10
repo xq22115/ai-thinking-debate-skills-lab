@@ -1,6 +1,6 @@
 {
   "name": "ai-efficiency-operating-system",
-  "version": "1.4.0",
+  "version": "1.3.0",
   "description": "Native goal-first agent harness with runtime preamble, phase-gated semantic routing, progressive skill disclosure, ordinary-ChatGPT Superpowers adaptation, deep research, capability/MCP/runtime forensics, fresh verification, recovery and failure-trace optimization for complex ChatGPT and Codex tasks.",
   "repository": "https://github.com/xq22115/ai-thinking-debate-skills-lab",
   "skills": "./skills/",
