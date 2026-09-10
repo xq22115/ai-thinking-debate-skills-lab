@@ -43,6 +43,10 @@ REQUIRED_SKILL_LAYERS = {
     "observable_effect",
     "regression_preserved",
 }
+REQUIRED_PROJECTION_ROLES = {
+    "completion_readback_and_invariant_gate",
+    "root_cause_and_source_triangulation",
+}
 REQUIRED_SCENARIOS = {
     "normal_valid_input",
     "invalid_input",
@@ -83,7 +87,7 @@ def validate() -> list[str]:
     required_paths = [CONFIG_PATH, POLICY_PATH, MANIFEST_PATH, AGENTS_PATH, WORKFLOW_PATH]
     for path in required_paths:
         if not path.is_file():
-            failures.append(f"missing:{path.relative_to(REPO_ROOT)}")
+            failures.append(f"missing:{path.relative_to(REPO_ROOT) if path.is_relative_to(REPO_ROOT) else path}")
     if failures:
         return sorted(set(failures))
 
@@ -190,6 +194,30 @@ def validate() -> list[str]:
         "skill_plugin",
     )
 
+    projections = config.get("runtime_behavior_projections") or {}
+    _require(projections.get("required") is True, "runtime_behavior_projections_not_required", failures)
+    owners = projections.get("owners") or []
+    roles = {item.get("role") for item in owners if isinstance(item, dict)}
+    _require(REQUIRED_PROJECTION_ROLES.issubset(roles), "runtime_behavior_projection_roles_incomplete", failures)
+    for item in owners:
+        if not isinstance(item, dict):
+            failures.append("runtime_behavior_projection_invalid")
+            continue
+        role = item.get("role") or "unknown"
+        relative_path = item.get("path")
+        markers = item.get("required_markers") or []
+        if not isinstance(relative_path, str) or not relative_path:
+            failures.append(f"runtime_behavior_projection_path_missing:{role}")
+            continue
+        path = REPO_ROOT / relative_path
+        if not path.is_file():
+            failures.append(f"runtime_behavior_projection_file_missing:{role}:{relative_path}")
+            continue
+        text = path.read_text(encoding="utf-8")
+        for marker in markers:
+            if marker not in text:
+                failures.append(f"runtime_behavior_projection_marker_missing:{role}:{marker}")
+
     scenarios = config.get("adversarial_scenarios") or {}
     _require(scenarios.get("select_by_causal_relevance_not_ceremony") is True, "scenario_selection_rule_missing", failures)
     _require(REQUIRED_SCENARIOS.issubset(set(scenarios.get("families") or [])), "adversarial_scenarios_incomplete", failures)
@@ -246,8 +274,8 @@ def validate() -> list[str]:
     )
 
     entrypoints = manifest.get("entrypoints") or []
-    roles = {item.get("role"): item for item in entrypoints if isinstance(item, dict)}
-    validator_entry = roles.get("execution_integrity_machine_validator") or {}
+    manifest_roles = {item.get("role"): item for item in entrypoints if isinstance(item, dict)}
+    validator_entry = manifest_roles.get("execution_integrity_machine_validator") or {}
     _require(
         validator_entry.get("path") == "control-plane/scripts/validate_execution_integrity_global.py",
         "manifest_execution_integrity_validator_missing",
