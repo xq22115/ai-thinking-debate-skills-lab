@@ -35,6 +35,18 @@ def _has(text, phrases):
     return any(p in text for p in phrases)
 
 
+def _is_pure_explanation(text):
+    explanation = _has(text, [
+        "请解释", "請解釋", "解释一下", "解釋一下", "what is", "what's", "explain ",
+        "有什么区别", "有什麼區別", "有什么差别", "有什麼差別",
+    ])
+    explicit_no_change = _has(text, [
+        "不要修改", "不要改", "不修改代码", "不修改代碼", "只解释", "只解釋",
+        "只做说明", "只做說明", "explanation only", "do not modify", "don't modify",
+    ])
+    return explanation and explicit_no_change
+
+
 def ordinary_chat_signals(prompt):
     """Protect common zh-Hans/zh-Hant/en intent that the baseline may miss."""
     text = " ".join(prompt.lower().split())
@@ -58,7 +70,7 @@ def process_signals(prompt):
     debugging = _has(text, [
         " bug", "bug ", "debug", "failing test", "test failure", "测试失败", "測試失敗",
         "随机超时", "隨機超時", "timeout", "报错", "報錯", "unexpected behavior",
-        "unexpected behaviour", "regression", "先找根因再修", "系統化 debug", "系统化 debug",
+        "unexpected behaviour", "先找根因再修", "系統化 debug", "系统化 debug",
     ])
 
     behavior_change = _has(text, [
@@ -67,6 +79,8 @@ def process_signals(prompt):
         "modify behavior", "modify behaviour", "behavior change", "behaviour change",
         "重构", "重構", "refactor", "做到可测试", "做到可測試",
     ])
+    if not behavior_change and _has(text, ["新功能", "new capability"]):
+        behavior_change = _has(text, ["实现", "實現", "实作", "實作", "implement", "开发", "開發", "build"])
 
     review_feedback = _has(text, [
         "pr review", "review feedback", "code review feedback", "review 的反馈", "review 的反饋",
@@ -101,6 +115,10 @@ def process_signals(prompt):
 
 
 def upstream_process(prompt):
+    text = " ".join(prompt.lower().split())
+    if _is_pure_explanation(text):
+        return None
+
     s = process_signals(prompt)
     if s["skill_authoring"]:
         return "writing-skills"
@@ -112,13 +130,20 @@ def upstream_process(prompt):
         return "executing-plans"
     if s["behavior_change"]:
         return "test-driven-development" if s["settled_design"] else "brainstorming"
+
+    _, base_signals = base.analyze(prompt)
+    if base_signals.get("completion", 0) > 0:
+        return "verification-before-completion"
     return None
 
 
 def route(prompt, explicit=None, host_capabilities=None):
+    text = " ".join(prompt.lower().split())
     base_primary = base.route(prompt, explicit, host_capabilities)
     if explicit:
         return base_primary
+    if _is_pure_explanation(text):
+        return "none"
 
     locale = ordinary_chat_signals(prompt)
     if base_primary == "none" and locale["memory"]:
@@ -141,7 +166,7 @@ def route_bundle(prompt, explicit=None, host_capabilities=None):
     base_primary = base.route(prompt, explicit, host_capabilities)
     if primary != BRIDGE:
         if primary != base_primary:
-            return [primary]
+            return [] if primary == "none" else [primary]
         return base.route_bundle(prompt, explicit, host_capabilities)
 
     _, signals = base.analyze(prompt)
