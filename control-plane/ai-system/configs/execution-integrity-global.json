@@ -105,6 +105,31 @@
     "installed_bytes_or_state_must_match_intended_source_identity": true,
     "representative_execution_required_for_activation_claim": true
   },
+  "runtime_behavior_projections": {
+    "required": true,
+    "owners": [
+      {
+        "path": "plugins/ai-efficiency-operating-system/skills/evidence-watchdog/SKILL.md",
+        "role": "completion_readback_and_invariant_gate",
+        "required_markers": [
+          "SOURCE_RESOLVED",
+          "System invariants for material mutations",
+          "search miss is not treated as absence",
+          "write/install success is not task success"
+        ]
+      },
+      {
+        "path": "plugins/ai-efficiency-operating-system/skills/executive-research/SKILL.md",
+        "role": "root_cause_and_source_triangulation",
+        "required_markers": [
+          "Choose source authority **by the claim being tested**",
+          "unsupported/undocumented but observed working",
+          "zero-result search is not proof of absence",
+          "Root-cause requirement"
+        ]
+      }
+    ]
+  },
   "adversarial_scenarios": {
     "select_by_causal_relevance_not_ceremony": true,
     "families": [
