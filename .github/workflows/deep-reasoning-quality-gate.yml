@@ -116,7 +116,7 @@ jobs:
 
           pattern = re.compile(r"^(?:FAIL|ERROR): (.+)$", re.MULTILINE)
           head_text = pathlib.Path("/tmp/head-control-plane-tests.log").read_text(errors="replace")
-          base_text = pathlib.Path("/tmp/main-baseline-tests.log").read_text(errors="replace") if pathlib.Path("/tmp/main-baseline-tests.log").exists() else pathlib.Path("/tmp/main-control-plane-tests.log").read_text(errors="replace")
+          base_text = pathlib.Path("/tmp/main-control-plane-tests.log").read_text(errors="replace")
           head_failures = set(pattern.findall(head_text))
           base_failures = set(pattern.findall(base_text))
           new_failures = sorted(head_failures - base_failures)
