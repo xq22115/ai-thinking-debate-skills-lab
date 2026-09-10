@@ -49,6 +49,15 @@
       ]
     },
     {
+      "path": "control-plane/scripts/validate_execution_integrity_global.py",
+      "role": "execution_integrity_machine_validator",
+      "required_markers": [
+        "execution-integrity-global.json",
+        "GITHUB_EXECUTION_INTEGRITY_POLICY.md",
+        "GI-12"
+      ]
+    },
+    {
       "path": "control-plane/scripts/validate_task_goal_intelligence_v3.py",
       "role": "task_goal_intelligence_v3_runtime_validator",
       "required_markers": [
@@ -135,6 +144,18 @@
       "load_mode": "material_or_critical_task"
     },
     {
+      "id": "github-execution-integrity",
+      "path": "docs/GITHUB_EXECUTION_INTEGRITY_POLICY.md",
+      "semantic_owner": "github_execution_integrity_and_system_invariants",
+      "load_mode": "github_repository_plugin_skill_or_persisted_tool_task"
+    },
+    {
+      "id": "execution-integrity-machine",
+      "path": "control-plane/ai-system/configs/execution-integrity-global.json",
+      "semantic_owner": "github_execution_integrity_machine_contract",
+      "load_mode": "github_repository_plugin_skill_or_persisted_tool_task"
+    },
+    {
       "id": "capability-flexibility",
       "path": "docs/CAPABILITY_ACCESS_AND_FLEXIBILITY_POLICY.md",
       "semantic_owner": "capability_and_anti_overrefusal",
@@ -183,8 +204,10 @@
       "load_kernel",
       "load_only_task_relevant_manifest_entries",
       "load_task_goal_portable_base_v3_extension_and_v31_truth_maintenance_for_substantive_tasks",
+      "load_execution_integrity_policy_and_machine_contract_for_github_plugin_skill_or_persisted_tool_tasks",
       "restore_root_goal_underlying_purpose_goal_signature_acceptance_contract_open_gates_failed_routes_and_evidence_index",
       "restore_goal_version_event_log_intent_belief_authority_uncertainty_traceability_progress_and_counterexample_state",
+      "restore_applicable_system_invariants_target_identity_exact_revision_and_rollback_target_before_material_write",
       "quarantine_failed_or_stale_context",
       "record_loaded_policy_revision_and_source_provenance",
       "continue_only_after_required_invariants_are_present"
@@ -234,7 +257,12 @@
       "NEGATIONS",
       "ACCEPTANCE_TESTS",
       "protected_capabilities",
+      "SYSTEM_INVARIANTS",
       "TARGET_IDENTITY",
+      "SOURCE_IDENTITY",
+      "HEAD_COMMIT_SHA",
+      "FILE_BLOB_SHA",
+      "INSTALLED_REVISION",
       "INTENT_BELIEF_GRAPH",
       "ASSUMPTION_LEDGER",
       "authority_ledger",
