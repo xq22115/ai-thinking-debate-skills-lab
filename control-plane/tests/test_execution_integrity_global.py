@@ -86,6 +86,29 @@ class ExecutionIntegrityGlobalProfileTests(unittest.TestCase):
                 )
                 self.assertIn("skill_plugin_layers_incomplete", failures)
 
+    def test_runtime_behavior_projection_role_cannot_disappear(self) -> None:
+        def mutate(config: dict) -> None:
+            config["runtime_behavior_projections"]["owners"] = [
+                item
+                for item in config["runtime_behavior_projections"]["owners"]
+                if item.get("role") != "completion_readback_and_invariant_gate"
+            ]
+
+        failures = self._mutated_config_failures(mutate)
+        self.assertIn("runtime_behavior_projection_roles_incomplete", failures)
+
+    def test_runtime_behavior_projection_marker_must_resolve_in_owner(self) -> None:
+        def mutate(config: dict) -> None:
+            config["runtime_behavior_projections"]["owners"][0]["required_markers"].append(
+                "THIS_MARKER_MUST_NOT_EXIST_IN_THE_OWNER"
+            )
+
+        failures = self._mutated_config_failures(mutate)
+        self.assertTrue(
+            any(item.startswith("runtime_behavior_projection_marker_missing:") for item in failures),
+            failures,
+        )
+
     def test_every_adversarial_scenario_family_is_required(self) -> None:
         for scenario in sorted(integrity.REQUIRED_SCENARIOS):
             with self.subTest(scenario=scenario):
