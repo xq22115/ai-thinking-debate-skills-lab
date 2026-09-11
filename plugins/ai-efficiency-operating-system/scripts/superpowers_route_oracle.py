@@ -2,8 +2,8 @@
 """Ordinary-chat Superpowers bridge layered over the canonical route oracle.
 
 The base router remains authoritative for research, capability, memory, planning,
-convergence and completion. This shadow oracle fills implementation-process and
-cross-locale routing gaps without mutating the canonical baseline.
+GitHub operations, convergence and completion. This shadow oracle fills implementation-
+process and cross-locale routing gaps without mutating the canonical baseline.
 """
 
 import json
@@ -19,6 +19,7 @@ LOCKED_BASE_ROUTES = {
     "plan-arbiter",
     "memory-policy",
     "convergence-controller",
+    "github-operation-orchestrator",
     "capability-forensics",
     "mcp-surface-engineering",
     "agent-runtime-forensics",
@@ -157,7 +158,8 @@ def route(prompt, explicit=None, host_capabilities=None):
 
     # Implementation-process signals are more discriminating than generic research
     # or goal wording. The bridge owns them while preserving higher-specificity
-    # base routes such as capability, planning, completion and runtime forensics.
+    # base routes such as GitHub operations, capability, planning, completion and
+    # runtime forensics.
     return BRIDGE
 
 
