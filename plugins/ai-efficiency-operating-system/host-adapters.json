@@ -18,10 +18,15 @@
       "app_manifest": ".app.json",
       "app_alias": "github",
       "connector_id": "connector_76869538009648d5b282a4bb21c3d157",
+      "canonical_plugin_reference": "github@openai-curated",
+      "canonical_plugin_id": "plugin_connector_1p_1a69035c238881919c4190932b2df699",
       "allow_implicit_invocation": true,
       "canonical_router_membership": false,
       "runtime_policy": "adapters/chatgpt/github-pull-runtime.json",
-      "reason": "Binds GitHub-backed repository, plugin and skill work to the actual ordinary-ChatGPT GitHub app and requires exact-version, fallback, response classification and read-back closure."
+      "upstream_capability_contract": "adapters/chatgpt/github-upstream-capability-contract.json",
+      "human_contract": "adapters/chatgpt/GITHUB_OPERATION_LOOP.md",
+      "root_control_plane": "adapters/chatgpt/GITHUB_ROOT_CONTROL_PLANE.md",
+      "reason": "Binds GitHub-backed repository, plugin, skill, PR and workflow work to the actual ordinary-ChatGPT GitHub app; resolves the true host/connector/GitHub/caller owner before repair; and enforces an evidence-bound read/analyze/schema/invoke/write/execute/read-back/recovery/verification loop."
     }
   ]
 }

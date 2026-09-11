@@ -17,7 +17,8 @@ DEFAULT_IMPLICIT = {
     "convergence-controller",
 }
 CONDITIONAL_IMPLICIT = {
-    "capability-forensics", "mcp-surface-engineering", "agent-runtime-forensics",
+    "github-operation-orchestrator", "capability-forensics",
+    "mcp-surface-engineering", "agent-runtime-forensics",
 }
 EXPLICIT_ONLY = {
     "autonomy-contract", "persistent-work-ledger", "authorized-reverse-engineering",
@@ -25,6 +26,7 @@ EXPLICIT_ONLY = {
 ALL_SKILLS = DEFAULT_IMPLICIT | CONDITIONAL_IMPLICIT | EXPLICIT_ONLY
 
 FALLBACKS = {
+    "github-operation-orchestrator": ["mcp-surface-engineering", "agent-runtime-forensics", "evidence-watchdog"],
     "capability-forensics": ["executive-research", "evidence-watchdog"],
     "mcp-surface-engineering": ["capability-forensics", "executive-research", "evidence-watchdog"],
     "agent-runtime-forensics": ["capability-forensics", "evidence-watchdog"],
@@ -34,9 +36,9 @@ FALLBACKS = {
 }
 
 PRIORITY = [
-    "agent-runtime-forensics", "mcp-surface-engineering", "capability-forensics",
-    "evidence-watchdog", "convergence-controller", "plan-arbiter", "memory-policy",
-    "executive-research", "chief-of-staff-core", "task-goal-intelligence",
+    "github-operation-orchestrator", "agent-runtime-forensics", "mcp-surface-engineering",
+    "capability-forensics", "evidence-watchdog", "convergence-controller", "plan-arbiter",
+    "memory-policy", "executive-research", "chief-of-staff-core", "task-goal-intelligence",
 ]
 
 TERMS = {
@@ -72,6 +74,16 @@ TERMS = {
         "鎖定目標", "目標漂移", "goal drift", "latent intent", "underlying purpose", "target identity",
         "歧義", "ambigu", "到底要做什麼", "不要曲解", "成功條件", "驗收條件", "acceptance criteria",
         "真正要達成", "先理解",
+    ],
+    "github_surface": [
+        "github", "github app", "repo", "repository", "pull request", "branch", "workflow", "actions",
+        "git repo", "github connector", "github plugin", "github 外掛", "github 插件",
+    ],
+    "github_chain": [
+        "拉取", "pull", "讀", "read", "fetch", "搜尋", "search", "分析", "analy", "呼叫", "invoke",
+        "tool call", "寫入", "write", "update", "create", "delete", "commit", "pr", "workflow", "執行",
+        "execute", "run", "驗證", "verify", "read-back", "read back", "plugin", "skill", "connector",
+        "blob sha", "stale sha", "response", "回應", "fallback", "回退",
     ],
     "capability_problem": [
         "能力限制", "capability limit", "capability bottleneck", "卡在哪一層", "卡在哪", "不能用", "用不了",
@@ -119,6 +131,7 @@ def _is_explanation_only(text):
     operational = any(p in text for p in [
         "幫我", "請查", "研究", "修", "設定", "配置", "診斷", "debug", "fix", "比較", "設計", "做 ",
         "怎麼做", "怎麼修", "why", "為什麼", "生效", "invoke", "dynamic discovery", "schema drift",
+        "拉取", "寫入", "執行", "驗證", "workflow", "read-back",
     ])
     return explain and not operational
 
@@ -133,6 +146,13 @@ def analyze(prompt):
             ("tool", "state"), ("configured", "state"), ("configured", "not effective"),
         ])
     )
+    signals["github_operation"] = int(
+        (signals["github_surface"] >= 1 and signals["github_chain"] >= 2)
+        or any(p in text for p in [
+            "github 拉外掛", "github 拉插件", "github plugin pull", "github skill pull",
+            "github read write", "github 讀寫", "github workflow verify", "github connector failure",
+        ])
+    )
     # Capability nouns such as Desktop/plugin/account are weak evidence. A heavy
     # capability specialist needs an actual diagnostic/contrast signal too.
     signals["capability_gap"] = int(
@@ -144,7 +164,8 @@ def analyze(prompt):
     )
     signals["substantive"] = int(any(signals[name] for name in [
         "plan", "completion", "memory", "convergence", "research", "complex",
-        "goal_ambiguity", "capability_problem", "mcp_surface", "runtime_effect",
+        "goal_ambiguity", "github_surface", "github_chain", "capability_problem",
+        "mcp_surface", "runtime_effect",
     ]))
     return text, signals
 
@@ -155,6 +176,9 @@ def score_routes(prompt):
         return {"none": 100}, s
 
     scores = {name: 0 for name in PRIORITY}
+    # A multi-step GitHub operation should own execution, but a narrow completion/
+    # postcondition check must still be able to remain evidence-watchdog-owned.
+    scores["github-operation-orchestrator"] = 7 * s["github_operation"] + 2 * s["github_surface"]
     scores["agent-runtime-forensics"] = 8 * s["runtime_mismatch"] + 2 * s["runtime_effect"]
     scores["mcp-surface-engineering"] = 8 * s["tool_surface_pressure"] + 2 * s["mcp_surface"]
     scores["capability-forensics"] = 8 * s["capability_gap"] + s["capability_problem"]
@@ -164,10 +188,16 @@ def score_routes(prompt):
     scores["memory-policy"] = 5 * s["memory"]
     scores["executive-research"] = 4 * s["research"]
     # The goal gate is included in the bundle; for a complex multi-stage task the
-    # chief-of-staff remains primary phase owner.
+    # chief-of-staff remains primary phase owner unless a GitHub-specific operation
+    # loop has enough direct evidence to own execution.
     scores["chief-of-staff-core"] = 8 * s["complex"]
     scores["task-goal-intelligence"] = 5 * s["goal_ambiguity"]
 
+    # Research should strengthen GitHub ownership only when there is more than one
+    # research signal. A single word such as "commit" must not steal a pure
+    # post-write completion check from evidence-watchdog.
+    if s["research"] >= 2 and s["github_operation"]:
+        scores["github-operation-orchestrator"] += 2
     if s["research"] and s["capability_gap"]:
         scores["capability-forensics"] += 3
     if s["research"] and s["tool_surface_pressure"]:
@@ -215,8 +245,8 @@ def route_bundle(prompt, explicit=None, host_capabilities=None):
     needs_verifier = (
         s["completion"] > 0 or s["runtime_mismatch"]
         or primary in {
-            "capability-forensics", "mcp-surface-engineering", "agent-runtime-forensics",
-            "convergence-controller", "chief-of-staff-core",
+            "github-operation-orchestrator", "capability-forensics", "mcp-surface-engineering",
+            "agent-runtime-forensics", "convergence-controller", "chief-of-staff-core",
         }
         or (primary == "executive-research" and s["complex"] > 0)
     )

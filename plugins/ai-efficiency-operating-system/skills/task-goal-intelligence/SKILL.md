@@ -92,6 +92,7 @@ Choose one primary phase owner. Use **at most three implicit skills** in a phase
 - completion/postcondition/read-back → `evidence-watchdog`;
 - cross-session durable context → `memory-policy`;
 - repeated no-progress/review loop → `convergence-controller`;
+- multi-step GitHub repository/plugin/skill/PR/workflow read-call-write-execute-verify loop → `github-operation-orchestrator`;
 - model/harness/tool/permission/session/entitlement uncertainty → `capability-forensics`;
 - MCP/tool-schema/discovery/namespace pressure → `mcp-surface-engineering`;
 - tool/process success with missing real-world effect → `agent-runtime-forensics`;

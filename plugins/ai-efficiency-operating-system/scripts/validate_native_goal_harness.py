@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -9,6 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "native-goal-harness.json"
 SKILL = ROOT / "skills" / "task-goal-intelligence"
+SEMVER = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$")
 
 
 def load_jsonl(path: Path) -> list[dict]:
@@ -21,9 +23,11 @@ def main() -> int:
     settings = json.loads((ROOT / "settings.json").read_text(encoding="utf-8"))
     plugin = json.loads((ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8"))
 
-    if plugin.get("version") != "1.3.0" or settings.get("version") != "1.3.0":
-        errors.append("native package version must be 1.3.0 in plugin + settings")
-    if plugin.get("version") != settings.get("version"):
+    plugin_version = plugin.get("version")
+    settings_version = settings.get("version")
+    if not isinstance(plugin_version, str) or SEMVER.fullmatch(plugin_version) is None:
+        errors.append("plugin package version must be valid semver")
+    if plugin_version != settings_version:
         errors.append("plugin/settings version drift")
     binding = settings.get("native_goal_harness") or {}
     if binding.get("profile") != "./native-goal-harness.json" or binding.get("revision") != "4.0.0-native":
@@ -150,7 +154,7 @@ def main() -> int:
     print(json.dumps({
         "status": "PASS" if not errors else "FAIL",
         "errors": errors,
-        "package_version": plugin.get("version"),
+        "package_version": plugin_version,
         "pressure_holdout_cases": len(holdout),
         "pressure_holdout_classes": len(classes),
         "subvalidators": command_results,

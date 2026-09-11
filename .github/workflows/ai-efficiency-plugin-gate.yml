@@ -33,14 +33,19 @@ jobs:
           python -m py_compile \
             plugins/ai-efficiency-operating-system/scripts/validate_plugin.py \
             plugins/ai-efficiency-operating-system/scripts/validate_superpowers_runtime.py \
+            plugins/ai-efficiency-operating-system/scripts/validate_github_upstream_contract.py \
             plugins/ai-efficiency-operating-system/scripts/route_oracle.py \
             plugins/ai-efficiency-operating-system/scripts/superpowers_route_oracle.py \
             plugins/ai-efficiency-operating-system/scripts/composition_oracle.py \
-            plugins/ai-efficiency-operating-system/scripts/expert_labs_oracle.py
+            plugins/ai-efficiency-operating-system/scripts/expert_labs_oracle.py \
+            plugins/ai-efficiency-operating-system/scripts/github_operation_oracle.py \
+            plugins/ai-efficiency-operating-system/scripts/github_root_control_oracle.py
       - name: Validate package, routing and migration contracts
         run: python plugins/ai-efficiency-operating-system/scripts/validate_plugin.py
       - name: Validate Superpowers ordinary-chat runtime contract
         run: python plugins/ai-efficiency-operating-system/scripts/validate_superpowers_runtime.py
+      - name: Validate canonical GitHub upstream ownership contract
+        run: python plugins/ai-efficiency-operating-system/scripts/validate_github_upstream_contract.py
       - name: Run primary auto-invoke routing oracle
         run: python plugins/ai-efficiency-operating-system/scripts/route_oracle.py plugins/ai-efficiency-operating-system/evals/routing-cases.jsonl
       - name: Run Superpowers ordinary-chat pressure cases
@@ -49,11 +54,17 @@ jobs:
         run: python plugins/ai-efficiency-operating-system/scripts/composition_oracle.py plugins/ai-efficiency-operating-system/evals/composition-cases.jsonl
       - name: Run Expert Labs known-outcome oracle
         run: python plugins/ai-efficiency-operating-system/scripts/expert_labs_oracle.py plugins/ai-efficiency-operating-system/evals/expert-labs-cases.jsonl
+      - name: Run GitHub operation known-outcome oracle
+        run: python plugins/ai-efficiency-operating-system/scripts/github_operation_oracle.py plugins/ai-efficiency-operating-system/evals/github-operation-cases.jsonl
+      - name: Run GitHub root-control ownership oracle
+        run: python plugins/ai-efficiency-operating-system/scripts/github_root_control_oracle.py plugins/ai-efficiency-operating-system/evals/github-root-control-cases.jsonl
       - name: Parse JSON/JSONL artifacts
         run: |
           python -m json.tool plugins/ai-efficiency-operating-system/.codex-plugin/plugin.json >/dev/null
           python -m json.tool plugins/ai-efficiency-operating-system/settings.json >/dev/null
           python -m json.tool plugins/ai-efficiency-operating-system/host-adapters.json >/dev/null
+          python -m json.tool plugins/ai-efficiency-operating-system/adapters/chatgpt/github-pull-runtime.json >/dev/null
+          python -m json.tool plugins/ai-efficiency-operating-system/adapters/chatgpt/github-upstream-capability-contract.json >/dev/null
           python -m json.tool plugins/ai-efficiency-operating-system/skills/superpowers-conversation-runtime/runtime-policy.json >/dev/null
           python -m json.tool plugins/ai-efficiency-operating-system/skills/superpowers-conversation-runtime/references/upstream-lock.json >/dev/null
           python -m json.tool .agents/plugins/marketplace.json >/dev/null
@@ -64,7 +75,9 @@ jobs:
               pathlib.Path('plugins/ai-efficiency-operating-system/evals/superpowers-conversation-routing-cases.jsonl'),
               pathlib.Path('plugins/ai-efficiency-operating-system/evals/composition-cases.jsonl'),
               pathlib.Path('plugins/ai-efficiency-operating-system/evals/behavior-cases.jsonl'),
-              pathlib.Path('plugins/ai-efficiency-operating-system/evals/expert-labs-cases.jsonl')]:
+              pathlib.Path('plugins/ai-efficiency-operating-system/evals/expert-labs-cases.jsonl'),
+              pathlib.Path('plugins/ai-efficiency-operating-system/evals/github-operation-cases.jsonl'),
+              pathlib.Path('plugins/ai-efficiency-operating-system/evals/github-root-control-cases.jsonl')]:
               for i, line in enumerate(path.read_text(encoding='utf-8').splitlines(), 1):
                   if line.strip(): json.loads(line)
           print('jsonl parse pass')

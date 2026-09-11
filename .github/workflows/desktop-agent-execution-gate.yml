@@ -18,6 +18,7 @@ on:
       - 'plugins/ai-efficiency-operating-system/.app.json'
       - 'plugins/ai-efficiency-operating-system/host-adapters.json'
       - 'plugins/ai-efficiency-operating-system/adapters/chatgpt/github-pull-runtime.json'
+      - 'plugins/ai-efficiency-operating-system/adapters/chatgpt/GITHUB_OPERATION_LOOP.md'
       - 'plugins/ai-efficiency-operating-system/adapters/chatgpt/RUNTIME_PROBE.md'
       - 'plugins/ai-efficiency-operating-system/adapters/chatgpt/HOST_LIVE_10WAY.md'
       - '.github/workflows/desktop-agent-execution-gate.yml'
@@ -37,6 +38,7 @@ on:
       - 'plugins/ai-efficiency-operating-system/.app.json'
       - 'plugins/ai-efficiency-operating-system/host-adapters.json'
       - 'plugins/ai-efficiency-operating-system/adapters/chatgpt/github-pull-runtime.json'
+      - 'plugins/ai-efficiency-operating-system/adapters/chatgpt/GITHUB_OPERATION_LOOP.md'
       - 'plugins/ai-efficiency-operating-system/adapters/chatgpt/RUNTIME_PROBE.md'
       - 'plugins/ai-efficiency-operating-system/adapters/chatgpt/HOST_LIVE_10WAY.md'
       - '.github/workflows/desktop-agent-execution-gate.yml'
@@ -61,7 +63,7 @@ jobs:
             control-plane/scripts/local_agent_executor.py
       - name: Validate desktop agent execution invariants
         run: python control-plane/scripts/validate_desktop_agent_execution_global.py
-      - name: Validate ordinary ChatGPT GitHub plugin bridge
+      - name: Validate ordinary ChatGPT GitHub operation bridge
         run: python control-plane/scripts/validate_chatgpt_github_plugin_bridge.py
       - name: Run ordinary ChatGPT GitHub bridge regression tests
         working-directory: control-plane

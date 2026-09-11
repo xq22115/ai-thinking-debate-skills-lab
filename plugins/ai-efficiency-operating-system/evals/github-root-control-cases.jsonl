@@ -1,0 +1,12 @@
+{"id":"GR01","input":{"live_discovery_done":true,"required_action_present":false},"expected":"UPSTREAM_CAPABILITY_GAP"}
+{"id":"GR02","input":{"required_action_present":true,"host_plugin_enabled":false},"expected":"HOST_PERMISSION_POLICY"}
+{"id":"GR03","input":{"required_action_present":true,"host_plugin_enabled":true,"github_remote_permission_denied":true},"expected":"GITHUB_REMOTE_PERMISSION"}
+{"id":"GR04","input":{"numeric_result_target":100,"unique_results":3,"materially_distinct_queries":1,"connector_exhausted":false},"expected":"CALLER_SEARCH_UNDERFETCH"}
+{"id":"GR05","input":{"numeric_result_target":100,"unique_results":40,"materially_distinct_queries":4,"connector_exhausted":false,"last_query_added_unique":true},"expected":"CALLER_SEARCH_UNDERFETCH"}
+{"id":"GR06","input":{"schema_current":false,"material_call_attempted":true},"expected":"CALLER_SCHEMA_STALE"}
+{"id":"GR07","input":{"response_truncated":true,"treated_as_exhaustive":true},"expected":"CALLER_RESPONSE_TRUNCATION"}
+{"id":"GR08","input":{"lower_layer_success":true,"readback_verified":false,"postcondition_verified":false},"expected":"CALLER_CHAIN_BREAK"}
+{"id":"GR09","input":{"numeric_result_target":100,"unique_results":100,"schema_current":true,"required_action_present":true,"host_plugin_enabled":true,"readback_verified":true,"postcondition_verified":true},"expected":"ROOT_PATH_OK"}
+{"id":"GR10","input":{"numeric_result_target":100,"unique_results":72,"materially_distinct_queries":6,"connector_exhausted":true,"schema_current":true,"required_action_present":true,"host_plugin_enabled":true},"expected":"SEARCH_EXHAUSTED_BELOW_TARGET"}
+{"id":"GR11","input":{"required_action_present":true,"host_plugin_enabled":true,"host_action_permission":"allow_all","github_remote_permission_denied":false,"schema_current":true},"expected":"ROOT_PATH_OK"}
+{"id":"GR12","input":{"live_discovery_done":false,"required_action_present":false},"expected":"DISCOVER_LIVE_SURFACE_FIRST"}

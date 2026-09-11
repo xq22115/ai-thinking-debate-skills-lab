@@ -53,3 +53,9 @@
 {"id":"R53","prompt":"這件事很複雜，我只要你先理解我真正要達成什麼，不要先選工具。","expected":"task-goal-intelligence"}
 {"id":"R54","prompt":"請研究這個問題的最新版本、maintainer 討論和 regression。","expected":"executive-research"}
 {"id":"R55","prompt":"請解釋 MCP。","expected":"none"}
+{"id":"R56","prompt":"GitHub 拉外掛時，把讀取、搜尋、分析、tool call、寫入、執行、read-back 和驗證串成完整閉環。","expected":"github-operation-orchestrator"}
+{"id":"R57","prompt":"GitHub repo 先 fetch exact branch/blob SHA，再 write，最後 read-back 對比內容和 regression。","expected":"github-operation-orchestrator"}
+{"id":"R58","prompt":"GitHub workflow 執行後不要只看 accepted，綁 exact commit/run 並 verify postcondition。","expected":"github-operation-orchestrator"}
+{"id":"R59","prompt":"請解釋 GitHub 是什麼。","expected":"none"}
+{"id":"R60","prompt":"查 GitHub 最新 issue、PR 和 maintainer 討論，先做研究不要修改。","expected":"executive-research"}
+{"id":"R61","prompt":"GitHub connector 搜尋兩次都沒新證據，改 exact fetch 路線並保留原驗收條件。","expected":"github-operation-orchestrator"}
