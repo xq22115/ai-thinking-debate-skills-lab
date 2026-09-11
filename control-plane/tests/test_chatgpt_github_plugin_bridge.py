@@ -75,6 +75,27 @@ class ChatGPTGitHubPluginBridgeTests(unittest.TestCase):
         failures = self._mutate_json("TEN_WAY_CONFIG", mutate)
         self.assertIn("ten_way_duplicate_version_constant_present", failures)
 
+    def test_bridge_schema_v2_is_required(self) -> None:
+        failures = self._mutate_json(
+            "BRIDGE_PROFILE",
+            lambda payload: payload.__setitem__("schema_version", 1),
+        )
+        self.assertIn("bridge_schema_version_invalid", failures)
+
+    def test_bridge_operation_state_cannot_disappear(self) -> None:
+        def mutate(payload: dict) -> None:
+            payload["operation_state_machine"]["states"].remove("TOOL_SCHEMA_READY")
+
+        failures = self._mutate_json("BRIDGE_PROFILE", mutate)
+        self.assertIn("bridge_operation_state_missing:TOOL_SCHEMA_READY", failures)
+
+    def test_bridge_operation_envelope_requires_evidence_delta(self) -> None:
+        def mutate(payload: dict) -> None:
+            payload["operation_envelope"]["required_fields"].remove("evidence_delta")
+
+        failures = self._mutate_json("BRIDGE_PROFILE", mutate)
+        self.assertIn("bridge_operation_envelope_field_missing:evidence_delta", failures)
+
     def test_bridge_transport_success_cannot_be_task_success(self) -> None:
         failures = self._mutate_json(
             "BRIDGE_PROFILE",
@@ -88,6 +109,41 @@ class ChatGPTGitHubPluginBridgeTests(unittest.TestCase):
             lambda payload: payload["write_contract"].__setitem__("readback_after_material_write", False),
         )
         self.assertIn("bridge_write_contract_missing:readback_after_material_write", failures)
+
+    def test_live_schema_requirement_cannot_be_disabled(self) -> None:
+        failures = self._mutate_json(
+            "BRIDGE_PROFILE",
+            lambda payload: payload["tool_surface_contract"].__setitem__("invented_or_remembered_unknown_parameters_forbidden", False),
+        )
+        self.assertIn("bridge_tool_surface_contract_missing:invented_or_remembered_unknown_parameters_forbidden", failures)
+
+    def test_execution_cannot_be_inferred_from_repository_state(self) -> None:
+        failures = self._mutate_json(
+            "BRIDGE_PROFILE",
+            lambda payload: payload["execution_contract"].__setitem__("repository_state_is_not_runtime_execution", False),
+        )
+        self.assertIn("bridge_execution_contract_missing:repository_state_is_not_runtime_execution", failures)
+
+    def test_recovery_route_for_schema_mismatch_cannot_disappear(self) -> None:
+        def mutate(payload: dict) -> None:
+            payload["recovery_contract"]["routes"].pop("schema_mismatch")
+
+        failures = self._mutate_json("BRIDGE_PROFILE", mutate)
+        self.assertIn("bridge_recovery_route_missing:schema_mismatch", failures)
+
+    def test_completion_gate_requires_observed_execution(self) -> None:
+        failures = self._mutate_json(
+            "BRIDGE_PROFILE",
+            lambda payload: payload["completion_gate"].__setitem__("requested_execution_observed_at_correct_layer", False),
+        )
+        self.assertIn("bridge_completion_gate_missing:requested_execution_observed_at_correct_layer", failures)
+
+    def test_operation_loop_no_progress_detector_cannot_disappear(self) -> None:
+        failures = self._mutate_text(
+            "OPERATION_LOOP",
+            lambda text: text.replace("## 13. No-progress detector", "## 13. Retry notes"),
+        )
+        self.assertIn("marker_missing:GITHUB_OPERATION_LOOP.md:No-progress detector", failures)
 
     def test_host_adapter_registration_cannot_disappear(self) -> None:
         def mutate(payload: dict) -> None:
