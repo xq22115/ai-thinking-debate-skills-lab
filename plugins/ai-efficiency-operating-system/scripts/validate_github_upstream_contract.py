@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail-closed structural validator for the ordinary-ChatGPT GitHub root-control contract."""
+"""Fail-closed structural validator for ordinary-ChatGPT GitHub activation/root-control contracts."""
 
 import json
 from pathlib import Path
@@ -32,19 +32,47 @@ def main():
     skill = SKILL.read_text(encoding="utf-8")
     human = HUMAN.read_text(encoding="utf-8")
 
-    canonical = contract.get("canonical_plugin") or {}
+    if contract.get("schema_version") != 2:
+        errors.append("GitHub upstream contract schema must be 2")
+
+    canonical = contract.get("canonical_chatgpt_github_plugin") or {}
     if canonical.get("reference") != EXPECTED_CANONICAL_REF:
-        errors.append("canonical plugin reference drift")
+        errors.append("canonical ChatGPT GitHub plugin reference drift")
     if canonical.get("canonical_plugin_id") != EXPECTED_CANONICAL_PLUGIN:
-        errors.append("canonical plugin id drift")
+        errors.append("canonical ChatGPT GitHub plugin id drift")
     if canonical.get("connector_id") != EXPECTED_CONNECTOR:
         errors.append("canonical connector id drift")
-    if canonical.get("upstream_repository") != "openai/plugins":
-        errors.append("upstream repository drift")
-    if canonical.get("upstream_plugin_path") != "plugins/github":
-        errors.append("upstream plugin path drift")
-    if canonical.get("codex_mcp_is_separate_surface") is not True:
-        errors.append("ordinary-chat vs codex MCP boundary missing")
+    if canonical.get("distribution_owner") != "chatgpt_plugin_directory_and_host":
+        errors.append("ordinary ChatGPT distribution owner drift")
+    if canonical.get("ordinary_chat_dependency_kind") != "hosted_app_connector":
+        errors.append("ordinary ChatGPT dependency kind drift")
+
+    examples = contract.get("openai_plugins_repository") or {}
+    if examples.get("repository") != "openai/plugins":
+        errors.append("OpenAI plugin example repository drift")
+    if examples.get("declared_repository_role") != "curated_collection_of_codex_plugin_examples":
+        errors.append("openai/plugins must remain classified as Codex examples")
+    if examples.get("ordinary_chat_deployment_source") is not False:
+        errors.append("openai/plugins must not be treated as ordinary-ChatGPT deployment source")
+    if examples.get("codex_mcp_is_separate_surface") is not True:
+        errors.append("ordinary-chat vs Codex MCP boundary missing")
+
+    activation_truth = contract.get("local_package_activation_truth") or {}
+    for key in (
+        "repository_package_or_ci_pass_does_not_install_chatgpt_plugin",
+        "repository_marketplace_presence_does_not_prove_chatgpt_import",
+        "ordinary_chat_effect_requires_host_plugin_activation",
+        "public_global_lookup_is_not_proof_of_workspace_specific_absence",
+        "host_live_must_not_be_inferred_from_repo_main_or_ci",
+    ):
+        if activation_truth.get(key) is not True:
+            errors.append(f"missing activation truth:{key}")
+    if activation_truth.get("current_public_global_plugin_lookup") != "plugin_not_found":
+        errors.append("public plugin lookup observation drift")
+    if activation_truth.get("custom_plugin_host_live_status") != "UNVERIFIED":
+        errors.append("custom plugin host-live status must remain UNVERIFIED until host evidence exists")
+    if len(activation_truth.get("supported_host_paths_may_include") or []) < 3:
+        errors.append("supported host activation paths incomplete")
 
     local_connector = (((app.get("apps") or {}).get("github") or {}).get("id"))
     if local_connector != EXPECTED_CONNECTOR:
@@ -72,25 +100,34 @@ def main():
                 errors.append(f"host adapter drift:{key}")
         if adapter.get("allow_implicit_invocation") is not True:
             errors.append("github host adapter implicit invocation disabled")
+        if adapter.get("host_activation_required_for_local_skill_effect") is not True:
+            errors.append("host adapter must require ChatGPT activation before local skill effect")
+        if adapter.get("repo_package_is_not_host_installation") is not True:
+            errors.append("host adapter must separate repository package from host installation")
 
     expected_order = [
-        "chatgpt_host_permission_and_plugin_state",
-        "canonical_openai_github_plugin_dependency",
-        "live_github_connector_tool_namespace_and_action_schema",
-        "github_remote_repository_state",
-        "local_ai_efficiency_orchestrator_policy",
+        "chatgpt_plugin_activation_and_session_surface",
+        "hosted_openai_github_connector_tool_namespace_and_action_schema",
+        "github_remote_repository_state_and_provider_permissions",
+        "local_ai_efficiency_orchestrator_only_if_host_loaded",
     ]
     if contract.get("ownership_order") != expected_order:
         errors.append("ownership order drift")
 
     ownership = contract.get("ownership_contract") or {}
-    for key in ("chatgpt_host_owns", "openai_github_connector_owns", "github_remote_owns", "local_orchestrator_owns"):
+    for key in (
+        "chatgpt_host_owns",
+        "openai_github_connector_owns",
+        "github_remote_owns",
+        "local_orchestrator_owns_only_when_loaded",
+    ):
         if not isinstance(ownership.get(key), list) or not ownership.get(key):
             errors.append(f"missing ownership class:{key}")
 
     ceiling = contract.get("local_capability_ceiling") or {}
     forbidden = set(ceiling.get("may_not_claim_or_create") or [])
     for item in (
+        "chatgpt_plugin_installation_by_git_commit_alone",
         "new_connector_actions",
         "new_connector_endpoint_families",
         "oauth_or_github_app_scopes",
@@ -104,9 +141,33 @@ def main():
         "host_allow_all_actions_does_not_expand_action_inventory",
         "app_manifest_binding_does_not_prove_invokable_or_effective",
         "repository_policy_cannot_override_live_connector_schema",
+        "codex_plugin_manifest_does_not_prove_ordinary_chat_activation",
     ):
         if ceiling.get(key) is not True:
             errors.append(f"missing capability truth:{key}")
+
+    activation = contract.get("activation_contract") or {}
+    required_activation = activation.get("before_claiming_local_skill_effect_in_ordinary_chat") or []
+    for item in (
+        "host_plugin_or_marketplace_entry_resolved",
+        "installed_or_workspace_assigned_state_observed",
+        "user_or_workspace_enablement_observed",
+        "required_app_dependency_resolved",
+        "skill_or_plugin_visible_on_current_surface",
+        "behavioral_probe_exercises_the_loaded_revision",
+    ):
+        if item not in required_activation:
+            errors.append(f"missing activation evidence:{item}")
+    if activation.get("missing_activation_evidence_status") != "CUSTOM_PLUGIN_ACTIVATION_UNVERIFIED":
+        errors.append("missing-activation terminal drift")
+    for key in (
+        "github_marketplace_import_is_host_admin_operation",
+        "github_marketplace_sync_is_not_git_push",
+        "daily_or_manual_sync_may_be_required_after_repo_change",
+        "ordinary_chat_activation_claim_requires_current_host_evidence",
+    ):
+        if activation.get(key) is not True:
+            errors.append(f"missing host activation invariant:{key}")
 
     surface = contract.get("live_surface_rules") or {}
     for key in (
@@ -116,6 +177,7 @@ def main():
         "unknown_action_must_not_be_invented",
         "connector_error_or_schema_change_requires_rediscovery",
         "permission_setting_and_connector_capability_are_separate_dimensions",
+        "local_skill_presence_and_connector_presence_are_separate_dimensions",
     ):
         if surface.get(key) is not True:
             errors.append(f"missing live-surface invariant:{key}")
@@ -123,6 +185,10 @@ def main():
     observed = contract.get("observed_live_surface_capabilities") or {}
     if observed.get("chatgpt_app_permission_observed") != "Allow all actions":
         errors.append("observed host action permission baseline drift")
+    if observed.get("canonical_github_plugin_installed_observed") is not True:
+        errors.append("canonical GitHub plugin installed observation missing")
+    if observed.get("canonical_github_plugin_user_enabled_observed") is not True:
+        errors.append("canonical GitHub plugin enablement observation missing")
     if observed.get("workflow_dispatch_action_discovered") is not False:
         errors.append("workflow dispatch observation must remain an observation of absence")
     if observed.get("observations_are_not_permanent_contract") is not True:
@@ -161,6 +227,7 @@ def main():
 
     failures = contract.get("failure_classes") or {}
     for name in (
+        "CUSTOM_PLUGIN_ACTIVATION_UNVERIFIED",
         "UPSTREAM_CAPABILITY_GAP",
         "HOST_PERMISSION_POLICY",
         "GITHUB_REMOTE_PERMISSION",
@@ -175,6 +242,7 @@ def main():
     gate = contract.get("root_completion_gate") or {}
     for key in (
         "root_owner_identified_before_fix",
+        "ordinary_chat_activation_verified_before_claiming_local_skill_effect",
         "capability_gap_localized_to_owner",
         "local_fix_must_target_only_local_owner",
         "upstream_gap_must_not_be_papered_over_with_prompt_text",
@@ -186,7 +254,8 @@ def main():
             errors.append(f"missing root completion gate:{key}")
 
     for marker in (
-        "Root-owner gate",
+        "Host-activation gate",
+        "CUSTOM_PLUGIN_ACTIVATION_UNVERIFIED",
         "CALLER_SEARCH_UNDERFETCH",
         "Search breadth protocol",
         "UPSTREAM_CAPABILITY_GAP",
@@ -196,10 +265,12 @@ def main():
             errors.append(f"skill missing root marker:{marker}")
 
     for marker in (
-        "first layer that actually owns",
+        "Activation truth",
+        "curated collection of Codex plugin examples",
+        "Git push is not a marketplace sync",
+        "CUSTOM_PLUGIN_ACTIVATION_UNVERIFIED",
         "Allow all actions",
         "Search-depth repair",
-        "UPSTREAM_CAPABILITY_GAP",
         "Machine-readable companion",
     ):
         if marker.lower() not in human.lower():
@@ -212,7 +283,7 @@ def main():
         return 1
 
     print("GITHUB UPSTREAM CONTRACT PASS")
-    print("canonical=github@openai-curated connector=" + EXPECTED_CONNECTOR)
+    print("canonical=github@openai-curated connector=" + EXPECTED_CONNECTOR + " local_host_live=UNVERIFIED")
     return 0
 
 
