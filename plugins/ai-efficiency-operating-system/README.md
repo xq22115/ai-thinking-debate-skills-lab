@@ -2,7 +2,7 @@
 
 Status: **v1.4.1 package candidate / ordinary ChatGPT local-plugin HOST_LIVE not preclaimed**.
 
-Version 1.4.1 keeps the Native Goal Harness, ordinary-ChatGPT Superpowers process bridge, and systematic GitHub operation layer, while correcting the highest-level activation boundary: **repository package state, ChatGPT plugin activation, hosted GitHub connector capability, GitHub remote state, and verified behavior are separate layers**. A merge or green CI can prove package state, but cannot by itself prove that ordinary ChatGPT imported/installed/enabled and behaviorally loaded this local plugin revision.
+Version 1.4.1 keeps the Native Goal Harness, ordinary-ChatGPT Superpowers process bridge, and systematic GitHub operation layer, while correcting the highest-level activation boundary: **repository package state, ChatGPT plugin activation, workspace effective policy, hosted GitHub connector capability, GitHub remote state, and verified behavior are separate layers**. A merge or green CI can prove package state, but cannot by itself prove that ordinary ChatGPT imported/installed/enabled and behaviorally loaded this local plugin revision.
 
 ## Native Goal Harness 4.0
 
@@ -41,7 +41,7 @@ The native package includes:
 - `adapters/chatgpt/github-pull-runtime.json` — machine-readable ordinary-ChatGPT GitHub operation contract;
 - `adapters/chatgpt/github-upstream-capability-contract.json` — root ownership plus ChatGPT host-activation truth;
 - `adapters/chatgpt/GITHUB_ROOT_CONTROL_PLANE.md` — human-readable root ownership/activation model;
-- `adapters/chatgpt/HOST_ACTIVATION_PROBE.md` — repository-marketplace → ChatGPT host import/sync/install/enable behavioral probe;
+- `adapters/chatgpt/HOST_ACTIVATION_PROBE.md` — repository-marketplace → ChatGPT host import/sync/effective-policy/app-access/load behavioral probe;
 - `adapters/chatgpt/GITHUB_OPERATION_LOOP.md` — human-readable GitHub read/analyze/call/write/execute/verify loop;
 - `adapters/chatgpt/RUNTIME_PROBE.md` — owning-surface read/schema/write/workflow/fallback live probe;
 - `skills/superpowers-conversation-runtime/` — isolated ordinary-ChatGPT implementation-process bridge;
@@ -57,17 +57,19 @@ The native package includes:
 
 For ordinary ChatGPT, the causal chain is:
 
-`GIT REPO → MARKETPLACE CATALOG → CHATGPT MARKETPLACE IMPORT/SYNC → PLUGIN INSTALL/ASSIGN → APP DEPENDENCY → CURRENT SURFACE LOAD → BEHAVIORAL EFFECT`
+`GIT REPO → MARKETPLACE CATALOG → CHATGPT MARKETPLACE IMPORT/SYNC → WORKSPACE EFFECTIVE POLICY → PLUGIN INSTALL/ASSIGN → REQUIRED APP ACCESS/AUTH → CURRENT SURFACE LOAD → BEHAVIORAL EFFECT`
 
 Do not collapse it into “repo is green, therefore ChatGPT is enhanced.” In particular:
 
 - `.codex-plugin/plugin.json` proves package metadata, not ordinary-ChatGPT installation;
 - `.agents/plugins/marketplace.json` proves marketplace readiness, not marketplace import;
+- repository `AVAILABLE / ON_INSTALL` metadata does **not** prove the workspace's effective Installation/authentication policy;
+- marketplace Import/Sync does **not** connect member provider accounts or grant required-app access;
 - a Git push is not marketplace sync;
 - the separately installed canonical `github@openai-curated` connector does not prove this local orchestration plugin is loaded;
-- an `Allow all actions` permission changes approval behavior for existing actions; it does not add connector actions or install the local plugin.
+- an `Allow all actions` permission changes approval behavior for existing actions; it does not add connector actions, install the local plugin, or replace required-app/member-auth evidence.
 
-Until the current ChatGPT surface independently proves marketplace import/install/enablement and a behavioral probe exercises the intended revision, use `CUSTOM_PLUGIN_ACTIVATION_UNVERIFIED`. If the workspace does not expose the required import/install controls, use `HOST_IMPORT_BLOCKED`.
+Until the current ChatGPT surface independently proves marketplace import/sync or another supported installation path, effective workspace policy, required-app role access/authentication when applicable, current-surface load, and a behavioral probe for the intended revision, use `CUSTOM_PLUGIN_ACTIVATION_UNVERIFIED`. If the workspace does not expose the required import/install controls, use `HOST_IMPORT_BLOCKED`.
 
 ## GitHub operation loop
 
@@ -85,7 +87,7 @@ The loop enforces these distinctions:
 - connector transport success vs task success;
 - commit creation vs persisted read-back;
 - workflow request/rerun vs exact run/commit execution evidence;
-- package/marketplace state vs ChatGPT host activation;
+- package/marketplace state vs ChatGPT host activation/effective workspace policy;
 - installation vs invocation vs observable effect;
 - retry wording changes vs a causally different recovery route.
 
@@ -124,7 +126,7 @@ Historical prose, command exit status and agent self-report cannot substitute fo
 | Skill | Auto-invoke trigger |
 |---|---|
 | `github-operation-orchestrator` | host-loaded multi-step GitHub read/search/analyze/action/write/PR/workflow/execute/read-back/verify work or repeated GitHub connector failures |
-| `capability-forensics` | capability differs by model/harness/session/account/surface, including uncertain plugin activation, or limiting layer is unclear |
+| `capability-forensics` | capability differs by model/harness/session/account/surface, including uncertain plugin activation/effective policy, or limiting layer is unclear |
 | `mcp-surface-engineering` | many/changing/conflicting tools, schema drift, discovery/entitlement/context pressure |
 | `agent-runtime-forensics` | tool/process reports success while file/process/network/artifact/postcondition state is missing or causally unclear |
 
@@ -143,15 +145,15 @@ Repository gates now cover native-goal behavior, GitHub operation behavior, root
 - deterministic routing plus hard-negative cases;
 - bounded composition and fallback cases;
 - GitHub operation known-outcome failure/recovery cases;
-- GitHub root-control cases including `CUSTOM_PLUGIN_ACTIVATION_UNVERIFIED` negatives;
+- GitHub root-control cases including repo-CI, marketplace-only, workspace-policy, required-app-access and member-authentication negatives;
 - ordinary-ChatGPT GitHub schema-v2 fail-closed validator and mutation tests;
-- fail-closed host activation contract validating marketplace readiness without preclaiming host import;
+- fail-closed host activation contract validating marketplace readiness without preclaiming host import/effective policy;
 - live probes for host activation, exact read, schema discovery, write/read-back, workflow execution evidence, partial responses and no-progress route switching.
 
 Repository-wide gates remain additional protections; package CI does not replace owning-surface verification.
 
 ## Truth boundary
 
-`PACKAGED != CHATGPT_INSTALLED != CONNECTED != INVOKABLE != EFFECTIVE != VERIFIED`.
+`PACKAGED != CHATGPT_IMPORTED != WORKSPACE_POLICY_EFFECTIVE != APP_ACCESSIBLE != CONNECTED != INVOKABLE != EFFECTIVE != VERIFIED`.
 
-Repository CI can prove package structure, deterministic runtime behavior, marketplace readiness and regression contracts on an exact revision. It cannot by itself prove an ordinary ChatGPT surface imported and behaviorally exercised that revision. Local-plugin `HOST_LIVE` still requires current host-side import/install/enablement, dependency resolution, surface visibility and a behavioral probe on the intended revision.
+Repository CI can prove package structure, deterministic runtime behavior, marketplace readiness and regression contracts on an exact revision. It cannot by itself prove an ordinary ChatGPT surface imported and behaviorally exercised that revision. Local-plugin `HOST_LIVE` still requires current host-side import/sync or another supported install path, workspace effective policy, required-app/member access and authentication when applicable, current-surface visibility and a behavioral probe on the intended revision.
