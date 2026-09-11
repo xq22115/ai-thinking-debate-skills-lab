@@ -2,11 +2,11 @@
 
 ## Canonical orchestration plugin
 
-### ai-efficiency-operating-system — `1.4.0`
+### ai-efficiency-operating-system — `1.4.1`
 
 Canonical path: `plugins/ai-efficiency-operating-system/`.
 
-The protected 1.4 package contract keeps **Task Goal Intelligence 4.0 Native**, the v2/v2.2/v3 semantic protections, and the isolated ordinary-ChatGPT Superpowers host adapter, while adding a first-class GitHub operation orchestrator. GitHub work is now modeled as an evidence-bound state machine spanning goal lock, exact target resolution, authoritative reads, analysis, live action/schema resolution, invocation preflight, response classification, mutation, execution observation, read-back, recovery, regression and completion.
+The protected 1.4.1 package contract keeps **Task Goal Intelligence 4.0 Native**, the v2/v2.2/v3 semantic protections, and the isolated ordinary-ChatGPT Superpowers host adapter; it adds a first-class GitHub operation orchestrator and corrects the upstream activation boundary. Repository package state, ordinary-ChatGPT plugin activation, hosted GitHub connector capability, GitHub remote state and verified behavioral effect are treated as separate layers. GitHub work is modeled as an evidence-bound state machine spanning goal lock, host activation truth, exact target resolution, authoritative reads, analysis, live action/schema resolution, invocation preflight, response classification, mutation, execution observation, read-back, recovery, regression and completion.
 
 ### Native Task Goal configuration
 
@@ -27,6 +27,9 @@ The runtime package is deliberately split:
 - `references/upstream-lock.json` — exact OpenAI Plugins, Superpowers, GStack, Anthropic Skills and DSPy/GEPA revisions;
 - `host-adapters.json` — machine-readable host-specific adapters kept outside the canonical router inventory;
 - `adapters/chatgpt/github-pull-runtime.json` — machine-readable ordinary-ChatGPT GitHub operation contract;
+- `adapters/chatgpt/github-upstream-capability-contract.json` — root ownership and host-activation truth;
+- `adapters/chatgpt/GITHUB_ROOT_CONTROL_PLANE.md` — human-readable ownership/activation model;
+- `adapters/chatgpt/HOST_ACTIVATION_PROBE.md` — repository marketplace → ChatGPT host import/sync/install/enable behavioral probe;
 - `adapters/chatgpt/GITHUB_OPERATION_LOOP.md` — human-readable GitHub read/analyze/call/write/execute/verify loop;
 - `skills/github-operation-orchestrator/` — demand-loaded GitHub specialist for multi-stage repository/plugin/PR/workflow work;
 - `skills/superpowers-conversation-runtime/` — thin ordinary-ChatGPT Superpowers bridge with progressive disclosure;
@@ -34,10 +37,13 @@ The runtime package is deliberately split:
 - `scripts/quick_validate.py` — package-local conformance check;
 - `scripts/superpowers_route_oracle.py` — isolated process-routing oracle for ordinary ChatGPT;
 - `scripts/validate_superpowers_runtime.py` — adapter/upstream/process-coverage/size contract;
+- `scripts/validate_github_upstream_contract.py` — fail-closed GitHub root ownership validator;
+- `scripts/validate_chatgpt_host_activation_contract.py` — fail-closed repository-to-ChatGPT activation validator;
 - `spec/task-goal-intelligence-spec.md` — host-neutral spec;
 - `evals/task-goal-native-state-cases.jsonl` — 30 executable state/gate cases;
-- `evals/task-goal-native-pressure-holdout.jsonl` — 24 hosted pressure cases; packaging is verified, HOST_LIVE pass is not preclaimed;
-- `evals/superpowers-conversation-routing-cases.jsonl` — ordinary-chat positive and hard-negative process-routing pressure cases.
+- `evals/task-goal-native-pressure-holdout.jsonl` — hosted pressure cases; packaging is verified, HOST_LIVE pass is not preclaimed;
+- `evals/superpowers-conversation-routing-cases.jsonl` — ordinary-chat positive and hard-negative process-routing pressure cases;
+- `evals/github-operation-cases.jsonl` and `evals/github-root-control-cases.jsonl` — GitHub lifecycle/root-owner known-outcome cases.
 
 ### Ordinary ChatGPT Superpowers host adapter
 
@@ -51,11 +57,17 @@ The bridge maps bugs/failing tests to `systematic-debugging`, new/changed behavi
 
 ### Ordinary ChatGPT GitHub operation adapter
 
-`github-operation-orchestrator` is a conditional canonical specialist for material GitHub work. It uses the bound GitHub app and `github-pull-runtime.json` schema v2 to preserve one operation envelope across the full lifecycle:
+`github-operation-orchestrator` is a conditional canonical specialist for material GitHub work **only when the owning ChatGPT surface has actually loaded the local plugin**. It uses the bound GitHub app and `github-pull-runtime.json` schema v2 to preserve one operation envelope across the lifecycle:
 
 `GOAL_LOCKED → TARGET_RESOLVED → AUTHORITY_RESOLVED → READ_PLAN_READY → SOURCE_READ → EVIDENCE_SUFFICIENT → TOOL_SCHEMA_READY → INVOCATION_PREFLIGHT → INVOKED → RESPONSE_CLASSIFIED → MUTATION/EXECUTION/READBACK → ACCEPTANCE_VERIFIED → REGRESSION_VERIFIED → COMPLETE`.
 
-It keeps `OBSERVED`, `DERIVED`, `HYPOTHESIS`, and `UNKNOWN` separate; requires live schema resolution when material action shape is not already current; treats transport success, commit creation, workflow dispatch, installation and invocation as lower-layer evidence rather than completion; and forces a causal route change after two same-mechanism attempts without a material evidence delta.
+Before crediting the local specialist with ordinary-ChatGPT behavior, the host activation chain must remain explicit:
+
+`GIT REPO → MARKETPLACE CATALOG → CHATGPT MARKETPLACE IMPORT/SYNC → PLUGIN INSTALL/ASSIGN → APP DEPENDENCY → CURRENT SURFACE LOAD → BEHAVIORAL EFFECT`.
+
+A merge, green CI, marketplace file, separately installed `github@openai-curated` connector, or `Allow all actions` setting is not sufficient proof of the local plugin being host-live. Missing evidence remains `CUSTOM_PLUGIN_ACTIVATION_UNVERIFIED`; inability to perform the required host import/install step remains `HOST_IMPORT_BLOCKED`.
+
+Once activation is established, the GitHub loop keeps `OBSERVED`, `DERIVED`, `HYPOTHESIS`, and `UNKNOWN` separate; requires live schema resolution when material action shape is not already current; treats transport success, commit creation, workflow request/rerun, installation and invocation as lower-layer evidence rather than completion; preserves explicit search breadth targets with query fanout/dedup/truncation handling; and forces a causal route change after two same-mechanism attempts without a material evidence delta.
 
 Evidence owner routing is host-aware: current library/framework/API facts prefer Context7 when available; repository/PR/Actions facts use GitHub; user files use Files; connected private data uses its owning connector; other current public facts use web; stateful completion uses owning-system readback.
 
@@ -88,8 +100,8 @@ Evidence owner routing is host-aware: current library/framework/API facts prefer
 
 | Skill | Specialist use |
 |---|---|
-| `github-operation-orchestrator` | multi-step GitHub read/search/analyze/action/write/PR/workflow/execute/read-back/verify loops, plugin/skill pulls and repeated GitHub connector failures |
-| `capability-forensics` | model-vs-harness-vs-tool-vs-permission/session/entitlement/environment bottleneck diagnosis |
+| `github-operation-orchestrator` | host-loaded multi-step GitHub read/search/analyze/action/write/PR/workflow/execute/read-back/verify loops, plugin/skill pulls and repeated GitHub connector failures |
+| `capability-forensics` | model-vs-harness-vs-tool-vs-permission/session/entitlement/environment bottleneck diagnosis, including uncertain plugin activation |
 | `mcp-surface-engineering` | dynamic tool discovery, schema/version drift, namespace collision, entitlement/context pressure and tool-poisoning controls |
 | `agent-runtime-forensics` | model/tool/process/file/network/artifact/postcondition causal evidence and replay |
 
@@ -106,7 +118,7 @@ These specialists are eligible for implicit invocation only after the routing el
 ## Canonical combination patterns
 
 - research-heavy → `task-goal-intelligence` + `executive-research` + `evidence-watchdog`
-- GitHub operation → `task-goal-intelligence` + `github-operation-orchestrator` + `evidence-watchdog`
+- GitHub operation → `task-goal-intelligence` + `github-operation-orchestrator` + `evidence-watchdog` after host activation is proven
 - capability bottleneck → `task-goal-intelligence` + `capability-forensics` + `evidence-watchdog`
 - MCP/tool-surface pressure → `task-goal-intelligence` + `mcp-surface-engineering` + `evidence-watchdog`
 - runtime-effect mismatch → `task-goal-intelligence` + `agent-runtime-forensics` + `evidence-watchdog`
@@ -115,7 +127,7 @@ These specialists are eligible for implicit invocation only after the routing el
 - cross-session context → `task-goal-intelligence` + `memory-policy`
 - complex multi-stage → `task-goal-intelligence` + `chief-of-staff-core` + `evidence-watchdog`
 
-Implicit canonical bundles are bounded to three skills per phase. Host adapters are orthogonal process overlays and do not consume a canonical router slot merely by being installed. Discover many, load few.
+Implicit canonical bundles are bounded to three skills per phase. Host adapters are orthogonal process overlays and do not consume a canonical router slot merely by being packaged. Discover many, load few.
 
 ## Portable specialist library
 
@@ -138,8 +150,6 @@ Prefer one semantic owner, thin runtime routers, progressive disclosure, executa
 
 ## Completion truth
 
-`PACKAGED != HOST_LIVE`.
+`PACKAGED != CHATGPT_INSTALLED != CONNECTED != INVOKABLE != EFFECTIVE != VERIFIED`.
 
-`CONNECTED != INVOKABLE != EFFECTIVE != VERIFIED`.
-
-A GitHub write, marketplace manifest, CI pass, plugin listing or available connector cannot prove the intended hosted surface loaded and exercised the exact revision. Host-live acceptance requires owning-surface discovery/load, implicit routing, pressure cases, fallback and postcondition evidence.
+A GitHub write, marketplace manifest, CI pass, plugin listing or available connector cannot prove the intended ordinary-ChatGPT surface loaded and exercised the exact local revision. Host-live acceptance requires current marketplace import/sync or another supported installation path, install/assignment/enablement evidence, dependency resolution, current-surface visibility, a behavioral marker unique to the intended revision, fallback validation and owning-system postcondition evidence.
