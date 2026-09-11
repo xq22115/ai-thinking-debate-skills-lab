@@ -44,7 +44,7 @@ On an eligible ChatGPT workspace/account surface:
 4. Confirm the plugin becomes available/assigned for the intended user or role.
 5. Install/enable the plugin on the owning ChatGPT surface when the host exposes that action.
 6. Resolve its required `github` app dependency and confirm the canonical GitHub app is available/connected for the intended account.
-7. After repository changes, use the host's marketplace **Sync now/Refresh** capability when available, or wait for the host's documented sync process; repository push alone is not sync evidence.
+7. After repository changes, use the host's marketplace **Sync now/Refresh** capability when available, or wait for the host's documented sync process. Git push is not sync evidence.
 8. Confirm the host-visible plugin revision/version corresponds to the intended repository revision when the surface exposes revision metadata.
 9. Run a behavioral probe in ordinary ChatGPT that requires a marker unique to the imported revision, not merely the already-installed canonical GitHub connector.
 10. Only after that behavioral probe succeeds may the local plugin be marked `HOST_LIVE` for the tested surface/revision.
