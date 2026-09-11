@@ -1,0 +1,5 @@
+interface:
+  display_name: "GitHub Operation Orchestrator"
+  short_description: "Close GitHub read-call-write-execute-verify loops"
+policy:
+  allow_implicit_invocation: true
