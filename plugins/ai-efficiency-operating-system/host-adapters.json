@@ -21,7 +21,8 @@
       "allow_implicit_invocation": true,
       "canonical_router_membership": false,
       "runtime_policy": "adapters/chatgpt/github-pull-runtime.json",
-      "reason": "Binds GitHub-backed repository, plugin and skill work to the actual ordinary-ChatGPT GitHub app and requires exact-version, fallback, response classification and read-back closure."
+      "human_contract": "adapters/chatgpt/GITHUB_OPERATION_LOOP.md",
+      "reason": "Binds GitHub-backed repository, plugin, skill, PR and workflow work to the actual ordinary-ChatGPT GitHub app and enforces an evidence-bound read/analyze/schema/invoke/write/execute/read-back/recovery/verification loop."
     }
   ]
 }
