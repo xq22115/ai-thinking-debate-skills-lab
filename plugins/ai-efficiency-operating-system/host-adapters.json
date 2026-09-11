@@ -26,7 +26,11 @@
       "upstream_capability_contract": "adapters/chatgpt/github-upstream-capability-contract.json",
       "human_contract": "adapters/chatgpt/GITHUB_OPERATION_LOOP.md",
       "root_control_plane": "adapters/chatgpt/GITHUB_ROOT_CONTROL_PLANE.md",
-      "reason": "Binds GitHub-backed repository, plugin, skill, PR and workflow work to the actual ordinary-ChatGPT GitHub app; resolves the true host/connector/GitHub/caller owner before repair; and enforces an evidence-bound read/analyze/schema/invoke/write/execute/read-back/recovery/verification loop."
+      "host_activation_required_for_local_skill_effect": true,
+      "repo_package_is_not_host_installation": true,
+      "workspace_marketplace_import_or_directory_install_may_be_required": true,
+      "current_local_plugin_host_live_status": "UNVERIFIED",
+      "reason": "Uses the hosted ordinary-ChatGPT GitHub app for live actions, while explicitly refusing to treat this repository's Codex-style package, marketplace files, or CI state as proof that the local orchestrator is installed or loaded by ChatGPT. Host activation must be independently verified before local skill effects are claimed."
     }
   ]
 }
