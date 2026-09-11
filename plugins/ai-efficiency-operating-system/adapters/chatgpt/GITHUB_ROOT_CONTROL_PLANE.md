@@ -15,7 +15,7 @@ The official public `openai/plugins` repository is explicitly a curated collecti
 
 For ordinary ChatGPT, the controlling chain is:
 
-`ChatGPT plugin installation / workspace marketplace import / current surface -> hosted GitHub connector namespace/schema -> GitHub remote state/permissions -> local orchestrator policy only if that local plugin is actually host-loaded`
+`ChatGPT plugin installation / workspace marketplace import / effective workspace policy / current surface -> hosted GitHub connector namespace/schema -> GitHub remote state/permissions -> local orchestrator policy only if that local plugin is actually host-loaded`
 
 Repair the first layer that actually owns the failed behavior. Do not repair a downstream prompt when the missing capability belongs to host activation or the connector.
 
@@ -33,9 +33,11 @@ To make a repository-hosted plugin affect ordinary ChatGPT, current OpenAI produ
 
 A Git push is not a marketplace sync. A marketplace JSON file sitting in a repository is not evidence that ChatGPT imported it. After an imported marketplace changes, the host may need automatic daily sync or an explicit **Sync now/Refresh** operation before the current plugin release changes.
 
+**Repository marketplace policy is not workspace effective policy.** Import and sync bring plugin content into the workspace directory, but workspace settings still control the effective Installation policy and authentication/access. Import or sync does not connect member provider accounts and does not grant access to required apps. Those states must be observed independently on the owning workspace/member surface.
+
 The current public/global lookup for `ai-efficiency-operating-system` does not resolve a public release. That does **not** prove a workspace-specific import is absent, but it blocks any claim that the local package is globally installed merely because the repository exists.
 
-Until current host evidence proves import/install/enablement and a behavioral probe exercises the loaded revision, use:
+Until current host evidence proves import/install/enablement, effective workspace policy, required-app access/authentication when applicable, and a behavioral probe exercises the loaded revision, use:
 
 `CUSTOM_PLUGIN_ACTIVATION_UNVERIFIED`
 
@@ -49,12 +51,15 @@ Controls:
 
 - plugin installation and enablement;
 - workspace GitHub marketplace import and sync;
+- effective Installation policy and role assignment;
+- required-app enablement and member access;
+- member/provider authentication when required;
 - whether local/custom skills are exposed on the current surface;
 - connected-app availability;
 - the user's action-approval policy;
 - session/tool namespace visibility.
 
-An **Allow all actions** setting only changes approval behavior for actions that already exist. It does not create connector actions, expand GitHub App scopes, import a local marketplace, or install this repository's skill package.
+An **Allow all actions** setting only changes approval behavior for actions that already exist. It does not create connector actions, expand GitHub App scopes, import a local marketplace, install this repository's skill package, or substitute for required-app access/authentication.
 
 ### Hosted OpenAI GitHub connector
 
@@ -70,13 +75,13 @@ Controls repository contents, refs, commits, PRs, issues, Actions state, and rep
 
 May improve goal interpretation, search strategy, query fanout, live tool discovery, action selection, argument construction, fallback, read-back, verification, and completion logic **only after ordinary ChatGPT has actually loaded the plugin**.
 
-It cannot add a hosted connector action, grant GitHub App/OAuth permissions, bypass an endpoint allowlist, turn the connector into arbitrary shell execution, or install itself into ChatGPT by committing files to GitHub.
+It cannot add a hosted connector action, grant GitHub App/OAuth permissions, bypass an endpoint allowlist, turn the connector into arbitrary shell execution, install itself into ChatGPT by committing files to GitHub, or set workspace effective policy through repository marketplace metadata.
 
 ## Root failure taxonomy
 
 Use the first matching owner:
 
-- `CUSTOM_PLUGIN_ACTIVATION_UNVERIFIED` — local package/repo exists, but current ordinary-ChatGPT import/install/enablement and loaded revision are not proven.
+- `CUSTOM_PLUGIN_ACTIVATION_UNVERIFIED` — local package/repo exists, but current ordinary-ChatGPT import/install/enablement, effective workspace policy, required-app access/authentication when applicable, and loaded revision are not proven.
 - `UPSTREAM_CAPABILITY_GAP` — the required action is absent after narrow live-tool discovery.
 - `HOST_PERMISSION_POLICY` — the action exists but host/plugin approval or enablement blocks it.
 - `GITHUB_REMOTE_PERMISSION` — the action exists but GitHub rejects repository authority.
@@ -132,6 +137,8 @@ A root fix is complete only when:
 
 - the first owning layer is identified;
 - **ordinary-ChatGPT activation of any claimed local plugin is proven independently of repository state**;
+- effective workspace policy is verified independently of repository marketplace metadata;
+- required-app role access and member authentication are verified when applicable;
 - the failure is classified at its real layer;
 - any local repair changes the local cause rather than masking an upstream gap;
 - explicit search breadth is measured by unique results;
