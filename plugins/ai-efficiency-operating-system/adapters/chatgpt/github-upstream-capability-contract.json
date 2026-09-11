@@ -1,38 +1,59 @@
 {
-  "schema_version": 1,
-  "profile_id": "ordinary-chatgpt-github-upstream-control-v1",
-  "purpose": "Separate the actual ordinary-ChatGPT GitHub capability owners from local orchestration so downstream skills cannot pretend to add connector actions, permissions, endpoint families, or arbitrary execution.",
-  "canonical_plugin": {
+  "schema_version": 2,
+  "profile_id": "ordinary-chatgpt-github-upstream-control-v2",
+  "purpose": "Separate ordinary-ChatGPT plugin activation, the hosted GitHub connector capability surface, GitHub remote state, and local repository orchestration so repository packaging can never be mistaken for host-live activation.",
+  "canonical_chatgpt_github_plugin": {
     "reference": "github@openai-curated",
     "canonical_plugin_id": "plugin_connector_1p_1a69035c238881919c4190932b2df699",
     "connector_id": "connector_76869538009648d5b282a4bb21c3d157",
-    "upstream_repository": "openai/plugins",
-    "upstream_plugin_path": "plugins/github",
-    "ordinary_chat_dependency_kind": "app_connector",
+    "distribution_owner": "chatgpt_plugin_directory_and_host",
+    "ordinary_chat_dependency_kind": "hosted_app_connector",
+    "installed_and_enabled_observed": true
+  },
+  "openai_plugins_repository": {
+    "repository": "openai/plugins",
+    "github_example_path": "plugins/github",
+    "observed_main_revision": "d416fd5a43426019986b1e489506db3db66dee3d",
+    "observed_github_plugin_version": "0.1.11",
+    "declared_repository_role": "curated_collection_of_codex_plugin_examples",
+    "ordinary_chat_deployment_source": false,
+    "may_be_used_for_manifest_provenance": true,
+    "codex_mcp_endpoint_observed": "https://api.githubcopilot.com/mcp/",
     "codex_mcp_is_separate_surface": true
   },
-  "observed_upstream_baseline": {
-    "observed_date": "2026-09-11",
-    "openai_plugins_main_revision": "d416fd5a43426019986b1e489506db3db66dee3d",
-    "github_plugin_version": "0.1.11",
-    "ordinary_chat_connector_id": "connector_76869538009648d5b282a4bb21c3d157",
-    "codex_mcp_endpoint": "https://api.githubcopilot.com/mcp/",
-    "snapshot_is_authority": false,
-    "live_host_and_live_tool_schema_override_snapshot": true
+  "local_package_activation_truth": {
+    "package_name": "ai-efficiency-operating-system",
+    "github_repository": "xq22115/ai-thinking-debate-skills-lab",
+    "repository_package_or_ci_pass_does_not_install_chatgpt_plugin": true,
+    "repository_marketplace_presence_does_not_prove_chatgpt_import": true,
+    "repository_marketplace_policy_values_do_not_set_workspace_effective_policy": true,
+    "ordinary_chat_effect_requires_host_plugin_activation": true,
+    "supported_host_paths_may_include": [
+      "plugin_directory_install_when_published_and_available",
+      "workspace_admin_github_marketplace_import_and_sync_when_eligible",
+      "custom_app_or_plugin_rollout_supported_by_the_workspace"
+    ],
+    "current_public_global_plugin_lookup": "plugin_not_found",
+    "public_global_lookup_is_not_proof_of_workspace_specific_absence": true,
+    "custom_plugin_host_live_status": "UNVERIFIED",
+    "host_live_must_not_be_inferred_from_repo_main_or_ci": true
   },
   "ownership_order": [
-    "chatgpt_host_permission_and_plugin_state",
-    "canonical_openai_github_plugin_dependency",
-    "live_github_connector_tool_namespace_and_action_schema",
-    "github_remote_repository_state",
-    "local_ai_efficiency_orchestrator_policy"
+    "chatgpt_plugin_activation_and_session_surface",
+    "hosted_openai_github_connector_tool_namespace_and_action_schema",
+    "github_remote_repository_state_and_provider_permissions",
+    "local_ai_efficiency_orchestrator_only_if_host_loaded"
   ],
   "ownership_contract": {
     "chatgpt_host_owns": [
-      "installed_enabled_state",
+      "plugin_installation_and_enablement",
+      "workspace_marketplace_import_and_sync",
+      "workspace_effective_installation_and_authentication_policy",
+      "required_app_enablement_and_member_access",
       "user_action_approval_policy",
       "tool_namespace_visibility",
-      "session_surface_availability"
+      "session_surface_availability",
+      "whether_local_plugin_skills_are_loaded"
     ],
     "openai_github_connector_owns": [
       "available_action_inventory",
@@ -49,7 +70,7 @@
       "workflow_runs_and_jobs",
       "repository_permissions_enforced_by_github"
     ],
-    "local_orchestrator_owns": [
+    "local_orchestrator_owns_only_when_loaded": [
       "goal_and_acceptance_locking",
       "query_planning_and_search_fanout",
       "live_action_discovery",
@@ -63,6 +84,9 @@
   },
   "local_capability_ceiling": {
     "may_not_claim_or_create": [
+      "chatgpt_plugin_installation_by_git_commit_alone",
+      "workspace_effective_policy_from_repository_marketplace_policy_alone",
+      "member_app_connection_or_access_from_marketplace_import_or_sync_alone",
       "new_connector_actions",
       "new_connector_endpoint_families",
       "oauth_or_github_app_scopes",
@@ -74,7 +98,30 @@
     "missing_live_action_is": "UPSTREAM_CAPABILITY_GAP",
     "host_allow_all_actions_does_not_expand_action_inventory": true,
     "app_manifest_binding_does_not_prove_invokable_or_effective": true,
-    "repository_policy_cannot_override_live_connector_schema": true
+    "repository_policy_cannot_override_live_connector_schema": true,
+    "codex_plugin_manifest_does_not_prove_ordinary_chat_activation": true
+  },
+  "activation_contract": {
+    "before_claiming_local_skill_effect_in_ordinary_chat": [
+      "host_plugin_or_marketplace_entry_resolved",
+      "installed_or_workspace_assigned_state_observed",
+      "workspace_effective_installation_policy_observed",
+      "user_or_workspace_enablement_observed",
+      "required_app_dependency_resolved",
+      "required_app_enabled_and_accessible_for_member_role",
+      "member_authentication_observed_if_required",
+      "skill_or_plugin_visible_on_current_surface",
+      "behavioral_probe_exercises_the_loaded_revision"
+    ],
+    "missing_activation_evidence_status": "CUSTOM_PLUGIN_ACTIVATION_UNVERIFIED",
+    "github_marketplace_import_is_host_admin_operation": true,
+    "github_marketplace_sync_is_not_git_push": true,
+    "repository_marketplace_policy_values_are_not_workspace_effective_policy": true,
+    "workspace_settings_control_installation_and_authentication": true,
+    "marketplace_import_or_sync_does_not_connect_member_accounts": true,
+    "marketplace_import_or_sync_does_not_grant_required_app_access": true,
+    "daily_or_manual_sync_may_be_required_after_repo_change": true,
+    "ordinary_chat_activation_claim_requires_current_host_evidence": true
   },
   "live_surface_rules": {
     "discover_before_material_call_when_schema_not_current": true,
@@ -82,10 +129,13 @@
     "absence_must_be_checked_by_narrow_tool_discovery_not_memory": true,
     "unknown_action_must_not_be_invented": true,
     "connector_error_or_schema_change_requires_rediscovery": true,
-    "permission_setting_and_connector_capability_are_separate_dimensions": true
+    "permission_setting_and_connector_capability_are_separate_dimensions": true,
+    "local_skill_presence_and_connector_presence_are_separate_dimensions": true
   },
   "observed_live_surface_capabilities": {
     "chatgpt_app_permission_observed": "Allow all actions",
+    "canonical_github_plugin_installed_observed": true,
+    "canonical_github_plugin_user_enabled_observed": true,
     "file_read": true,
     "file_create_update_delete": true,
     "branch_search_create_update": true,
@@ -136,7 +186,8 @@
     "missing_required_execution_path_is_blocked_not_pass": true
   },
   "failure_classes": {
-    "UPSTREAM_CAPABILITY_GAP": "Required action is absent from the live connector tool namespace.",
+    "CUSTOM_PLUGIN_ACTIVATION_UNVERIFIED": "Local package exists or passed CI, but ordinary ChatGPT has not been proven to have imported/installed/enabled and behaviorally loaded that package revision.",
+    "UPSTREAM_CAPABILITY_GAP": "Required action is absent from the live hosted GitHub connector tool namespace.",
     "HOST_PERMISSION_POLICY": "The action exists but ChatGPT host approval or plugin state blocks it.",
     "GITHUB_REMOTE_PERMISSION": "The action exists and host allows it but GitHub rejects repository authority.",
     "CALLER_SEARCH_UNDERFETCH": "The caller used too few/too narrow searches or failed to fan out/preserve a numeric breadth target.",
@@ -146,6 +197,9 @@
   },
   "root_completion_gate": {
     "root_owner_identified_before_fix": true,
+    "ordinary_chat_activation_verified_before_claiming_local_skill_effect": true,
+    "workspace_effective_policy_verified_independently_of_repository_policy": true,
+    "required_app_access_and_member_auth_verified_when_applicable": true,
     "capability_gap_localized_to_owner": true,
     "local_fix_must_target_only_local_owner": true,
     "upstream_gap_must_not_be_papered_over_with_prompt_text": true,

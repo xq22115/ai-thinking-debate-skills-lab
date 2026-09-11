@@ -8,18 +8,23 @@ The repository provides `.agents/plugins/marketplace.json` for supported workspa
 
 The plugin includes `.app.json` with the `github` app binding used for repository/PR/issue/Actions work. Importing or syncing the repository does not itself prove that the owning workspace has connected or authorized that app. Actual availability depends on workspace permissions, plan, surface and import/install state. Do not convert a GitHub commit into a `HOST_LIVE` claim.
 
+Repository marketplace `policy` values are catalog metadata, not proof of the workspace's effective installation/authentication policy. After import/sync, read the effective workspace Installation policy separately, verify each required app is enabled and accessible for the intended member role, and verify member/provider authentication when the live app requires it. Import/sync does not connect member accounts or grant required-app access.
+
 The plugin does not manufacture local filesystem, process/network telemetry, terminal, browser-control, binary-analysis or other host capabilities. Those must be supplied and authorized by the owning host/runtime.
 
-For ordinary ChatGPT GitHub work, read both `github-pull-runtime.json` and `GITHUB_OPERATION_LOOP.md`. The machine profile is authoritative for fail-closed validation; the Markdown file is its human-readable operational projection.
+For ordinary ChatGPT GitHub work, read `github-upstream-capability-contract.json`, `HOST_ACTIVATION_PROBE.md`, `github-pull-runtime.json`, and `GITHUB_OPERATION_LOOP.md`. Machine profiles are authoritative for fail-closed validation; Markdown files are human-readable operational projections.
 
 ## Probe order
 
 1. Import/sync the repository marketplace through the actual supported workspace/admin plugin control for the target account.
-2. Confirm `AI Efficiency Operating System` is listed and installable/installed on the owning surface.
-3. Read the expected plugin name/version from `.codex-plugin/plugin.json` at the exact imported/synced repository revision. Confirm the owning surface reports the same version when exposed; never compare against a hand-written stale version constant.
-4. For GitHub-backed work, verify the plugin exposes or can use the bound `GitHub` app, then distinguish these states: `APP_DECLARED → APP_AVAILABLE → APP_CONNECTED → TOOL_NAMESPACE_VISIBLE → TOOL_SCHEMA_READY → TOOL_INVOKABLE → EFFECT_VERIFIED`.
-5. Verify the operation profile reports schema v2 and contains the state path `GOAL_LOCKED → TARGET_RESOLVED → AUTHORITY_RESOLVED → READ_PLAN_READY → SOURCE_READ → EVIDENCE_SUFFICIENT → TOOL_SCHEMA_READY → INVOCATION_PREFLIGHT → INVOKED → RESPONSE_CLASSIFIED`, plus the applicable mutation/execution/verification states.
-6. Run a real GitHub **pull/read path** from ordinary ChatGPT:
+2. Confirm `AI Efficiency Operating System` is listed for the owning workspace/surface.
+3. Read the effective workspace Installation policy; do not infer it from repository marketplace `AVAILABLE / ON_INSTALL` metadata.
+4. Confirm the plugin is available/installed/assigned for the intended user or role according to workspace policy.
+5. For each required app, confirm it is enabled and accessible for the intended role; complete member/provider authentication only if required by that app.
+6. Read the expected plugin name/version from `.codex-plugin/plugin.json` at the exact imported/synced repository revision. Confirm the owning surface reports the same version when exposed; never compare against a hand-written stale version constant.
+7. For GitHub-backed work, verify the plugin exposes or can use the bound `GitHub` app, then distinguish these states: `APP_DECLARED → APP_AVAILABLE → APP_ROLE_ACCESSIBLE → APP_AUTHENTICATED_IF_REQUIRED → TOOL_NAMESPACE_VISIBLE → TOOL_SCHEMA_READY → TOOL_INVOKABLE → EFFECT_VERIFIED`.
+8. Verify the operation profile reports schema v2 and contains the state path `GOAL_LOCKED → TARGET_RESOLVED → AUTHORITY_RESOLVED → READ_PLAN_READY → SOURCE_READ → EVIDENCE_SUFFICIENT → TOOL_SCHEMA_READY → INVOCATION_PREFLIGHT → INVOKED → RESPONSE_CLASSIFIED`, plus the applicable mutation/execution/verification states.
+9. Run a real GitHub **pull/read path** from ordinary ChatGPT:
    - lock the requested target and acceptance criterion;
    - resolve a known repository by exact identity;
    - record default branch, current head and effective permissions when exposed;
@@ -27,13 +32,13 @@ For ordinary ChatGPT GitHub work, read both `github-pull-runtime.json` and `GITH
    - distinguish observed facts from derived conclusions and unresolved hypotheses;
    - if ranked/code search misses, pivot to a causally distinct exact lookup/direct fetch/tree-or-contents route before concluding absence;
    - if a response is empty/truncated, targeted-refetch the exact object instead of inferring missing state.
-7. Run a real **live-schema invocation preflight**:
+10. Run a real **live-schema invocation preflight**:
    - narrow-discover the relevant GitHub action when its schema is not already current in context;
    - verify required arguments, enums, identifier semantics and write behavior from the live tool description;
    - reject an invented/unknown argument rather than guessing;
    - after a simulated or observed schema mismatch, rediscover the action before retrying;
    - record the expected postcondition before an effectful call.
-8. Run a real GitHub **write/read-back path** only on a safe test branch/repository when write verification is required:
+11. Run a real GitHub **write/read-back path** only on a safe test branch/repository when write verification is required:
    - record rollback/base revision;
    - read target file and current blob SHA;
    - create/use an isolated test branch for non-trivial probes;
@@ -42,45 +47,45 @@ For ordinary ChatGPT GitHub work, read both `github-pull-runtime.json` and `GITH
    - read the same target branch back and compare intended content;
    - deliberately exercise one stale-SHA or equivalent detectable failure on the safe test path and verify it does not corrupt the accepted state;
    - restore/delete the probe state and read back the rollback result.
-9. Run a real GitHub **execution path** when execution is part of the acceptance contract:
+12. Run a real GitHub **execution path** when execution is part of the acceptance contract:
    - distinguish workflow dispatch/request acceptance from workflow execution success;
    - bind the observed workflow run to the exact commit/ref under test;
    - inspect its conclusion and any relevant evidence exposed by the GitHub surface;
    - verify the user-level postcondition separately when it is higher than CI status;
    - if owning-runtime behavior cannot be observed, report `BLOCKED` or `NOT_RUN`, not PASS.
-10. Run a **partial/ambiguous response** probe:
+13. Run a **partial/ambiguous response** probe:
    - simulate or encounter partial success, truncation, ambiguous status, or remote failure;
    - preserve exact target/action/status and evidence delta;
    - read current remote state before deciding the next material action;
    - prove the workflow does not blindly chain a mutation from an ambiguous result.
-11. Run a **no-progress** probe:
+14. Run a **no-progress** probe:
    - cause two same-mechanism attempts to produce no material evidence delta;
    - verify the next attempt changes causal mechanism rather than wording;
    - ensure target identity, acceptance criteria and authority ceiling remain unchanged.
-12. Run base positive/negative routing:
-   - multi-step GitHub read/search/analyze/call/write/workflow/verify task → `github-operation-orchestrator` behavior;
+15. Run base positive/negative routing:
+   - multi-step GitHub read/search/analyze/call/write/workflow/verify task → `github-operation-orchestrator` behavior after host activation truth is satisfied;
    - explanation-only `GitHub 是什麼` → no GitHub specialist ceremony;
    - material target ambiguity → `task-goal-intelligence` behavior;
    - plan comparison → `plan-arbiter` behavior;
    - completion claim → `evidence-watchdog` postcondition behavior;
    - current technical research → `executive-research` behavior;
    - simple arithmetic/translation and explanation-only specialist nouns → no heavy specialist ceremony.
-13. **Without explicit skill names**, run conditional specialist probes:
+16. **Without explicit skill names**, run conditional specialist probes:
    - same model/product behaves differently by session/account/surface → `capability-forensics` behavior;
    - many/changing MCP tools or schema/context pressure → `mcp-surface-engineering` behavior;
    - tool/process claims success but real state is missing → `agent-runtime-forensics` behavior.
-14. Verify deep-use markers rather than mere name-dropping:
-   - GitHub probe maintains target/revision/schema/result/evidence-delta/legal-next-action state and uses a failure-class-specific recovery route;
+17. Verify deep-use markers rather than mere name-dropping:
+   - GitHub probe maintains host activation, workspace policy, app access/auth, target/revision/schema/result/evidence-delta/legal-next-action state and uses a failure-class-specific recovery route;
    - capability probe distinguishes declared/visible/authorized/loadable/invokable/effective/verified states and chooses a differential probe;
    - MCP probe inspects live namespace/schema/version/entitlement/session and proposes narrow/lazy discovery when relevant;
    - runtime probe correlates intent/tool/process/file/network/artifact/postcondition evidence and reports missing planes rather than inventing them.
-15. Verify bounded composition: no more than three implicit skills in one phase; for material GitHub operations the default rich shape is `task-goal-intelligence + github-operation-orchestrator + evidence-watchdog`.
-16. Verify fallback/self-repair: simulate or encounter one unavailable/failed specialist or GitHub retrieval route, preserve the Goal Contract, retry the same mechanism at most once without new evidence, then select a materially different goal-advancing route.
-17. Verify explicit-only boundaries:
+18. Verify bounded composition: no more than three implicit skills in one phase; for material GitHub operations after host activation the default rich shape is `task-goal-intelligence + github-operation-orchestrator + evidence-watchdog`.
+19. Verify fallback/self-repair: simulate or encounter one unavailable/failed specialist or GitHub retrieval route, preserve the Goal Contract, retry the same mechanism at most once without new evidence, then select a materially different goal-advancing route.
+20. Verify explicit-only boundaries:
    - `autonomy-contract` does not appear implicitly;
    - `persistent-work-ledger` does not pretend ordinary Chat has durable primitives;
    - `authorized-reverse-engineering` remains intentionally explicit and authorization-scoped.
-18. Test a real state claim with owning-runtime/read-back proof.
+21. Test a real state claim with owning-runtime/read-back proof.
 
 ## GitHub response classification
 
@@ -106,6 +111,8 @@ Preserve the exact target, mechanism, error/status, evidence delta and legal nex
 For a material probe retain enough evidence to reconstruct:
 
 - goal and acceptance criterion;
+- ChatGPT marketplace/import state and effective workspace policy;
+- required-app/member access and authentication when applicable;
 - owner/repository/ref/path/PR/workflow identity;
 - base/head/blob/version dimensions;
 - observed authority;
@@ -122,13 +129,13 @@ This is an audit record, not a request to expose private chain-of-thought.
 
 ## Acceptance states
 
-`CHATGPT_DESKTOP_HOST_LIVE` requires observed plugin availability plus successful behavior probes on the actual Desktop surface for the exact imported/synced plugin revision.
+`CHATGPT_DESKTOP_HOST_LIVE` requires observed plugin availability, effective workspace policy, required-app/member access/authentication when applicable, plus successful behavior probes on the actual Desktop surface for the exact imported/synced plugin revision.
 
 `CHATGPT_GITHUB_BRIDGE_VERIFIED` additionally requires:
 
 - the plugin manifest references `./.app.json`;
 - `.app.json` resolves the `github` app binding expected by the current package;
-- the GitHub app is available/connected on the owning surface;
+- the GitHub app is available/role-accessible and authenticated when required on the owning surface;
 - `github-pull-runtime.json` schema v2 and `GITHUB_OPERATION_LOOP.md` agree on the core operation states;
 - a real ordinary-ChatGPT GitHub read/pull path succeeds;
 - live action/schema preflight is observed for a material call;
