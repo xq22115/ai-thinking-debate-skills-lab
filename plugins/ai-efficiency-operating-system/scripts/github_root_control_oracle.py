@@ -7,8 +7,15 @@ from pathlib import Path
 
 
 def classify(d):
-    if d.get("depends_on_local_plugin") and not d.get("local_plugin_host_activation_verified"):
-        return "CUSTOM_PLUGIN_ACTIVATION_UNVERIFIED"
+    if d.get("depends_on_local_plugin"):
+        if not d.get("local_plugin_host_activation_verified"):
+            return "CUSTOM_PLUGIN_ACTIVATION_UNVERIFIED"
+        if not d.get("workspace_effective_policy_observed"):
+            return "CUSTOM_PLUGIN_ACTIVATION_UNVERIFIED"
+        if d.get("required_app_dependency") and not d.get("required_app_access_observed"):
+            return "CUSTOM_PLUGIN_ACTIVATION_UNVERIFIED"
+        if d.get("member_authentication_required") and not d.get("member_authentication_observed"):
+            return "CUSTOM_PLUGIN_ACTIVATION_UNVERIFIED"
     if not d.get("live_discovery_done", True) and not d.get("required_action_present", False):
         return "DISCOVER_LIVE_SURFACE_FIRST"
     if d.get("live_discovery_done") and d.get("required_action_present") is False:
