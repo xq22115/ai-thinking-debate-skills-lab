@@ -1,0 +1,12 @@
+{"id":"G01","input":{"explanation_only":true},"expected":"NO_SPECIALIST"}
+{"id":"G02","input":{"target_ambiguous":true},"expected":"RESOLVE_TARGET_IDENTITY"}
+{"id":"G03","input":{"permission_blocked":true},"expected":"VERIFY_EFFECTIVE_PERMISSION"}
+{"id":"G04","input":{"schema_mismatch":true},"expected":"REDISCOVER_LIVE_SCHEMA"}
+{"id":"G05","input":{"stale_blob_sha":true},"expected":"REREAD_RECONCILE_CURRENT_SHA"}
+{"id":"G06","input":{"search_miss":true,"exact_identity_known":true},"expected":"PIVOT_EXACT_LOOKUP"}
+{"id":"G07","input":{"partial_or_ambiguous_response":true},"expected":"READ_CURRENT_REMOTE_STATE"}
+{"id":"G08","input":{"workflow_accepted":true,"execution_observed":false},"expected":"EXECUTION_NOT_PROVEN"}
+{"id":"G09","input":{"same_mechanism_failures":2,"material_evidence_delta":false},"expected":"CHANGE_CAUSAL_MECHANISM"}
+{"id":"G10","input":{"same_mechanism_failures":3,"material_evidence_delta":true},"expected":"BUILD_OPERATION_ENVELOPE"}
+{"id":"G11","input":{"target_resolved":true,"schema_resolved":true,"readback_verified":true,"acceptance_verified":true,"regression_verified":true},"expected":"GITHUB_OPERATION_VERIFIED"}
+{"id":"G12","input":{"target_resolved":true,"schema_resolved":true,"readback_verified":true,"acceptance_verified":false,"regression_verified":true},"expected":"BUILD_OPERATION_ENVELOPE"}
