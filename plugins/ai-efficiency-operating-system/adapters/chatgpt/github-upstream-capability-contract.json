@@ -26,6 +26,7 @@
     "github_repository": "xq22115/ai-thinking-debate-skills-lab",
     "repository_package_or_ci_pass_does_not_install_chatgpt_plugin": true,
     "repository_marketplace_presence_does_not_prove_chatgpt_import": true,
+    "repository_marketplace_policy_values_do_not_set_workspace_effective_policy": true,
     "ordinary_chat_effect_requires_host_plugin_activation": true,
     "supported_host_paths_may_include": [
       "plugin_directory_install_when_published_and_available",
@@ -47,6 +48,8 @@
     "chatgpt_host_owns": [
       "plugin_installation_and_enablement",
       "workspace_marketplace_import_and_sync",
+      "workspace_effective_installation_and_authentication_policy",
+      "required_app_enablement_and_member_access",
       "user_action_approval_policy",
       "tool_namespace_visibility",
       "session_surface_availability",
@@ -82,6 +85,8 @@
   "local_capability_ceiling": {
     "may_not_claim_or_create": [
       "chatgpt_plugin_installation_by_git_commit_alone",
+      "workspace_effective_policy_from_repository_marketplace_policy_alone",
+      "member_app_connection_or_access_from_marketplace_import_or_sync_alone",
       "new_connector_actions",
       "new_connector_endpoint_families",
       "oauth_or_github_app_scopes",
@@ -100,14 +105,21 @@
     "before_claiming_local_skill_effect_in_ordinary_chat": [
       "host_plugin_or_marketplace_entry_resolved",
       "installed_or_workspace_assigned_state_observed",
+      "workspace_effective_installation_policy_observed",
       "user_or_workspace_enablement_observed",
       "required_app_dependency_resolved",
+      "required_app_enabled_and_accessible_for_member_role",
+      "member_authentication_observed_if_required",
       "skill_or_plugin_visible_on_current_surface",
       "behavioral_probe_exercises_the_loaded_revision"
     ],
     "missing_activation_evidence_status": "CUSTOM_PLUGIN_ACTIVATION_UNVERIFIED",
     "github_marketplace_import_is_host_admin_operation": true,
     "github_marketplace_sync_is_not_git_push": true,
+    "repository_marketplace_policy_values_are_not_workspace_effective_policy": true,
+    "workspace_settings_control_installation_and_authentication": true,
+    "marketplace_import_or_sync_does_not_connect_member_accounts": true,
+    "marketplace_import_or_sync_does_not_grant_required_app_access": true,
     "daily_or_manual_sync_may_be_required_after_repo_change": true,
     "ordinary_chat_activation_claim_requires_current_host_evidence": true
   },
@@ -186,6 +198,8 @@
   "root_completion_gate": {
     "root_owner_identified_before_fix": true,
     "ordinary_chat_activation_verified_before_claiming_local_skill_effect": true,
+    "workspace_effective_policy_verified_independently_of_repository_policy": true,
+    "required_app_access_and_member_auth_verified_when_applicable": true,
     "capability_gap_localized_to_owner": true,
     "local_fix_must_target_only_local_owner": true,
     "upstream_gap_must_not_be_papered_over_with_prompt_text": true,
