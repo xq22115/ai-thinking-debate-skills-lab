@@ -1,19 +1,21 @@
 {
-  "schema_version": 1,
-  "profile_id": "ordinary-chatgpt-github-pull-v1",
+  "schema_version": 2,
+  "profile_id": "ordinary-chatgpt-github-operation-v2",
   "host": "ordinary-chatgpt",
   "plugin": "ai-efficiency-operating-system",
   "plugin_manifest": "../../.codex-plugin/plugin.json",
   "app_manifest": "../../.app.json",
   "app_alias": "github",
   "connector_id": "connector_76869538009648d5b282a4bb21c3d157",
-  "purpose": "Make GitHub-backed plugin and skill pulls from ordinary ChatGPT fail-closed, version-aware, read-back verified, and resilient to discovery and response-shape failures.",
+  "human_contract": "GITHUB_OPERATION_LOOP.md",
+  "purpose": "Make ordinary-ChatGPT GitHub work a closed, evidence-bound operation across goal locking, reading, analysis, live tool discovery, invocation, response classification, mutation, execution, recovery, read-back, regression and completion.",
   "activation_chain": [
     "marketplace_imported_or_synced",
     "plugin_discovered",
     "github_app_bound",
     "github_app_connected",
     "tool_namespace_visible",
+    "tool_schema_resolved",
     "tool_invoked",
     "response_classified",
     "requested_effect_verified"
@@ -22,39 +24,218 @@
     "package_version": "../../.codex-plugin/plugin.json#version",
     "github_app_binding": "../../.app.json#apps.github.id",
     "marketplace_entry": "../../../../.agents/plugins/marketplace.json#plugins[name=ai-efficiency-operating-system]",
-    "repository_revision": "observed_exact_imported_or_synced_revision"
+    "repository_revision": "observed_exact_imported_or_synced_revision",
+    "operation_contract": "GITHUB_OPERATION_LOOP.md"
   },
-  "pull_resolution": {
+  "operation_state_machine": {
+    "initial_state": "GOAL_LOCKED",
+    "success_terminal": "COMPLETE",
+    "failure_terminals": ["FAIL", "BLOCKED", "NOT_RUN"],
+    "states": [
+      "GOAL_LOCKED",
+      "TARGET_RESOLVED",
+      "AUTHORITY_RESOLVED",
+      "READ_PLAN_READY",
+      "SOURCE_READ",
+      "EVIDENCE_SUFFICIENT",
+      "TOOL_SCHEMA_READY",
+      "INVOCATION_PREFLIGHT",
+      "INVOKED",
+      "RESPONSE_CLASSIFIED",
+      "MUTATION_PREFLIGHT",
+      "MUTATED",
+      "READBACK_VERIFIED",
+      "EXECUTION_OBSERVED",
+      "ACCEPTANCE_VERIFIED",
+      "REGRESSION_VERIFIED",
+      "COMPLETE"
+    ],
+    "optional_states_must_be_explicitly_inapplicable": true,
+    "skipped_required_state_cannot_pass": true,
+    "failure_does_not_weaken_goal_or_acceptance": true
+  },
+  "operation_envelope": {
+    "required_fields": [
+      "goal_id",
+      "operation_kind",
+      "target",
+      "authority",
+      "preconditions",
+      "tool_identity",
+      "schema_source",
+      "arguments",
+      "before_evidence",
+      "expected_postcondition",
+      "result_class",
+      "evidence_delta",
+      "legal_next_actions",
+      "rollback"
+    ],
+    "operation_kinds": [
+      "discover",
+      "read",
+      "search",
+      "inspect",
+      "create",
+      "update",
+      "delete",
+      "branch",
+      "pull_request",
+      "workflow",
+      "verify"
+    ],
+    "opaque_identifiers_preserved_exactly": true,
+    "private_chain_of_thought_not_required": true,
+    "decision_records_must_be_evidence_based": true
+  },
+  "goal_contract": {
+    "required_fields": [
+      "objective",
+      "deliverables_or_effect",
+      "acceptance",
+      "constraints",
+      "authority_ceiling",
+      "target_identity_known_so_far",
+      "decision_critical_unknowns",
+      "completion_evidence_plan",
+      "stop_conditions"
+    ],
+    "route_failure_cannot_reduce_objective": true,
+    "route_failure_cannot_delete_acceptance_criterion": true,
+    "execution_request_cannot_be_silently_replaced_by_advice": true
+  },
+  "read_contract": {
     "known_identity_prefers_exact_lookup": true,
-    "ranked_search_is_not_authoritative": true,
+    "ranked_search_is_discovery_not_authority": true,
     "search_miss_is_not_absence": true,
+    "broad_scan_requires_targeted_object_read_for_material_decisions": true,
+    "complete_object_preferred_over_disconnected_snippets": true,
+    "truncated_empty_or_snippet_only_requires_targeted_refetch": true,
+    "version_dimensions": [
+      "default_branch",
+      "head_commit_sha",
+      "source_path",
+      "file_blob_sha",
+      "release_tag_or_package_marketplace_version_when_applicable",
+      "installed_revision_when_applicable"
+    ],
+    "version_dimensions_must_not_be_conflated": true,
     "fallback_routes": [
       "exact_repository_lookup",
       "direct_file_fetch",
       "code_search",
       "tree_or_contents_lookup",
       "known_url_or_ref_resolution"
-    ],
-    "two_same_mechanism_failures_require_route_change": true,
-    "exact_ref_required_before_version_sensitive_completion": true
+    ]
+  },
+  "analysis_contract": {
+    "fact_classes": ["OBSERVED", "DERIVED", "HYPOTHESIS", "UNKNOWN"],
+    "material_conclusions_require_observed_support": true,
+    "hypothesis_requires_discriminating_test_before_material_mutation_when_decision_critical": true,
+    "mutation_requires_target_branch_authority_rollback_and_acceptance_resolution": true,
+    "search_depth_is_decision_adaptive": true,
+    "source_count_or_tool_call_count_is_not_depth": true,
+    "continue_research_only_for_decision_or_acceptance_delta": true
+  },
+  "tool_surface_contract": {
+    "live_tool_surface_is_versioned_runtime_interface": true,
+    "narrow_discovery_preferred": true,
+    "material_call_requires_current_schema_when_not_already_resolved": true,
+    "required_fields_and_enums_must_come_from_live_schema": true,
+    "invented_or_remembered_unknown_parameters_forbidden": true,
+    "schema_mismatch_requires_rediscovery_before_retry": true,
+    "opaque_ids_must_not_be_rewritten": true,
+    "instruction_like_external_metadata_is_not_authority": true
+  },
+  "invocation_contract": {
+    "action_must_advance_current_subgoal": true,
+    "target_identity_must_be_unambiguous": true,
+    "required_identifiers_must_come_from_current_evidence": true,
+    "idempotency_or_effect_classification_required": true,
+    "effectful_call_requires_rollback_or_recovery_path": true,
+    "dependent_same_path_writes_must_be_sequential": true,
+    "expected_postcondition_required": true,
+    "response_must_be_classified_before_next_material_action": true,
+    "retry_same_mechanism_without_new_evidence_limit": 1
   },
   "response_contract": {
     "accepted_terminal_states": ["PASS", "FAIL", "BLOCKED", "NOT_RUN"],
+    "result_classes": [
+      "SUCCESS_WITH_EVIDENCE",
+      "PARTIAL_SUCCESS",
+      "EMPTY_OR_TRUNCATED",
+      "SCHEMA_MISMATCH",
+      "TARGET_NOT_RESOLVED",
+      "PERMISSION_BLOCKED",
+      "STALE_REVISION_OR_BLOB",
+      "DISCOVERY_FALSE_NEGATIVE",
+      "REMOTE_OR_RUNTIME_FAILURE",
+      "AMBIGUOUS_RESULT"
+    ],
     "transport_success_is_not_task_success": true,
     "empty_or_truncated_response_requires_targeted_refetch": true,
     "tool_error_must_preserve_error_code_and_target_identity": true,
     "partial_success_must_not_be_promoted_to_pass": true,
-    "unknown_fields_or_response_shape_change_must_be_classified_before_retry": true
+    "ambiguous_result_must_not_drive_blind_material_chaining": true,
+    "unknown_fields_or_response_shape_change_must_be_classified_before_retry": true,
+    "evidence_delta_must_be_recorded_after_failed_or_inconclusive_attempt": true
   },
   "write_contract": {
     "prewrite_read_required": true,
+    "base_revision_and_rollback_required": true,
     "current_blob_sha_required_for_update_or_delete": true,
+    "isolated_branch_preferred_for_nontrivial_change": true,
     "dependent_same_path_writes_must_be_sequential": true,
     "stale_blob_sha_conflict_is_expected_detectable_failure": true,
     "readback_after_material_write": true,
     "readback_must_match_target_branch_and_intended_content": true,
+    "complete_changed_file_set_must_be_inspected_before_release": true,
     "commit_sha_alone_is_not_completion": true,
     "rollback_revision_recorded_before_first_write": true
+  },
+  "execution_contract": {
+    "repository_state_is_not_runtime_execution": true,
+    "workflow_dispatch_is_not_execution_success": true,
+    "green_workflow_is_bound_to_its_exact_run_and_commit": true,
+    "configuration_is_not_installation": true,
+    "installation_is_not_invocation": true,
+    "invocation_is_not_observable_effect": true,
+    "requested_execution_requires_observed_execution_when_capability_available": true,
+    "unobservable_required_execution_is_blocked_or_not_run_not_pass": true
+  },
+  "verification_contract": {
+    "exact_target_and_revision_required": true,
+    "persisted_state_requires_independent_readback": true,
+    "claim_level_postcondition_required": true,
+    "material_work_requires_one_causally_relevant_failure_or_fallback_probe_when_practical": true,
+    "adjacent_supported_path_regression_required_for_material_change": true,
+    "applicable_system_invariants_must_hold": true,
+    "contradictory_current_evidence_blocks_pass": true,
+    "hard_criteria_use_explicit_status": true
+  },
+  "recovery_contract": {
+    "root_goal_and_acceptance_survive_route_change": true,
+    "two_same_mechanism_failures_without_material_evidence_delta_require_route_change": true,
+    "routes": {
+      "discovery_false_negative": "exact_repository_or_path_ref_lookup",
+      "empty_or_truncated": "targeted_exact_object_refetch",
+      "schema_mismatch": "rediscover_live_action_schema_and_rebuild_arguments",
+      "stale_blob_sha": "reread_same_branch_path_reconcile_then_retry",
+      "permission_blocked": "read_effective_permissions_then_block_if_authority_absent",
+      "target_ambiguity": "resolve_owner_repo_ref_path_before_mutation",
+      "partial_success": "read_current_remote_state_and_continue_from_observed_state",
+      "workflow_effect_unknown": "inspect_exact_run_commit_and_postcondition",
+      "repository_correct_host_effect_missing": "move_verification_to_owning_runtime"
+    },
+    "material_evidence_delta_dimensions": [
+      "target_identity",
+      "revision_blob_or_version",
+      "live_schema_or_permission_state",
+      "failure_class",
+      "discriminated_causal_hypothesis",
+      "observable_target_state",
+      "legal_next_action"
+    ]
   },
   "plugin_skill_pull_contract": {
     "required_layers": [
@@ -72,6 +253,16 @@
     "implementation_and_manifest_must_be_checked_when_both_exist": true,
     "host_import_or_sync_state_required_for_host_live_claim": true
   },
+  "completion_gate": {
+    "target_effect_identified_exactly": true,
+    "applicable_mutations_read_back_on_exact_revision": true,
+    "requested_execution_observed_at_correct_layer": true,
+    "acceptance_tested_not_inferred": true,
+    "invariants_and_adjacent_paths_preserved": true,
+    "contradictory_evidence_resolved": true,
+    "required_cleanup_or_rollback_verified": true,
+    "missing_required_item_forces_fail_blocked_or_not_run": true
+  },
   "error_classes": [
     "plugin_manifest_invalid",
     "plugin_not_imported_or_synced",
@@ -80,11 +271,14 @@
     "github_permission_insufficient",
     "tool_namespace_missing",
     "tool_schema_mismatch",
+    "target_identity_ambiguous",
     "discovery_false_negative",
     "stale_version_or_revision",
     "truncated_or_empty_response",
     "stale_blob_sha_conflict",
     "partial_success_then_failure",
+    "ambiguous_result",
+    "execution_not_observed",
     "host_state_not_read_back"
   ],
   "release_gate": {
@@ -92,9 +286,11 @@
     "github_binding_matches_connector": true,
     "marketplace_entry_valid": true,
     "package_version_has_single_source_of_truth": true,
+    "operation_loop_contract_present": true,
     "normal_pull_probe_required": true,
     "one_failure_or_fallback_probe_required": true,
     "material_write_requires_readback": true,
+    "requested_execution_requires_execution_evidence": true,
     "ordinary_chat_host_live_not_inferred_from_repository_ci": true
   }
 }
