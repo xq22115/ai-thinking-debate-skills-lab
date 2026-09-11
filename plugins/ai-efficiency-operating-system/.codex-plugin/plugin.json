@@ -1,7 +1,7 @@
 {
   "name": "ai-efficiency-operating-system",
-  "version": "1.4.0",
-  "description": "Native goal-first agent harness with runtime preamble, phase-gated semantic routing, progressive skill disclosure, ordinary-ChatGPT GitHub operation orchestration, deep research, capability/MCP/runtime forensics, fresh verification, recovery and failure-trace optimization for complex ChatGPT and Codex tasks.",
+  "version": "1.4.1",
+  "description": "Native goal-first agent harness with runtime preamble, phase-gated semantic routing, progressive skill disclosure, ordinary-ChatGPT GitHub operation orchestration, explicit host-activation truth, deep research, capability/MCP/runtime forensics, fresh verification, recovery and failure-trace optimization for complex ChatGPT and Codex tasks.",
   "author": {
     "name": "xq22115",
     "url": "https://github.com/xq22115"
@@ -19,6 +19,7 @@
     "progressive-disclosure",
     "auto-invoke",
     "ordinary-chatgpt",
+    "host-activation",
     "superpowers",
     "github",
     "github-orchestration",
@@ -37,13 +38,13 @@
     "displayName": "AI Efficiency Operating System",
     "developerName": "xq22115",
     "category": "Productivity",
-    "shortDescription": "Native goal harness, GitHub operation loop and verified execution",
-    "longDescription": "A goal-first harness with a thin implicit router, deterministic runtime preamble, progressive specialist disclosure, an ordinary-ChatGPT GitHub operation orchestrator with explicit app binding, bounded composition, failure-trace optimization and fresh owning-system verification.",
+    "shortDescription": "Native goal harness, GitHub operation loop and activation truth",
+    "longDescription": "A goal-first harness with a thin implicit router, deterministic runtime preamble, progressive specialist disclosure, an ordinary-ChatGPT GitHub operation orchestrator with explicit hosted-app binding and host-activation gates, bounded composition, failure-trace optimization and fresh owning-system verification.",
     "capabilities": ["Interactive", "Read", "Write"],
     "defaultPrompt": [
       "Recover my actual goal, run the smallest useful native workflow, and verify the result with current owning evidence.",
       "Treat route failures as recovery signals rather than permission to reduce the goal or acceptance criteria.",
-      "For GitHub work, use the bound GitHub app as an evidence-bound read-analyze-call-write-execute-verify loop and prove persisted changes with read-back."
+      "For GitHub work, first separate repository package state, ChatGPT plugin activation, hosted connector capability, and GitHub remote state; then use the live GitHub app as an evidence-bound read-analyze-call-write-execute-verify loop."
     ]
   }
 }
