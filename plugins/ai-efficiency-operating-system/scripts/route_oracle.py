@@ -193,7 +193,10 @@ def score_routes(prompt):
     scores["chief-of-staff-core"] = 8 * s["complex"]
     scores["task-goal-intelligence"] = 5 * s["goal_ambiguity"]
 
-    if s["research"] and s["github_operation"]:
+    # Research should strengthen GitHub ownership only when there is more than one
+    # research signal. A single word such as "commit" must not steal a pure
+    # post-write completion check from evidence-watchdog.
+    if s["research"] >= 2 and s["github_operation"]:
         scores["github-operation-orchestrator"] += 2
     if s["research"] and s["capability_gap"]:
         scores["capability-forensics"] += 3
