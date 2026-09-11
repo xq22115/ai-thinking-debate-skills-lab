@@ -2,6 +2,7 @@
 """Fail-closed validator for repository-to-ordinary-ChatGPT plugin activation readiness."""
 
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -14,6 +15,7 @@ UPSTREAM = ROOT / "adapters" / "chatgpt" / "github-upstream-capability-contract.
 HOST_ADAPTERS = ROOT / "host-adapters.json"
 EXPECTED_NAME = "ai-efficiency-operating-system"
 EXPECTED_SOURCE_PATH = "./plugins/ai-efficiency-operating-system"
+SEMVER = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$")
 
 
 def main():
@@ -36,10 +38,11 @@ def main():
 
     if plugin.get("name") != EXPECTED_NAME:
         errors.append("plugin name drift")
-    if plugin.get("version") != settings.get("version"):
+    version = plugin.get("version")
+    if not isinstance(version, str) or not SEMVER.fullmatch(version):
+        errors.append("plugin version must be canonical SemVer")
+    if version != settings.get("version"):
         errors.append("plugin/settings version drift")
-    if plugin.get("version") != "1.4.1":
-        errors.append("host-activation correction must publish package version 1.4.1")
 
     matches = [row for row in marketplace.get("plugins", []) if row.get("name") == EXPECTED_NAME]
     if len(matches) != 1:
@@ -52,22 +55,45 @@ def main():
             errors.append("marketplace source kind must remain local")
         if source.get("path") != EXPECTED_SOURCE_PATH:
             errors.append("marketplace source path drift")
+        # These are repository catalog metadata only. They must never be promoted
+        # to proof of the workspace's effective installation/authentication state.
         if policy.get("installation") != "AVAILABLE":
-            errors.append("marketplace installation policy must remain AVAILABLE")
+            errors.append("repository marketplace installation metadata drift")
         if policy.get("authentication") != "ON_INSTALL":
-            errors.append("marketplace authentication policy must remain ON_INSTALL")
+            errors.append("repository marketplace authentication metadata drift")
 
     activation_truth = upstream.get("local_package_activation_truth") or {}
     if activation_truth.get("custom_plugin_host_live_status") != "UNVERIFIED":
         errors.append("repository package must not preclaim ChatGPT HOST_LIVE")
-    if activation_truth.get("repository_marketplace_presence_does_not_prove_chatgpt_import") is not True:
-        errors.append("marketplace presence/import truth boundary missing")
+    for key in (
+        "repository_marketplace_presence_does_not_prove_chatgpt_import",
+        "repository_marketplace_policy_values_do_not_set_workspace_effective_policy",
+    ):
+        if activation_truth.get(key) is not True:
+            errors.append(f"missing marketplace activation truth:{key}")
 
     activation_contract = upstream.get("activation_contract") or {}
-    if activation_contract.get("github_marketplace_import_is_host_admin_operation") is not True:
-        errors.append("marketplace import host/admin boundary missing")
-    if activation_contract.get("github_marketplace_sync_is_not_git_push") is not True:
-        errors.append("Git push vs marketplace sync boundary missing")
+    for key in (
+        "github_marketplace_import_is_host_admin_operation",
+        "github_marketplace_sync_is_not_git_push",
+        "repository_marketplace_policy_values_are_not_workspace_effective_policy",
+        "workspace_settings_control_installation_and_authentication",
+        "marketplace_import_or_sync_does_not_connect_member_accounts",
+        "marketplace_import_or_sync_does_not_grant_required_app_access",
+    ):
+        if activation_contract.get(key) is not True:
+            errors.append(f"missing host activation boundary:{key}")
+
+    required = set(activation_contract.get("before_claiming_local_skill_effect_in_ordinary_chat") or [])
+    for item in (
+        "workspace_effective_installation_policy_observed",
+        "required_app_enabled_and_accessible_for_member_role",
+        "member_authentication_observed_if_required",
+        "skill_or_plugin_visible_on_current_surface",
+        "behavioral_probe_exercises_the_loaded_revision",
+    ):
+        if item not in required:
+            errors.append(f"missing host activation evidence requirement:{item}")
 
     github_adapters = [
         row for row in (adapters.get("adapters") or [])
@@ -86,6 +112,8 @@ def main():
 
     for marker in (
         "GIT REPO -> MARKETPLACE CATALOG -> CHATGPT MARKETPLACE IMPORT/SYNC",
+        "Repository marketplace policy is not workspace effective policy",
+        "Import or sync does not connect members' provider accounts",
         "Git push is not sync evidence",
         "CUSTOM_PLUGIN_ACTIVATION_UNVERIFIED",
         "HOST_IMPORT_BLOCKED",
@@ -102,7 +130,7 @@ def main():
         return 1
 
     print("CHATGPT HOST ACTIVATION CONTRACT PASS")
-    print(f"plugin={EXPECTED_NAME} version={plugin['version']} host_live=UNVERIFIED marketplace_ready=true")
+    print(f"plugin={EXPECTED_NAME} version={version} host_live=UNVERIFIED marketplace_ready=true")
     return 0
 
 
