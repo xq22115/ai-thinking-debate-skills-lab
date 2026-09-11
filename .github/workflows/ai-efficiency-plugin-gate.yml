@@ -34,6 +34,7 @@ jobs:
             plugins/ai-efficiency-operating-system/scripts/validate_plugin.py \
             plugins/ai-efficiency-operating-system/scripts/validate_superpowers_runtime.py \
             plugins/ai-efficiency-operating-system/scripts/validate_github_upstream_contract.py \
+            plugins/ai-efficiency-operating-system/scripts/validate_chatgpt_host_activation_contract.py \
             plugins/ai-efficiency-operating-system/scripts/route_oracle.py \
             plugins/ai-efficiency-operating-system/scripts/superpowers_route_oracle.py \
             plugins/ai-efficiency-operating-system/scripts/composition_oracle.py \
@@ -46,6 +47,8 @@ jobs:
         run: python plugins/ai-efficiency-operating-system/scripts/validate_superpowers_runtime.py
       - name: Validate canonical GitHub upstream ownership contract
         run: python plugins/ai-efficiency-operating-system/scripts/validate_github_upstream_contract.py
+      - name: Validate ordinary ChatGPT host activation contract
+        run: python plugins/ai-efficiency-operating-system/scripts/validate_chatgpt_host_activation_contract.py
       - name: Run primary auto-invoke routing oracle
         run: python plugins/ai-efficiency-operating-system/scripts/route_oracle.py plugins/ai-efficiency-operating-system/evals/routing-cases.jsonl
       - name: Run Superpowers ordinary-chat pressure cases
