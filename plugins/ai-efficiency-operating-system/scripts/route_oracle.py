@@ -176,7 +176,9 @@ def score_routes(prompt):
         return {"none": 100}, s
 
     scores = {name: 0 for name in PRIORITY}
-    scores["github-operation-orchestrator"] = 10 * s["github_operation"] + 2 * s["github_surface"]
+    # A multi-step GitHub operation should own execution, but a narrow completion/
+    # postcondition check must still be able to remain evidence-watchdog-owned.
+    scores["github-operation-orchestrator"] = 7 * s["github_operation"] + 2 * s["github_surface"]
     scores["agent-runtime-forensics"] = 8 * s["runtime_mismatch"] + 2 * s["runtime_effect"]
     scores["mcp-surface-engineering"] = 8 * s["tool_surface_pressure"] + 2 * s["mcp_surface"]
     scores["capability-forensics"] = 8 * s["capability_gap"] + s["capability_problem"]
