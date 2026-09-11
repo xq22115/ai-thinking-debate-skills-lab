@@ -34,7 +34,7 @@ def main():
     settings = json.loads(SETTINGS.read_text(encoding="utf-8"))
     upstream = json.loads(UPSTREAM.read_text(encoding="utf-8"))
     adapters = json.loads(HOST_ADAPTERS.read_text(encoding="utf-8"))
-    activation_text = ACTIVATION.read_text(encoding="utf-8")
+    activation_text = ACTIVATION.read_text(encoding="utf-8").lower()
 
     if plugin.get("name") != EXPECTED_NAME:
         errors.append("plugin name drift")
@@ -55,8 +55,8 @@ def main():
             errors.append("marketplace source kind must remain local")
         if source.get("path") != EXPECTED_SOURCE_PATH:
             errors.append("marketplace source path drift")
-        # These are repository catalog metadata only. They must never be promoted
-        # to proof of the workspace's effective installation/authentication state.
+        # Repository catalog metadata is validated for drift only. It is never
+        # accepted as proof of the workspace's effective install/auth state.
         if policy.get("installation") != "AVAILABLE":
             errors.append("repository marketplace installation metadata drift")
         if policy.get("authentication") != "ON_INSTALL":
@@ -110,18 +110,22 @@ def main():
         if adapter.get("current_local_plugin_host_live_status") != "UNVERIFIED":
             errors.append("adapter must not preclaim local plugin HOST_LIVE")
 
-    for marker in (
-        "GIT REPO -> MARKETPLACE CATALOG -> CHATGPT MARKETPLACE IMPORT/SYNC",
-        "Repository marketplace policy is not workspace effective policy",
-        "Import or sync does not connect members' provider accounts",
-        "Git push is not sync evidence",
-        "CUSTOM_PLUGIN_ACTIVATION_UNVERIFIED",
-        "HOST_IMPORT_BLOCKED",
-        "canonical GitHub connector and this local orchestration plugin are separate activation dimensions",
-        "CHATGPT_LOCAL_PLUGIN_HOST_LIVE",
-    ):
-        if marker.lower() not in activation_text.lower():
-            errors.append(f"activation probe marker missing:{marker}")
+    # Human probe checks intentionally target semantic invariants rather than
+    # one brittle sentence shape. Changing prose must not weaken these claims.
+    semantic_markers = (
+        "git repo -> marketplace catalog -> chatgpt marketplace import/sync",
+        "repository marketplace policy is not workspace effective policy",
+        "does not connect members' provider accounts",
+        "does not grant required-app access",
+        "git push is not sync evidence",
+        "custom_plugin_activation_unverified",
+        "host_import_blocked",
+        "canonical github connector and this local orchestration plugin are separate activation dimensions",
+        "chatgpt_local_plugin_host_live",
+    )
+    for marker in semantic_markers:
+        if marker not in activation_text:
+            errors.append(f"activation probe semantic invariant missing:{marker}")
 
     if errors:
         print("CHATGPT HOST ACTIVATION CONTRACT FAIL")
