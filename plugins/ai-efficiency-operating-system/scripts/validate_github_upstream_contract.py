@@ -7,15 +7,17 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT = ROOT / "adapters" / "chatgpt" / "github-upstream-capability-contract.json"
 APP = ROOT / ".app.json"
+HOST_ADAPTERS = ROOT / "host-adapters.json"
 SKILL = ROOT / "skills" / "github-operation-orchestrator" / "SKILL.md"
 HUMAN = ROOT / "adapters" / "chatgpt" / "GITHUB_ROOT_CONTROL_PLANE.md"
 EXPECTED_CONNECTOR = "connector_76869538009648d5b282a4bb21c3d157"
 EXPECTED_CANONICAL_PLUGIN = "plugin_connector_1p_1a69035c238881919c4190932b2df699"
+EXPECTED_CANONICAL_REF = "github@openai-curated"
 
 
 def main():
     errors = []
-    for path in (CONTRACT, APP, SKILL, HUMAN):
+    for path in (CONTRACT, APP, HOST_ADAPTERS, SKILL, HUMAN):
         if not path.exists():
             errors.append(f"missing:{path.relative_to(ROOT)}")
     if errors:
@@ -26,11 +28,12 @@ def main():
 
     contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
     app = json.loads(APP.read_text(encoding="utf-8"))
+    adapters = json.loads(HOST_ADAPTERS.read_text(encoding="utf-8"))
     skill = SKILL.read_text(encoding="utf-8")
     human = HUMAN.read_text(encoding="utf-8")
 
     canonical = contract.get("canonical_plugin") or {}
-    if canonical.get("reference") != "github@openai-curated":
+    if canonical.get("reference") != EXPECTED_CANONICAL_REF:
         errors.append("canonical plugin reference drift")
     if canonical.get("canonical_plugin_id") != EXPECTED_CANONICAL_PLUGIN:
         errors.append("canonical plugin id drift")
@@ -46,6 +49,29 @@ def main():
     local_connector = (((app.get("apps") or {}).get("github") or {}).get("id"))
     if local_connector != EXPECTED_CONNECTOR:
         errors.append("local app binding does not match canonical connector")
+
+    adapter_rows = adapters.get("adapters") or []
+    github_rows = [row for row in adapter_rows if isinstance(row, dict) and row.get("name") == "github-pull-runtime"]
+    if len(github_rows) != 1:
+        errors.append("github host adapter count must equal one")
+    else:
+        adapter = github_rows[0]
+        expected_adapter = {
+            "host": "ordinary-chatgpt",
+            "app_alias": "github",
+            "connector_id": EXPECTED_CONNECTOR,
+            "canonical_plugin_reference": EXPECTED_CANONICAL_REF,
+            "canonical_plugin_id": EXPECTED_CANONICAL_PLUGIN,
+            "runtime_policy": "adapters/chatgpt/github-pull-runtime.json",
+            "upstream_capability_contract": "adapters/chatgpt/github-upstream-capability-contract.json",
+            "human_contract": "adapters/chatgpt/GITHUB_OPERATION_LOOP.md",
+            "root_control_plane": "adapters/chatgpt/GITHUB_ROOT_CONTROL_PLANE.md",
+        }
+        for key, expected in expected_adapter.items():
+            if adapter.get(key) != expected:
+                errors.append(f"host adapter drift:{key}")
+        if adapter.get("allow_implicit_invocation") is not True:
+            errors.append("github host adapter implicit invocation disabled")
 
     expected_order = [
         "chatgpt_host_permission_and_plugin_state",
@@ -94,10 +120,19 @@ def main():
         if surface.get(key) is not True:
             errors.append(f"missing live-surface invariant:{key}")
 
+    observed = contract.get("observed_live_surface_capabilities") or {}
+    if observed.get("chatgpt_app_permission_observed") != "Allow all actions":
+        errors.append("observed host action permission baseline drift")
+    if observed.get("workflow_dispatch_action_discovered") is not False:
+        errors.append("workflow dispatch observation must remain an observation of absence")
+    if observed.get("observations_are_not_permanent_contract") is not True:
+        errors.append("live capability observations must not become permanent authority")
+
     search = contract.get("search_depth_contract") or {}
     for key in (
         "numeric_user_result_target_must_be_preserved",
         "single_default_search_call_is_not_exhaustive",
+        "broad_search_may_request_topn_up_to_observed_supported_100",
         "response_truncation_is_not_result_exhaustion",
         "use_query_fanout_when_one_query_cannot_meet_breadth_target",
         "dedupe_by_canonical_repository_object_identity",
@@ -107,12 +142,10 @@ def main():
     ):
         if search.get(key) is not True:
             errors.append(f"missing search-depth invariant:{key}")
-    if int(search.get("broad_search_may_request_topn_up_to_observed_supported_100", 0)) != 1:
-        # JSON stores this as boolean by design; reject accidental numeric/string rewrite.
-        if search.get("broad_search_may_request_topn_up_to_observed_supported_100") is not True:
-            errors.append("observed topn-100 capability marker missing")
     if len(search.get("fanout_dimensions") or []) < 5:
         errors.append("insufficient search fanout dimensions")
+    if "explicit_user_target_met" not in set(search.get("continue_until") or []):
+        errors.append("search completion does not preserve explicit user target")
 
     execution = contract.get("execution_contract") or {}
     for key in (
