@@ -1,8 +1,8 @@
 # AI Efficiency Operating System — 2026 Native Plugin
 
-Status: **v1.3 package candidate / hosted ChatGPT-Codex HOST_LIVE not preclaimed**.
+Status: **v1.4 package candidate / hosted ChatGPT-Codex HOST_LIVE not preclaimed**.
 
-Version 1.3 changes Task Goal Intelligence from a monolithic semantic rule block into an upstream-native agent harness package: thin router, deterministic runtime preamble, explicit phase machine, progressive references/scripts, fresh-verification gate, recovery state, executable state evals and failure-trace holdouts.
+Version 1.4 keeps the Native Goal Harness and ordinary-ChatGPT Superpowers process bridge, and adds a systematic GitHub operation layer. Material GitHub work now has a first-class specialist, a machine-readable schema-v2 operation contract, deterministic routing/evals, failure-class recovery, exact read-back requirements and runtime probes spanning read, analysis, live tool schema, invocation, writing, workflow execution and final verification.
 
 ## Native Goal Harness 4.0
 
@@ -34,23 +34,43 @@ The repo adopts mechanisms and package structure, not verbatim upstream prompt p
 
 ## Package shape
 
-`task-goal-intelligence` now follows a native package layout:
+The native package includes:
 
-- `SKILL.md` — thin implicit router only;
-- `agents/openai.yaml` — invocation policy;
-- `references/phase-machine.md` — state transitions and complexity ratchet;
-- `references/runtime-preamble.md` — machine protocol, trust boundary and degraded mode;
-- `references/evidence-and-optimization.md` — root cause, fresh verification, evidence mesh and optimizer loop;
-- `references/upstream-lock.json` — exact source commits and adopted mechanisms;
-- `scripts/goal_skill_start.py` — deterministic preamble producing `GOAL_*` / `GATE_*` status;
-- `scripts/quick_validate.py` — package-local validator;
-- `spec/task-goal-intelligence-spec.md` — host-neutral conformance spec;
-- `evals/task-goal-native-state-cases.jsonl` — executable state/gate suite;
-- `evals/task-goal-native-pressure-holdout.jsonl` — host behavioral pressure holdout, packaged but not falsely claimed as HOST_LIVE-passed.
+- `skills/task-goal-intelligence/` — thin goal/phase router with progressive references and deterministic preamble;
+- `skills/github-operation-orchestrator/` — demand-loaded GitHub multi-stage operation specialist;
+- `adapters/chatgpt/github-pull-runtime.json` — machine-readable ordinary-ChatGPT GitHub operation contract;
+- `adapters/chatgpt/GITHUB_OPERATION_LOOP.md` — human-readable operation loop and recovery matrix;
+- `adapters/chatgpt/RUNTIME_PROBE.md` — owning-surface read/schema/write/workflow/fallback live probe;
+- `skills/superpowers-conversation-runtime/` — isolated ordinary-ChatGPT implementation-process bridge;
+- `scripts/route_oracle.py` and `scripts/composition_oracle.py` — deterministic routing/composition baselines;
+- `scripts/github_operation_oracle.py` — known-outcome GitHub failure/recovery classifier;
+- `evals/github-operation-cases.jsonl` — deterministic GitHub operation failure/recovery cases;
+- `scripts/validate_plugin.py` and control-plane validators — fail-closed package/bridge checks.
+
+## GitHub operation loop
+
+The GitHub operation path is treated as one evidence-bound state machine:
+
+`GOAL_LOCKED → TARGET_RESOLVED → AUTHORITY_RESOLVED → READ_PLAN_READY → SOURCE_READ → EVIDENCE_SUFFICIENT → TOOL_SCHEMA_READY → INVOCATION_PREFLIGHT → INVOKED → RESPONSE_CLASSIFIED → MUTATION/READBACK/EXECUTION → ACCEPTANCE_VERIFIED → REGRESSION_VERIFIED → COMPLETE`.
+
+Not every state applies to read-only work, but a required state cannot be silently skipped and promoted to PASS.
+
+The loop enforces these distinctions:
+
+- exact repository/ref/path/blob identity vs ranked discovery;
+- `OBSERVED` vs `DERIVED` vs `HYPOTHESIS` vs `UNKNOWN`;
+- live tool schema vs remembered/guessed arguments;
+- connector transport success vs task success;
+- commit creation vs persisted read-back;
+- workflow dispatch vs exact run/commit execution evidence;
+- installation vs invocation vs observable effect;
+- retry wording changes vs a causally different recovery route.
+
+Two same-mechanism failures without a material evidence delta force a route change. Material writes require pre-read, current blob/base evidence, sequential dependent writes, exact-branch read-back, and regression checks. Plugin/skill pull claims cannot jump directly from source state to hosted effectiveness.
 
 ## Runtime behavior
 
-When a host can execute the preamble, it receives phase, path, goal version, goal fingerprint, missing core fields and hard gates before specialist routing. When execution is unavailable, the skill uses degraded inline state evaluation and continues the user's otherwise executable task without claiming the preamble ran.
+When a host can execute the native preamble, it receives phase, path, goal version, goal fingerprint, missing core fields and hard gates before specialist routing. When execution is unavailable, the skill uses degraded inline state evaluation and continues the user's otherwise executable task without claiming the preamble ran.
 
 Material progress requires at least one acceptance, evidence, decision-critical uncertainty or observable-state delta. Two no-delta material steps force causal recovery. Three materially distinct failed repairs to one mechanism force architectural review rather than a fourth symptom patch.
 
@@ -76,11 +96,12 @@ Historical prose, command exit status and agent self-report cannot substitute fo
 
 | Skill | Auto-invoke trigger |
 |---|---|
+| `github-operation-orchestrator` | multi-step GitHub read/search/analyze/action/write/PR/workflow/execute/read-back/verify work or repeated GitHub connector failures |
 | `capability-forensics` | capability differs by model/harness/session/account/surface, or limiting layer is unclear |
 | `mcp-surface-engineering` | many/changing/conflicting tools, schema drift, discovery/entitlement/context pressure |
 | `agent-runtime-forensics` | tool/process reports success while file/process/network/artifact/postcondition state is missing or causally unclear |
 
-Implicit composition remains bounded to three skills per phase: goal gate, one primary specialist, and `evidence-watchdog` when current state/completion proof is required.
+Implicit composition remains bounded to three skills per phase: goal gate, one primary specialist, and `evidence-watchdog` when current state/completion proof is required. A topic noun by itself is not enough to trigger a heavy specialist.
 
 ## Explicit-only skills
 
@@ -88,17 +109,17 @@ Implicit composition remains bounded to three skills per phase: goal gate, one p
 
 ## Verification stack
 
-`Task Goal Native v4 Gate` executes, rather than merely scans, the native package:
+Repository gates now cover both native-goal behavior and the GitHub operation loop:
 
 - JSON/JSONL parse and Python compile;
-- skill-local quick validation including five exact upstream revision locks;
-- 30-case deterministic state-machine oracle covering all seven phases;
-- native harness structural/behavioral contract validation;
-- 24-case pressure-holdout packaging and class coverage validation;
-- existing plugin validation;
-- existing Task Goal Intelligence v3 validator.
+- plugin/settings/skill inventory validation;
+- deterministic routing plus hard-negative cases;
+- bounded composition and fallback cases;
+- GitHub operation known-outcome failure/recovery cases;
+- ordinary-ChatGPT GitHub schema-v2 fail-closed validator and mutation tests;
+- live-probe contract for exact read, schema discovery, write/read-back, workflow execution evidence, partial responses and no-progress route switching.
 
-Repository-wide gates remain additional protections; v4 does not replace them.
+Repository-wide gates remain additional protections; package CI does not replace owning-surface verification.
 
 ## Truth boundary
 
