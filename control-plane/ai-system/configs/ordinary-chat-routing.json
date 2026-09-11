@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "name": "provider-native-first",
+      "when": "a connected native app directly supports the provider and requested action",
+      "route": "native_plugin"
+    },
+    {
+      "name": "deterministic-local-first",
+      "when": "the task is deterministic, bounded, local, and does not need an autonomous loop",
+      "route": "remote-desktop-commander_or_cli_skill"
+    },
+    {
+      "name": "long-local-task",
+      "when": "the task requires repeated inspect-act-verify cycles or multi-file repair",
+      "route": "chat-work-agent_or_a01-a10-runtime"
+    },
+    {
+      "name": "browser-deterministic",
+      "when": "browser work is scripted/replayable and persistent interactive state is not required",
+      "route": "playwright-cli"
+    },
+    {
+      "name": "browser-stateful",
+      "when": "browser work needs persistent session state, accessibility-tree introspection, or interactive exploration",
+      "route": "playwright-mcp"
+    },
+    {
+      "name": "project-memory-read",
+      "when": "the task needs explicit project recall or provenance search for a workspace",
+      "route": "project-memory"
+    },
+    {
+      "name": "local-observability",
+      "when": "the user needs visual preflight, run status, or receipt inspection without mutation",
+      "route": "ordinary-chat-dashboard"
+    },
+    {
+      "name": "mcp-gateway",
+      "when": "the host exposes custom MCP and the request is capability discovery, preflight, run status, receipt retrieval, project-memory search, or a guarded mutation supported by the bridge",
+      "route": "ordinary-chat-mcp"
+    }
+  ],
+  "escalation": {
+    "requirePreflightBeforeLocalMutation": true,
+    "requirePreflightBeforeAgentRun": true,
+    "requireCapabilityAvailable": true,
+    "requireCleanRepoForA01A10": true,
+    "bindA01A10ToQueuedBaseSha": true,
+    "fallbackMustBeExplicit": true
+  },
+  "antiPatterns": [
+    "load_every_tool_for_every_task",
+    "duplicate_provider_credentials_without_need",
+    "silent_fallback_to_browser",
+    "raw_shell_as_universal_tool",
+    "claim_host_feature_unlock",
+    "treat_process_start_as_completion",
+    "allow_generated_browser_artifacts_to_dirty_agent_repo"
+  ]
+}

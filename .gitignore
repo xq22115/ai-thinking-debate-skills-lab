@@ -1,0 +1,7 @@
+# Ordinary-chat local generated artifacts.
+# Keep source/config tracked; ignore only runtime/install outputs.
+.playwright-cli/
+.claude/skills/playwright-cli/
+control-plane/ai-system/mcp/node_modules/
+control-plane/ai-system/mcp/dist/
+control-plane/ai-system/mcp/.env

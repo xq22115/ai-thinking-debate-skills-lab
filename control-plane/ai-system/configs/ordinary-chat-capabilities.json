@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "updated": "2026-08-26",
+  "capabilities": [
+    {
+      "id": "github-native",
+      "kind": "native_plugin",
+      "status": "available",
+      "priority": 10,
+      "risk": "provider_scoped",
+      "useFor": ["repository", "issue", "pull_request", "workflow", "file"]
+    },
+    {
+      "id": "remote-desktop-commander",
+      "kind": "native_plugin",
+      "status": "device_dependent",
+      "priority": 20,
+      "risk": "local_mutation",
+      "useFor": ["local_read", "local_write", "terminal", "local_health"]
+    },
+    {
+      "id": "chat-work-agent",
+      "kind": "local_bridge",
+      "status": "configured_by_path",
+      "priority": 30,
+      "risk": "long_running_local_mutation",
+      "useFor": ["long_task", "local_agent_loop", "multi_step_repair"]
+    },
+    {
+      "id": "a01-a10-runtime",
+      "kind": "agent_runtime",
+      "status": "implemented",
+      "priority": 40,
+      "risk": "governed_local_mutation",
+      "entrypoint": "control-plane/scripts/run_local_agent_workflow.py",
+      "useFor": ["parallel_deliberation", "dependency_workflow", "receipt_bound_execution"]
+    },
+    {
+      "id": "ordinary-chat-mcp",
+      "kind": "mcp_gateway",
+      "status": "implemented_ci_validated_not_deployed",
+      "priority": 50,
+      "risk": "host_plan_dependent",
+      "entrypoint": "control-plane/ai-system/mcp/src/index.ts",
+      "useFor": ["capability_discovery", "bridge_preflight", "run_status", "receipts", "project_memory_search", "guarded_submit"]
+    },
+    {
+      "id": "playwright-cli",
+      "kind": "cli_skill",
+      "status": "install_when_device_online",
+      "priority": 60,
+      "risk": "browser",
+      "useFor": ["deterministic_browser", "testing", "screenshot", "extraction", "visual_monitoring"]
+    },
+    {
+      "id": "playwright-mcp",
+      "kind": "mcp_browser",
+      "status": "install_when_device_online",
+      "priority": 70,
+      "risk": "stateful_browser",
+      "useFor": ["persistent_browser", "interactive_exploration", "extension_attach"]
+    },
+    {
+      "id": "project-memory",
+      "kind": "local_memory",
+      "status": "implemented_guarded",
+      "priority": 80,
+      "risk": "local_data_retention",
+      "entrypoint": "control-plane/scripts/project_memory.py",
+      "useFor": ["project_recall", "provenance_search", "explicit_project_memory"]
+    },
+    {
+      "id": "ordinary-chat-dashboard",
+      "kind": "local_ui",
+      "status": "implemented_read_only",
+      "priority": 90,
+      "risk": "local_observability",
+      "entrypoint": "control-plane/ordinary-chat-dashboard/server.py",
+      "useFor": ["preflight_visibility", "run_status", "receipt_visibility"]
+    }
+  ]
+}
