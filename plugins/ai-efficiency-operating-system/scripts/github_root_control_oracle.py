@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Known-outcome oracle for GitHub upstream/root ownership classification."""
+"""Known-outcome oracle for ordinary-ChatGPT GitHub activation/root ownership classification."""
 
 import json
 import sys
@@ -7,6 +7,8 @@ from pathlib import Path
 
 
 def classify(d):
+    if d.get("depends_on_local_plugin") and not d.get("local_plugin_host_activation_verified"):
+        return "CUSTOM_PLUGIN_ACTIVATION_UNVERIFIED"
     if not d.get("live_discovery_done", True) and not d.get("required_action_present", False):
         return "DISCOVER_LIVE_SURFACE_FIRST"
     if d.get("live_discovery_done") and d.get("required_action_present") is False:
