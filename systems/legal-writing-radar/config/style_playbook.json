@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "name": "Elite U.S. Legal & Commercial Correspondence Playbook",
+  "purpose": "Encode the functional logic behind high-stakes U.S. legal, executive and international-project correspondence without copying any named lawyer's personal prose or inventing legal authority.",
+  "core_interpretation": {
+    "secret_codes": false,
+    "explanation": "The 'insider' quality is usually compressed professional signaling: what is a fact, what is the present position, what is conditional, what is being preserved, what decision is requested, and what happens next. Treat these as functional signals, not magical phrases.",
+    "priority": "substance and record control before style"
+  },
+  "signals": [
+    {
+      "id": "decision_first",
+      "function": "Put the decision, recommendation or requested action before background so a senior reader can act immediately.",
+      "test": "The first substantive paragraph tells the reader what position/action matters."
+    },
+    {
+      "id": "record_anchor",
+      "function": "Anchor assertions to dates, documents, matter/project references and contemporaneous records rather than adjectives or reconstructed memory.",
+      "test": "Every material factual proposition can be traced to a supplied record or is marked for verification."
+    },
+    {
+      "id": "authority_anchor",
+      "function": "Tie the position to verified contract text, law, precedent, policy or an approved institutional playbook.",
+      "test": "No clause, case, statute or policy is cited unless supplied or independently verified."
+    },
+    {
+      "id": "calibrated_commitment",
+      "function": "Make the commitment state legible: inquiry, proposal, present position, conditional willingness, firm instruction or final commitment.",
+      "examples": [
+        "Our present position is…",
+        "We would be prepared to consider… provided that…",
+        "Please confirm whether…"
+      ],
+      "warning": "Do not use conditional wording to disguise a commitment the user actually intends to make."
+    },
+    {
+      "id": "controlled_conditionality",
+      "function": "State dependencies explicitly so silence, sequence or courtesy language does not accidentally become consent.",
+      "test": "Conditions and reciprocal steps are expressed next to the corresponding proposal."
+    },
+    {
+      "id": "risk_allocation",
+      "function": "Show who owns the next decision, information gap, cost, timing risk or approval without unnecessary accusation.",
+      "test": "The letter identifies the operational consequence and the responsible next action."
+    },
+    {
+      "id": "escalation_posture",
+      "function": "Choose a posture deliberately: cooperative clarification, executive decision request, formal notice, reservation, dispute position or settlement communication.",
+      "test": "Tone and legal effect match the selected posture; a routine email is not silently converted into a formal notice."
+    },
+    {
+      "id": "explicit_close",
+      "function": "End with one clear ask, owner, deadline or next procedural step.",
+      "test": "The recipient can answer 'what do you want me to do, and by when?' from the closing paragraph alone."
+    },
+    {
+      "id": "precision_over_jargon",
+      "function": "Use professional terminology where it carries legal/project meaning, but remove jargon that only performs status.",
+      "test": "Every technical or legal term changes meaning, scope, proof or procedure."
+    }
+  ],
+  "modes": {
+    "executive-counsel": {
+      "sequence": [
+        "bottom-line position / recommended decision",
+        "two-to-five record facts that control the decision",
+        "verified authority or governing premise",
+        "risk / commercial consequence",
+        "recommended action",
+        "deadline / owner / next step"
+      ],
+      "tone": "calm, compressed, decisive, board-ready"
+    },
+    "transactional": {
+      "sequence": [
+        "commercial objective",
+        "current proposal state",
+        "conditions and reciprocal commitments",
+        "risk allocation / drafting point",
+        "specific counterproposal or instruction",
+        "next drafting step"
+      ],
+      "tone": "precise, non-theatrical, negotiation-aware"
+    },
+    "dispute-preservation": {
+      "sequence": [
+        "precise disputed proposition",
+        "contemporaneous record",
+        "verified legal / contractual basis",
+        "measured consequence",
+        "required cure / response / decision",
+        "deadline or procedural next step",
+        "only the rights reservation actually supported by verified law/contract"
+      ],
+      "tone": "firm without gratuitous hostility; evidentiary rather than emotional"
+    },
+    "international-project": {
+      "sequence": [
+        "project / contract / package / correspondence reference",
+        "position or purpose of the letter",
+        "chronology and contemporaneous record",
+        "verified contract notice / communication basis",
+        "cause",
+        "effect",
+        "entitlement",
+        "quantum or valuation status",
+        "instruction / determination / information requested",
+        "response deadline",
+        "record-preservation / narrow reservation if required"
+      ],
+      "tone": "Engineer/Employer/Contractor-readable, claim-structured, procedure-aware"
+    }
+  },
+  "context_dependent_labels": {
+    "fail_closed": true,
+    "labels": [
+      "without prejudice",
+      "for settlement purposes only",
+      "subject to contract",
+      "attorney-client privileged",
+      "attorney work product",
+      "all rights reserved"
+    ],
+    "rule": "Never insert these merely because they sound sophisticated. Enable only when the user confirms the factual/legal basis or the applicable jurisdiction/contract has been verified. A label never substitutes for a required contractual notice, addressee, delivery method or time bar."
+  },
+  "international_project_claim_logic": {
+    "required_chain": ["cause", "effect", "entitlement", "quantum"],
+    "notice_controls": [
+      "verify who must receive the notice",
+      "verify form and mandatory content",
+      "verify permitted delivery method and deemed-receipt mechanics",
+      "verify time bar / response period",
+      "preserve contemporaneous programme, cost, instruction and site records",
+      "separate request for instruction from assertion of entitlement"
+    ]
+  },
+  "quality_gates": [
+    "No invented fact, date, quote, case, statute, clause, precedent or approval.",
+    "No context-dependent legal label without a confirmed basis.",
+    "No stylistic flourish that changes the legal/commercial commitment accidentally.",
+    "No vague close: the requested action and next step must be explicit.",
+    "No formal-notice claim unless the required contract/jurisdiction mechanics were verified.",
+    "Distinguish evidence, inference, legal conclusion and commercial recommendation."
+  ],
+  "reference_sources": [
+    {
+      "publisher": "American Bar Association",
+      "title": "Tips for Writing Effective Emails to Your Clients",
+      "url": "https://www.americanbar.org/groups/litigation/resources/litigation-journal/2025-summer/tips-writing-effective-emails-your-clients/",
+      "portable_lesson": "Lead with important information, stay focused, state recommendations and next steps/deadlines."
+    },
+    {
+      "publisher": "Georgetown Law",
+      "title": "Professional Email Communication",
+      "url": "https://www.law.georgetown.edu/wp-content/uploads/2024/08/Professional-Email-Communication.pdf",
+      "portable_lesson": "Professional email should be brief, direct, reader-centered and appropriately formal."
+    },
+    {
+      "publisher": "FIDIC",
+      "title": "Construction Claims & Responses",
+      "url": "https://fidic.org/books/construction-claims-and-responses-effective-writing-and-presentation-2nd-ed-2020-jaeger-h%C3%B6k",
+      "portable_lesson": "Persuasive construction claims follow a logical contract/cause/effect/entitlement/quantum structure and rely on records."
+    },
+    {
+      "publisher": "FIDIC",
+      "title": "FIDIC Contracts Guide / FAQ material on notices and claims",
+      "url": "https://fidic.org/",
+      "portable_lesson": "Notice wording, timing and contemporaneous records are procedural evidence, not decorative formalism."
+    }
+  ]
+}
