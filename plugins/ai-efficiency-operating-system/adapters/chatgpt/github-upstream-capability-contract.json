@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "profile_id": "ordinary-chatgpt-github-upstream-control-v1",
+  "purpose": "Separate the actual ordinary-ChatGPT GitHub capability owners from local orchestration so downstream skills cannot pretend to add connector actions, permissions, endpoint families, or arbitrary execution.",
+  "canonical_plugin": {
+    "reference": "github@openai-curated",
+    "canonical_plugin_id": "plugin_connector_1p_1a69035c238881919c4190932b2df699",
+    "connector_id": "connector_76869538009648d5b282a4bb21c3d157",
+    "upstream_repository": "openai/plugins",
+    "upstream_plugin_path": "plugins/github",
+    "ordinary_chat_dependency_kind": "app_connector",
+    "codex_mcp_is_separate_surface": true
+  },
+  "observed_upstream_baseline": {
+    "observed_date": "2026-09-11",
+    "openai_plugins_main_revision": "d416fd5a43426019986b1e489506db3db66dee3d",
+    "github_plugin_version": "0.1.11",
+    "ordinary_chat_connector_id": "connector_76869538009648d5b282a4bb21c3d157",
+    "codex_mcp_endpoint": "https://api.githubcopilot.com/mcp/",
+    "snapshot_is_authority": false,
+    "live_host_and_live_tool_schema_override_snapshot": true
+  },
+  "ownership_order": [
+    "chatgpt_host_permission_and_plugin_state",
+    "canonical_openai_github_plugin_dependency",
+    "live_github_connector_tool_namespace_and_action_schema",
+    "github_remote_repository_state",
+    "local_ai_efficiency_orchestrator_policy"
+  ],
+  "ownership_contract": {
+    "chatgpt_host_owns": [
+      "installed_enabled_state",
+      "user_action_approval_policy",
+      "tool_namespace_visibility",
+      "session_surface_availability"
+    ],
+    "openai_github_connector_owns": [
+      "available_action_inventory",
+      "action_parameter_schema",
+      "endpoint_allowlist",
+      "response_shape",
+      "connector_side_pagination_and_search_behavior",
+      "connector_supported_write_and_actions_operations"
+    ],
+    "github_remote_owns": [
+      "repository_contents",
+      "branches_and_commits",
+      "pull_requests_and_issues",
+      "workflow_runs_and_jobs",
+      "repository_permissions_enforced_by_github"
+    ],
+    "local_orchestrator_owns": [
+      "goal_and_acceptance_locking",
+      "query_planning_and_search_fanout",
+      "live_action_discovery",
+      "action_selection",
+      "argument_construction_from_current_schema",
+      "response_classification",
+      "fallback_selection",
+      "readback_and_postcondition_verification",
+      "regression_and_completion_gates"
+    ]
+  },
+  "local_capability_ceiling": {
+    "may_not_claim_or_create": [
+      "new_connector_actions",
+      "new_connector_endpoint_families",
+      "oauth_or_github_app_scopes",
+      "administration_or_secrets_access",
+      "arbitrary_remote_shell_execution",
+      "workflow_dispatch_when_no_live_dispatch_action_exists",
+      "host_installation_or_enablement_without_host_evidence"
+    ],
+    "missing_live_action_is": "UPSTREAM_CAPABILITY_GAP",
+    "host_allow_all_actions_does_not_expand_action_inventory": true,
+    "app_manifest_binding_does_not_prove_invokable_or_effective": true,
+    "repository_policy_cannot_override_live_connector_schema": true
+  },
+  "live_surface_rules": {
+    "discover_before_material_call_when_schema_not_current": true,
+    "live_tool_schema_is_authoritative": true,
+    "absence_must_be_checked_by_narrow_tool_discovery_not_memory": true,
+    "unknown_action_must_not_be_invented": true,
+    "connector_error_or_schema_change_requires_rediscovery": true,
+    "permission_setting_and_connector_capability_are_separate_dimensions": true
+  },
+  "observed_live_surface_capabilities": {
+    "chatgpt_app_permission_observed": "Allow all actions",
+    "file_read": true,
+    "file_create_update_delete": true,
+    "branch_search_create_update": true,
+    "pull_request_read_write": true,
+    "workflow_run_job_log_read": true,
+    "workflow_rerun": true,
+    "workflow_dispatch_action_discovered": false,
+    "generic_fetch_has_endpoint_allowlist": true,
+    "generic_fetch_excludes_sensitive_endpoint_families": true,
+    "managed_app_admin_access_not_assumed": true,
+    "observations_are_not_permanent_contract": true
+  },
+  "search_depth_contract": {
+    "numeric_user_result_target_must_be_preserved": true,
+    "single_default_search_call_is_not_exhaustive": true,
+    "broad_search_may_request_topn_up_to_observed_supported_100": true,
+    "response_truncation_is_not_result_exhaustion": true,
+    "use_query_fanout_when_one_query_cannot_meet_breadth_target": true,
+    "fanout_dimensions": [
+      "exact_symbol_or_filename",
+      "concept_synonyms",
+      "error_message_or_behavior",
+      "repository_or_org_scope",
+      "issue_pr_commit_workflow_surface",
+      "version_or_date_terms"
+    ],
+    "dedupe_by_canonical_repository_object_identity": true,
+    "continue_until": [
+      "explicit_user_target_met",
+      "connector_exhaustion_observed",
+      "next_query_has_no_material_discovery_delta",
+      "hard_tool_or_permission_blocker"
+    ],
+    "search_snippets_are_discovery_evidence_only": true,
+    "material_claim_requires_targeted_object_read": true,
+    "never_report_only_a_few_exist_from_one_shallow_query": true
+  },
+  "execution_contract": {
+    "connector_is_not_arbitrary_code_executor": true,
+    "existing_workflow_rerun_is_not_new_workflow_dispatch": true,
+    "when_no_dispatch_action_exists_prefer_repo_controlled_automatic_triggers": [
+      "pull_request",
+      "push_on_isolated_branch"
+    ],
+    "automatic_trigger_must_be_bound_to_exact_commit": true,
+    "green_ci_proves_declared_checks_only": true,
+    "host_runtime_effect_requires_owning_surface_observation": true,
+    "missing_required_execution_path_is_blocked_not_pass": true
+  },
+  "failure_classes": {
+    "UPSTREAM_CAPABILITY_GAP": "Required action is absent from the live connector tool namespace.",
+    "HOST_PERMISSION_POLICY": "The action exists but ChatGPT host approval or plugin state blocks it.",
+    "GITHUB_REMOTE_PERMISSION": "The action exists and host allows it but GitHub rejects repository authority.",
+    "CALLER_SEARCH_UNDERFETCH": "The caller used too few/too narrow searches or failed to fan out/preserve a numeric breadth target.",
+    "CALLER_SCHEMA_STALE": "The caller used a remembered or stale action schema instead of the live schema.",
+    "CALLER_RESPONSE_TRUNCATION": "The caller treated a truncated response as exhaustive.",
+    "CALLER_CHAIN_BREAK": "A successful lower-layer action was incorrectly treated as completion without readback/postcondition evidence."
+  },
+  "root_completion_gate": {
+    "root_owner_identified_before_fix": true,
+    "capability_gap_localized_to_owner": true,
+    "local_fix_must_target_only_local_owner": true,
+    "upstream_gap_must_not_be_papered_over_with_prompt_text": true,
+    "search_breadth_target_must_be_measured_on_unique_results": true,
+    "material_write_requires_exact_remote_readback": true,
+    "execution_claim_requires_exact_run_or_runtime_effect_evidence": true
+  }
+}
