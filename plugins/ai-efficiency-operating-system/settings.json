@@ -1,6 +1,6 @@
 {
   "schema": 4,
-  "version": "1.4.0",
+  "version": "1.4.1",
   "mode": "native-goal-harness-semantic-routing",
   "status": "PACKAGE_CANDIDATE_HOST_LIVE_UNVERIFIED",
   "default_implicit_skills": [
@@ -197,6 +197,9 @@
     "installed_does_not_imply_invokable": true,
     "invokable_does_not_imply_effective": true,
     "effective_does_not_imply_verified": true,
-    "plugin_package_does_not_imply_host_live": true
+    "plugin_package_does_not_imply_host_live": true,
+    "repository_marketplace_does_not_imply_chatgpt_import": true,
+    "git_push_does_not_imply_chatgpt_marketplace_sync": true,
+    "local_skill_effect_requires_current_host_activation_evidence": true
   }
 }
