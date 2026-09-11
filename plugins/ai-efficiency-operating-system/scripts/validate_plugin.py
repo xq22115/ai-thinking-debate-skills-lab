@@ -16,6 +16,7 @@ DEFAULT_IMPLICIT = [
     "convergence-controller",
 ]
 CONDITIONAL_IMPLICIT = [
+    "github-operation-orchestrator",
     "capability-forensics",
     "mcp-surface-engineering",
     "agent-runtime-forensics",
@@ -26,6 +27,7 @@ EXPLICIT_ONLY = [
     "authorized-reverse-engineering",
 ]
 EXPERT = [
+    "github-operation-orchestrator",
     "capability-forensics",
     "mcp-surface-engineering",
     "authorized-reverse-engineering",
@@ -109,6 +111,7 @@ def main():
     composition = settings.get("composition") or {}
     required_compositions = {
         "complex_research",
+        "github_operation",
         "capability_bottleneck",
         "many_tool_or_mcp_surface",
         "runtime_effect_mismatch",
@@ -252,7 +255,7 @@ def main():
         if len(rows) < minimum: fail(errors, f"insufficient {name}: {len(rows)} < {minimum}")
 
     route_oracle = (ROOT / "scripts" / "route_oracle.py").read_text(encoding="utf-8")
-    for marker in ["CONDITIONAL_IMPLICIT", "route_bundle", "fallback_chain", "deterministic baseline", "_is_explanation_only"]:
+    for marker in ["CONDITIONAL_IMPLICIT", "github-operation-orchestrator", "github_operation", "route_bundle", "fallback_chain", "deterministic baseline", "_is_explanation_only"]:
         if marker.lower() not in route_oracle.lower(): fail(errors, f"routing oracle marker missing: {marker}")
 
     composition_oracle = (ROOT / "scripts" / "composition_oracle.py").read_text(encoding="utf-8")
