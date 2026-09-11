@@ -2,11 +2,11 @@
 
 ## Canonical orchestration plugin
 
-### ai-efficiency-operating-system — `1.3.0`
+### ai-efficiency-operating-system — `1.4.0`
 
 Canonical path: `plugins/ai-efficiency-operating-system/`.
 
-The protected 1.3 package contract keeps **Task Goal Intelligence 4.0 Native** and the v2/v2.2/v3 semantic protections, while this revision adds an isolated ordinary-ChatGPT Superpowers host adapter. The canonical research/goal/evidence router inventory is intentionally unchanged; implementation-process discipline is demand-loaded through a separate bridge so stronger execution does not force coding-agent ceremony into ordinary conversation.
+The protected 1.4 package contract keeps **Task Goal Intelligence 4.0 Native**, the v2/v2.2/v3 semantic protections, and the isolated ordinary-ChatGPT Superpowers host adapter, while adding a first-class GitHub operation orchestrator. GitHub work is now modeled as an evidence-bound state machine spanning goal lock, exact target resolution, authoritative reads, analysis, live action/schema resolution, invocation preflight, response classification, mutation, execution observation, read-back, recovery, regression and completion.
 
 ### Native Task Goal configuration
 
@@ -26,6 +26,9 @@ The runtime package is deliberately split:
 - `references/evidence-and-optimization.md` — root cause, verification, rare evidence and failure-trace optimizer;
 - `references/upstream-lock.json` — exact OpenAI Plugins, Superpowers, GStack, Anthropic Skills and DSPy/GEPA revisions;
 - `host-adapters.json` — machine-readable host-specific adapters kept outside the canonical router inventory;
+- `adapters/chatgpt/github-pull-runtime.json` — machine-readable ordinary-ChatGPT GitHub operation contract;
+- `adapters/chatgpt/GITHUB_OPERATION_LOOP.md` — human-readable GitHub read/analyze/call/write/execute/verify loop;
+- `skills/github-operation-orchestrator/` — demand-loaded GitHub specialist for multi-stage repository/plugin/PR/workflow work;
 - `skills/superpowers-conversation-runtime/` — thin ordinary-ChatGPT Superpowers bridge with progressive disclosure;
 - `scripts/goal_skill_start.py` — executable `GOAL_*`/`GATE_*` preamble;
 - `scripts/quick_validate.py` — package-local conformance check;
@@ -45,6 +48,14 @@ The runtime package is deliberately split:
 - `ARCHITECTURAL` — only materially architectural work adds goal locking, design/planning and verification.
 
 The bridge maps bugs/failing tests to `systematic-debugging`, new/changed behavior to `brainstorming`, settled implementation to `test-driven-development`, approved plans to `executing-plans`, review feedback to `receiving-code-review`, skill authoring to `writing-skills`, and completion claims to `verification-before-completion` while preserving local `evidence-watchdog` ownership. It stays quiet by default and never invents unavailable worktrees, subagents, background execution, filesystem access or test runs.
+
+### Ordinary ChatGPT GitHub operation adapter
+
+`github-operation-orchestrator` is a conditional canonical specialist for material GitHub work. It uses the bound GitHub app and `github-pull-runtime.json` schema v2 to preserve one operation envelope across the full lifecycle:
+
+`GOAL_LOCKED → TARGET_RESOLVED → AUTHORITY_RESOLVED → READ_PLAN_READY → SOURCE_READ → EVIDENCE_SUFFICIENT → TOOL_SCHEMA_READY → INVOCATION_PREFLIGHT → INVOKED → RESPONSE_CLASSIFIED → MUTATION/EXECUTION/READBACK → ACCEPTANCE_VERIFIED → REGRESSION_VERIFIED → COMPLETE`.
+
+It keeps `OBSERVED`, `DERIVED`, `HYPOTHESIS`, and `UNKNOWN` separate; requires live schema resolution when material action shape is not already current; treats transport success, commit creation, workflow dispatch, installation and invocation as lower-layer evidence rather than completion; and forces a causal route change after two same-mechanism attempts without a material evidence delta.
 
 Evidence owner routing is host-aware: current library/framework/API facts prefer Context7 when available; repository/PR/Actions facts use GitHub; user files use Files; connected private data uses its owning connector; other current public facts use web; stateful completion uses owning-system readback.
 
@@ -77,11 +88,12 @@ Evidence owner routing is host-aware: current library/framework/API facts prefer
 
 | Skill | Specialist use |
 |---|---|
+| `github-operation-orchestrator` | multi-step GitHub read/search/analyze/action/write/PR/workflow/execute/read-back/verify loops, plugin/skill pulls and repeated GitHub connector failures |
 | `capability-forensics` | model-vs-harness-vs-tool-vs-permission/session/entitlement/environment bottleneck diagnosis |
 | `mcp-surface-engineering` | dynamic tool discovery, schema/version drift, namespace collision, entitlement/context pressure and tool-poisoning controls |
 | `agent-runtime-forensics` | model/tool/process/file/network/artifact/postcondition causal evidence and replay |
 
-These specialists are eligible for implicit invocation only after the routing eligibility layer finds material diagnostic signals. A topic noun such as “MCP” or “runtime” is insufficient by itself.
+These specialists are eligible for implicit invocation only after the routing eligibility layer finds material diagnostic signals. A topic noun such as “GitHub”, “MCP” or “runtime” is insufficient by itself.
 
 ### Explicit-only skills
 
@@ -94,6 +106,7 @@ These specialists are eligible for implicit invocation only after the routing el
 ## Canonical combination patterns
 
 - research-heavy → `task-goal-intelligence` + `executive-research` + `evidence-watchdog`
+- GitHub operation → `task-goal-intelligence` + `github-operation-orchestrator` + `evidence-watchdog`
 - capability bottleneck → `task-goal-intelligence` + `capability-forensics` + `evidence-watchdog`
 - MCP/tool-surface pressure → `task-goal-intelligence` + `mcp-surface-engineering` + `evidence-watchdog`
 - runtime-effect mismatch → `task-goal-intelligence` + `agent-runtime-forensics` + `evidence-watchdog`
