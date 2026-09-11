@@ -11,7 +11,7 @@ There are two independent questions that must never be collapsed:
 
 The local repository does not implement the hosted GitHub action server. Its `.app.json` binds `github` to the existing hosted connector `connector_76869538009648d5b282a4bb21c3d157`.
 
-The official public `openai/plugins` repository is explicitly a curated collection of **Codex plugin examples**. Its `plugins/github` manifests are useful provenance for the canonical GitHub plugin/connector relationship and for the separate MCP surface, but a commit to that repository or to this repository is **not** the ordinary-ChatGPT plugin deployment mechanism.
+The official public `openai/plugins` repository is explicitly a curated collection of Codex plugin examples. Its `plugins/github` manifests are useful provenance for the canonical GitHub plugin/connector relationship and for the separate MCP surface, but a commit to that repository or to this repository is **not** the ordinary-ChatGPT plugin deployment mechanism.
 
 For ordinary ChatGPT, the controlling chain is:
 
