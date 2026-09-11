@@ -61,6 +61,7 @@ def main():
     for key in (
         "repository_package_or_ci_pass_does_not_install_chatgpt_plugin",
         "repository_marketplace_presence_does_not_prove_chatgpt_import",
+        "repository_marketplace_policy_values_do_not_set_workspace_effective_policy",
         "ordinary_chat_effect_requires_host_plugin_activation",
         "public_global_lookup_is_not_proof_of_workspace_specific_absence",
         "host_live_must_not_be_inferred_from_repo_main_or_ci",
@@ -123,11 +124,20 @@ def main():
     ):
         if not isinstance(ownership.get(key), list) or not ownership.get(key):
             errors.append(f"missing ownership class:{key}")
+    host_owned = set(ownership.get("chatgpt_host_owns") or [])
+    for item in (
+        "workspace_effective_installation_and_authentication_policy",
+        "required_app_enablement_and_member_access",
+    ):
+        if item not in host_owned:
+            errors.append(f"missing host-owned activation state:{item}")
 
     ceiling = contract.get("local_capability_ceiling") or {}
     forbidden = set(ceiling.get("may_not_claim_or_create") or [])
     for item in (
         "chatgpt_plugin_installation_by_git_commit_alone",
+        "workspace_effective_policy_from_repository_marketplace_policy_alone",
+        "member_app_connection_or_access_from_marketplace_import_or_sync_alone",
         "new_connector_actions",
         "new_connector_endpoint_families",
         "oauth_or_github_app_scopes",
@@ -151,8 +161,11 @@ def main():
     for item in (
         "host_plugin_or_marketplace_entry_resolved",
         "installed_or_workspace_assigned_state_observed",
+        "workspace_effective_installation_policy_observed",
         "user_or_workspace_enablement_observed",
         "required_app_dependency_resolved",
+        "required_app_enabled_and_accessible_for_member_role",
+        "member_authentication_observed_if_required",
         "skill_or_plugin_visible_on_current_surface",
         "behavioral_probe_exercises_the_loaded_revision",
     ):
@@ -163,6 +176,10 @@ def main():
     for key in (
         "github_marketplace_import_is_host_admin_operation",
         "github_marketplace_sync_is_not_git_push",
+        "repository_marketplace_policy_values_are_not_workspace_effective_policy",
+        "workspace_settings_control_installation_and_authentication",
+        "marketplace_import_or_sync_does_not_connect_member_accounts",
+        "marketplace_import_or_sync_does_not_grant_required_app_access",
         "daily_or_manual_sync_may_be_required_after_repo_change",
         "ordinary_chat_activation_claim_requires_current_host_evidence",
     ):
@@ -243,6 +260,8 @@ def main():
     for key in (
         "root_owner_identified_before_fix",
         "ordinary_chat_activation_verified_before_claiming_local_skill_effect",
+        "workspace_effective_policy_verified_independently_of_repository_policy",
+        "required_app_access_and_member_auth_verified_when_applicable",
         "capability_gap_localized_to_owner",
         "local_fix_must_target_only_local_owner",
         "upstream_gap_must_not_be_papered_over_with_prompt_text",
@@ -268,6 +287,7 @@ def main():
         "Activation truth",
         "curated collection of Codex plugin examples",
         "Git push is not a marketplace sync",
+        "Repository marketplace policy is not workspace effective policy",
         "CUSTOM_PLUGIN_ACTIVATION_UNVERIFIED",
         "Allow all actions",
         "Search-depth repair",
