@@ -1,0 +1,6 @@
+# Canonical cross-platform line-ending policy.
+* text=auto eol=lf
+
+# Native Windows command scripts keep CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf
