@@ -57,8 +57,7 @@
     "defaultPrompt": [
       "Recover my actual goal, run the smallest useful native workflow, and verify the result with current owning evidence.",
       "Treat route failures as recovery signals rather than permission to reduce the goal or acceptance criteria.",
-      "For production AI work, separate context, concurrency, observability, tool contracts, runtime identity, evaluation evidence, containment and model-routing economics instead of collapsing them into one agent-quality claim.",
-      "For GitHub work, first separate repository package state, ChatGPT plugin activation, hosted connector capability, and GitHub remote state; then use the live GitHub app as an evidence-bound read-analyze-call-write-execute-verify loop."
+      "For production AI work, separate context, concurrency, observability, tool contracts, runtime identity, evaluation evidence, containment and model-routing economics; for GitHub work, also separate repository package state, ChatGPT plugin activation, hosted connector capability, and GitHub remote state before using the live GitHub app as an evidence-bound read-analyze-call-write-execute-verify loop."
     ]
   }
 }
