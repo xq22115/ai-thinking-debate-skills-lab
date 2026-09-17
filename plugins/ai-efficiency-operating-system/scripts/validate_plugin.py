@@ -15,24 +15,33 @@ DEFAULT_IMPLICIT = [
     "memory-policy",
     "convergence-controller",
 ]
-CONDITIONAL_IMPLICIT = [
+EXPERT_IMPLICIT = [
     "github-operation-orchestrator",
     "capability-forensics",
     "mcp-surface-engineering",
     "agent-runtime-forensics",
 ]
+PRODUCTION_CONDITIONAL = [
+    "agent-observability-slos",
+    "agent-concurrency-backpressure",
+    "agent-evaluation-operations",
+    "long-horizon-context-engineering",
+    "runtime-release-parity",
+    "tool-contract-testing",
+    "identity-session-isolation",
+    "agent-containment-and-rollback",
+    "model-routing-budget-control",
+    "desktop-ui-automation-reliability",
+    "electron-chromium-process-forensics",
+    "mcp-bridge-reliability",
+]
+CONDITIONAL_IMPLICIT = EXPERT_IMPLICIT + PRODUCTION_CONDITIONAL
 EXPLICIT_ONLY = [
     "autonomy-contract",
     "persistent-work-ledger",
     "authorized-reverse-engineering",
 ]
-EXPERT = [
-    "github-operation-orchestrator",
-    "capability-forensics",
-    "mcp-surface-engineering",
-    "authorized-reverse-engineering",
-    "agent-runtime-forensics",
-]
+EXPERT = EXPERT_IMPLICIT + ["authorized-reverse-engineering"]
 EXPECTED = DEFAULT_IMPLICIT + CONDITIONAL_IMPLICIT + EXPLICIT_ONLY
 DEPTH_LEVELS = ["SURFACE", "MECHANISM", "CODE_PATH", "DETERMINISTIC_REPRO", "COUNTEREXAMPLE", "FIX_STATUS", "REGRESSION", "GENERALIZATION"]
 EXPERT_REFS = {
@@ -115,6 +124,18 @@ def main():
         "capability_bottleneck",
         "many_tool_or_mcp_surface",
         "runtime_effect_mismatch",
+        "production_observability",
+        "concurrency_pressure",
+        "agent_evaluation",
+        "long_horizon_context",
+        "release_runtime_parity",
+        "tool_contract",
+        "identity_isolation",
+        "containment_and_rollback",
+        "model_routing_budget",
+        "desktop_ui_automation",
+        "electron_process_forensics",
+        "mcp_bridge_lifecycle",
         "architecture_choice",
         "repeated_failure",
         "cross_session_context",
@@ -144,7 +165,7 @@ def main():
     labs = settings.get("expert_labs", {})
     if labs.get("activation") != "conditional-demand-loaded": fail(errors, "expert labs activation must be conditional-demand-loaded")
     if labs.get("default_enabled") is not False: fail(errors, "expert labs must not be globally default-enabled")
-    if labs.get("implicit_eligible") != CONDITIONAL_IMPLICIT: fail(errors, "expert lab implicit-eligible inventory drift")
+    if labs.get("implicit_eligible") != EXPERT_IMPLICIT: fail(errors, "expert lab implicit-eligible inventory drift")
     if labs.get("explicit_only") != ["authorized-reverse-engineering"]: fail(errors, "authorized reverse engineering must remain expert explicit-only")
     if labs.get("load_only_on_material_need") is not True: fail(errors, "expert labs must be demand-loaded")
     if labs.get("no_skill_counterfactual_required_for_promotion") is not True: fail(errors, "expert labs require no-skill counterfactual")
@@ -241,7 +262,7 @@ def main():
         if not (ROOT / rel).exists(): fail(errors, f"missing {rel}")
 
     minimums = {
-        "routing-cases.jsonl": 55,
+        "routing-cases.jsonl": 85,
         "composition-cases.jsonl": 15,
         "behavior-cases.jsonl": 55,
         "expert-labs-cases.jsonl": 25,
@@ -255,7 +276,12 @@ def main():
         if len(rows) < minimum: fail(errors, f"insufficient {name}: {len(rows)} < {minimum}")
 
     route_oracle = (ROOT / "scripts" / "route_oracle.py").read_text(encoding="utf-8")
-    for marker in ["CONDITIONAL_IMPLICIT", "github-operation-orchestrator", "github_operation", "route_bundle", "fallback_chain", "deterministic baseline", "_is_explanation_only"]:
+    for marker in [
+        "CONDITIONAL_IMPLICIT", "github-operation-orchestrator", "github_operation", "route_bundle",
+        "fallback_chain", "deterministic baseline", "_is_explanation_only", "agent-concurrency-backpressure",
+        "agent-observability-slos", "runtime-release-parity", "desktop-ui-automation-reliability",
+        "electron-chromium-process-forensics", "mcp-bridge-reliability",
+    ]:
         if marker.lower() not in route_oracle.lower(): fail(errors, f"routing oracle marker missing: {marker}")
 
     composition_oracle = (ROOT / "scripts" / "composition_oracle.py").read_text(encoding="utf-8")
@@ -271,7 +297,7 @@ def main():
     print(
         f"skills={len(EXPECTED)} default_implicit={len(DEFAULT_IMPLICIT)} "
         f"conditional_implicit={len(CONDITIONAL_IMPLICIT)} explicit={len(EXPLICIT_ONLY)} "
-        f"expert={len(EXPERT)} depth_levels={len(DEPTH_LEVELS)}"
+        f"expert={len(EXPERT)} production_specialists={len(PRODUCTION_CONDITIONAL)} depth_levels={len(DEPTH_LEVELS)}"
     )
     return 0
 
