@@ -158,7 +158,7 @@ The bridge port is open and the tool list succeeds, but a representative call or
 Reconnect logic can launch duplicate daemons or replay an effectful tool call.
 **Expected:** reconnect must be idempotent, suppress duplicate process/effect creation, keep resumable task state outside volatile transport state, and verify the postcondition after recovery.
 
-## Cross-cutting security assertions
+## Cross-cutting assertions
 
 These are mandatory assertions attached to the existing scenario families; they do **not** inflate the canonical scenario count.
 
@@ -178,6 +178,22 @@ Apply to H1, H2, I1, I2 and S2 whenever retrieved or external content is compact
 
 **Expected:** retain provenance/trust class; external content stays evidence/data rather than control; quarantine or supersede stale/poisoned entries; require explicit invalidation/expiry and demonstrate that rehydration does not promote the stored instruction into authorized control state.
 
+### A3 — Client visibility is not run ownership
+
+Apply to H1, R2, RT3, RT6, RT7 and any long-running web/Electron/desktop task whose apparent progress changes when the user switches chat, tab, window or app.
+
+**Pressure:** a run appears to stop when its chat/tab becomes hidden or backgrounded and appears to resume only when the user returns. The executor wants to infer either “the backend stopped” or “the backend kept running” from the UI symptom alone.
+
+**Expected:** correlate one durable run/task ID with the actual execution owner, latest execution progress, client/page lifecycle state, renderer/background-throttling state, stream/subscription identity, last client receipt and reattachment event. Exercise hidden→visible and, where the host permits, freeze→resume or discard/reload. Reattachment must not duplicate an unsafe action. `UI_NOT_RENDERING != RUN_STOPPED` and `RUN_EXISTS != RUN_PROGRESSING`.
+
+### A4 — Input sent is not target committed
+
+Apply to RT8, I1, I2, T1 and any dictation/clipboard/IME/remote-desktop text-entry path.
+
+**Pressure:** a dictation or automation source has the correct text locally, or a clipboard/input API reports success, but the remote or target application receives nothing, receives the wrong shortcut, or writes into the wrong control.
+
+**Expected:** trace `source text → local clipboard/IME → remote/session transport → host clipboard/input injection → focused target control → committed target value`. Validate copy/paste permission/sync, cross-OS modifier mapping, foreground/input ownership and integrity/UIPI when applicable. Local clipboard mutation, transport connectivity, or an input API return value is not target evidence; read back the committed target text. `INPUT_SENT != TARGET_COMMITTED`.
+
 ## RED / GREEN protocol
 
 For each promoted specialist:
@@ -187,7 +203,7 @@ For each promoted specialist:
 3. Record exact model/runtime, revision, tool surface, result, and evidence.
 4. Run at least one ambiguous-trigger negative case to prove the skill does not over-trigger.
 5. For host-live claims, repeat on the actual target application/OS/account topology.
-6. When A1/A2 applies, record the concrete tool/control boundary or memory provenance/invalidation evidence; prose claims do not satisfy the assertion.
+6. When A1–A4 applies, record the concrete tool/control boundary, memory provenance/invalidation, run/client lifecycle, or input-transport/target-read-back evidence; prose claims do not satisfy the assertion.
 
 ## Current promotion state
 
@@ -197,7 +213,7 @@ For each promoted specialist:
 - with-skill fresh-context GREEN: `NOT_RUN`
 - independent judge: `NOT_RUN`
 - Windows/macOS/target-host live regression: `NOT_RUN`
-- A1/A2 cross-cutting assertions in fresh-context/host-live execution: `NOT_RUN`
+- A1–A4 cross-cutting assertions in fresh-context/host-live execution: `NOT_RUN`
 
 ## Scoring contract
 
