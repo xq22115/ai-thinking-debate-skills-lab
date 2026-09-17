@@ -87,3 +87,6 @@
 {"id":"R87","prompt":"Wispr Flow 本機有文字，但經 Parsec 到 Windows 貼不進目標欄位；請追 clipboard/IME、remote transport、focus/UIPI 和 target text read-back。","expected":"desktop-ui-automation-reliability"}
 {"id":"R88","prompt":"Page Visibility API 是什麼？","expected":"none"}
 {"id":"R89","prompt":"Parsec copy/paste 是什麼？","expected":"none"}
+{"id":"R90","prompt":"任務被中斷後續跑，先檢查 checkpoint freshness、action receipt、pending observation，避免 unsafe replay 已經做過的外部動作。","expected":"recoverable-state"}
+{"id":"R91","prompt":"resume after restart：前一個 effect 只有 attestation，沒有 owning-system read-back；請從 durable checkpoint 判斷哪些 action 不能 unsafe replay。","expected":"recoverable-state"}
+{"id":"R92","prompt":"只是長任務 context budget 膨脹與 compaction 失焦，請做 just-in-time retrieval、精簡 evidence ledger 和 stale context eviction。","expected":"long-horizon-context-engineering"}

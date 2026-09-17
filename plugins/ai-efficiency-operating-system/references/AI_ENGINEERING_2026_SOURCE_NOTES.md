@@ -73,6 +73,17 @@ OWASP highlights that an agent can carry untrusted content forward through persi
 
 Portable lessons: persistent memory is an authority boundary and attack surface, not merely storage. Keep provenance and trust class on durable entries; scope writes; quarantine unverified external instructions; support supersede/invalidate/expiry; and pressure-test whether poisoned or stale memory can become control state after compaction, restart or rehydration.
 
+## Retrieval/tool candidate authorization
+
+Sources:
+- https://arxiv.org/abs/2608.22751
+- https://cheatsheetseries.owasp.org/cheatsheets/RAG_Security_Cheat_Sheet.html
+- https://learn.microsoft.com/en-us/azure/search/agentic-retrieval-how-to-retrieve
+
+2026 tool-retrieval research treats retrieval as a pre-execution boundary rather than a relevance-only ranking problem. OWASP guidance requires tool-level authorization independently of model choice, and Azure AI Search's agentic retrieval documentation supports query-time permission filtering from end-user identity.
+
+Portable lesson: current principal/account/tenant/entitlement scope constrains the candidate set before semantic relevance, utility or risk ranking. Risk-aware reranking can further reduce exposure, but relevance/risk scores do not grant authority. Re-check authorization before sensitive execution when identity, entitlement or target state can drift.
+
 ## Model Context Protocol
 
 ### MCP specification `2026-07-28`

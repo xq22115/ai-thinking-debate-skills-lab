@@ -55,9 +55,10 @@ Routing TDD fixture set: `evals/routing-cases.jsonl`.
 
 - Existing protection cases: R01–R61.
 - New production-specialist cases: R62–R85.
-- RED evidence was captured before routing implementation: `85 cases / 24 failures`, with all 24 failures corresponding to the new specialists and no newly failing legacy cases.
+- Recovery/control-plane integration cases: R86–R88.
+- The original specialist RED evidence remains `85 cases / 24 failures`: all 24 failures mapped to the 12 newly specified production specialists while legacy cases stayed protected. R86–R88 were added later as integration hard-negatives and must not be misreported as part of that historical RED run.
 
-Scenario-level engineering pressure cases are canonicalized in `evals/AI_ENGINEERING_GAP_PACK_v1.md`: **30 scenarios total** — 18 base engineering cases plus 12 distinct runtime-specialist adversarial cases reconciled from the same-day runtime branch. These remain `SPECIFIED_NOT_EXECUTED` for real baseline-vs-skill fresh-context/model-behavior evaluation. Cross-cutting assertions additionally require boundary-specific guardrail evidence, provenance/invalidation evidence for persistent memory, client-lifecycle/run-ownership evidence, and end-to-end input-transport target read-back; they do not inflate the scenario count.
+Scenario-level engineering pressure cases are canonicalized in `evals/AI_ENGINEERING_GAP_PACK_v1.md`: **30 scenarios total** — 18 base engineering cases plus 12 distinct runtime-specialist adversarial cases reconciled from the same-day runtime branch. These remain `SPECIFIED_NOT_EXECUTED` for real baseline-vs-skill fresh-context/model-behavior evaluation. Cross-cutting assertions additionally require path-specific guardrail evidence, provenance/invalidation evidence for persistent memory, client-lifecycle/run-ownership evidence, end-to-end input-transport target read-back, terminal receipt/attestation evidence, and authorization-before-relevance evidence; they do not inflate the scenario count.
 
 ## MCP compatibility boundary
 
@@ -84,6 +85,14 @@ A long-running agent must distinguish durable run/task identity and actual execu
 `INPUT_SENT != TARGET_COMMITTED`.
 
 Text entry across local/remote desktop boundaries is an end-to-end transport: source text, clipboard/IME, remote-session transport, host input/clipboard, foreground target control and committed target value. Clipboard sync, key mapping, foreground ownership and Windows integrity/UIPI can fail independently. The canonical owner is `desktop-ui-automation-reliability`, with `tool-contract-testing` used where lower-layer APIs report success without target effect.
+
+## Terminal evidence boundary
+
+`ATTESTED != COMPLETED`. For asynchronous or interrupted work, distinguish `SENT → DELIVERED → ACKNOWLEDGED → INCORPORATED → VERIFIED` where those states exist. A terminal claim should bind the strongest available independent planes — worker/thread health, completion event or terminal state, owning-target read-back, and a persisted receipt/checkpoint. Missing, malformed, stale or unknown-generation receipts produce `UNKNOWN`, not success; receipts must not persist secrets.
+
+## Authorization-before-relevance boundary
+
+Relevance cannot widen authority. Retrieval and tool discovery must constrain candidates by current principal/account/tenant/entitlement identity before semantic relevance, utility or risk ranking. Re-authorize before sensitive execution when identity, entitlement or target state can drift.
 
 ## Promotion ladder
 

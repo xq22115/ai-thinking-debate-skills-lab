@@ -21,6 +21,9 @@ EXPERT_IMPLICIT = [
     "mcp-surface-engineering",
     "agent-runtime-forensics",
 ]
+CORE_CONDITIONAL = [
+    "recoverable-state",
+]
 PRODUCTION_CONDITIONAL = [
     "agent-observability-slos",
     "agent-concurrency-backpressure",
@@ -35,7 +38,7 @@ PRODUCTION_CONDITIONAL = [
     "electron-chromium-process-forensics",
     "mcp-bridge-reliability",
 ]
-CONDITIONAL_IMPLICIT = EXPERT_IMPLICIT + PRODUCTION_CONDITIONAL
+CONDITIONAL_IMPLICIT = EXPERT_IMPLICIT + CORE_CONDITIONAL + PRODUCTION_CONDITIONAL
 EXPLICIT_ONLY = [
     "autonomy-contract",
     "persistent-work-ledger",
@@ -51,6 +54,9 @@ EXPERT_REFS = {
     "agent-runtime-forensics": ("references/runtime-provenance.md", ["Evidence planes", "Causal edges", "Replay"]),
 }
 EXTRA_REFS = {
+    "skills/recoverable-state/references/temporal-trajectory-integrity.md": [
+        "ATTESTED != COMPLETED", "PENDING_OBSERVATION", "FIRST_IRRECOVERABLE_ERROR"
+    ],
     "skills/capability-forensics/references/capability-boundary-recon.md": [
         "PLAN/ROLLOUT", "WORKSPACE POLICY", "PLUGIN INSTALL", "SESSION REGISTRATION", "Desktop-only", "MODEL_OR_REASONING_LIMIT"
     ],
@@ -127,6 +133,7 @@ def main():
         "production_observability",
         "concurrency_pressure",
         "agent_evaluation",
+        "recoverable_state",
         "long_horizon_context",
         "release_runtime_parity",
         "tool_contract",
@@ -245,7 +252,7 @@ def main():
         if marker not in memory: fail(errors, f"persistent-state firewall marker missing: {marker}")
 
     long_horizon = (ROOT / "skills" / "long-horizon-context-engineering" / "SKILL.md").read_text(encoding="utf-8")
-    for marker in ["DEPENDENCY BOUNDARY", "repository-level `recoverable-state`", "external dependency unavailable"]:
+    for marker in ["REQUIRED SUB-SKILLS", "plugin-local `recoverable-state`", "repository registration alone is not host execution proof"]:
         if marker not in long_horizon: fail(errors, f"long-horizon dependency marker missing: {marker}")
 
     observability = (ROOT / "skills" / "agent-observability-slos" / "SKILL.md").read_text(encoding="utf-8")
@@ -261,11 +268,11 @@ def main():
         if marker not in mcp_bridge: fail(errors, f"MCP 2026 transport marker missing: {marker}")
 
     gap_eval = (ROOT / "evals" / "AI_ENGINEERING_GAP_PACK_v1.md").read_text(encoding="utf-8")
-    for marker in ["A3 — Client visibility is not run ownership", "UI_NOT_RENDERING != RUN_STOPPED", "RUN_EXISTS != RUN_PROGRESSING", "A4 — Input sent is not target committed", "INPUT_SENT != TARGET_COMMITTED"]:
+    for marker in ["A3 — Client visibility is not run ownership", "UI_NOT_RENDERING != RUN_STOPPED", "RUN_EXISTS != RUN_PROGRESSING", "A4 — Input sent is not target committed", "INPUT_SENT != TARGET_COMMITTED", "A5 — Attestation is not terminal completion", "ATTESTED != COMPLETED", "A6 — Authorization constrains retrieval before relevance"]:
         if marker not in gap_eval: fail(errors, f"AI engineering cross-cutting assertion missing: {marker}")
 
     source_notes = (ROOT / "references" / "AI_ENGINEERING_2026_SOURCE_NOTES.md").read_text(encoding="utf-8")
-    for marker in ["Client/page lifecycle continuity", "Remote text/input transport", "MCP-Protocol-Version", "Parsec copy/paste"]:
+    for marker in ["Client/page lifecycle continuity", "Remote text/input transport", "Retrieval/tool candidate authorization", "MCP-Protocol-Version", "Parsec copy/paste"]:
         if marker not in source_notes: fail(errors, f"AI engineering source-note marker missing: {marker}")
 
     legacy_skill = REPO / "skills" / "skills" / "ai-efficiency-operating-system" / "SKILL.md"
@@ -286,8 +293,8 @@ def main():
         if not (ROOT / rel).exists(): fail(errors, f"missing {rel}")
 
     minimums = {
-        "routing-cases.jsonl": 89,
-        "composition-cases.jsonl": 15,
+        "routing-cases.jsonl": 92,
+        "composition-cases.jsonl": 23,
         "behavior-cases.jsonl": 59,
         "expert-labs-cases.jsonl": 25,
     }
@@ -304,7 +311,7 @@ def main():
     required_behavior = {
         "B56": ("client lifecycle is not run ownership", "hidden frozen discarded or background-throttled client state does not prove run stopped or progressed; correlate execution progress subscription delivery and idempotent reattachment"),
         "B57": ("remote input requires target commit", "source text clipboard IME transport or input API success is lower-layer evidence; verify focused target identity and committed target value read-back"),
-        "B58": ("external skill dependency is capability-bound", "repository-level recoverable-state is invoked only when the host exposes it; otherwise emit an equivalent checkpoint and report the dependency unavailable"),
+        "B58": ("recoverable-state registration and host activation are separate", "plugin package registers recoverable-state for deterministic routing while host-live claims still require current host discovery registration execution and effect evidence"),
         "B59": ("MCP Streamable HTTP version parity", "modern request POST includes MCP-Protocol-Version equal to _meta protocolVersion; mismatch is rejected with HTTP 400 HeaderMismatch"),
     }
     for bid, (invariant, expected) in required_behavior.items():
@@ -319,7 +326,7 @@ def main():
     for marker in [
         "CONDITIONAL_IMPLICIT", "github-operation-orchestrator", "github_operation", "route_bundle",
         "fallback_chain", "deterministic baseline", "_is_explanation_only", "agent-concurrency-backpressure",
-        "agent-observability-slos", "runtime-release-parity", "desktop-ui-automation-reliability",
+        "agent-observability-slos", "recoverable-state", "runtime-release-parity", "desktop-ui-automation-reliability",
         "electron-chromium-process-forensics", "mcp-bridge-reliability",
         "切聊天室", "subscription", "parsec", "clipboard", "uipi",
     ]:
@@ -338,7 +345,8 @@ def main():
     print(
         f"skills={len(EXPECTED)} default_implicit={len(DEFAULT_IMPLICIT)} "
         f"conditional_implicit={len(CONDITIONAL_IMPLICIT)} explicit={len(EXPLICIT_ONLY)} "
-        f"expert={len(EXPERT)} production_specialists={len(PRODUCTION_CONDITIONAL)} depth_levels={len(DEPTH_LEVELS)}"
+        f"expert={len(EXPERT)} core_conditional={len(CORE_CONDITIONAL)} "
+        f"production_specialists={len(PRODUCTION_CONDITIONAL)} depth_levels={len(DEPTH_LEVELS)}"
     )
     return 0
 

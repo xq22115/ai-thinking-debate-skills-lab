@@ -18,7 +18,7 @@ DEFAULT_IMPLICIT = {
 }
 CONDITIONAL_IMPLICIT = {
     "github-operation-orchestrator", "capability-forensics",
-    "mcp-surface-engineering", "agent-runtime-forensics",
+    "mcp-surface-engineering", "agent-runtime-forensics", "recoverable-state",
     "agent-observability-slos", "agent-concurrency-backpressure",
     "agent-evaluation-operations", "long-horizon-context-engineering",
     "runtime-release-parity", "tool-contract-testing",
@@ -36,6 +36,7 @@ FALLBACKS = {
     "capability-forensics": ["executive-research", "evidence-watchdog"],
     "mcp-surface-engineering": ["capability-forensics", "executive-research", "evidence-watchdog"],
     "agent-runtime-forensics": ["capability-forensics", "evidence-watchdog"],
+    "recoverable-state": ["long-horizon-context-engineering", "memory-policy", "evidence-watchdog"],
     "agent-observability-slos": ["agent-runtime-forensics", "evidence-watchdog"],
     "agent-concurrency-backpressure": ["agent-observability-slos", "evidence-watchdog"],
     "agent-evaluation-operations": ["evidence-watchdog", "executive-research"],
@@ -58,7 +59,7 @@ PRIORITY = [
     "electron-chromium-process-forensics", "desktop-ui-automation-reliability", "mcp-bridge-reliability",
     "identity-session-isolation", "runtime-release-parity", "tool-contract-testing",
     "agent-concurrency-backpressure", "agent-observability-slos", "agent-evaluation-operations",
-    "long-horizon-context-engineering", "agent-containment-and-rollback", "model-routing-budget-control",
+    "recoverable-state", "long-horizon-context-engineering", "agent-containment-and-rollback", "model-routing-budget-control",
     "agent-runtime-forensics", "mcp-surface-engineering", "capability-forensics",
     "evidence-watchdog", "convergence-controller", "plan-arbiter", "memory-policy",
     "executive-research", "chief-of-staff-core", "task-goal-intelligence",
@@ -149,6 +150,12 @@ TERMS = {
     "evaluation_ops": [
         "eval", "evaluation", "holdout", "llm judge", "judge", "rubric", "fixture", "promotion",
         "generalization", "paired eval", "slice regression", "order bias", "verbosity bias", "fresh-context",
+    ],
+    "recoverable_state": [
+        "resume from checkpoint", "resume after restart", "recover from checkpoint", "checkpoint freshness",
+        "中斷後續跑", "中斷後繼續", "斷點續跑", "恢復執行", "不可重播", "不要重播",
+        "pending observation", "delayed feedback", "irreversible action", "action receipt", "unsafe replay",
+        "durable checkpoint",
     ],
     "context_engineering": [
         "context budget", "compaction", "rehydration", "checkpoint", "just-in-time retrieval", "context rot",
@@ -251,6 +258,10 @@ def analyze(prompt):
     signals["evaluation_pressure"] = int(
         signals["evaluation_ops"] >= 2 and any(p in text for p in ["eval", "holdout", "judge", "promotion", "fresh-context"])
     )
+    signals["recoverable_state_pressure"] = int(
+        signals["recoverable_state"] >= 2
+        or any(p in text for p in ["resume from checkpoint", "resume after restart", "中斷後續跑", "斷點續跑"])
+    )
     signals["context_pressure"] = int(signals["context_engineering"] >= 2)
     signals["release_parity_pressure"] = int(
         signals["release_parity"] >= 2
@@ -286,7 +297,7 @@ def analyze(prompt):
     signals["substantive"] = int(any(signals[name] for name in [
         "plan", "completion", "memory", "convergence", "research", "complex", "goal_ambiguity",
         "github_surface", "github_chain", "capability_problem", "mcp_surface", "runtime_effect", "concurrency",
-        "observability", "evaluation_ops", "context_engineering", "release_parity", "tool_contract",
+        "observability", "evaluation_ops", "recoverable_state", "context_engineering", "release_parity", "tool_contract",
         "identity_isolation", "containment", "model_routing", "desktop_ui", "electron_process", "mcp_bridge",
     ]))
     return text, signals
@@ -308,6 +319,7 @@ def score_routes(prompt):
     scores["agent-concurrency-backpressure"] = 10 * s["concurrency_pressure"] + s["concurrency"]
     scores["agent-observability-slos"] = 10 * s["observability_pressure"] + s["observability"]
     scores["agent-evaluation-operations"] = 10 * s["evaluation_pressure"] + s["evaluation_ops"]
+    scores["recoverable-state"] = 11 * s["recoverable_state_pressure"] + s["recoverable_state"]
     scores["long-horizon-context-engineering"] = 10 * s["context_pressure"] + s["context_engineering"]
     scores["agent-containment-and-rollback"] = 10 * s["containment_pressure"] + s["containment"]
     scores["model-routing-budget-control"] = 10 * s["model_routing_pressure"] + s["model_routing"]

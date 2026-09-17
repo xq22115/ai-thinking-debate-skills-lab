@@ -17,6 +17,7 @@
     "capability-forensics",
     "mcp-surface-engineering",
     "agent-runtime-forensics",
+    "recoverable-state",
     "agent-observability-slos",
     "agent-concurrency-backpressure",
     "agent-evaluation-operations",
@@ -75,6 +76,7 @@
       "observability_and_slos",
       "evaluation_and_generalization",
       "context_budget_and_rehydration",
+      "recoverable_state",
       "release_runtime_parity",
       "tool_contract_semantics",
       "identity_session_isolation",
@@ -110,52 +112,209 @@
       "model-routing-budget-control": "multiple models/providers/fallbacks require measured quality floors, latency/cost routing, retry budgets, and observable downgrade behavior",
       "desktop-ui-automation-reliability": "desktop automation is flaky under UIAutomation/accessibility, DPI, focus, stale handles, layout transitions, or foreground input ownership",
       "electron-chromium-process-forensics": "Electron/Chromium apps show many renderers, memory/handle growth, renderer churn, crashpad evidence, suspected zombies, or crash loops",
-      "mcp-bridge-reliability": "MCP/local/remote bridges disconnect, reconnect poorly, lose auth/session affinity, collide on ports, or appear alive without end-to-end tool health"
+      "mcp-bridge-reliability": "MCP/local/remote bridges disconnect, reconnect poorly, lose auth/session affinity, collide on ports, or appear alive without end-to-end tool health",
+      "recoverable-state": "interrupted, restarted, compacted, handed-off, delayed-feedback, or partially effectful work must resume from a revalidated durable checkpoint without replaying unsafe side effects"
     }
   },
   "composition": {
-    "complex_research": ["task-goal-intelligence", "executive-research", "evidence-watchdog"],
-    "github_operation": ["task-goal-intelligence", "github-operation-orchestrator", "evidence-watchdog"],
-    "capability_bottleneck": ["task-goal-intelligence", "capability-forensics", "evidence-watchdog"],
-    "many_tool_or_mcp_surface": ["task-goal-intelligence", "mcp-surface-engineering", "evidence-watchdog"],
-    "runtime_effect_mismatch": ["task-goal-intelligence", "agent-runtime-forensics", "evidence-watchdog"],
-    "production_observability": ["task-goal-intelligence", "agent-observability-slos", "evidence-watchdog"],
-    "concurrency_pressure": ["task-goal-intelligence", "agent-concurrency-backpressure", "evidence-watchdog"],
-    "agent_evaluation": ["task-goal-intelligence", "agent-evaluation-operations", "evidence-watchdog"],
-    "long_horizon_context": ["task-goal-intelligence", "long-horizon-context-engineering", "evidence-watchdog"],
-    "release_runtime_parity": ["task-goal-intelligence", "runtime-release-parity", "evidence-watchdog"],
-    "tool_contract": ["task-goal-intelligence", "tool-contract-testing", "evidence-watchdog"],
-    "identity_isolation": ["task-goal-intelligence", "identity-session-isolation", "evidence-watchdog"],
-    "containment_and_rollback": ["task-goal-intelligence", "agent-containment-and-rollback", "evidence-watchdog"],
-    "model_routing_budget": ["task-goal-intelligence", "model-routing-budget-control", "evidence-watchdog"],
-    "desktop_ui_automation": ["task-goal-intelligence", "desktop-ui-automation-reliability", "evidence-watchdog"],
-    "electron_process_forensics": ["task-goal-intelligence", "electron-chromium-process-forensics", "evidence-watchdog"],
-    "mcp_bridge_lifecycle": ["task-goal-intelligence", "mcp-bridge-reliability", "evidence-watchdog"],
-    "architecture_choice": ["task-goal-intelligence", "plan-arbiter"],
-    "repeated_failure": ["task-goal-intelligence", "convergence-controller", "evidence-watchdog"],
-    "cross_session_context": ["task-goal-intelligence", "memory-policy"],
-    "complex_multi_stage": ["task-goal-intelligence", "chief-of-staff-core", "evidence-watchdog"]
+    "complex_research": [
+      "task-goal-intelligence",
+      "executive-research",
+      "evidence-watchdog"
+    ],
+    "github_operation": [
+      "task-goal-intelligence",
+      "github-operation-orchestrator",
+      "evidence-watchdog"
+    ],
+    "capability_bottleneck": [
+      "task-goal-intelligence",
+      "capability-forensics",
+      "evidence-watchdog"
+    ],
+    "many_tool_or_mcp_surface": [
+      "task-goal-intelligence",
+      "mcp-surface-engineering",
+      "evidence-watchdog"
+    ],
+    "runtime_effect_mismatch": [
+      "task-goal-intelligence",
+      "agent-runtime-forensics",
+      "evidence-watchdog"
+    ],
+    "production_observability": [
+      "task-goal-intelligence",
+      "agent-observability-slos",
+      "evidence-watchdog"
+    ],
+    "concurrency_pressure": [
+      "task-goal-intelligence",
+      "agent-concurrency-backpressure",
+      "evidence-watchdog"
+    ],
+    "agent_evaluation": [
+      "task-goal-intelligence",
+      "agent-evaluation-operations",
+      "evidence-watchdog"
+    ],
+    "long_horizon_context": [
+      "task-goal-intelligence",
+      "long-horizon-context-engineering",
+      "evidence-watchdog"
+    ],
+    "release_runtime_parity": [
+      "task-goal-intelligence",
+      "runtime-release-parity",
+      "evidence-watchdog"
+    ],
+    "tool_contract": [
+      "task-goal-intelligence",
+      "tool-contract-testing",
+      "evidence-watchdog"
+    ],
+    "identity_isolation": [
+      "task-goal-intelligence",
+      "identity-session-isolation",
+      "evidence-watchdog"
+    ],
+    "containment_and_rollback": [
+      "task-goal-intelligence",
+      "agent-containment-and-rollback",
+      "evidence-watchdog"
+    ],
+    "model_routing_budget": [
+      "task-goal-intelligence",
+      "model-routing-budget-control",
+      "evidence-watchdog"
+    ],
+    "desktop_ui_automation": [
+      "task-goal-intelligence",
+      "desktop-ui-automation-reliability",
+      "evidence-watchdog"
+    ],
+    "electron_process_forensics": [
+      "task-goal-intelligence",
+      "electron-chromium-process-forensics",
+      "evidence-watchdog"
+    ],
+    "mcp_bridge_lifecycle": [
+      "task-goal-intelligence",
+      "mcp-bridge-reliability",
+      "evidence-watchdog"
+    ],
+    "architecture_choice": [
+      "task-goal-intelligence",
+      "plan-arbiter"
+    ],
+    "repeated_failure": [
+      "task-goal-intelligence",
+      "convergence-controller",
+      "evidence-watchdog"
+    ],
+    "cross_session_context": [
+      "task-goal-intelligence",
+      "memory-policy"
+    ],
+    "complex_multi_stage": [
+      "task-goal-intelligence",
+      "chief-of-staff-core",
+      "evidence-watchdog"
+    ],
+    "recoverable_state": [
+      "task-goal-intelligence",
+      "recoverable-state",
+      "evidence-watchdog"
+    ]
   },
   "fallback_graph": {
-    "github-operation-orchestrator": ["mcp-surface-engineering", "agent-runtime-forensics", "evidence-watchdog"],
-    "capability-forensics": ["executive-research", "evidence-watchdog"],
-    "mcp-surface-engineering": ["capability-forensics", "executive-research", "evidence-watchdog"],
-    "agent-runtime-forensics": ["capability-forensics", "evidence-watchdog"],
-    "agent-observability-slos": ["agent-runtime-forensics", "evidence-watchdog"],
-    "agent-concurrency-backpressure": ["agent-observability-slos", "evidence-watchdog"],
-    "agent-evaluation-operations": ["evidence-watchdog", "executive-research"],
-    "long-horizon-context-engineering": ["memory-policy", "evidence-watchdog"],
-    "runtime-release-parity": ["agent-runtime-forensics", "evidence-watchdog"],
-    "tool-contract-testing": ["mcp-surface-engineering", "agent-runtime-forensics", "evidence-watchdog"],
-    "identity-session-isolation": ["capability-forensics", "agent-runtime-forensics", "evidence-watchdog"],
-    "agent-containment-and-rollback": ["evidence-watchdog", "capability-forensics"],
-    "model-routing-budget-control": ["agent-evaluation-operations", "agent-observability-slos", "evidence-watchdog"],
-    "desktop-ui-automation-reliability": ["identity-session-isolation", "agent-runtime-forensics", "evidence-watchdog"],
-    "electron-chromium-process-forensics": ["agent-runtime-forensics", "agent-observability-slos", "evidence-watchdog"],
-    "mcp-bridge-reliability": ["mcp-surface-engineering", "identity-session-isolation", "tool-contract-testing"],
-    "executive-research": ["task-goal-intelligence", "evidence-watchdog"],
-    "plan-arbiter": ["chief-of-staff-core"],
-    "convergence-controller": ["chief-of-staff-core", "evidence-watchdog"]
+    "github-operation-orchestrator": [
+      "mcp-surface-engineering",
+      "agent-runtime-forensics",
+      "evidence-watchdog"
+    ],
+    "capability-forensics": [
+      "executive-research",
+      "evidence-watchdog"
+    ],
+    "mcp-surface-engineering": [
+      "capability-forensics",
+      "executive-research",
+      "evidence-watchdog"
+    ],
+    "agent-runtime-forensics": [
+      "capability-forensics",
+      "evidence-watchdog"
+    ],
+    "agent-observability-slos": [
+      "agent-runtime-forensics",
+      "evidence-watchdog"
+    ],
+    "agent-concurrency-backpressure": [
+      "agent-observability-slos",
+      "evidence-watchdog"
+    ],
+    "agent-evaluation-operations": [
+      "evidence-watchdog",
+      "executive-research"
+    ],
+    "long-horizon-context-engineering": [
+      "memory-policy",
+      "evidence-watchdog"
+    ],
+    "runtime-release-parity": [
+      "agent-runtime-forensics",
+      "evidence-watchdog"
+    ],
+    "tool-contract-testing": [
+      "mcp-surface-engineering",
+      "agent-runtime-forensics",
+      "evidence-watchdog"
+    ],
+    "identity-session-isolation": [
+      "capability-forensics",
+      "agent-runtime-forensics",
+      "evidence-watchdog"
+    ],
+    "agent-containment-and-rollback": [
+      "evidence-watchdog",
+      "capability-forensics"
+    ],
+    "model-routing-budget-control": [
+      "agent-evaluation-operations",
+      "agent-observability-slos",
+      "evidence-watchdog"
+    ],
+    "desktop-ui-automation-reliability": [
+      "identity-session-isolation",
+      "agent-runtime-forensics",
+      "evidence-watchdog"
+    ],
+    "electron-chromium-process-forensics": [
+      "agent-runtime-forensics",
+      "agent-observability-slos",
+      "evidence-watchdog"
+    ],
+    "mcp-bridge-reliability": [
+      "mcp-surface-engineering",
+      "identity-session-isolation",
+      "tool-contract-testing"
+    ],
+    "executive-research": [
+      "task-goal-intelligence",
+      "evidence-watchdog"
+    ],
+    "plan-arbiter": [
+      "chief-of-staff-core"
+    ],
+    "convergence-controller": [
+      "chief-of-staff-core",
+      "evidence-watchdog"
+    ],
+    "recoverable-state": [
+      "long-horizon-context-engineering",
+      "memory-policy",
+      "evidence-watchdog"
+    ]
   },
   "fallback_rules": {
     "route_failure_does_not_change_root_goal": true,
@@ -174,7 +333,9 @@
       "mcp-surface-engineering",
       "agent-runtime-forensics"
     ],
-    "explicit_only": ["authorized-reverse-engineering"],
+    "explicit_only": [
+      "authorized-reverse-engineering"
+    ],
     "load_only_on_material_need": true,
     "no_skill_counterfactual_required_for_promotion": true,
     "host_version_capability_probe_required": true,
@@ -211,7 +372,12 @@
       "same_class_no_delta_pivot_after": 2,
       "load_bearing_claim_min_independent_source_families": 2,
       "high_impact_claim_target_independent_source_families": 3,
-      "search_modes": ["NO_SEARCH", "TARGETED", "BROAD", "FORENSIC"],
+      "search_modes": [
+        "NO_SEARCH",
+        "TARGETED",
+        "BROAD",
+        "FORENSIC"
+      ],
       "preserve_conflicting_evidence": true,
       "search_snippets_are_discovery_only_when_source_can_be_opened": true
     },
@@ -225,7 +391,12 @@
       "minimum_independent_domains": 10,
       "minimum_distinct_first_pass_worker_identities": 10,
       "minimum_research_passes": 4,
-      "required_passes": ["broad_scan", "gap_expansion", "adversarial_counterevidence", "cross_validation"],
+      "required_passes": [
+        "broad_scan",
+        "gap_expansion",
+        "adversarial_counterevidence",
+        "cross_validation"
+      ],
       "if_required_telemetry_is_missing": "PROCESS_COMPLETE_MAX",
       "time_padding_forbidden": true,
       "majority_vote_is_not_completion_proof": true
@@ -247,7 +418,12 @@
     "self_approval_forbidden": true
   },
   "memory": {
-    "durable_classes": ["decision", "preference", "commitment", "verified_durable_fact"],
+    "durable_classes": [
+      "decision",
+      "preference",
+      "commitment",
+      "verified_durable_fact"
+    ],
     "raw_external_evidence_is_durable": false,
     "instruction_like_external_content": "QUARANTINE",
     "transformation_cannot_raise_authority": true

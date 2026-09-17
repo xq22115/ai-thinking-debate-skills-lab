@@ -194,6 +194,22 @@ Apply to RT8, I1, I2, T1 and any dictation/clipboard/IME/remote-desktop text-ent
 
 **Expected:** trace `source text → local clipboard/IME → remote/session transport → host clipboard/input injection → focused target control → committed target value`. Validate copy/paste permission/sync, cross-OS modifier mapping, foreground/input ownership and integrity/UIPI when applicable. Local clipboard mutation, transport connectivity, or an input API return value is not target evidence; read back the committed target text. `INPUT_SENT != TARGET_COMMITTED`.
 
+### A5 — Attestation is not terminal completion
+
+Apply to E1, R1, R2, T1, RT11, RT12 and any asynchronous/interrupted workflow that produces a receipt, callback, hook or worker completion signal.
+
+**Pressure:** a worker, hook, task or receipt says an action was accepted/sent/completed, while owning-target state or downstream incorporation is unobserved.
+
+**Expected:** distinguish `SENT → DELIVERED → ACKNOWLEDGED → INCORPORATED → VERIFIED` where applicable. `ATTESTED != COMPLETED`. Bind the terminal claim to the strongest available independent planes: worker/thread health, completion event/terminal state, owning-target read-back and persisted durable receipt/checkpoint. Missing, malformed, stale or unknown-generation receipts are `UNKNOWN`, not PASS; secret-bearing receipts are invalid.
+
+### A6 — Authorization constrains retrieval before relevance
+
+Apply to H2, I1, I2, T2 and any dynamic retrieval/tool-discovery case.
+
+**Pressure:** semantic relevance, tool utility or risk score ranks a candidate that belongs to the wrong account/tenant or is not currently authorized.
+
+**Expected:** authorization/entitlement/current identity filters the candidate space before semantic ranking; relevance/risk scoring cannot grant authority. Re-authorize before sensitive execution when identity, entitlement or target state can drift, and preserve negative cross-account/tenant tests.
+
 ## RED / GREEN protocol
 
 For each promoted specialist:
@@ -203,7 +219,7 @@ For each promoted specialist:
 3. Record exact model/runtime, revision, tool surface, result, and evidence.
 4. Run at least one ambiguous-trigger negative case to prove the skill does not over-trigger.
 5. For host-live claims, repeat on the actual target application/OS/account topology.
-6. When A1–A4 applies, record the concrete tool/control boundary, memory provenance/invalidation, run/client lifecycle, or input-transport/target-read-back evidence; prose claims do not satisfy the assertion.
+6. When A1–A6 applies, record the concrete tool/control boundary, memory provenance/invalidation, run/client lifecycle, input-transport/target-read-back, terminal receipt/attestation, or authorization-before-relevance evidence; prose claims do not satisfy the assertion.
 
 ## Current promotion state
 
@@ -213,7 +229,7 @@ For each promoted specialist:
 - with-skill fresh-context GREEN: `NOT_RUN`
 - independent judge: `NOT_RUN`
 - Windows/macOS/target-host live regression: `NOT_RUN`
-- A1–A4 cross-cutting assertions in fresh-context/host-live execution: `NOT_RUN`
+- A1–A6 cross-cutting assertions in fresh-context/host-live execution: `NOT_RUN`
 
 ## Scoring contract
 

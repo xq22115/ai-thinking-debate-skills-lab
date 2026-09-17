@@ -1,0 +1,5 @@
+interface:
+  display_name: "Recoverable State"
+  short_description: "Resume interrupted work safely from revalidated durable checkpoints"
+policy:
+  allow_implicit_invocation: true

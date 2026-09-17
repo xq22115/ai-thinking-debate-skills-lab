@@ -1,7 +1,7 @@
 {
   "name": "ai-efficiency-operating-system",
   "version": "1.5.0",
-  "description": "Native goal-first agent harness with runtime preamble, phase-gated semantic routing, progressive skill disclosure, ordinary-ChatGPT GitHub operation orchestration, explicit host-activation truth, deep research, capability/MCP/runtime forensics, production observability, concurrency/backpressure control, evaluation operations, long-horizon context engineering, runtime-release parity, tool contract testing, identity isolation, containment/rollback, model routing, fresh verification and recovery for complex ChatGPT and Codex tasks.",
+  "description": "Native goal-first agent harness with runtime preamble, phase-gated semantic routing, progressive skill disclosure, ordinary-ChatGPT GitHub operation orchestration, explicit host-activation truth, deep research, capability/MCP/runtime forensics, production observability, concurrency/backpressure control, evaluation operations, long-horizon context engineering, recoverable state, runtime-release parity, tool contract testing, identity isolation, containment/rollback, model routing, fresh verification and recovery for complex ChatGPT and Codex tasks.",
   "author": {
     "name": "xq22115",
     "url": "https://github.com/xq22115"
@@ -43,6 +43,7 @@
     "model-routing",
     "budget-control",
     "goal-integrity",
+    "recoverable-state",
     "long-horizon",
     "chatgpt-desktop",
     "codex"
@@ -53,7 +54,11 @@
     "category": "Productivity",
     "shortDescription": "Goal harness plus production-grade AI engineering controls",
     "longDescription": "A goal-first harness with progressive specialist disclosure, GitHub orchestration, explicit activation truth, production observability, concurrency/backpressure control, eval operations, context engineering, runtime parity, tool contracts, identity isolation, containment/rollback, model routing, failure-trace optimization and fresh owning-system verification.",
-    "capabilities": ["Interactive", "Read", "Write"],
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
     "defaultPrompt": [
       "Recover my actual goal, run the smallest useful native workflow, and verify the result with current owning evidence.",
       "Treat route failures as recovery signals rather than permission to reduce the goal or acceptance criteria.",

@@ -42,7 +42,7 @@ Keep separate:
 - Durable entries need a way to be superseded, invalidated or expired when the owning evidence changes.
 - If context pressure changes behavior, record it as a system variable, not a model personality trait.
 
-**DEPENDENCY BOUNDARY:** use plugin-local `memory-policy` for the canonical persistent-state injection firewall/provenance policy. For durable resume, use the repository-level `recoverable-state` owner only when that skill surface is actually registered/exposed by the host. Otherwise this skill must emit an equivalent canonical checkpoint (goal/constraints, exact target/revision, completed and pending actions, unsafe-to-repeat effects, evidence pointers, blocker state and next discriminating action) and explicitly mark the external dependency unavailable; never claim an unregistered sub-skill was invoked.
+**REQUIRED SUB-SKILLS:** use plugin-local `memory-policy` for the canonical persistent-state injection firewall/provenance policy and plugin-local `recoverable-state` for durable resume/checkpoint freshness/unsafe-replay control. Host-live invocation still requires the current host to discover/register the packaged skill; repository registration alone is not host execution proof.
 
 ## Output
 
