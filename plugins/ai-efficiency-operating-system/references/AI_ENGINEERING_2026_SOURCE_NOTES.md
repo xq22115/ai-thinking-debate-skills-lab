@@ -120,6 +120,26 @@ Agent Framework emits workflow/session/invocation/executor/message spans, logs a
 
 Portable lesson: agent observability should cover message/executor/workflow flow, not only individual LLM calls.
 
+## Client/page lifecycle continuity
+
+### Chromium Page Lifecycle and Page Visibility
+
+Sources:
+- https://developer.chrome.com/docs/web-platform/page-lifecycle-api
+- https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API
+
+Chromium can move hidden pages through lifecycle states that include hidden, frozen, terminated and discarded. In the frozen state, freezable task queues stop running until resume; a discarded page cannot execute tasks at all and must later be reloaded. Browser background policies also throttle timers and rendering in hidden/inactive tabs.
+
+### Electron background throttling
+
+Sources:
+- https://www.electronjs.org/docs/latest/api/web-contents
+- https://www.electronjs.org/docs/latest/api/browser-window
+
+Electron exposes `backgroundThrottling`; by default web contents may throttle animations and timers when backgrounded, and that setting also affects the Page Visibility API. Renderer visibility therefore must not be treated as a transparent execution environment.
+
+Portable lessons: keep durable run/task identity and execution ownership separate from the client renderer and output subscription. A paused render, hidden tab or frozen page does not by itself prove the backend run stopped; conversely, a surviving run ID does not prove progress. Persist resumable state before lifecycle loss, instrument execution progress separately from client delivery/render state, and make reattachment idempotent so returning to a chat/tab cannot replay unsafe work.
+
 ## Windows desktop automation
 
 ### UI Automation screen scaling
@@ -129,6 +149,24 @@ Source: https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-screensca
 Microsoft documents that UI Automation point/bounding-rectangle APIs operate in physical coordinates, while non-DPI-aware clients can receive or supply incompatible logical coordinates. Correct clients must account for DPI awareness and physical cursor coordinates when geometry is unavoidable.
 
 Portable lessons: prefer semantic UIAutomation/Accessibility element identity over screen geometry; when coordinates are required, fingerprint DPI/coordinate space explicitly and never mix logical and physical coordinates silently. Verify the target window/control before and after an input action.
+
+## Remote text/input transport
+
+### Windows synthetic input
+
+Source: https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendinput
+
+Windows `SendInput` synthesizes keyboard/mouse input but is subject to User Interface Privilege Isolation (UIPI). Injection is restricted by integrity level, and the API does not reliably identify UIPI as the cause when injection fails. A successful low-level call also does not prove that the intended application control committed the text.
+
+### Parsec copy/paste and cross-OS key mapping
+
+Sources:
+- https://support.parsec.app/hc/en-us/articles/32381443626516-All-Advanced-Configuration-Options
+- https://support.parsec.app/hc/en-us/articles/32361367389972-Swap-Command-and-Ctrl-for-MacOS
+
+Parsec exposes explicit copy/paste policy between guest and host, and documents that macOS↔Windows modifier mapping is not inherently 1:1. Copy/paste permission, remote transport and shortcut mapping therefore belong to the input-path contract rather than being assumed from a connected session.
+
+Portable lessons: trace text entry as `source text → local clipboard/IME → remote/session transport → host clipboard/input injection → focused target control → committed target value`. Distinguish transport connectivity, clipboard state, key mapping, foreground ownership, integrity/UIPI and target-control behavior. `INPUT_SENT != TARGET_COMMITTED`; verify the final target value/read-back.
 
 ## Electron / Chromium desktop runtime
 
@@ -163,7 +201,9 @@ The primary sources converge on a production-agent architecture with these indep
 9. semantic-first desktop automation with explicit coordinate-space handling;
 10. lifecycle-aware Electron/Chromium process forensics;
 11. protocol-version-aware MCP bridge recovery with explicit application state;
-12. provenance-aware durable memory that resists stale or poisoned context becoming control authority.
+12. provenance-aware durable memory that resists stale or poisoned context becoming control authority;
+13. run ownership and durable progress that remain distinct from client visibility, renderer throttling and subscription/reattachment state;
+14. end-to-end text/input transport verification from source text to committed target value across local/remote UI boundaries.
 
 ## Invalidation rule
 
