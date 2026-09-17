@@ -1,0 +1,5 @@
+interface:
+  display_name: "Tool Contract Testing"
+  short_description: "Test live schemas, effects, retries and postconditions"
+policy:
+  allow_implicit_invocation: true
