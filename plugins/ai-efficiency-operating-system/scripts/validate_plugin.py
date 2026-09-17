@@ -295,7 +295,7 @@ def main():
     minimums = {
         "routing-cases.jsonl": 92,
         "composition-cases.jsonl": 23,
-        "behavior-cases.jsonl": 59,
+        "behavior-cases.jsonl": 61,
         "expert-labs-cases.jsonl": 25,
     }
     for name, minimum in minimums.items():
@@ -313,6 +313,8 @@ def main():
         "B57": ("remote input requires target commit", "source text clipboard IME transport or input API success is lower-layer evidence; verify focused target identity and committed target value read-back"),
         "B58": ("recoverable-state registration and host activation are separate", "plugin package registers recoverable-state for deterministic routing while host-live claims still require current host discovery registration execution and effect evidence"),
         "B59": ("MCP Streamable HTTP version parity", "modern request POST includes MCP-Protocol-Version equal to _meta protocolVersion; mismatch is rejected with HTTP 400 HeaderMismatch"),
+        "B60": ("attestation is not terminal completion", "accepted sent acknowledged worker or receipt status is not terminal proof; require owning-system postcondition evidence and classify missing confirmation as UNKNOWN"),
+        "B61": ("authorization constrains retrieval before relevance", "current principal account tenant and entitlement scope filters candidate tools before semantic utility or risk ranking; relevance never grants authority"),
     }
     for bid, (invariant, expected) in required_behavior.items():
         row = behavior_by_id.get(bid)

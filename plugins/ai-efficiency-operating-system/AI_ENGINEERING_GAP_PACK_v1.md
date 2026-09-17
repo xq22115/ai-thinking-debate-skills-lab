@@ -55,8 +55,9 @@ Routing TDD fixture set: `evals/routing-cases.jsonl`.
 
 - Existing protection cases: R01–R61.
 - New production-specialist cases: R62–R85.
-- Recovery/control-plane integration cases: R86–R88.
-- The original specialist RED evidence remains `85 cases / 24 failures`: all 24 failures mapped to the 12 newly specified production specialists while legacy cases stayed protected. R86–R88 were added later as integration hard-negatives and must not be misreported as part of that historical RED run.
+- Client-lifecycle/input-transport integration cases: R86–R89.
+- Recoverable-state/control-plane integration cases: R90–R92.
+- The original specialist RED evidence remains `85 cases / 24 failures`: all 24 failures mapped to the 12 newly specified production specialists while legacy cases stayed protected. R86–R92 were added later as integration hard-negatives and must not be misreported as part of that historical RED run.
 
 Scenario-level engineering pressure cases are canonicalized in `evals/AI_ENGINEERING_GAP_PACK_v1.md`: **30 scenarios total** — 18 base engineering cases plus 12 distinct runtime-specialist adversarial cases reconciled from the same-day runtime branch. These remain `SPECIFIED_NOT_EXECUTED` for real baseline-vs-skill fresh-context/model-behavior evaluation. Cross-cutting assertions additionally require path-specific guardrail evidence, provenance/invalidation evidence for persistent memory, client-lifecycle/run-ownership evidence, end-to-end input-transport target read-back, terminal receipt/attestation evidence, and authorization-before-relevance evidence; they do not inflate the scenario count.
 
