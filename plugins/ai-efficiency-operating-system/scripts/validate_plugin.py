@@ -15,24 +15,36 @@ DEFAULT_IMPLICIT = [
     "memory-policy",
     "convergence-controller",
 ]
-CONDITIONAL_IMPLICIT = [
+EXPERT_IMPLICIT = [
     "github-operation-orchestrator",
     "capability-forensics",
     "mcp-surface-engineering",
     "agent-runtime-forensics",
 ]
+CORE_CONDITIONAL = [
+    "recoverable-state",
+]
+PRODUCTION_CONDITIONAL = [
+    "agent-observability-slos",
+    "agent-concurrency-backpressure",
+    "agent-evaluation-operations",
+    "long-horizon-context-engineering",
+    "runtime-release-parity",
+    "tool-contract-testing",
+    "identity-session-isolation",
+    "agent-containment-and-rollback",
+    "model-routing-budget-control",
+    "desktop-ui-automation-reliability",
+    "electron-chromium-process-forensics",
+    "mcp-bridge-reliability",
+]
+CONDITIONAL_IMPLICIT = EXPERT_IMPLICIT + CORE_CONDITIONAL + PRODUCTION_CONDITIONAL
 EXPLICIT_ONLY = [
     "autonomy-contract",
     "persistent-work-ledger",
     "authorized-reverse-engineering",
 ]
-EXPERT = [
-    "github-operation-orchestrator",
-    "capability-forensics",
-    "mcp-surface-engineering",
-    "authorized-reverse-engineering",
-    "agent-runtime-forensics",
-]
+EXPERT = EXPERT_IMPLICIT[:3] + ["authorized-reverse-engineering", "agent-runtime-forensics"]
 EXPECTED = DEFAULT_IMPLICIT + CONDITIONAL_IMPLICIT + EXPLICIT_ONLY
 DEPTH_LEVELS = ["SURFACE", "MECHANISM", "CODE_PATH", "DETERMINISTIC_REPRO", "COUNTEREXAMPLE", "FIX_STATUS", "REGRESSION", "GENERALIZATION"]
 EXPERT_REFS = {
@@ -42,6 +54,9 @@ EXPERT_REFS = {
     "agent-runtime-forensics": ("references/runtime-provenance.md", ["Evidence planes", "Causal edges", "Replay"]),
 }
 EXTRA_REFS = {
+    "skills/recoverable-state/references/temporal-trajectory-integrity.md": [
+        "ATTESTED != COMPLETED", "PENDING_OBSERVATION", "FIRST_IRRECOVERABLE_ERROR"
+    ],
     "skills/capability-forensics/references/capability-boundary-recon.md": [
         "PLAN/ROLLOUT", "WORKSPACE POLICY", "PLUGIN INSTALL", "SESSION REGISTRATION", "Desktop-only", "MODEL_OR_REASONING_LIMIT"
     ],
@@ -115,6 +130,19 @@ def main():
         "capability_bottleneck",
         "many_tool_or_mcp_surface",
         "runtime_effect_mismatch",
+        "production_observability",
+        "concurrency_pressure",
+        "agent_evaluation",
+        "recoverable_state",
+        "long_horizon_context",
+        "release_runtime_parity",
+        "tool_contract",
+        "identity_isolation",
+        "containment_and_rollback",
+        "model_routing_budget",
+        "desktop_ui_automation",
+        "electron_process_forensics",
+        "mcp_bridge_lifecycle",
         "architecture_choice",
         "repeated_failure",
         "cross_session_context",
@@ -144,7 +172,7 @@ def main():
     labs = settings.get("expert_labs", {})
     if labs.get("activation") != "conditional-demand-loaded": fail(errors, "expert labs activation must be conditional-demand-loaded")
     if labs.get("default_enabled") is not False: fail(errors, "expert labs must not be globally default-enabled")
-    if labs.get("implicit_eligible") != CONDITIONAL_IMPLICIT: fail(errors, "expert lab implicit-eligible inventory drift")
+    if labs.get("implicit_eligible") != EXPERT_IMPLICIT: fail(errors, "expert lab implicit-eligible inventory drift")
     if labs.get("explicit_only") != ["authorized-reverse-engineering"]: fail(errors, "authorized reverse engineering must remain expert explicit-only")
     if labs.get("load_only_on_material_need") is not True: fail(errors, "expert labs must be demand-loaded")
     if labs.get("no_skill_counterfactual_required_for_promotion") is not True: fail(errors, "expert labs require no-skill counterfactual")
@@ -223,6 +251,34 @@ def main():
     for marker in ["Persistent-state injection firewall", "control state", "evidence/data", "persistent file is storage, not an authority upgrade"]:
         if marker not in memory: fail(errors, f"persistent-state firewall marker missing: {marker}")
 
+    long_horizon = (ROOT / "skills" / "long-horizon-context-engineering" / "SKILL.md").read_text(encoding="utf-8")
+    for marker in ["REQUIRED SUB-SKILLS", "plugin-local `recoverable-state`", "repository registration alone is not host execution proof"]:
+        if marker not in long_horizon: fail(errors, f"long-horizon dependency marker missing: {marker}")
+
+    recoverable = (ROOT / "skills" / "recoverable-state" / "SKILL.md").read_text(encoding="utf-8")
+    for marker in ["Packaging provenance", "packaged adapter/snapshot", "skills/skills/recoverable-state/SKILL.md", "second independent semantic owner"]:
+        if marker not in recoverable: fail(errors, f"recoverable-state packaging provenance marker missing: {marker}")
+
+    observability = (ROOT / "skills" / "agent-observability-slos" / "SKILL.md").read_text(encoding="utf-8")
+    for marker in ["client/page lifecycle state", "stream/subscription identity", "execution-owner progress", "reattachment"]:
+        if marker not in observability: fail(errors, f"client lifecycle observability marker missing: {marker}")
+
+    desktop_ui = (ROOT / "skills" / "desktop-ui-automation-reliability" / "SKILL.md").read_text(encoding="utf-8")
+    for marker in ["source text → local clipboard/IME", "INPUT_SENT != TARGET_COMMITTED", "UIPI", "remote/session transport"]:
+        if marker not in desktop_ui: fail(errors, f"remote input transport marker missing: {marker}")
+
+    mcp_bridge = (ROOT / "skills" / "mcp-bridge-reliability" / "SKILL.md").read_text(encoding="utf-8")
+    for marker in ["MCP-Protocol-Version", "HeaderMismatch", "server/discover"]:
+        if marker not in mcp_bridge: fail(errors, f"MCP 2026 transport marker missing: {marker}")
+
+    gap_eval = (ROOT / "evals" / "AI_ENGINEERING_GAP_PACK_v1.md").read_text(encoding="utf-8")
+    for marker in ["A3 — Client visibility is not run ownership", "UI_NOT_RENDERING != RUN_STOPPED", "RUN_EXISTS != RUN_PROGRESSING", "A4 — Input sent is not target committed", "INPUT_SENT != TARGET_COMMITTED", "A5 — Attestation is not terminal completion", "ATTESTED != COMPLETED", "A6 — Authorization constrains retrieval before relevance"]:
+        if marker not in gap_eval: fail(errors, f"AI engineering cross-cutting assertion missing: {marker}")
+
+    source_notes = (ROOT / "references" / "AI_ENGINEERING_2026_SOURCE_NOTES.md").read_text(encoding="utf-8")
+    for marker in ["Client/page lifecycle continuity", "Remote text/input transport", "Retrieval/tool candidate authorization", "Durable asynchronous terminal evidence", "TERMINAL_TASK_STATE != DOMAIN_POSTCONDITION", "MCP-Protocol-Version", "Parsec copy/paste"]:
+        if marker not in source_notes: fail(errors, f"AI engineering source-note marker missing: {marker}")
+
     legacy_skill = REPO / "skills" / "skills" / "ai-efficiency-operating-system" / "SKILL.md"
     if legacy_skill.exists(): fail(errors, "legacy mega SKILL.md is still active")
 
@@ -241,9 +297,9 @@ def main():
         if not (ROOT / rel).exists(): fail(errors, f"missing {rel}")
 
     minimums = {
-        "routing-cases.jsonl": 55,
-        "composition-cases.jsonl": 15,
-        "behavior-cases.jsonl": 55,
+        "routing-cases.jsonl": 92,
+        "composition-cases.jsonl": 23,
+        "behavior-cases.jsonl": 62,
         "expert-labs-cases.jsonl": 25,
     }
     for name, minimum in minimums.items():
@@ -254,8 +310,37 @@ def main():
         if len(ids) != len(set(ids)): fail(errors, f"duplicate IDs in {name}")
         if len(rows) < minimum: fail(errors, f"insufficient {name}: {len(rows)} < {minimum}")
 
+    behavior_rows, _ = load_jsonl(ROOT / "evals" / "behavior-cases.jsonl")
+    behavior_by_id = {row["id"]: row for row in behavior_rows}
+    required_behavior = {
+        "B56": ("client lifecycle is not run ownership", "hidden frozen discarded or background-throttled client state does not prove run stopped or progressed; correlate execution progress subscription delivery and idempotent reattachment"),
+        "B57": ("remote input requires target commit", "source text clipboard IME transport or input API success is lower-layer evidence; verify focused target identity and committed target value read-back"),
+        "B58": ("recoverable-state registration and host activation are separate", "plugin package registers recoverable-state for deterministic routing while host-live claims still require current host discovery registration execution and effect evidence"),
+        "B59": ("MCP Streamable HTTP version parity", "modern request POST includes MCP-Protocol-Version equal to _meta protocolVersion; mismatch is rejected with HTTP 400 HeaderMismatch"),
+        "B60": ("attestation is not terminal completion", "accepted sent acknowledged worker or receipt status is not terminal proof; require owning-system postcondition evidence and classify missing confirmation as UNKNOWN"),
+        "B61": ("authorization constrains retrieval before relevance", "current principal account tenant and entitlement scope filters candidate tools before semantic utility or risk ranking; relevance never grants authority"),
+        "B62": ("shared branch mutation is compare-and-swap guarded", "record expected head before write and move the branch only when current head still matches; on head drift abort force-free compare reconcile rebuild then read back the new exact revision"),
+    }
+    for bid, (invariant, expected) in required_behavior.items():
+        row = behavior_by_id.get(bid)
+        if not row:
+            fail(errors, f"required behavior case missing: {bid}")
+            continue
+        if row.get("invariant") != invariant: fail(errors, f"behavior invariant drift: {bid}")
+        if row.get("expected") != expected: fail(errors, f"behavior expected contract drift: {bid}")
+
+    github_skill = (ROOT / "skills" / "github-operation-orchestrator" / "SKILL.md").read_text(encoding="utf-8")
+    for marker in ["Shared-branch optimistic concurrency", "EXPECTED_HEAD == CURRENT_HEAD", "EXPECTED_HEAD != CURRENT_HEAD", "ABORT + COMPARE + RECONCILE + REBUILD", "force=true"]:
+        if marker not in github_skill: fail(errors, f"github shared-branch CAS marker missing: {marker}")
+
     route_oracle = (ROOT / "scripts" / "route_oracle.py").read_text(encoding="utf-8")
-    for marker in ["CONDITIONAL_IMPLICIT", "github-operation-orchestrator", "github_operation", "route_bundle", "fallback_chain", "deterministic baseline", "_is_explanation_only"]:
+    for marker in [
+        "CONDITIONAL_IMPLICIT", "github-operation-orchestrator", "github_operation", "route_bundle",
+        "fallback_chain", "deterministic baseline", "_is_explanation_only", "agent-concurrency-backpressure",
+        "agent-observability-slos", "recoverable-state", "runtime-release-parity", "desktop-ui-automation-reliability",
+        "electron-chromium-process-forensics", "mcp-bridge-reliability",
+        "切聊天室", "subscription", "parsec", "clipboard", "uipi",
+    ]:
         if marker.lower() not in route_oracle.lower(): fail(errors, f"routing oracle marker missing: {marker}")
 
     composition_oracle = (ROOT / "scripts" / "composition_oracle.py").read_text(encoding="utf-8")
@@ -271,7 +356,8 @@ def main():
     print(
         f"skills={len(EXPECTED)} default_implicit={len(DEFAULT_IMPLICIT)} "
         f"conditional_implicit={len(CONDITIONAL_IMPLICIT)} explicit={len(EXPLICIT_ONLY)} "
-        f"expert={len(EXPERT)} depth_levels={len(DEPTH_LEVELS)}"
+        f"expert={len(EXPERT)} core_conditional={len(CORE_CONDITIONAL)} "
+        f"production_specialists={len(PRODUCTION_CONDITIONAL)} depth_levels={len(DEPTH_LEVELS)}"
     )
     return 0
 

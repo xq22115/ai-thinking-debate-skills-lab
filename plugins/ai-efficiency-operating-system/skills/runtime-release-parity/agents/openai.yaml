@@ -1,0 +1,5 @@
+interface:
+  display_name: "Runtime Release Parity"
+  short_description: "Prove source, artifact and live runtime identity parity"
+policy:
+  allow_implicit_invocation: true

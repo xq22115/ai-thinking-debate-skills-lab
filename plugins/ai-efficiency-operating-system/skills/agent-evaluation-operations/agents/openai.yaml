@@ -1,0 +1,5 @@
+interface:
+  display_name: "Agent Evaluation Operations"
+  short_description: "Operate trajectory, holdout and regression evals"
+policy:
+  allow_implicit_invocation: true

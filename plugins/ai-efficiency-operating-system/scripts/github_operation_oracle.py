@@ -17,6 +17,8 @@ def classify(d):
         return "REDISCOVER_LIVE_SCHEMA"
     if d.get("stale_blob_sha"):
         return "REREAD_RECONCILE_CURRENT_SHA"
+    if d.get("shared_branch_head_moved"):
+        return "ABORT_REBASE_RECONCILE_HEAD"
     if d.get("search_miss") and d.get("exact_identity_known"):
         return "PIVOT_EXACT_LOOKUP"
     if d.get("partial_or_ambiguous_response"):

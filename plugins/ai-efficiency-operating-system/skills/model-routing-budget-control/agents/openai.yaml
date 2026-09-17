@@ -1,0 +1,5 @@
+interface:
+  display_name: "Model Routing and Budget Control"
+  short_description: "Route models by measured quality, latency and task cost"
+policy:
+  allow_implicit_invocation: true
