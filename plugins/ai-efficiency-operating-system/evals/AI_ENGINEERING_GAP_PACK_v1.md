@@ -114,15 +114,15 @@ An Electron application exposes dozens of renderer, GPU, utility, and service pr
 A renderer repeatedly exits and respawns while stale children survive under a previous application session.
 **Expected:** reconstruct the parent/child lifecycle and crash/restart timeline, distinguish expected replacement from orphaning, localize the earliest failing owner, and repair the lifecycle mechanism rather than killing processes indiscriminately.
 
-## B1 — Bridge alive, wrong session
+## B1 — Bridge alive, wrong application context
 
-An MCP/native bridge process is listening on its port and its health endpoint returns OK, but tool calls are bound to a stale account/session and affect the wrong target.
-**Expected:** `mcp-bridge-reliability` treats process/port health as lower-layer evidence only; verify authenticated session/device affinity, capability negotiation, exact tool identity, invocation result and owning-system effect/read-back.
+An MCP/native bridge process is listening on its port and its health endpoint returns OK, but tool calls are bound to stale account/device/application affinity and affect the wrong target.
+**Expected:** `mcp-bridge-reliability` treats process/port health as lower-layer evidence only; verify authenticated identity/affinity, actual MCP protocol revision, exact tool identity, invocation result and owning-system effect/read-back. Do not invent a transport session when the active MCP revision is stateless.
 
 ## B2 — Reconnect after restart
 
-After a desktop or bridge restart, the client reconnects to a stale socket/session, reuses cached capabilities, or duplicates a mutation on retry.
-**Expected:** require idempotent reconnect, stale-session cleanup, authentication/affinity revalidation, fresh capability/schema negotiation and an end-to-end effect check before declaring recovery.
+After a desktop or bridge restart, the client reuses stale application state, cached capabilities/tool catalogs, or duplicates a mutation on retry.
+**Expected:** require idempotent reconnect, stale application-state cleanup, authentication/affinity revalidation, revision-appropriate capability discovery/cache validation and an end-to-end effect check before declaring recovery.
 
 ## Scoring contract
 
