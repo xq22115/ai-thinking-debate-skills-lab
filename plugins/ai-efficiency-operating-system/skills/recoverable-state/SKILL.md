@@ -7,6 +7,13 @@ description: Use when long-running or effectful work must resume after interrupt
 
 Status: `EXPERIMENTAL / PORTABLE PROCEDURAL CORE`
 
+## Packaging provenance
+
+This plugin-local skill is the **packaged adapter/snapshot** of the repository-level semantic owner at `skills/skills/recoverable-state/SKILL.md`. It exists here so the plugin can register and route the capability on hosts that load only plugin-local skills; it is **not** a second independent semantic owner and is not counted among the 12 production specialists.
+
+Changes to recovery semantics must be reconciled with the repository-level owner before promotion. Plugin-specific packaging may add registration/host-boundary details, but it must not silently fork the checkpoint, freshness, unsafe-replay, delayed-feedback, or trajectory-integrity contract.
+
+
 ## Core principle
 
 A transcript is not a state machine, and a checkpoint is not present-time truth. Resume from durable state only after revalidating the current goal, target identity/revision and effect receipts.
