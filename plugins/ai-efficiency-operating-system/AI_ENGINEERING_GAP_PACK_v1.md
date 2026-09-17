@@ -30,11 +30,23 @@ Recent work repeatedly exposed a gap between strong reasoning/verification skill
 - `evidence-watchdog` / `completion-gate` for evidence-bound release claims.
 - `durable-agent-control-plane` / `recoverable-state` for durable task state and resume.
 
+## Runtime specialist extension
+
+A stacked specialist layer covers recurring live-runtime failure modes that are too narrow for the general owners:
+
+- `electron-chromium-process-forensics` — Electron/Chromium process lineage, renderer churn, leak/crash-loop falsification.
+- `desktop-ui-automation-reliability` — UIAutomation/Accessibility targeting, DPI coordinate space, layout/focus/input races, recovery-guard reliability.
+- `mcp-bridge-reliability` — MCP/native-host/bridge lifecycle, stale sessions, reconnect idempotency, device/session affinity.
+
+See `AI_RUNTIME_SPECIALIST_PACK_v1.md`. These specialists compose with the general owners above; they do not replace them.
+
 ## Composition
 
 For a production agent incident or build:
 
 `goal contract → identity/session isolation → current tool/MCP surface → context budget → concurrency/resource model → observability → execution → tool contract checks → runtime/release parity → eval operations → containment/rollback → completion gate`
+
+When a narrow runtime trigger is present, insert at most one runtime specialist after the relevant general owner unless evidence shows two independent mechanisms.
 
 Omit layers whose trigger conditions are absent.
 
@@ -46,8 +58,8 @@ This branch may prove only the first two layers. A GitHub commit or PR is not ev
 
 ## Primary-source learning inputs
 
-Mechanisms were distilled from current OpenAI agent harness/API guidance, Anthropic context-engineering/eval/containment work, MCP specification `2026-07-28`, OpenTelemetry GenAI observability conventions, and current agent-workflow observability guidance. See `references/AI_ENGINEERING_2026_SOURCE_NOTES.md`.
+Mechanisms were distilled from current OpenAI agent harness/API guidance, Anthropic context-engineering/eval/containment work, MCP specification `2026-07-28`, OpenTelemetry GenAI observability conventions, and current agent-workflow observability guidance. See `references/AI_ENGINEERING_2026_SOURCE_NOTES.md` and `references/AI_RUNTIME_SPECIALIST_SOURCES_2026_09.md`.
 
 ## Evaluation
 
-Pressure scenarios live in `evals/AI_ENGINEERING_GAP_PACK_v1.md`. They are deliberately marked `SPECIFIED_NOT_EXECUTED` until run in a fresh context without and with each skill, followed by host-live regression where available.
+General pressure scenarios live in `evals/AI_ENGINEERING_GAP_PACK_v1.md`; runtime specialist cases live in `evals/AI_RUNTIME_SPECIALIST_PACK_v1.md`. They are deliberately marked `SPECIFIED_NOT_EXECUTED` until run in a fresh context without and with each skill, followed by host-live regression where available.
