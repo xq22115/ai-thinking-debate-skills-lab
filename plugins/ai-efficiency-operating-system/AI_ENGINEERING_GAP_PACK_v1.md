@@ -34,7 +34,7 @@ Recent work repeatedly exposed a gap between strong reasoning/verification skill
 - `capability-forensics` — visible/authorized/invokable/effective capability-layer diagnosis.
 - `memory-policy` — persistent-state provenance, injection firewall and rehydration authority.
 - `evidence-watchdog` / `completion-gate` — evidence-bound release claims.
-- `durable-agent-control-plane` / `recoverable-state` — repository-level external owners for durable task state/resume; they are reused when the host exposes that skill surface rather than duplicated into this plugin.
+- `durable-agent-control-plane` remains a repository-level orchestration owner. `recoverable-state` keeps the repository-level semantic owner at `skills/skills/recoverable-state/SKILL.md` and is packaged inside this plugin only as a registered adapter/snapshot for host-local routing; it is not a second semantic owner and is not counted among the 12 production specialists.
 
 ## Routing architecture
 
