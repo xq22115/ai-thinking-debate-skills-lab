@@ -1,0 +1,86 @@
+{
+  "suite": "runtime-engineering-v0.1",
+  "status": "SPECIFIED_FROM_OBSERVED_FAILURES_NOT_YET_TARGET_MODEL_EXECUTED",
+  "scope": "runtime-truth-electron-uia-mcp-isolation-observability-repair",
+  "cases": [
+    {
+      "id": "RE1-electron-process-count",
+      "input": "A desktop Electron app has 29 processes, 18 renderers, two independent account roots, two crash handlers, and no crash reports. Diagnose whether this proves zombies or a crash loop.",
+      "must_detect": ["process_count_not_leak_proof", "map_root_lineage", "require_churn_or_crash_evidence"],
+      "fail_if": ["declares_zombie_or_crash_loop_from_count_alone"]
+    },
+    {
+      "id": "RE2-wrong-network-probe",
+      "input": "A health script reports HTTP FAIL but the script probes a Microsoft connectivity URL while the incident concerns OpenAI. Direct service-specific requests return low-latency HTTP responses.",
+      "must_detect": ["probe_target_mismatch", "reachability_vs_application_response", "old_health_result_not_service_root_cause"],
+      "fail_if": ["blames_openai_network_from_generic_probe"]
+    },
+    {
+      "id": "RE3-dpi-coordinate-space",
+      "input": "Windows UI Automation bounding rectangles are compared with coordinates from a DPI-virtualized client at 200 percent scaling, and a guard declares the composer missing.",
+      "must_detect": ["physical_vs_logical_coordinate_risk", "dpi_awareness_or_conversion_needed", "geometry_is_secondary_selector"],
+      "fail_if": ["claims_200_percent_scaling_alone_proves_app_bug"]
+    },
+    {
+      "id": "RE4-recovery-guard-interference",
+      "input": "A polling guard can inject Ctrl+R when a control is judged missing during layout transitions. The UI symptom existed before the guard, but reload capability could amplify churn or input loss.",
+      "must_detect": ["preexisting_symptom_not_caused_by_guard", "guard_is_risk_amplifier", "require_action_receipts_hysteresis_transition_suppression"],
+      "fail_if": ["calls_guard_proven_root_cause_without_reload_evidence", "ignores_guard_interference_risk"]
+    },
+    {
+      "id": "RE5-repo-vs-runtime",
+      "input": "A skill and configuration exist in GitHub, but no owning runtime has loaded or executed them.",
+      "must_detect": ["repository_artifact_not_runtime_activation", "configured_registered_loaded_executed_observable_layers"],
+      "fail_if": ["claims_live_capability_from_repository_presence"]
+    },
+    {
+      "id": "RE6-dual-account-targeting",
+      "input": "Two desktop accounts run simultaneously with similar process names but different roots, profiles, logs, and automation sessions.",
+      "must_detect": ["independent_lane_identity", "friendly_name_insufficient", "evidence_must_be_lane_bound"],
+      "fail_if": ["aggregates_both_accounts_into_one_runtime", "writes_without_disambiguation"]
+    },
+    {
+      "id": "RE7-provider-vs-local-limit",
+      "input": "A model usage cap is enforced by a cloud provider while the local machine has recently received more RAM.",
+      "must_detect": ["provider_side_control", "local_resource_change_cannot_raise_remote_quota"],
+      "fail_if": ["proposes_ram_or_local_patch_to_change_provider_cap"]
+    },
+    {
+      "id": "RE8-stale-bridge-session",
+      "input": "A local bridge recovers after being unavailable, but previous session IDs and target affinity may be stale.",
+      "must_detect": ["revalidate_identity_after_reconnect", "session_id_may_be_stale", "checkpoint_outside_volatile_transport"],
+      "fail_if": ["blindly_resumes_writes_on_old_session"]
+    },
+    {
+      "id": "RE9-ci-prestep-failure",
+      "input": "A CI job fails before any project test step because the runner or artifact fetch is unavailable.",
+      "must_detect": ["infrastructure_failure_separate_from_code_failure", "tests_not_run"],
+      "fail_if": ["labels_product_code_failed", "claims_tests_passed"]
+    },
+    {
+      "id": "RE10-version-entrypoint-drift",
+      "input": "Two CLI entrypoints resolve to different versions, and an npx latest path changes over time.",
+      "must_detect": ["entrypoint_identity", "pin_actual_version", "moving_latest_is_not_reproducible"],
+      "fail_if": ["treats_all_entrypoints_as_same_runtime"]
+    },
+    {
+      "id": "RE11-foreground-ownership-race",
+      "input": "Desktop text automation intermittently fails because another application steals foreground/input ownership during the write.",
+      "must_detect": ["focus_or_input_sink_race", "verify_before_and_after_input", "condition_based_recovery"],
+      "fail_if": ["adds_more_fixed_sleep_as_primary_fix"]
+    },
+    {
+      "id": "RE12-observability-trajectory",
+      "input": "An agent returns a correct final answer after duplicate tool side effects, a stale handoff, and an unnecessary retry storm.",
+      "must_detect": ["final_answer_not_sufficient", "trajectory_failure", "side_effect_and_retry_metrics_needed"],
+      "fail_if": ["scores_run_as_fully_successful_from_final_text_only"]
+    }
+  ],
+  "release_gate": {
+    "fixture_presence": "PASS_WHEN_READ_BACK",
+    "target_model_execution": "NOT_RUN",
+    "fresh_context_eval": "NOT_RUN",
+    "adversarial_eval": "NOT_RUN",
+    "host_live_regression": "NOT_RUN"
+  }
+}
