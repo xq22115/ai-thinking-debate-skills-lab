@@ -24,6 +24,8 @@ Recent work repeatedly exposed a gap between strong reasoning/verification skill
 | UIAutomation/DPI/focus/layout transitions cause false actions or misses | `desktop-ui-automation-reliability` |
 | Electron renderer count is mistaken for zombies/leaks without lifecycle evidence | `electron-chromium-process-forensics` |
 | MCP/local bridges appear alive but fail auth/affinity/reconnect/end-to-end health | `mcp-bridge-reliability` |
+| A long-running task appears to pause only because its chat/tab/client is hidden, frozen or detached | `agent-observability-slos` + existing `durable-agent-control-plane` / `recoverable-state` |
+| Dictation/clipboard/remote input is emitted but the intended target control never commits the text | `desktop-ui-automation-reliability`, `tool-contract-testing` |
 
 ## Existing owners reused, not duplicated
 
@@ -55,7 +57,7 @@ Routing TDD fixture set: `evals/routing-cases.jsonl`.
 - New production-specialist cases: R62–R85.
 - RED evidence was captured before routing implementation: `85 cases / 24 failures`, with all 24 failures corresponding to the new specialists and no newly failing legacy cases.
 
-Scenario-level engineering pressure cases are canonicalized in `evals/AI_ENGINEERING_GAP_PACK_v1.md`: **30 scenarios total** — 18 base engineering cases plus 12 distinct runtime-specialist adversarial cases reconciled from the same-day runtime branch. These remain `SPECIFIED_NOT_EXECUTED` for real baseline-vs-skill fresh-context/model-behavior evaluation. Cross-cutting assertions additionally require boundary-specific guardrail evidence and provenance/invalidation evidence when persistent memory is involved; they do not inflate the scenario count.
+Scenario-level engineering pressure cases are canonicalized in `evals/AI_ENGINEERING_GAP_PACK_v1.md`: **30 scenarios total** — 18 base engineering cases plus 12 distinct runtime-specialist adversarial cases reconciled from the same-day runtime branch. These remain `SPECIFIED_NOT_EXECUTED` for real baseline-vs-skill fresh-context/model-behavior evaluation. Cross-cutting assertions additionally require boundary-specific guardrail evidence, provenance/invalidation evidence for persistent memory, client-lifecycle/run-ownership evidence, and end-to-end input-transport target read-back; they do not inflate the scenario count.
 
 ## MCP compatibility boundary
 
@@ -71,6 +73,18 @@ A tool/control claim is valid only when the actual execution path is identified 
 
 Persistent memory is storage plus an authority boundary, not a free trust upgrade. Retrieved repository/web/tool content and old summaries retain provenance across compaction/restart; stale, contradictory, poisoned or provenance-unknown entries must be quarantined/superseded/invalidated before they can steer effectful work. The canonical enforcement owner remains `memory-policy`; `long-horizon-context-engineering` is responsible for preserving those trust/provenance semantics through context pressure and rehydration.
 
+## Client lifecycle boundary
+
+`UI_NOT_RENDERING != RUN_STOPPED` and `RUN_EXISTS != RUN_PROGRESSING`.
+
+A long-running agent must distinguish durable run/task identity and actual execution ownership from the client renderer, page/chat visibility and output subscription. Hidden/frozen/discarded/background-throttled client state can delay or stop client-side tasks/rendering without proving what the owning backend/worker did. Reattachment must recover state without replaying unsafe completed effects. The canonical owners are `agent-observability-slos` for correlated evidence plus existing `durable-agent-control-plane` / `recoverable-state` for resumable execution state.
+
+## Input transport boundary
+
+`INPUT_SENT != TARGET_COMMITTED`.
+
+Text entry across local/remote desktop boundaries is an end-to-end transport: source text, clipboard/IME, remote-session transport, host input/clipboard, foreground target control and committed target value. Clipboard sync, key mapping, foreground ownership and Windows integrity/UIPI can fail independently. The canonical owner is `desktop-ui-automation-reliability`, with `tool-contract-testing` used where lower-layer APIs report success without target effect.
+
 ## Promotion ladder
 
 `SPECIFIED → STATIC/READBACK → DETERMINISTIC_ROUTING_CI → FRESH-CONTEXT → HOST-LIVE → REGRESSION → STABLE`
@@ -79,7 +93,7 @@ Repository/CI success does not prove that ChatGPT, Codex, Claude, Cursor, Antigr
 
 ## Current-source learning inputs
 
-Mechanisms were checked against current primary sources: OpenAI Agents API and Agents SDK tracing/guardrails/tool boundaries, Anthropic context-engineering/eval/containment engineering notes, MCP specification `2026-07-28`, OpenTelemetry GenAI semantic conventions/observability, Microsoft Agent Framework workflow observability, OWASP 2026 Memory & Context Poisoning guidance, Windows UI Automation/DPI guidance, and Electron process/lifecycle evidence APIs. See `references/AI_ENGINEERING_2026_SOURCE_NOTES.md`.
+Mechanisms were checked against current primary sources: OpenAI Agents API and Agents SDK tracing/guardrails/tool boundaries, Anthropic context-engineering/eval/containment engineering notes, MCP specification `2026-07-28`, OpenTelemetry GenAI semantic conventions/observability, Microsoft Agent Framework workflow observability, OWASP 2026 Memory & Context Poisoning guidance, Chromium Page Lifecycle/Page Visibility, Electron background throttling/process lifecycle, Windows UI Automation/SendInput integrity behavior, and Parsec copy/paste/key-mapping guidance. See `references/AI_ENGINEERING_2026_SOURCE_NOTES.md`.
 
 ## Invalidation rule
 
