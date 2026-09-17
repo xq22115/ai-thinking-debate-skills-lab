@@ -139,8 +139,8 @@
   "fallback_graph": {
     "github-operation-orchestrator": ["mcp-surface-engineering", "agent-runtime-forensics", "evidence-watchdog"],
     "capability-forensics": ["executive-research", "evidence-watchdog"],
-    "mcp-surface-engineering": ["mcp-bridge-reliability", "capability-forensics", "evidence-watchdog"],
-    "agent-runtime-forensics": ["agent-observability-slos", "capability-forensics", "evidence-watchdog"],
+    "mcp-surface-engineering": ["capability-forensics", "executive-research", "evidence-watchdog"],
+    "agent-runtime-forensics": ["capability-forensics", "evidence-watchdog"],
     "agent-observability-slos": ["agent-runtime-forensics", "evidence-watchdog"],
     "agent-concurrency-backpressure": ["agent-observability-slos", "evidence-watchdog"],
     "agent-evaluation-operations": ["evidence-watchdog", "executive-research"],
