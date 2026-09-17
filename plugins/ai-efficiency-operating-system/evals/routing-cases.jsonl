@@ -59,3 +59,27 @@
 {"id":"R59","prompt":"請解釋 GitHub 是什麼。","expected":"none"}
 {"id":"R60","prompt":"查 GitHub 最新 issue、PR 和 maintainer 討論，先做研究不要修改。","expected":"executive-research"}
 {"id":"R61","prompt":"GitHub connector 搜尋兩次都沒新證據，改 exact fetch 路線並保留原驗收條件。","expected":"github-operation-orchestrator"}
+{"id":"R62","prompt":"四個 agents 都啟動了，但工具其實共用一條 global queue，請量 wall-clock overlap 和 queue wait 找 hidden serialization。","expected":"agent-concurrency-backpressure"}
+{"id":"R63","prompt":"worker 越開越多後開始 429、retry storm、queue age 暴增，請找穩定 concurrency knee 和 backpressure。","expected":"agent-concurrency-backpressure"}
+{"id":"R64","prompt":"這個 agent 很慢，先用 trace 拆 p95 latency：queue wait、model、tool、retry、render 各花多少。","expected":"agent-observability-slos"}
+{"id":"R65","prompt":"我要為 agent 建 SLO，包含 success rate、p95/p99、tool error、cost/task 和 span correlation。","expected":"agent-observability-slos"}
+{"id":"R66","prompt":"public fixtures 全綠，但 fresh-context holdout 和 host-live 都沒跑，請判斷 eval promotion 能到哪一層。","expected":"agent-evaluation-operations"}
+{"id":"R67","prompt":"LLM judge 可能被答案順序、verbosity 和自己模型偏好影響，幫我設計 paired eval 與 slice regression。","expected":"agent-evaluation-operations"}
+{"id":"R68","prompt":"長任務 compaction 後把原始 acceptance criteria 弄丟了，幫我做 context budget、checkpoint 和 rehydration。","expected":"long-horizon-context-engineering"}
+{"id":"R69","prompt":"context 越塞越長開始重做舊工作，請改成 just-in-time retrieval、精簡 evidence ledger 和 stale context eviction。","expected":"long-horizon-context-engineering"}
+{"id":"R70","prompt":"source tests 都 pass，但 live daemon 還是舊 revision；請比對 source、artifact、process identity 和 cold-start。","expected":"runtime-release-parity"}
+{"id":"R71","prompt":"CI 綠但 package、config、installed revision 和正在跑的 process 可能不是同一版，做完整 release parity ledger。","expected":"runtime-release-parity"}
+{"id":"R72","prompt":"這個 tool 要驗 schema、pagination、partial-success、timeout、retry 和 idempotency，不要只看 RPC 200。","expected":"tool-contract-testing"}
+{"id":"R73","prompt":"effectful tool timeout 後重試可能重複寫入，請做 contract test、dedup 和 postcondition read-back。","expected":"tool-contract-testing"}
+{"id":"R74","prompt":"Account 2 的命令竟然打到 Account 1，共用 bridge 可能 cross-account contamination，請做 identity isolation negative test。","expected":"identity-session-isolation"}
+{"id":"R75","prompt":"兩個 profile 共用 cache、port 和 tool namespace，請分離 session routing identity 並證明不會串帳號。","expected":"identity-session-isolation"}
+{"id":"R76","prompt":"Composer recovery guard 可能 false positive 後送 Ctrl+R，請限制 blast radius、加 cooldown、ownership check 和 rollback。","expected":"agent-containment-and-rollback"}
+{"id":"R77","prompt":"sandbox 裡的 agent 拿得到不相關專案 credential，請做 least privilege、capability boundary 和可驗證 rollback。","expected":"agent-containment-and-rollback"}
+{"id":"R78","prompt":"不要所有子任務都用最貴模型；按 quality floor、latency、cost 和 fallback eval 做 model routing。","expected":"model-routing-budget-control"}
+{"id":"R79","prompt":"latency spike 時系統偷偷 fallback 到便宜弱模型，可能破壞 acceptance-critical quality floor，請把 downgrade 可觀測化。","expected":"model-routing-budget-control"}
+{"id":"R80","prompt":"Windows UIAutomation 在 200% DPI 下用 composer bounding rectangle 判 missing，請檢查 physical/logical coordinate 和 semantic selector。","expected":"desktop-ui-automation-reliability"}
+{"id":"R81","prompt":"layout transition 後 accessibility element handle stale，background app 還被 SendKeys 搶 focus，請修桌面 automation reliability。","expected":"desktop-ui-automation-reliability"}
+{"id":"R82","prompt":"看到 29 個 ChatGPT.exe、18 個 renderer 就說 zombie 不可靠；請看 Electron parent-child lineage、churn、crash evidence。","expected":"electron-chromium-process-forensics"}
+{"id":"R83","prompt":"renderer PID 一直換、crashpad、working set 和 handles 都在變，請判斷是正常 multiprocess、churn、leak 還是 crash loop。","expected":"electron-chromium-process-forensics"}
+{"id":"R84","prompt":"MCP bridge 會斷線重連，偶爾 wrong device、stale session、port collision，請做 lifecycle recovery 驗證。","expected":"mcp-bridge-reliability"}
+{"id":"R85","prompt":"local bridge process alive、TCP port 也開著，但 handshake/auth/tool call 不一定可用，請逐層驗證 reconnect。","expected":"mcp-bridge-reliability"}
