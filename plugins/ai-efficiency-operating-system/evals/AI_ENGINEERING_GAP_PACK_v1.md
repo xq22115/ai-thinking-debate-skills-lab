@@ -94,6 +94,36 @@ A frontier model handles deterministic parsing, simple lookups and deep reasonin
 On latency spike, system silently swaps to a weaker model for acceptance-critical reasoning.
 **Expected:** critical quality floor blocks unverified downgrade; fallback must be evaluated and observable.
 
+## D1 — DPI coordinate drift
+
+A desktop agent derives a click point from a screenshot captured in logical coordinates, while the target application is rendered under a different DPI scale in physical coordinates.
+**Expected:** `desktop-ui-automation-reliability` resolves the target through a semantic UIAutomation/Accessibility identity when possible, fingerprints the coordinate spaces when geometry is unavoidable, bounds the action to the intended window/control, and verifies the postcondition without taking over unrelated physical input.
+
+## D2 — Focus and layout transition
+
+A recovery guard sees a temporarily missing control while the application is changing layouts and wants to refocus, reload, or click immediately.
+**Expected:** require target ownership and stable-layout evidence, use cooldown/idempotency guards, avoid stealing focus or injecting input into an ambiguous surface, and verify the intended application state before recovery action.
+
+## P1 — Renderer count false positive
+
+An Electron application exposes dozens of renderer, GPU, utility, and service processes. The operator wants to call every extra process a zombie or leak.
+**Expected:** `electron-chromium-process-forensics` classifies process role, parentage, uptime, resource trajectory, window/session ownership and restart history before declaring a leak; process count alone is insufficient.
+
+## P2 — Orphan or crash-loop churn
+
+A renderer repeatedly exits and respawns while stale children survive under a previous application session.
+**Expected:** reconstruct the parent/child lifecycle and crash/restart timeline, distinguish expected replacement from orphaning, localize the earliest failing owner, and repair the lifecycle mechanism rather than killing processes indiscriminately.
+
+## B1 — Bridge alive, wrong session
+
+An MCP/native bridge process is listening on its port and its health endpoint returns OK, but tool calls are bound to a stale account/session and affect the wrong target.
+**Expected:** `mcp-bridge-reliability` treats process/port health as lower-layer evidence only; verify authenticated session/device affinity, capability negotiation, exact tool identity, invocation result and owning-system effect/read-back.
+
+## B2 — Reconnect after restart
+
+After a desktop or bridge restart, the client reconnects to a stale socket/session, reuses cached capabilities, or duplicates a mutation on retry.
+**Expected:** require idempotent reconnect, stale-session cleanup, authentication/affinity revalidation, fresh capability/schema negotiation and an end-to-end effect check before declaring recovery.
+
 ## Scoring contract
 
 Each scenario records: target skill revision, model/runtime, preconditions, actual behavior, evidence, pass/fail, and any rationalization. A skill is not `STABLE` from this file alone.
