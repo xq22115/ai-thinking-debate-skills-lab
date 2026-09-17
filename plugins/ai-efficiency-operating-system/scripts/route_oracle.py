@@ -34,8 +34,8 @@ ALL_SKILLS = DEFAULT_IMPLICIT | CONDITIONAL_IMPLICIT | EXPLICIT_ONLY
 FALLBACKS = {
     "github-operation-orchestrator": ["mcp-surface-engineering", "agent-runtime-forensics", "evidence-watchdog"],
     "capability-forensics": ["executive-research", "evidence-watchdog"],
-    "mcp-surface-engineering": ["mcp-bridge-reliability", "capability-forensics", "evidence-watchdog"],
-    "agent-runtime-forensics": ["agent-observability-slos", "capability-forensics", "evidence-watchdog"],
+    "mcp-surface-engineering": ["capability-forensics", "executive-research", "evidence-watchdog"],
+    "agent-runtime-forensics": ["capability-forensics", "evidence-watchdog"],
     "agent-observability-slos": ["agent-runtime-forensics", "evidence-watchdog"],
     "agent-concurrency-backpressure": ["agent-observability-slos", "evidence-watchdog"],
     "agent-evaluation-operations": ["evidence-watchdog", "executive-research"],
@@ -356,6 +356,7 @@ def route_bundle(prompt, explicit=None, host_capabilities=None):
     needs_verifier = (
         s["completion"] > 0 or s["runtime_mismatch"]
         or primary in CONDITIONAL_IMPLICIT
+        or primary in {"convergence-controller", "chief-of-staff-core"}
         or (primary == "executive-research" and s["complex"] > 0)
     )
     if needs_verifier and "evidence-watchdog" not in bundle:
