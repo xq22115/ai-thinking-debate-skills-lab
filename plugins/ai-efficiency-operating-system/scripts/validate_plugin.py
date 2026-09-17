@@ -288,7 +288,7 @@ def main():
     minimums = {
         "routing-cases.jsonl": 89,
         "composition-cases.jsonl": 15,
-        "behavior-cases.jsonl": 55,
+        "behavior-cases.jsonl": 59,
         "expert-labs-cases.jsonl": 25,
     }
     for name, minimum in minimums.items():
@@ -298,6 +298,22 @@ def main():
         rows, ids = load_jsonl(path)
         if len(ids) != len(set(ids)): fail(errors, f"duplicate IDs in {name}")
         if len(rows) < minimum: fail(errors, f"insufficient {name}: {len(rows)} < {minimum}")
+
+    behavior_rows, _ = load_jsonl(ROOT / "evals" / "behavior-cases.jsonl")
+    behavior_by_id = {row["id"]: row for row in behavior_rows}
+    required_behavior = {
+        "B56": ("client lifecycle is not run ownership", "hidden frozen discarded or background-throttled client state does not prove run stopped or progressed; correlate execution progress subscription delivery and idempotent reattachment"),
+        "B57": ("remote input requires target commit", "source text clipboard IME transport or input API success is lower-layer evidence; verify focused target identity and committed target value read-back"),
+        "B58": ("external skill dependency is capability-bound", "repository-level recoverable-state is invoked only when the host exposes it; otherwise emit an equivalent checkpoint and report the dependency unavailable"),
+        "B59": ("MCP Streamable HTTP version parity", "modern request POST includes MCP-Protocol-Version equal to _meta protocolVersion; mismatch is rejected with HTTP 400 HeaderMismatch"),
+    }
+    for bid, (invariant, expected) in required_behavior.items():
+        row = behavior_by_id.get(bid)
+        if not row:
+            fail(errors, f"required behavior case missing: {bid}")
+            continue
+        if row.get("invariant") != invariant: fail(errors, f"behavior invariant drift: {bid}")
+        if row.get("expected") != expected: fail(errors, f"behavior expected contract drift: {bid}")
 
     route_oracle = (ROOT / "scripts" / "route_oracle.py").read_text(encoding="utf-8")
     for marker in [
