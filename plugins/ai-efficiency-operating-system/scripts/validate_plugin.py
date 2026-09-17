@@ -253,7 +253,7 @@ def main():
         if marker not in observability: fail(errors, f"client lifecycle observability marker missing: {marker}")
 
     desktop_ui = (ROOT / "skills" / "desktop-ui-automation-reliability" / "SKILL.md").read_text(encoding="utf-8")
-    for marker in ["source text → local clipboard/IME", "INPUT_SENT != TARGET_COMMITTED", "UIPI", "remote-session transport"]:
+    for marker in ["source text → local clipboard/IME", "INPUT_SENT != TARGET_COMMITTED", "UIPI", "remote/session transport"]:
         if marker not in desktop_ui: fail(errors, f"remote input transport marker missing: {marker}")
 
     mcp_bridge = (ROOT / "skills" / "mcp-bridge-reliability" / "SKILL.md").read_text(encoding="utf-8")
