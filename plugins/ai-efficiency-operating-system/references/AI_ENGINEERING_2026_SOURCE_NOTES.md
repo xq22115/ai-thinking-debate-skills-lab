@@ -77,9 +77,12 @@ Portable lessons: persistent memory is an authority boundary and attack surface,
 
 ### MCP specification `2026-07-28`
 
-Source: https://blog.modelcontextprotocol.io/posts/2026-07-28/
+Sources:
+- https://modelcontextprotocol.io/specification/2026-07-28/basic/index
+- https://modelcontextprotocol.io/specification/2026-07-28/server/discover
+- https://blog.modelcontextprotocol.io/posts/2026-07-28/
 
-The release introduced a stateless protocol core, Multi Round-Trip Requests, header-based routing, cacheable list results, authorization hardening, formal extensions and updated Tier-1 SDKs. The legacy `initialize`/`initialized` exchange and `Mcp-Session-Id` transport session were retired. Each request requires protocol version and client capabilities in `_meta`; `clientInfo` is optional but normally SHOULD be included unless configured otherwise, and is self-reported metadata rather than an authorization identity. `server/discover` is optional. Streamable HTTP routing exposes `Mcp-Method` and `Mcp-Name` headers so routing/authorization assumptions can be tested explicitly rather than inferred from request bodies or sticky transport state.
+The release introduced a stateless protocol core, Multi Round-Trip Requests, header-based routing, cacheable list results, authorization hardening, formal extensions and updated Tier-1 SDKs. The legacy `initialize`/`initialized` exchange and `Mcp-Session-Id` transport session were retired. Each request requires protocol version and client capabilities in `_meta`; `clientInfo` is optional but normally SHOULD be included unless configured otherwise, and is self-reported metadata rather than an authorization identity. Servers implementing `2026-07-28` MUST implement `server/discover`; calling it is optional for clients, which may instead issue another RPC inline and handle version errors. Streamable HTTP routing exposes `Mcp-Method` and `Mcp-Name` headers so routing/authorization assumptions can be tested explicitly rather than inferred from request bodies or sticky transport state.
 
 ### Release-candidate migration context — 2026-05-21
 
@@ -87,7 +90,7 @@ Source: https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate/
 
 The release candidate describes the stateless core, Extensions framework, Tasks, MCP Apps, authorization changes and formal deprecation policy.
 
-Portable lessons: fingerprint the actual protocol/SDK pair; do not assume an older handshake or hidden transport session; validate per-request capabilities, optional client metadata, cache freshness, auth, extensions/tasks and live schema composition on the actual client/server pair. Keep application-level state and security identity explicit and separate from MCP transport or self-reported client metadata.
+Portable lessons: fingerprint the actual protocol/SDK pair; do not assume an older handshake or hidden transport session; distinguish server conformance from optional client discovery, and validate per-request capabilities, optional client metadata, cache freshness, auth, extensions/tasks and live schema composition on the actual client/server pair. Keep application-level state and security identity explicit and separate from MCP transport or self-reported client metadata.
 
 ## OpenTelemetry
 
