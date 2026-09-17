@@ -1,0 +1,5 @@
+interface:
+  display_name: "Desktop UI Automation Reliability"
+  short_description: "Stabilize accessibility, DPI, focus and window automation"
+policy:
+  allow_implicit_invocation: true
