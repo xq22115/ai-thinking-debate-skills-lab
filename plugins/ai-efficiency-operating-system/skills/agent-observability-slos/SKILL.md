@@ -1,6 +1,6 @@
 ---
 name: agent-observability-slos
-description: Use when an AI agent is slow, flaky, expensive, hard to debug, or produces disputed outcomes and the cause may span model calls, tools, queues, runtime processes, UI automation, retries, or external services.
+description: Use when an AI agent is slow, flaky, expensive, hard to debug, or produces disputed outcomes and the cause may span model calls, tools, queues, runtime processes, UI automation, retries, client lifecycle, or external services.
 ---
 
 # Agent Observability and SLOs
@@ -17,6 +17,7 @@ For each material run, preserve a stable run/task ID and correlate when availabl
 - tool/server/tool-name, queue wait, execution time, result class;
 - agent/subagent/span parentage and handoffs;
 - UI/client-render/browser span identity and parentage linked to the stable run/task ID; report a correlation gap when unavailable;
+- client/page lifecycle state when continuity matters: visible/hidden/frozen/discarded, renderer/background-throttling state, stream/subscription identity and reattachment event;
 - process/runtime/session/profile identity;
 - external effect and read-back result;
 - error type, timeout/cancellation and recovery path.
@@ -27,13 +28,14 @@ Prompt/completion/tool content is **opt-in** telemetry. Redact or omit sensitive
 
 1. Define user-facing SLOs before tuning: success rate, p50/p95/p99 latency, cost/task, tool-error rate, recovery rate.
 2. Trace one request end-to-end before blaming CPU, RAM, network, disk, model or UI.
-3. Split latency into queue wait, model time, tool time, retries, serialization and client/render time.
-4. Use saturation/throughput metrics to distinguish load from causal failure.
-5. Compare good and bad runs with the same identity dimensions.
-6. Record the first span where behavior diverges; do not infer downstream causes from later symptoms.
-7. Verify a repair by showing the targeted span/SLO changed without adjacent regression.
+3. Split latency into queue wait, model time, tool time, retries, serialization, client delivery and render time.
+4. When output appears to stop after a tab/chat/app switch, separate execution-owner progress from client subscription/delivery/render state before classifying the run as paused or dead.
+5. Use saturation/throughput metrics to distinguish load from causal failure.
+6. Compare good and bad runs with the same identity dimensions.
+7. Record the first span where behavior diverges; do not infer downstream causes from later symptoms.
+8. Verify a repair by showing the targeted span/SLO changed without adjacent regression.
 
-**REQUIRED SUB-SKILL:** use `agent-runtime-forensics` when causality or provenance is disputed.
+**REQUIRED SUB-SKILL:** use `agent-runtime-forensics` when causality or provenance is disputed, and `durable-agent-control-plane` / `recoverable-state` when execution must survive client interruption or reattachment.
 
 ## Red flags
 
@@ -42,8 +44,10 @@ Prompt/completion/tool content is **opt-in** telemetry. Redact or omit sensitive
 - “tool success” has no postcondition span/read-back;
 - logs cannot distinguish Account 1 vs Account 2;
 - traces omit queue wait, retry or fallback;
+- the UI stops rendering and this is declared “the backend stopped” without execution-owner evidence;
+- a run ID still exists and this is declared “the run is progressing” without fresh progress evidence;
 - p95 improves while success rate or cost regresses.
 
 ## Output
 
-Return SLOs, trace identity, latency/error budget, bottleneck span, causal evidence, missing telemetry, and pre/post repair comparison.
+Return SLOs, trace identity, execution owner, client lifecycle/subscription state when relevant, latency/error budget, bottleneck span, causal evidence, missing telemetry, and pre/post repair comparison.
