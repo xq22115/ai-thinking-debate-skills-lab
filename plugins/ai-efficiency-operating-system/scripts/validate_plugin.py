@@ -276,7 +276,7 @@ def main():
         if marker not in gap_eval: fail(errors, f"AI engineering cross-cutting assertion missing: {marker}")
 
     source_notes = (ROOT / "references" / "AI_ENGINEERING_2026_SOURCE_NOTES.md").read_text(encoding="utf-8")
-    for marker in ["Client/page lifecycle continuity", "Remote text/input transport", "Retrieval/tool candidate authorization", "MCP-Protocol-Version", "Parsec copy/paste"]:
+    for marker in ["Client/page lifecycle continuity", "Remote text/input transport", "Retrieval/tool candidate authorization", "Durable asynchronous terminal evidence", "TERMINAL_TASK_STATE != DOMAIN_POSTCONDITION", "MCP-Protocol-Version", "Parsec copy/paste"]:
         if marker not in source_notes: fail(errors, f"AI engineering source-note marker missing: {marker}")
 
     legacy_skill = REPO / "skills" / "skills" / "ai-efficiency-operating-system" / "SKILL.md"
