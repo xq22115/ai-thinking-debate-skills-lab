@@ -16,6 +16,7 @@ For each material run, preserve a stable run/task ID and correlate when availabl
 - model/provider/model-version, latency, token counts, retry/fallback;
 - tool/server/tool-name, queue wait, execution time, result class;
 - agent/subagent/span parentage and handoffs;
+- UI/client-render/browser span identity and parentage linked to the stable run/task ID; report a correlation gap when unavailable;
 - process/runtime/session/profile identity;
 - external effect and read-back result;
 - error type, timeout/cancellation and recovery path.
