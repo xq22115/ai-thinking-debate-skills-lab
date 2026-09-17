@@ -34,7 +34,7 @@ Recent work repeatedly exposed a gap between strong reasoning/verification skill
 - `capability-forensics` — visible/authorized/invokable/effective capability-layer diagnosis.
 - `memory-policy` — persistent-state provenance, injection firewall and rehydration authority.
 - `evidence-watchdog` / `completion-gate` — evidence-bound release claims.
-- `durable-agent-control-plane` / `recoverable-state` — durable task state and resume.
+- `durable-agent-control-plane` / `recoverable-state` — repository-level external owners for durable task state/resume; they are reused when the host exposes that skill surface rather than duplicated into this plugin.
 
 ## Routing architecture
 
@@ -61,7 +61,7 @@ Scenario-level engineering pressure cases are canonicalized in `evals/AI_ENGINEE
 
 ## MCP compatibility boundary
 
-MCP lifecycle assumptions are version-sensitive. For `2026-07-28`, the protocol core is stateless and the legacy `initialize`/`initialized` handshake plus `Mcp-Session-Id` transport session are retired. Bridge skills therefore distinguish explicit application/account/device affinity and cached capabilities from protocol transport sessions. Every request requires protocol version and client capabilities in `_meta`; optional `clientInfo` is self-reported metadata, not an authorization/account identity. Header routing (`Mcp-Method` / `Mcp-Name`), cache hints, extensions/tasks and authorization behavior remain part of the versioned contract. Older protocol revisions require their own lifecycle adapter.
+MCP lifecycle assumptions are version-sensitive. For `2026-07-28`, the protocol core is stateless and the legacy `initialize`/`initialized` handshake plus `Mcp-Session-Id` transport session are retired. Bridge skills therefore distinguish explicit application/account/device affinity and cached capabilities from protocol transport sessions. Every request requires protocol version and client capabilities in `_meta`; optional `clientInfo` is self-reported metadata, not an authorization/account identity. On Streamable HTTP, every request POST must also include `MCP-Protocol-Version` equal to `_meta.io.modelcontextprotocol/protocolVersion`; a mismatch is rejected with HTTP 400 and `HeaderMismatch`. Header routing (`Mcp-Method` / `Mcp-Name`), cache hints, extensions/tasks and authorization behavior remain part of the versioned contract. Older protocol revisions require their own lifecycle adapter.
 
 ## Tool-control boundary
 
@@ -77,7 +77,7 @@ Persistent memory is storage plus an authority boundary, not a free trust upgrad
 
 `UI_NOT_RENDERING != RUN_STOPPED` and `RUN_EXISTS != RUN_PROGRESSING`.
 
-A long-running agent must distinguish durable run/task identity and actual execution ownership from the client renderer, page/chat visibility and output subscription. Hidden/frozen/discarded/background-throttled client state can delay or stop client-side tasks/rendering without proving what the owning backend/worker did. Reattachment must recover state without replaying unsafe completed effects. The canonical owners are `agent-observability-slos` for correlated evidence plus existing `durable-agent-control-plane` / `recoverable-state` for resumable execution state.
+A long-running agent must distinguish durable run/task identity and actual execution ownership from the client renderer, page/chat visibility and output subscription. Hidden/frozen/discarded/background-throttled client state can delay or stop client-side tasks/rendering without proving what the owning backend/worker did. Reattachment must recover state without replaying unsafe completed effects. The canonical owner inside this plugin is `agent-observability-slos` for correlated evidence. Repository-level `durable-agent-control-plane` / `recoverable-state` should be used for resumable execution only when the host actually exposes those skills; otherwise the active skill must emit the equivalent checkpoint contract directly and report the external dependency unavailable.
 
 ## Input transport boundary
 
