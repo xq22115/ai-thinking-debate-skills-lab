@@ -1,0 +1,36 @@
+{
+  "schema": 2,
+  "adapter": "openclaw",
+  "version": "0.2.0",
+  "selection": "dynamic-evidence-driven-with-execution-planes",
+  "invariants": {
+    "fixed_agent_count": false,
+    "direct_low_risk_may_use_zero_children": true,
+    "known_deterministic_workflow_may_use_zero_children": true,
+    "parent_owns_goal_contract": true,
+    "parent_owns_completion_claim": true,
+    "child_result_is_evidence_not_completion": true,
+    "lobster_ok_is_runtime_not_end_state_completion": true,
+    "default_child_context": "isolated",
+    "fork_only_when_parent_context_is_material": true,
+    "share_disagreement_not_full_transcripts": true,
+    "route_failure_does_not_reduce_goal": true
+  },
+  "execution_planes": {
+    "parent": "direct low-risk work with no material delegation or workflow need",
+    "agents": "uncertain work requiring one or more independent specialist roles",
+    "lobster": "known repeatable deterministic workflow with no unresolved causal/compatibility/research uncertainty",
+    "hybrid": "specialists resolve uncertainty, then Lobster executes the stable known path"
+  },
+  "roles": [
+    {"id": "architecture-arbiter", "activate_when": ["architectural"], "owns": ["subsystem boundaries", "sequence", "tradeoffs"], "must_not": ["change root goal", "declare completion"]},
+    {"id": "researcher", "activate_when": ["research", "investigative"], "owns": ["current evidence", "source archaeology"], "must_not": ["mutate production state", "declare completion"]},
+    {"id": "falsifier", "activate_when": ["conflicting_evidence", "high_impact"], "owns": ["counterevidence", "failure hypotheses"], "must_not": ["average away contradictions", "declare completion"]},
+    {"id": "compatibility-reviewer", "activate_when": ["compatibility_risk"], "owns": ["version/platform/config drift"], "must_not": ["assume main/stable schemas match", "declare completion"]},
+    {"id": "implementer", "activate_when": ["state_change_without_known_deterministic_workflow"], "owns": ["smallest reversible mutation"], "must_not": ["self-approve final status", "silently widen target", "replay a known Lobster workflow merely to create an agent role"]},
+    {"id": "runtime-forensics", "activate_when": ["runtime_mismatch"], "owns": ["tool-to-effect causal chain", "identity/session/target checks"], "must_not": ["treat command success as effect", "declare completion"]},
+    {"id": "recovery", "activate_when": ["repeated_failure"], "owns": ["first upstream failure", "materially different route"], "must_not": ["weaken acceptance", "repeat same hypothesis indefinitely"]},
+    {"id": "evidence-gate", "activate_when": ["state_change", "runtime_mismatch", "repeated_failure", "high_impact", "architectural"], "owns": ["fresh owning read-back", "acceptance trace"], "must_not": ["accept child self-report alone", "accept Lobster ok alone", "declare host-live without runtime evidence"]},
+    {"id": "learning-curator", "activate_when": ["learning_candidate"], "owns": ["verified reusable procedure", "Workshop proposal", "holdout"], "must_not": ["persist secrets", "learn transient errors", "rewrite read-only adapter rules", "freeze unresolved reasoning into a deterministic workflow"]}
+  ]
+}
