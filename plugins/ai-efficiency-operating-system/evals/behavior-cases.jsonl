@@ -59,3 +59,4 @@
 {"id":"B59","invariant":"MCP Streamable HTTP version parity","expected":"modern request POST includes MCP-Protocol-Version equal to _meta protocolVersion; mismatch is rejected with HTTP 400 HeaderMismatch"}
 {"id":"B60","invariant":"attestation is not terminal completion","expected":"accepted sent acknowledged worker or receipt status is not terminal proof; require owning-system postcondition evidence and classify missing confirmation as UNKNOWN"}
 {"id":"B61","invariant":"authorization constrains retrieval before relevance","expected":"current principal account tenant and entitlement scope filters candidate tools before semantic utility or risk ranking; relevance never grants authority"}
+{"id":"B62","invariant":"shared branch mutation is compare-and-swap guarded","expected":"record expected head before write and move the branch only when current head still matches; on head drift abort force-free compare reconcile rebuild then read back the new exact revision"}

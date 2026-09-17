@@ -75,11 +75,34 @@ Do not activate merely because the word GitHub appears in a simple explanation-o
 7. **Resolve the live tool schema.** Narrowly discover the exact GitHub action when its schema is not already current. Validate required fields, enums, IDs, SHA/ref semantics, and write behavior. Never invent parameters from memory.
 8. **Run invocation preflight.** Confirm the action advances the current subgoal, identifiers are current, effect class is understood, rollback exists for material writes, and the expected postcondition is explicit.
 9. **Invoke and classify.** Separate transport success from task success. Preserve target, mechanism, status/error, evidence delta, and legal next actions before chaining another material call.
-10. **Mutate safely.** Pre-read, record base and blob SHA, prefer a branch for non-trivial work, serialize dependent same-path writes, and keep rollback available.
+10. **Mutate safely.** Pre-read, record base and blob SHA, prefer a branch for non-trivial work, serialize dependent same-path writes, and keep rollback available. On a shared branch, use the optimistic-concurrency/CAS contract below.
 11. **Read back.** Independently fetch the exact target branch/object and compare intended versus observed content/state. A commit SHA or PR URL alone is never completion proof.
 12. **Observe execution.** If the user asked to run/test/install/activate, distinguish repository state, marketplace sync/install state, workflow request, workflow result, invocation, and observable effect. Verify at the highest claimed layer.
 13. **Recover by failure class.** Activation unverified -> host import/install/sync evidence; search miss -> exact lookup or query fanout; truncation -> continuation/targeted refetch; schema mismatch -> rediscover schema; stale SHA -> re-read/reconcile; partial success -> continue from observed remote state; permission failure -> verify actual owner/authority; repeated no-delta failure -> change causal mechanism.
 14. **Verify and close.** Test acceptance criteria, applicable invariants, exact revision, at least one causally relevant fallback/failure path when practical, and adjacent regression. Only then return PASS.
+
+## Shared-branch optimistic concurrency
+
+A branch ref is shared mutable state. In multi-agent or multi-chat work, `PRE_READ_HEAD != CURRENT_HEAD` is a normal concurrency event, not permission to overwrite another writer.
+
+For every material shared-branch mutation:
+
+1. read and record the exact expected branch head and base tree before constructing the write;
+2. build file/blob/tree changes without moving the branch ref;
+3. immediately before ref mutation, re-read/compare the current branch head;
+4. update the ref only if `current_head == expected_head` and the update is a normal fast-forward;
+5. if the head moved, **abort the ref update**. Compare `expected_head..current_head`, preserve intervening commits, and rebuild the candidate tree on the new head;
+6. for non-overlapping intervening changes, rebase/rebuild deterministically; for overlapping paths or semantic conflicts, perform explicit three-way reconciliation rather than last-writer-wins;
+7. never use `force=true` merely to make a stale candidate commit land;
+8. after a successful ref update, read back the branch head, changed paths and required CI/postconditions at the **new exact revision**.
+
+Commit/tree creation alone does not prove branch adoption: an unreferenced commit is not the shared branch state. An older revision's green CI is not transferable to a newer head.
+
+This is a compare-and-swap invariant:
+
+`EXPECTED_HEAD == CURRENT_HEAD → FAST_FORWARD`
+
+`EXPECTED_HEAD != CURRENT_HEAD → ABORT + COMPARE + RECONCILE + REBUILD`
 
 ## Search breadth protocol
 

@@ -299,7 +299,7 @@ def main():
     minimums = {
         "routing-cases.jsonl": 92,
         "composition-cases.jsonl": 23,
-        "behavior-cases.jsonl": 61,
+        "behavior-cases.jsonl": 62,
         "expert-labs-cases.jsonl": 25,
     }
     for name, minimum in minimums.items():
@@ -319,6 +319,7 @@ def main():
         "B59": ("MCP Streamable HTTP version parity", "modern request POST includes MCP-Protocol-Version equal to _meta protocolVersion; mismatch is rejected with HTTP 400 HeaderMismatch"),
         "B60": ("attestation is not terminal completion", "accepted sent acknowledged worker or receipt status is not terminal proof; require owning-system postcondition evidence and classify missing confirmation as UNKNOWN"),
         "B61": ("authorization constrains retrieval before relevance", "current principal account tenant and entitlement scope filters candidate tools before semantic utility or risk ranking; relevance never grants authority"),
+        "B62": ("shared branch mutation is compare-and-swap guarded", "record expected head before write and move the branch only when current head still matches; on head drift abort force-free compare reconcile rebuild then read back the new exact revision"),
     }
     for bid, (invariant, expected) in required_behavior.items():
         row = behavior_by_id.get(bid)
@@ -327,6 +328,10 @@ def main():
             continue
         if row.get("invariant") != invariant: fail(errors, f"behavior invariant drift: {bid}")
         if row.get("expected") != expected: fail(errors, f"behavior expected contract drift: {bid}")
+
+    github_skill = (ROOT / "skills" / "github-operation-orchestrator" / "SKILL.md").read_text(encoding="utf-8")
+    for marker in ["Shared-branch optimistic concurrency", "EXPECTED_HEAD == CURRENT_HEAD", "EXPECTED_HEAD != CURRENT_HEAD", "ABORT + COMPARE + RECONCILE + REBUILD", "force=true"]:
+        if marker not in github_skill: fail(errors, f"github shared-branch CAS marker missing: {marker}")
 
     route_oracle = (ROOT / "scripts" / "route_oracle.py").read_text(encoding="utf-8")
     for marker in [
