@@ -6,48 +6,63 @@ Base revision: `b3b10ef0cf09cafb29a5fa4ae3e53f0549ad8154`
 
 ## Why this pack exists
 
-Recent work repeatedly exposed a gap between strong reasoning/verification skills and production AI-engineering execution. The existing system is already strong on evidence, competing hypotheses, root-cause analysis, durable state, capability/MCP/runtime forensics, and completion gates. The missing layer is operational engineering: concurrency, traces/SLOs, eval operations, context-budget control, release/runtime parity, tool contract tests, session isolation, blast-radius containment, and model-routing economics.
+Recent work repeatedly exposed a gap between strong reasoning/verification skills and production AI-engineering execution. The existing system is already strong on evidence, competing hypotheses, root-cause analysis, durable state, capability/MCP/runtime forensics, and completion gates. The missing layer is operational engineering: concurrency, traces/SLOs, eval operations, context-budget control, release/runtime parity, tool contract tests, session isolation, blast-radius containment, model-routing economics, desktop automation reliability, Electron/Chromium lifecycle forensics, and MCP bridge recovery.
 
-## Recurring failure patterns converted into skills
+## Production specialists
 
-| Observed failure class | New owner |
+| Observed failure class | Skill owner |
 |---|---|
 | Global queue or hidden serialization makes “multi-agent” work sequential | `agent-concurrency-backpressure` |
 | CPU/RAM/network guesses without end-to-end traces | `agent-observability-slos` |
 | Same-model votes or green fixtures mistaken for product truth | `agent-evaluation-operations` |
 | Long tasks accumulate stale/noisy context and lose the goal | `long-horizon-context-engineering` |
-| Source tests pass while a stale daemon/runtime is still live | `runtime-release-parity` |
-| Tool call returns success but schema/effects/retry semantics are wrong | `tool-contract-testing` |
-| Two accounts/profiles/workspaces contaminate state or target identity | `identity-session-isolation` |
+| Source/CI passes while a stale daemon/runtime is live | `runtime-release-parity` |
+| Tool call succeeds while schema/effects/retry semantics are wrong | `tool-contract-testing` |
+| Accounts/profiles/workspaces contaminate state or target identity | `identity-session-isolation` |
 | Automation has excessive blast radius or weak rollback boundaries | `agent-containment-and-rollback` |
-| One model is used for every subtask without quality/cost/latency evidence | `model-routing-budget-control` |
+| One model is used for every subtask without measured quality/cost/latency | `model-routing-budget-control` |
+| UIAutomation/DPI/focus/layout transitions cause false actions or misses | `desktop-ui-automation-reliability` |
+| Electron renderer count is mistaken for zombies/leaks without lifecycle evidence | `electron-chromium-process-forensics` |
+| MCP/local bridges appear alive but fail auth/affinity/reconnect/end-to-end health | `mcp-bridge-reliability` |
 
 ## Existing owners reused, not duplicated
 
-- `agent-runtime-forensics` for causal reconstruction outside model prose.
-- `mcp-surface-engineering` for live tool-surface identity, schema drift, entitlement and trust boundaries.
-- `memory-policy` for persistent-state provenance and rehydration.
-- `evidence-watchdog` / `completion-gate` for evidence-bound release claims.
-- `durable-agent-control-plane` / `recoverable-state` for durable task state and resume.
+- `agent-runtime-forensics` — causal reconstruction outside model prose.
+- `mcp-surface-engineering` — live tool-surface identity, schema drift, entitlement and trust boundaries.
+- `capability-forensics` — visible/authorized/invokable/effective capability-layer diagnosis.
+- `memory-policy` — persistent-state provenance and rehydration.
+- `evidence-watchdog` / `completion-gate` — evidence-bound release claims.
+- `durable-agent-control-plane` / `recoverable-state` — durable task state and resume.
 
-## Composition
+## Routing architecture
 
-For a production agent incident or build:
+The 12 production specialists are `conditional_implicit`, not default-loaded. Deterministic eligibility uses observable predicates and keeps composition bounded to at most three implicit skills:
 
-`goal contract → identity/session isolation → current tool/MCP surface → context budget → concurrency/resource model → observability → execution → tool contract checks → runtime/release parity → eval operations → containment/rollback → completion gate`
+`task-goal-intelligence → one primary specialist → evidence-watchdog`
 
-Omit layers whose trigger conditions are absent.
+Specialists are intentionally narrow. Examples:
+
+- generic Desktop capability mismatch → `capability-forensics`; UIAutomation/DPI/focus fault → `desktop-ui-automation-reliability`;
+- many MCP tools/schema drift → `mcp-surface-engineering`; disconnect/reconnect/session-affinity fault → `mcp-bridge-reliability`;
+- tool reports success but no state change → `agent-runtime-forensics`; pagination/idempotency/partial-success contract → `tool-contract-testing`;
+- generic long multi-stage orchestration → `chief-of-staff-core`; context compaction/rehydration pressure → `long-horizon-context-engineering`.
+
+## Evaluation evidence
+
+Routing TDD fixture set: `evals/routing-cases.jsonl`.
+
+- Existing protection cases: R01–R61.
+- New production-specialist cases: R62–R85.
+- RED evidence was captured before routing implementation: `85 cases / 24 failures`, with all 24 failures corresponding to the new specialists and no newly failing legacy cases.
+
+Scenario-level engineering pressure cases remain in `evals/AI_ENGINEERING_GAP_PACK_v1.md` and are still `SPECIFIED_NOT_EXECUTED` for fresh-context/model-behavior evaluation.
 
 ## Promotion ladder
 
-`SPECIFIED → STATIC/READBACK → FRESH-CONTEXT → HOST-LIVE → REGRESSION → STABLE`
+`SPECIFIED → STATIC/READBACK → DETERMINISTIC_ROUTING_CI → FRESH-CONTEXT → HOST-LIVE → REGRESSION → STABLE`
 
-This branch may prove only the first two layers. A GitHub commit or PR is not evidence that ChatGPT, Codex, Claude, Cursor, Antigravity, MCP clients, or desktop runtimes have loaded or executed these skills.
+Repository/CI success does not prove that ChatGPT, Codex, Claude, Cursor, Antigravity, desktop apps, or MCP clients have loaded or executed these skills. Host activation must be separately observed.
 
-## Primary-source learning inputs
+## Current-source learning inputs
 
-Mechanisms were distilled from current OpenAI agent harness/API guidance, Anthropic context-engineering/eval/containment work, MCP specification `2026-07-28`, OpenTelemetry GenAI observability conventions, and current agent-workflow observability guidance. See `references/AI_ENGINEERING_2026_SOURCE_NOTES.md`.
-
-## Evaluation
-
-Pressure scenarios live in `evals/AI_ENGINEERING_GAP_PACK_v1.md`. They are deliberately marked `SPECIFIED_NOT_EXECUTED` until run in a fresh context without and with each skill, followed by host-live regression where available.
+Mechanisms were checked against current primary sources: OpenAI Agents API and Agents SDK, Anthropic context-engineering/eval/containment engineering notes, MCP specification `2026-07-28`, OpenTelemetry GenAI semantic conventions/observability, and Microsoft Agent Framework workflow observability. See `references/AI_ENGINEERING_2026_SOURCE_NOTES.md`.
