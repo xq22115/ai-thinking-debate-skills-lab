@@ -103,6 +103,19 @@ The release candidate describes the stateless core, Extensions framework, Tasks,
 
 Portable lessons: fingerprint the actual protocol/SDK pair; do not assume an older handshake or hidden transport session; distinguish server conformance from optional client discovery, and validate per-request capabilities, HTTP header/body version parity, optional client metadata, cache freshness, auth, extensions/tasks and live schema composition on the actual client/server pair. Keep application-level state and security identity explicit and separate from MCP transport or self-reported client metadata.
 
+## Durable asynchronous terminal evidence
+
+Sources:
+- https://tasks.extensions.modelcontextprotocol.io/specification/draft/tasks
+- https://openai.com/index/introducing-the-agents-api/
+- https://docs.temporal.io/
+
+The MCP `io.modelcontextprotocol/tasks` extension models asynchronous work as a durable state machine with `working`, `input_required`, `completed`, `failed` and `cancelled` states. Clients are expected to keep observing until terminal state and SHOULD persist task IDs so observation can resume after restart. Importantly, protocol-level `completed` can still carry a tool result with `isError: true`, so even a terminal task state does not by itself prove the owning business/application postcondition succeeded.
+
+OpenAI's Agents API separately emphasizes infrastructure for agents that run reliably for days and preserve intermediate results, while Temporal's durable-execution model resumes workflows after crashes or infrastructure failure.
+
+Portable lessons: `ATTESTED != COMPLETED` and `TERMINAL_TASK_STATE != DOMAIN_POSTCONDITION`. Keep request/receipt/task identity, current state, terminal result/error and owning-target read-back distinct. Persist resumable identifiers without secrets; if a receipt/task generation is missing, stale, expired or ambiguous, report `UNKNOWN` and reconcile the owning state before replaying effectful work.
+
 ## OpenTelemetry
 
 ### GenAI observability — 2026-05-14
