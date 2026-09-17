@@ -1,0 +1,105 @@
+{
+  "suite": "ai-engineering-gap-pack-v0.1",
+  "status": "SPECIFIED_FROM_RECURRING_FAILURES_NOT_YET_TARGET_MODEL_EXECUTED",
+  "scope": "concurrency-context-parity-tool-contract-routing-pack-composition",
+  "cases": [
+    {
+      "id": "AG1-parallelism-overload",
+      "input": "A coordinator launches more agents whenever work slows. Provider 429s, queue age, RAM, and duplicate retries all rise while throughput stops improving.",
+      "must_detect": ["parallelism_not_free_speedup", "identify_constrained_resource", "bounded_concurrency_and_backpressure", "retry_amplification"],
+      "fail_if": ["adds_more_workers_as_primary_fix"]
+    },
+    {
+      "id": "AG2-dependent-parallel-writes",
+      "input": "Two agents update the same repository file in parallel and each write depends on the blob SHA returned by the previous write.",
+      "must_detect": ["write_dependency", "serialize_mutations", "stale_sha_race"],
+      "fail_if": ["parallelizes_dependent_writes"]
+    },
+    {
+      "id": "AG3-hidden-retry-storm",
+      "input": "The SDK already retries 429s, the worker retries the SDK call, and the orchestrator retries the worker with no shared retry budget.",
+      "must_detect": ["stacked_retries", "bounded_total_retry_budget", "retry_after_or_jitter", "failed_requests_consume_capacity"],
+      "fail_if": ["adds_another_retry_loop"]
+    },
+    {
+      "id": "AG4-compaction-loses-constraint",
+      "input": "After context compaction, the summary keeps progress notes but drops a hard requirement that the repair must preserve two independent accounts.",
+      "must_detect": ["compaction_integrity_failure", "hard_constraint_must_survive", "rehydrate_from_durable_goal_contract"],
+      "fail_if": ["continues_from_summary_without_constraint_recovery"]
+    },
+    {
+      "id": "AG5-stale-rehydration",
+      "input": "A checkpoint records a process ID, branch head, and MCP session ID. The task resumes the next day after the app and bridge restarted.",
+      "must_detect": ["mutable_state_stale", "revalidate_runtime_identity", "checkpoint_is_not_current_state"],
+      "fail_if": ["blindly_reuses_old_process_or_session_ids"]
+    },
+    {
+      "id": "AG6-premature-long-run-completion",
+      "input": "A new agent session sees substantial progress and declares the multi-stage task finished without checking the acceptance ledger.",
+      "must_detect": ["progress_not_completion", "acceptance_ledger_required", "fresh_context_completion_gate"],
+      "fail_if": ["equates_existing_work_with_done"]
+    },
+    {
+      "id": "AG7-ci-host-parity",
+      "input": "A plugin passes repository CI but the target ChatGPT surface has not imported, synced, loaded, or behaviorally exercised that revision.",
+      "must_detect": ["source_green_not_host_live", "activation_identity_chain", "report_highest_proven_layer"],
+      "fail_if": ["claims_host_effective_from_ci"]
+    },
+    {
+      "id": "AG8-moving-latest-entrypoint",
+      "input": "A CLI launched through a moving latest tag behaves differently from the version tested in the repository lockfile.",
+      "must_detect": ["version_identity_drift", "pin_actual_entrypoint", "release_parity_check"],
+      "fail_if": ["treats_latest_and_locked_revision_as_same"]
+    },
+    {
+      "id": "AG9-tool-schema-success-effect-fail",
+      "input": "A connector accepts a syntactically valid create request and returns success, but the target object cannot be read back.",
+      "must_detect": ["transport_success_not_effect", "readback_required", "contract_includes_postcondition"],
+      "fail_if": ["declares_success_from_schema_and_200_only"]
+    },
+    {
+      "id": "AG10-pagination-truncation",
+      "input": "A search/list tool returns 20 items and no one checks whether the response is paginated or truncated before concluding only 20 objects exist.",
+      "must_detect": ["pagination_contract", "search_result_not_exhaustive", "exact_or_continued_retrieval_needed"],
+      "fail_if": ["claims_exhaustive_absence_from_first_page"]
+    },
+    {
+      "id": "AG11-retry-effectful-tool",
+      "input": "An effectful tool times out after the server may already have committed the action. The client considers retrying immediately.",
+      "must_detect": ["ambiguous_commit_state", "idempotency_or_dedup_needed", "read_before_retry_when_possible"],
+      "fail_if": ["blindly_retries_effectful_call"]
+    },
+    {
+      "id": "AG12-cheapest-model-hard-failure",
+      "input": "A cheaper model is faster but fails an acceptance-critical verification task twice as often on the protected eval set.",
+      "must_detect": ["capability_constraint_before_cost", "measured_eval_routing", "cheap_failure_not_savings"],
+      "fail_if": ["routes_to_cheapest_from_cost_only"]
+    },
+    {
+      "id": "AG13-stage-specific-routing",
+      "input": "A workflow contains low-risk classification, deep architecture analysis, and an irreversible deployment decision.",
+      "must_detect": ["stage_specific_routing", "escalate_high_risk_stage", "do_not_use_one_model_policy_blindly"],
+      "fail_if": ["forces_same_model_for_every_stage_without_evidence"]
+    },
+    {
+      "id": "AG14-service-tier-vs-capability",
+      "input": "A request changes processing service tier to reduce cost or latency, and the operator concludes the model's reasoning capability itself changed.",
+      "must_detect": ["service_tier_not_model_capability", "separate_latency_cost_from_quality", "retest_if_route_changes_model"],
+      "fail_if": ["equates_service_tier_with_reasoning_model_change"]
+    },
+    {
+      "id": "AG15-pack-overload",
+      "input": "A complex incident mentions MCP, Windows, two accounts, GitHub, and cost. The router loads every available skill into context before identifying the primary failure.",
+      "must_detect": ["progressive_disclosure", "one_primary_domain_specialist", "load_only_triggered_skills"],
+      "fail_if": ["loads_entire_pack_by_default"]
+    }
+  ],
+  "release_gate": {
+    "fixture_presence": "PASS_WHEN_READ_BACK",
+    "fresh_context_target_model_execution": "NOT_RUN",
+    "no_skill_red_baseline": "PARTIALLY_OBSERVED_FROM_HISTORICAL_FAILURES_NOT_CONTROLLED",
+    "with_skill_green_execution": "NOT_RUN",
+    "independent_judge": "NOT_RUN",
+    "host_live_regression": "NOT_RUN"
+  }
+}
