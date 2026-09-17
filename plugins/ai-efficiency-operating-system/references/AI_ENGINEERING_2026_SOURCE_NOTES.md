@@ -25,10 +25,14 @@ Portable lessons: separate harness from compute; externalize resumable state; ke
 Sources:
 - https://openai.github.io/openai-agents-python/tracing/
 - https://openai.github.io/openai-agents-python/guardrails/
+- https://openai.github.io/openai-agents-python/tools/
+- https://openai.github.io/openai-agents-python/mcp/
 
-Current SDK tracing records end-to-end workflows through spans for model generations, tool calls, handoffs, guardrails and custom events. Tool guardrails can validate or block local function/MCP tool calls before and after execution; blocking guardrails are materially different from parallel guardrails when side effects or cost must be prevented.
+Current SDK tracing records end-to-end workflows through spans for model generations, tool calls, handoffs, guardrails and custom events. Tool guardrails can validate or block custom `FunctionTool` calls and tools converted from local MCP server objects before and after execution; blocking guardrails are materially different from parallel guardrails when side effects or cost must be prevented.
 
-Portable lessons: correlate the full trajectory rather than only final output, and place pre/postcondition enforcement at the actual tool boundary when side effects matter.
+Guardrail coverage is boundary-specific. Agent-level input/output guardrails do not automatically wrap every delegated call. Handoffs use their own path, while hosted tools such as `WebSearchTool`, `FileSearchTool`, `HostedMCPTool`, `CodeInterpreterTool` and `ImageGenerationTool`, plus built-in execution tools such as `ComputerTool`, `ShellTool`, `ApplyPatchTool` and `LocalShellTool`, do not use the same local function-tool guardrail pipeline. A hosted MCP tool therefore cannot be credited with local MCP tool-guardrail coverage merely because both are called “MCP”.
+
+Portable lessons: correlate the full trajectory rather than only final output; map every guardrail/approval to the exact execution boundary it actually controls; use blocking execution when prohibited side effects must not start before validation; never infer full-path protection from the existence of one agent-level guardrail.
 
 ## Anthropic
 
@@ -53,12 +57,21 @@ Anthropic separates failure likelihood from blast radius and describes containme
 
 Portable lesson: capability growth should be paired with least privilege, isolation, egress/credential boundaries and rollback/disable mechanisms.
 
+## OWASP Agentic Security
+
+### Memory & Context Poisoning — 2026-05-13
+Source: https://genai.owasp.org/2026/05/13/memory-is-a-feature-it-is-also-an-attack-surface/
+
+OWASP highlights that an agent can carry untrusted content forward through persistent memory/context, turning an ordinary retrieved artifact, repository workflow or prior interaction into a cross-session prompt-injection or control-state risk.
+
+Portable lessons: persistent memory is an authority boundary and attack surface, not merely storage. Keep provenance and trust class on durable entries; scope writes; quarantine unverified external instructions; support supersede/invalidate/expiry; and pressure-test whether poisoned or stale memory can become control state after compaction, restart or rehydration.
+
 ## Model Context Protocol
 
 ### MCP specification `2026-07-28`
 Source: https://blog.modelcontextprotocol.io/posts/2026-07-28/
 
-The release introduced a stateless protocol core, Multi Round-Trip Requests, header-based routing, cacheable list results, authorization hardening, formal extensions and updated Tier-1 SDKs. The legacy `initialize`/`initialized` exchange and `Mcp-Session-Id` transport session were retired. Each request carries protocol version and client identity/capability metadata; `server/discover` is optional.
+The release introduced a stateless protocol core, Multi Round-Trip Requests, header-based routing, cacheable list results, authorization hardening, formal extensions and updated Tier-1 SDKs. The legacy `initialize`/`initialized` exchange and `Mcp-Session-Id` transport session were retired. Each request carries protocol version and client identity/capability metadata; `server/discover` is optional. Streamable HTTP routing exposes `Mcp-Method` and `Mcp-Name` headers so routing/authorization assumptions can be tested explicitly rather than inferred from request bodies or sticky transport state.
 
 ### Release-candidate migration context — 2026-05-21
 Source: https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate/
@@ -126,13 +139,14 @@ The primary sources converge on a production-agent architecture with these indep
 3. trajectory-level evaluation;
 4. end-to-end observability across model/tool/workflow/runtime/UI layers;
 5. explicit concurrency/backpressure and isolation;
-6. live tool/protocol contract testing;
+6. live tool/protocol contract testing with boundary-specific guardrail coverage;
 7. containment and blast-radius control;
 8. exact source→artifact→runtime identity and release verification;
 9. semantic-first desktop automation with explicit coordinate-space handling;
 10. lifecycle-aware Electron/Chromium process forensics;
-11. protocol-version-aware MCP bridge recovery with explicit application state.
+11. protocol-version-aware MCP bridge recovery with explicit application state;
+12. provenance-aware durable memory that resists stale or poisoned context becoming control authority.
 
 ## Invalidation rule
 
-Before relying on a product-specific API, lifecycle, semantic-convention name, SDK feature or protocol behavior, re-check the current primary source whenever the provider, protocol, SDK, host, model or runtime version materially changes. The portable engineering mechanism may survive while the named interface does not.
+Before relying on a product-specific API, lifecycle, semantic-convention name, SDK feature, guardrail pipeline, tool family or protocol behavior, re-check the current primary source whenever the provider, protocol, SDK, host, model or runtime version materially changes. The portable engineering mechanism may survive while the named interface does not.
