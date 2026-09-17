@@ -21,6 +21,15 @@ The Agents SDK added a model-native harness, controlled workspaces, native sandb
 
 Portable lessons: separate harness from compute; externalize resumable state; keep credentials out of model-generated-code environments; parallelize only across isolated, compatible work units.
 
+### Agents SDK tracing and guardrails
+Sources:
+- https://openai.github.io/openai-agents-python/tracing/
+- https://openai.github.io/openai-agents-python/guardrails/
+
+Current SDK tracing records end-to-end workflows through spans for model generations, tool calls, handoffs, guardrails and custom events. Tool guardrails can validate or block local function/MCP tool calls before and after execution; blocking guardrails are materially different from parallel guardrails when side effects or cost must be prevented.
+
+Portable lessons: correlate the full trajectory rather than only final output, and place pre/postcondition enforcement at the actual tool boundary when side effects matter.
+
 ## Anthropic
 
 ### Effective context engineering for AI agents — 2025-09-29
@@ -49,14 +58,14 @@ Portable lesson: capability growth should be paired with least privilege, isolat
 ### MCP specification `2026-07-28`
 Source: https://blog.modelcontextprotocol.io/posts/2026-07-28/
 
-The release introduced a stateless protocol core, Multi Round-Trip Requests, header-based routing, cacheable list results, authorization hardening, formal extensions and updated Tier-1 SDKs.
+The release introduced a stateless protocol core, Multi Round-Trip Requests, header-based routing, cacheable list results, authorization hardening, formal extensions and updated Tier-1 SDKs. The legacy `initialize`/`initialized` exchange and `Mcp-Session-Id` transport session were retired. Each request carries protocol version and client identity/capability metadata; `server/discover` is optional.
 
 ### Release-candidate migration context — 2026-05-21
 Source: https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate/
 
 The release candidate describes the stateless core, Extensions framework, Tasks, MCP Apps, authorization changes and formal deprecation policy.
 
-Portable lessons: fingerprint negotiated spec/SDK/capabilities; do not assume an older stateful lifecycle; test caching, auth, extension/task semantics and live schema composition on the actual client/server pair.
+Portable lessons: fingerprint the actual protocol/SDK pair; do not assume an older handshake or hidden transport session; validate cache freshness, auth, extensions/tasks and live schema composition on the actual client/server pair. Keep application-level state explicit and separate from MCP transport semantics.
 
 ## OpenTelemetry
 
@@ -83,6 +92,31 @@ Agent Framework emits workflow/session/invocation/executor/message spans, logs a
 
 Portable lesson: agent observability should cover message/executor/workflow flow, not only individual LLM calls.
 
+## Windows desktop automation
+
+### UI Automation screen scaling
+Source: https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-screenscaling
+
+Microsoft documents that UI Automation point/bounding-rectangle APIs operate in physical coordinates, while non-DPI-aware clients can receive or supply incompatible logical coordinates. Correct clients must account for DPI awareness and physical cursor coordinates when geometry is unavoidable.
+
+Portable lessons: prefer semantic UIAutomation/Accessibility element identity over screen geometry; when coordinates are required, fingerprint DPI/coordinate space explicitly and never mix logical and physical coordinates silently. Verify the target window/control before and after an input action.
+
+## Electron / Chromium desktop runtime
+
+### Electron process model
+Source: https://www.electronjs.org/docs/latest/tutorial/process-model
+
+Electron inherits Chromium's multi-process architecture. A single main process manages application lifecycle and windows; each BrowserWindow/web embed can have its own renderer, and applications may also create utility processes.
+
+### Runtime process evidence
+Sources:
+- https://www.electronjs.org/docs/latest/api/process
+- https://www.electronjs.org/docs/latest/api/structures/render-process-gone-details
+
+Electron exposes process type, creation time, uptime, CPU and memory information, while renderer termination reasons distinguish clean exit, abnormal exit, killed, crash, OOM, launch failure, integrity failure and memory eviction.
+
+Portable lessons: process count alone is not leak evidence. Diagnose role, parentage/ownership, creation/restart timeline, resource trajectory and explicit crash/exit reasons before classifying renderer churn, orphaning or crash loops.
+
 ## Cross-source synthesis
 
 The primary sources converge on a production-agent architecture with these independent engineering concerns:
@@ -90,11 +124,14 @@ The primary sources converge on a production-agent architecture with these indep
 1. durable harness and externalized resumable state;
 2. finite context/attention budgeting;
 3. trajectory-level evaluation;
-4. end-to-end observability across model/tool/workflow/runtime layers;
+4. end-to-end observability across model/tool/workflow/runtime/UI layers;
 5. explicit concurrency/backpressure and isolation;
 6. live tool/protocol contract testing;
 7. containment and blast-radius control;
-8. exact source→artifact→runtime identity and release verification.
+8. exact source→artifact→runtime identity and release verification;
+9. semantic-first desktop automation with explicit coordinate-space handling;
+10. lifecycle-aware Electron/Chromium process forensics;
+11. protocol-version-aware MCP bridge recovery with explicit application state.
 
 ## Invalidation rule
 
