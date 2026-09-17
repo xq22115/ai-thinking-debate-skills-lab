@@ -41,7 +41,7 @@ EXPLICIT_ONLY = [
     "persistent-work-ledger",
     "authorized-reverse-engineering",
 ]
-EXPERT = EXPERT_IMPLICIT + ["authorized-reverse-engineering"]
+EXPERT = EXPERT_IMPLICIT[:3] + ["authorized-reverse-engineering", "agent-runtime-forensics"]
 EXPECTED = DEFAULT_IMPLICIT + CONDITIONAL_IMPLICIT + EXPLICIT_ONLY
 DEPTH_LEVELS = ["SURFACE", "MECHANISM", "CODE_PATH", "DETERMINISTIC_REPRO", "COUNTEREXAMPLE", "FIX_STATUS", "REGRESSION", "GENERALIZATION"]
 EXPERT_REFS = {
