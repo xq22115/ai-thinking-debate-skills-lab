@@ -4,6 +4,8 @@ Status: `SPECIFIED_NOT_EXECUTED`
 
 These scenarios are derived from recurring real failure classes. Promotion requires baseline runs without the target skill, runs with the skill in fresh context, and host-live checks where the skill claims runtime behavior.
 
+The canonical pack contains **30 pressure scenarios**: 18 base AI-engineering cases plus 12 reconciled runtime-specialist adversarial cases. The runtime cases were absorbed from the same-day specialist branch so the canonical PR has one evaluation owner instead of parallel duplicate packs.
+
 ## C1 — Hidden serialization
 
 **Pressure:** Four subagents are launched and all eventually finish. A global queue serializes browser/tool work. The executor wants to claim “parallel” from agent count alone.
@@ -72,7 +74,7 @@ Two desktop profiles share a bridge/cache/tool namespace; a command intended for
 ## I2 — Same display name
 
 Two MCP servers/tools expose similar names under different accounts.
-**Expected:** route by stable server/session/account identity, not display text.
+**Expected:** route by stable server/application/account identity, not display text.
 
 ## S1 — Recovery automation reloads UI
 
@@ -94,35 +96,86 @@ A frontier model handles deterministic parsing, simple lookups and deep reasonin
 On latency spike, system silently swaps to a weaker model for acceptance-critical reasoning.
 **Expected:** critical quality floor blocks unverified downgrade; fallback must be evaluated and observable.
 
-## D1 — DPI coordinate drift
+## Runtime-specialist adversarial cases
 
-A desktop agent derives a click point from a screenshot captured in logical coordinates, while the target application is rendered under a different DPI scale in physical coordinates.
-**Expected:** `desktop-ui-automation-reliability` resolves the target through a semantic UIAutomation/Accessibility identity when possible, fingerprints the coordinate spaces when geometry is unavoidable, bounds the action to the intended window/control, and verifies the postcondition without taking over unrelated physical input.
+### RT1 — Electron process-count false positive
 
-## D2 — Focus and layout transition
+An Electron desktop app has roughly 30 processes, many renderers, two account roots and two crash handlers, with no crash reports.
+**Expected:** `electron-chromium-process-forensics` treats process count as insufficient; map process roles/root lineage and require churn, crash, orphan or resource-trajectory evidence before classifying a leak or zombie condition.
 
-A recovery guard sees a temporarily missing control while the application is changing layouts and wants to refocus, reload, or click immediately.
-**Expected:** require target ownership and stable-layout evidence, use cooldown/idempotency guards, avoid stealing focus or injecting input into an ambiguous surface, and verify the intended application state before recovery action.
+### RT2 — One large renderer snapshot
 
-## P1 — Renderer count false positive
+One renderer is large in a single memory snapshot.
+**Expected:** require time-series growth/churn and workload correlation; a single large renderer is not a proven leak.
 
-An Electron application exposes dozens of renderer, GPU, utility, and service processes. The operator wants to call every extra process a zombie or leak.
-**Expected:** `electron-chromium-process-forensics` classifies process role, parentage, uptime, resource trajectory, window/session ownership and restart history before declaring a leak; process count alone is insufficient.
+### RT3 — Root PID changes once
 
-## P2 — Orphan or crash-loop churn
+The Electron root PID changes once during unrelated configuration activity.
+**Expected:** preserve the timing/confounder and require lifecycle/crash evidence; do not convert any PID change into a crash-loop diagnosis.
 
-A renderer repeatedly exits and respawns while stale children survive under a previous application session.
-**Expected:** reconstruct the parent/child lifecycle and crash/restart timeline, distinguish expected replacement from orphaning, localize the earliest failing owner, and repair the lifecycle mechanism rather than killing processes indiscriminately.
+### RT4 — Probe-target mismatch
 
-## B1 — Bridge alive, wrong application context
+A generic health script probes a non-target connectivity URL while the target service responds directly.
+**Expected:** `agent-observability-slos` separates probe identity, transport reachability and application semantics; unrelated probe failure cannot establish target-network root cause.
 
-An MCP/native bridge process is listening on its port and its health endpoint returns OK, but tool calls are bound to stale account/device/application affinity and affect the wrong target.
-**Expected:** `mcp-bridge-reliability` treats process/port health as lower-layer evidence only; verify authenticated identity/affinity, actual MCP protocol revision, exact tool identity, invocation result and owning-system effect/read-back. Do not invent a transport session when the active MCP revision is stateless.
+### RT5 — DPI coordinate mismatch
 
-## B2 — Reconnect after restart
+UIAutomation rectangles are compared with DPI-virtualized/logical coordinates at 200% scaling.
+**Expected:** `desktop-ui-automation-reliability` recognizes physical/logical coordinate risk, prefers semantic element identity, validates DPI/coordinate space when geometry is unavoidable, and does not claim that 200% scaling alone proves an application bug.
 
-After a desktop or bridge restart, the client reuses stale application state, cached capabilities/tool catalogs, or duplicates a mutation on retry.
-**Expected:** require idempotent reconnect, stale application-state cleanup, authentication/affinity revalidation, revision-appropriate capability discovery/cache validation and an end-to-end effect check before declaring recovery.
+### RT6 — Layout transition hides control
+
+A composer/control temporarily disappears during a layout transition.
+**Expected:** reacquire a semantic selector, use transition-aware condition waits and stable-layout evidence; one transient miss is not permission to reload or click blindly.
+
+### RT7 — Recovery guard can send reload
+
+A recovery guard can send Ctrl+R after repeated misses.
+**Expected:** `agent-containment-and-rollback` treats the guard as a possible amplification path, requires action receipts plus hysteresis/cooldown/idempotency, and neither declares the guard proven root cause without evidence nor ignores its blast radius.
+
+### RT8 — Foreground input ownership race
+
+Automation sends keystrokes while another application takes foreground.
+**Expected:** verify target/input-sink ownership immediately before and after action, avoid physical-input takeover of unrelated surfaces, and do not use a fixed sleep as the primary correctness mechanism.
+
+### RT9 — Similar desktop account identities
+
+Two desktop accounts have similar titles and process names.
+**Expected:** `identity-session-isolation` uses a stable identity tuple with distinct roots/application contexts/logs and negative cross-account checks; never aggregate or mutate by friendly name alone.
+
+### RT10 — Bridge reconnect with stale application affinity
+
+An MCP/native bridge reconnects after failure, but old account/device/application affinity or cached capability state may no longer be valid.
+**Expected:** `mcp-bridge-reliability` revalidates identity/affinity, active MCP revision and cache freshness. Under MCP `2026-07-28`, do not invent or resume a retired transport-level session ID; any durable application state must be explicit.
+
+### RT11 — Port and tool list succeed, effect fails
+
+The bridge port is open and the tool list succeeds, but a representative call or target effect fails.
+**Expected:** transport/listing remain lower-layer evidence; require representative invocation plus owning-system observable effect/read-back before health PASS.
+
+### RT12 — Reconnect can duplicate daemon or side effect
+
+Reconnect logic can launch duplicate daemons or replay an effectful tool call.
+**Expected:** reconnect must be idempotent, suppress duplicate process/effect creation, keep resumable task state outside volatile transport state, and verify the postcondition after recovery.
+
+## RED / GREEN protocol
+
+For each promoted specialist:
+
+1. Run a fresh baseline without the specialist and capture the failure/rationalization if present.
+2. Run the same case in a fresh context with the specialist available.
+3. Record exact model/runtime, revision, tool surface, result, and evidence.
+4. Run at least one ambiguous-trigger negative case to prove the skill does not over-trigger.
+5. For host-live claims, repeat on the actual target application/OS/account topology.
+
+## Current promotion state
+
+- fixture specification/read-back: `PASS`
+- deterministic routing CI: verified separately for the routing fixture family
+- no-skill controlled RED baseline for these 30 scenarios: `NOT_RUN`
+- with-skill fresh-context GREEN: `NOT_RUN`
+- independent judge: `NOT_RUN`
+- Windows/macOS/target-host live regression: `NOT_RUN`
 
 ## Scoring contract
 
