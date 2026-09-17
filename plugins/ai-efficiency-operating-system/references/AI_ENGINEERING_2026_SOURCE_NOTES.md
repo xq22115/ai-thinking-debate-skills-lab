@@ -8,6 +8,7 @@ The pack records reusable mechanisms separately from product-specific claims so 
 ## OpenAI
 
 ### Agents API — 2026-09-10
+
 Source: https://openai.com/index/introducing-the-agents-api/
 
 OpenAI describes a managed agent harness for long-running cloud agents that manages context, tool use and subagents, with infrastructure for work that can run for days, manipulate files/code, and preserve intermediate results.
@@ -15,6 +16,7 @@ OpenAI describes a managed agent harness for long-running cloud agents that mana
 Portable lesson: long-horizon reliability is a harness + state + execution-environment problem, not only a model/prompt problem.
 
 ### Agents SDK evolution — 2026-04-15
+
 Source: https://openai.com/index/the-next-evolution-of-the-agents-sdk/
 
 The Agents SDK added a model-native harness, controlled workspaces, native sandbox execution, snapshot/rehydration for durable execution, isolated environments and parallel work across sandboxes/containers.
@@ -22,6 +24,7 @@ The Agents SDK added a model-native harness, controlled workspaces, native sandb
 Portable lessons: separate harness from compute; externalize resumable state; keep credentials out of model-generated-code environments; parallelize only across isolated, compatible work units.
 
 ### Agents SDK tracing and guardrails
+
 Sources:
 - https://openai.github.io/openai-agents-python/tracing/
 - https://openai.github.io/openai-agents-python/guardrails/
@@ -37,6 +40,7 @@ Portable lessons: correlate the full trajectory rather than only final output; m
 ## Anthropic
 
 ### Effective context engineering for AI agents — 2025-09-29
+
 Source: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
 
 Anthropic frames context as a finite attention budget and recommends curating the smallest high-signal token set across instructions, tools, MCP, external data and history.
@@ -44,6 +48,7 @@ Anthropic frames context as a finite attention budget and recommends curating th
 Portable lessons: just-in-time retrieval, compact durable notes, bounded tool context and deliberate compaction/rehydration are core long-horizon engineering mechanisms.
 
 ### Demystifying evals for AI agents — 2026-01-09
+
 Source: https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents
 
 Agent behavior spans many turns, tool calls and state changes, so one-shot output grading is insufficient.
@@ -51,6 +56,7 @@ Agent behavior spans many turns, tool calls and state changes, so one-shot outpu
 Portable lesson: evaluate trajectories, state transitions, tool behavior and recovery in addition to final output quality.
 
 ### How we contain Claude across products — 2026-05-25
+
 Source: https://www.anthropic.com/engineering/how-we-contain-claude
 
 Anthropic separates failure likelihood from blast radius and describes containment through enforced environment/access boundaries rather than relying only on repeated human approval prompts.
@@ -60,6 +66,7 @@ Portable lesson: capability growth should be paired with least privilege, isolat
 ## OWASP Agentic Security
 
 ### Memory & Context Poisoning — 2026-05-13
+
 Source: https://genai.owasp.org/2026/05/13/memory-is-a-feature-it-is-also-an-attack-surface/
 
 OWASP highlights that an agent can carry untrusted content forward through persistent memory/context, turning an ordinary retrieved artifact, repository workflow or prior interaction into a cross-session prompt-injection or control-state risk.
@@ -69,25 +76,29 @@ Portable lessons: persistent memory is an authority boundary and attack surface,
 ## Model Context Protocol
 
 ### MCP specification `2026-07-28`
+
 Source: https://blog.modelcontextprotocol.io/posts/2026-07-28/
 
-The release introduced a stateless protocol core, Multi Round-Trip Requests, header-based routing, cacheable list results, authorization hardening, formal extensions and updated Tier-1 SDKs. The legacy `initialize`/`initialized` exchange and `Mcp-Session-Id` transport session were retired. Each request carries protocol version and client identity/capability metadata; `server/discover` is optional. Streamable HTTP routing exposes `Mcp-Method` and `Mcp-Name` headers so routing/authorization assumptions can be tested explicitly rather than inferred from request bodies or sticky transport state.
+The release introduced a stateless protocol core, Multi Round-Trip Requests, header-based routing, cacheable list results, authorization hardening, formal extensions and updated Tier-1 SDKs. The legacy `initialize`/`initialized` exchange and `Mcp-Session-Id` transport session were retired. Each request requires protocol version and client capabilities in `_meta`; `clientInfo` is optional but normally SHOULD be included unless configured otherwise, and is self-reported metadata rather than an authorization identity. `server/discover` is optional. Streamable HTTP routing exposes `Mcp-Method` and `Mcp-Name` headers so routing/authorization assumptions can be tested explicitly rather than inferred from request bodies or sticky transport state.
 
 ### Release-candidate migration context — 2026-05-21
+
 Source: https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate/
 
 The release candidate describes the stateless core, Extensions framework, Tasks, MCP Apps, authorization changes and formal deprecation policy.
 
-Portable lessons: fingerprint the actual protocol/SDK pair; do not assume an older handshake or hidden transport session; validate cache freshness, auth, extensions/tasks and live schema composition on the actual client/server pair. Keep application-level state explicit and separate from MCP transport semantics.
+Portable lessons: fingerprint the actual protocol/SDK pair; do not assume an older handshake or hidden transport session; validate per-request capabilities, optional client metadata, cache freshness, auth, extensions/tasks and live schema composition on the actual client/server pair. Keep application-level state and security identity explicit and separate from MCP transport or self-reported client metadata.
 
 ## OpenTelemetry
 
 ### GenAI observability — 2026-05-14
+
 Source: https://opentelemetry.io/blog/2026/genai-observability/
 
 OpenTelemetry demonstrates tracing model calls, tool invocations, token usage, latency and errors; detailed prompt/completion/tool content is opt-in and can contain sensitive data.
 
 ### Semantic conventions
+
 Sources:
 - https://opentelemetry.io/docs/specs/semconv/
 - https://opentelemetry.io/docs/specs/semconv/registry/attributes/gen-ai/
@@ -99,6 +110,7 @@ Portable lessons: trace identity, model/tool operations, token/cost and error/la
 ## Microsoft Agent Framework
 
 ### Workflow observability
+
 Source: https://learn.microsoft.com/en-us/agent-framework/workflows/observability
 
 Agent Framework emits workflow/session/invocation/executor/message spans, logs and metrics and can expose delivery/buffering/error state across workflow edges. Sensitive message/input/output telemetry is explicitly configurable.
@@ -108,6 +120,7 @@ Portable lesson: agent observability should cover message/executor/workflow flow
 ## Windows desktop automation
 
 ### UI Automation screen scaling
+
 Source: https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-screenscaling
 
 Microsoft documents that UI Automation point/bounding-rectangle APIs operate in physical coordinates, while non-DPI-aware clients can receive or supply incompatible logical coordinates. Correct clients must account for DPI awareness and physical cursor coordinates when geometry is unavoidable.
@@ -117,11 +130,13 @@ Portable lessons: prefer semantic UIAutomation/Accessibility element identity ov
 ## Electron / Chromium desktop runtime
 
 ### Electron process model
+
 Source: https://www.electronjs.org/docs/latest/tutorial/process-model
 
 Electron inherits Chromium's multi-process architecture. A single main process manages application lifecycle and windows; each BrowserWindow/web embed can have its own renderer, and applications may also create utility processes.
 
 ### Runtime process evidence
+
 Sources:
 - https://www.electronjs.org/docs/latest/api/process
 - https://www.electronjs.org/docs/latest/api/structures/render-process-gone-details
