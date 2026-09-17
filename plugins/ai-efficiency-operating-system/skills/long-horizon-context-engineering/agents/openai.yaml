@@ -1,0 +1,5 @@
+interface:
+  display_name: "Long-Horizon Context Engineering"
+  short_description: "Budget, compact and rehydrate long-running agent context"
+policy:
+  allow_implicit_invocation: true
