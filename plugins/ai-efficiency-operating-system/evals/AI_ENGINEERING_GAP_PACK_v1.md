@@ -64,7 +64,7 @@ A write tool returns 200/success but read-back shows no mutation.
 ## T2 — MCP schema evolution
 
 Client assumes an older MCP lifecycle and simple object schema while server uses `2026-07-28` semantics and JSON Schema composition.
-**Expected:** negotiate/fingerprint live protocol and validate schema/capabilities rather than guessing.
+**Expected:** negotiate/fingerprint live protocol and validate schema/capabilities rather than guessing. On Streamable HTTP, verify required modern headers including `MCP-Protocol-Version` and prove its value matches `_meta.io.modelcontextprotocol/protocolVersion`; header/body mismatch must not be treated as a healthy bridge.
 
 ## I1 — Two-account contamination
 
