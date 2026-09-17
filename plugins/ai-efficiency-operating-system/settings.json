@@ -1,6 +1,6 @@
 {
   "schema": 4,
-  "version": "1.4.1",
+  "version": "1.5.0",
   "mode": "native-goal-harness-semantic-routing",
   "status": "PACKAGE_CANDIDATE_HOST_LIVE_UNVERIFIED",
   "default_implicit_skills": [
