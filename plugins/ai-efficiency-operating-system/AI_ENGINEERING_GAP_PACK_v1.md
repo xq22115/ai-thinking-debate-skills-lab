@@ -59,7 +59,7 @@ Scenario-level engineering pressure cases are canonicalized in `evals/AI_ENGINEE
 
 ## MCP compatibility boundary
 
-MCP lifecycle assumptions are version-sensitive. For `2026-07-28`, the protocol core is stateless and the legacy `initialize`/`initialized` handshake plus `Mcp-Session-Id` transport session are retired. Bridge skills therefore distinguish explicit application/account/device affinity and cached capabilities from protocol transport sessions. Header routing (`Mcp-Method` / `Mcp-Name`), cache hints, extensions/tasks and authorization behavior remain part of the versioned contract. Older protocol revisions require their own lifecycle adapter.
+MCP lifecycle assumptions are version-sensitive. For `2026-07-28`, the protocol core is stateless and the legacy `initialize`/`initialized` handshake plus `Mcp-Session-Id` transport session are retired. Bridge skills therefore distinguish explicit application/account/device affinity and cached capabilities from protocol transport sessions. Every request requires protocol version and client capabilities in `_meta`; optional `clientInfo` is self-reported metadata, not an authorization/account identity. Header routing (`Mcp-Method` / `Mcp-Name`), cache hints, extensions/tasks and authorization behavior remain part of the versioned contract. Older protocol revisions require their own lifecycle adapter.
 
 ## Tool-control boundary
 
