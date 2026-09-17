@@ -1,0 +1,5 @@
+interface:
+  display_name: "MCP Bridge Reliability"
+  short_description: "Diagnose bridge lifecycle, affinity and reconnect failures"
+policy:
+  allow_implicit_invocation: true
