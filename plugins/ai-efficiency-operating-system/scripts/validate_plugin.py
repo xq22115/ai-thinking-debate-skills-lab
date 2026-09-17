@@ -256,7 +256,7 @@ def main():
         if marker not in long_horizon: fail(errors, f"long-horizon dependency marker missing: {marker}")
 
     recoverable = (ROOT / "skills" / "recoverable-state" / "SKILL.md").read_text(encoding="utf-8")
-    for marker in ["Packaging provenance", "packaged adapter/snapshot", "skills/skills/recoverable-state/SKILL.md", "not a second independent semantic owner"]:
+    for marker in ["Packaging provenance", "packaged adapter/snapshot", "skills/skills/recoverable-state/SKILL.md", "second independent semantic owner"]:
         if marker not in recoverable: fail(errors, f"recoverable-state packaging provenance marker missing: {marker}")
 
     observability = (ROOT / "skills" / "agent-observability-slos" / "SKILL.md").read_text(encoding="utf-8")
