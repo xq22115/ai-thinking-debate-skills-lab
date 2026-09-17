@@ -142,6 +142,9 @@ TERMS = {
     "observability": [
         "trace", "tracing", "telemetry", "span", "slo", "p95", "p99", "latency", "metrics",
         "cost/task", "span correlation", "queue wait", "render time", "tool error rate",
+        "切聊天室", "切到別的聊天室", "切 tab", "switch chat", "switch tab", "hidden tab", "page hidden",
+        "frozen", "discarded", "background throttling", "renderer visibility", "run progress",
+        "subscription", "reattach", "reattachment", "切回來才", "回來才繼續",
     ],
     "evaluation_ops": [
         "eval", "evaluation", "holdout", "llm judge", "judge", "rubric", "fixture", "promotion",
@@ -175,6 +178,9 @@ TERMS = {
     "desktop_ui": [
         "uiautomation", "ui automation", "accessibility", "dpi", "bounding rectangle", "semantic selector", "sendkeys",
         "focus", "stale element", "layout transition", "coordinate", "composer", "foreground",
+        "wispr", "wispr flow", "parsec", "clipboard", "copy/paste", "copy paste", "ime", "dictation",
+        "remote desktop", "remote transport", "sendinput", "uipi", "key mapping", "target text",
+        "貼不進", "貼不上", "遠端貼上", "目標欄位",
     ],
     "electron_process": [
         "electron", "chromium", "renderer", "crashpad", "zombie", "working set", "handles", "gpu", "multiprocess",
@@ -235,7 +241,12 @@ def analyze(prompt):
     )
     signals["concurrency_pressure"] = int(signals["concurrency"] >= 2)
     signals["observability_pressure"] = int(
-        signals["observability"] >= 2 and any(p in text for p in ["trace", "telemetry", "span", "slo", "p95", "p99"])
+        (signals["observability"] >= 2 and any(p in text for p in ["trace", "telemetry", "span", "slo", "p95", "p99"]))
+        or (
+            signals["observability"] >= 2
+            and any(p in text for p in ["切聊天室", "切到別的聊天室", "switch chat", "switch tab", "hidden tab", "page hidden", "frozen", "discarded", "background throttling"])
+            and any(p in text for p in ["run progress", "renderer", "subscription", "reattach", "切回來", "回來才繼續", "停止", "停住", "resume", "繼續"])
+        )
     )
     signals["evaluation_pressure"] = int(
         signals["evaluation_ops"] >= 2 and any(p in text for p in ["eval", "holdout", "judge", "promotion", "fresh-context"])
@@ -260,7 +271,11 @@ def analyze(prompt):
         signals["model_routing"] >= 2 and any(p in text for p in ["model", "模型", "quality floor", "fallback", "downgrade"])
     )
     signals["desktop_ui_pressure"] = int(
-        signals["desktop_ui"] >= 2 and any(p in text for p in ["uiautomation", "ui automation", "accessibility", "dpi", "sendkeys"])
+        signals["desktop_ui"] >= 2 and any(p in text for p in [
+            "uiautomation", "ui automation", "accessibility", "dpi", "sendkeys",
+            "wispr", "parsec", "clipboard", "copy/paste", "ime", "dictation", "remote desktop",
+            "sendinput", "uipi", "貼不進", "貼不上", "遠端貼上",
+        ])
     )
     signals["electron_pressure"] = int(
         signals["electron_process"] >= 2 and any(p in text for p in ["electron", "chromium", "renderer", "crashpad", "zombie"])
