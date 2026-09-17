@@ -244,6 +244,30 @@ def main():
     for marker in ["Persistent-state injection firewall", "control state", "evidence/data", "persistent file is storage, not an authority upgrade"]:
         if marker not in memory: fail(errors, f"persistent-state firewall marker missing: {marker}")
 
+    long_horizon = (ROOT / "skills" / "long-horizon-context-engineering" / "SKILL.md").read_text(encoding="utf-8")
+    for marker in ["DEPENDENCY BOUNDARY", "repository-level `recoverable-state`", "external dependency unavailable"]:
+        if marker not in long_horizon: fail(errors, f"long-horizon dependency marker missing: {marker}")
+
+    observability = (ROOT / "skills" / "agent-observability-slos" / "SKILL.md").read_text(encoding="utf-8")
+    for marker in ["client/page lifecycle state", "stream/subscription identity", "execution-owner progress", "reattachment"]:
+        if marker not in observability: fail(errors, f"client lifecycle observability marker missing: {marker}")
+
+    desktop_ui = (ROOT / "skills" / "desktop-ui-automation-reliability" / "SKILL.md").read_text(encoding="utf-8")
+    for marker in ["source text → local clipboard/IME", "INPUT_SENT != TARGET_COMMITTED", "UIPI", "remote-session transport"]:
+        if marker not in desktop_ui: fail(errors, f"remote input transport marker missing: {marker}")
+
+    mcp_bridge = (ROOT / "skills" / "mcp-bridge-reliability" / "SKILL.md").read_text(encoding="utf-8")
+    for marker in ["MCP-Protocol-Version", "HeaderMismatch", "server/discover"]:
+        if marker not in mcp_bridge: fail(errors, f"MCP 2026 transport marker missing: {marker}")
+
+    gap_eval = (ROOT / "evals" / "AI_ENGINEERING_GAP_PACK_v1.md").read_text(encoding="utf-8")
+    for marker in ["A3 — Client visibility is not run ownership", "UI_NOT_RENDERING != RUN_STOPPED", "RUN_EXISTS != RUN_PROGRESSING", "A4 — Input sent is not target committed", "INPUT_SENT != TARGET_COMMITTED"]:
+        if marker not in gap_eval: fail(errors, f"AI engineering cross-cutting assertion missing: {marker}")
+
+    source_notes = (ROOT / "references" / "AI_ENGINEERING_2026_SOURCE_NOTES.md").read_text(encoding="utf-8")
+    for marker in ["Client/page lifecycle continuity", "Remote text/input transport", "MCP-Protocol-Version", "Parsec copy/paste"]:
+        if marker not in source_notes: fail(errors, f"AI engineering source-note marker missing: {marker}")
+
     legacy_skill = REPO / "skills" / "skills" / "ai-efficiency-operating-system" / "SKILL.md"
     if legacy_skill.exists(): fail(errors, "legacy mega SKILL.md is still active")
 
@@ -262,7 +286,7 @@ def main():
         if not (ROOT / rel).exists(): fail(errors, f"missing {rel}")
 
     minimums = {
-        "routing-cases.jsonl": 85,
+        "routing-cases.jsonl": 89,
         "composition-cases.jsonl": 15,
         "behavior-cases.jsonl": 55,
         "expert-labs-cases.jsonl": 25,
@@ -281,6 +305,7 @@ def main():
         "fallback_chain", "deterministic baseline", "_is_explanation_only", "agent-concurrency-backpressure",
         "agent-observability-slos", "runtime-release-parity", "desktop-ui-automation-reliability",
         "electron-chromium-process-forensics", "mcp-bridge-reliability",
+        "切聊天室", "subscription", "parsec", "clipboard", "uipi",
     ]:
         if marker.lower() not in route_oracle.lower(): fail(errors, f"routing oracle marker missing: {marker}")
 
