@@ -1,0 +1,5 @@
+interface:
+  display_name: "Agent Containment and Rollback"
+  short_description: "Bound agent blast radius and preserve reversible recovery"
+policy:
+  allow_implicit_invocation: true
