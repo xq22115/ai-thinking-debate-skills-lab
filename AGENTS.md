@@ -13,6 +13,7 @@ Machine-enforced capability routing: `control-plane/ai-system/configs/context-fi
 Desktop execution policy: `docs/DESKTOP_AGENT_EXECUTION_POLICY.md`.
 Machine-enforced desktop execution profile: `control-plane/ai-system/configs/desktop-agent-execution-global.json`.
 Cross-chat hidden-state / orchestration owner: `skills/skills/ai-efficiency-operating-system/SKILL.md`.
+Skill-authoring owner: `skills/skills/skill-authoring-engine/SKILL.md`; GitHub Copilot projection: `.github/skills/skill-authoring-engine/SKILL.md`; dedicated cloud-agent profile: `.github/agents/skill-architect.agent.md`. Personal Copilot projection installer: `control-plane/scripts/install_copilot_user_skill_authoring.py`.
 
 ## Primary objective
 

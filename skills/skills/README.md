@@ -17,6 +17,13 @@ The skill folder shape follows the current Agent Skills semantic pattern: each p
 9. `capability-challenge` — separates `VISIBLE`, `AUTHORIZED`, and `VERIFIED` before terminal `cannot`. (`0.1.1-rc1`)
 10. `durable-agent-control-plane` — durable Goal Contract + task identity, isolated writers, goal-contract-bound receipts, goal-drift detection, proxy/acceptance integrity, resume/recovery, and task-result vs infrastructure-state separation. (`0.2.0-rc1`; consult `GOAL_OBJECTIVE_AUDIT.md` when objective ambiguity/proxy gaming matters)
 
+## Supplemental / Experimental Skills
+
+- `adversarial-deliberation-council` — adversarial cross-checking and synthesis support.
+- `semantic-argument-microscope` — semantic/pragmatic and argument-structure analysis.
+- `task-goal-intelligence` — full-detail goal reconstruction and truth-maintenance logic.
+- `skill-authoring-engine` — first-class reusable skill/skill-pack authoring, trigger design, adaptive specialist decomposition, host projection, registry integration, and layered verification. Status: `EXPERIMENTAL / NOT HOST-LIVE VERIFIED`.
+
 ## Composition Order
 
 For complex engineering/research/argument tasks:

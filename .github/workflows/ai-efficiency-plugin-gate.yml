@@ -7,6 +7,13 @@ on:
       - '.agents/plugins/marketplace.json'
       - 'skills/02-skills-catalog.md'
       - 'skills/skills/ai-efficiency-operating-system/**'
+      - 'skills/skills/skill-authoring-engine/**'
+      - '.github/skills/skill-authoring-engine/**'
+      - '.github/agents/skill-architect.agent.md'
+      - 'control-plane/ai-system/configs/skill-authoring-engine.json'
+      - 'control-plane/scripts/install_copilot_user_skill_authoring.py'
+      - 'control-plane/scripts/validate_skill_authoring_integration.py'
+      - 'deploy/copilot-user/skill-architect.agent.md'
       - '.github/workflows/ai-efficiency-plugin-gate.yml'
   pull_request:
     paths:
@@ -14,6 +21,13 @@ on:
       - '.agents/plugins/marketplace.json'
       - 'skills/02-skills-catalog.md'
       - 'skills/skills/ai-efficiency-operating-system/**'
+      - 'skills/skills/skill-authoring-engine/**'
+      - '.github/skills/skill-authoring-engine/**'
+      - '.github/agents/skill-architect.agent.md'
+      - 'control-plane/ai-system/configs/skill-authoring-engine.json'
+      - 'control-plane/scripts/install_copilot_user_skill_authoring.py'
+      - 'control-plane/scripts/validate_skill_authoring_integration.py'
+      - 'deploy/copilot-user/skill-architect.agent.md'
       - '.github/workflows/ai-efficiency-plugin-gate.yml'
 
 permissions:
@@ -40,11 +54,22 @@ jobs:
             plugins/ai-efficiency-operating-system/scripts/composition_oracle.py \
             plugins/ai-efficiency-operating-system/scripts/expert_labs_oracle.py \
             plugins/ai-efficiency-operating-system/scripts/github_operation_oracle.py \
-            plugins/ai-efficiency-operating-system/scripts/github_root_control_oracle.py
+            plugins/ai-efficiency-operating-system/scripts/github_root_control_oracle.py \
+            skills/skills/skill-authoring-engine/scripts/validate_skill_package.py \
+            control-plane/scripts/install_copilot_user_skill_authoring.py \
+            control-plane/scripts/validate_skill_authoring_integration.py
       - name: Validate package, routing and migration contracts
         run: python plugins/ai-efficiency-operating-system/scripts/validate_plugin.py
       - name: Validate Superpowers ordinary-chat runtime contract
         run: python plugins/ai-efficiency-operating-system/scripts/validate_superpowers_runtime.py
+      - name: Validate canonical and GitHub skill-authoring packages
+        run: |
+          python skills/skills/skill-authoring-engine/scripts/validate_skill_package.py skills/skills/skill-authoring-engine
+          python skills/skills/skill-authoring-engine/scripts/validate_skill_package.py .github/skills/skill-authoring-engine
+      - name: Verify personal Copilot projection installer
+        run: python control-plane/scripts/install_copilot_user_skill_authoring.py --copilot-home "$RUNNER_TEMP/copilot-home"
+      - name: Validate skill authoring integration graph
+        run: python control-plane/scripts/validate_skill_authoring_integration.py
       - name: Validate canonical GitHub upstream ownership contract
         run: python plugins/ai-efficiency-operating-system/scripts/validate_github_upstream_contract.py
       - name: Validate ordinary ChatGPT host activation contract

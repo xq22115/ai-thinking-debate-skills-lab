@@ -15,6 +15,16 @@ assets:
   skills:
     path: ai-system/skills
     status: active
+  skill_authoring:
+    canonical: ../skills/skills/skill-authoring-engine/SKILL.md
+    github_projection: ../.github/skills/skill-authoring-engine/SKILL.md
+    github_agent: ../.github/agents/skill-architect.agent.md
+    personal_agent_source: ../deploy/copilot-user/skill-architect.agent.md
+    personal_installer: scripts/install_copilot_user_skill_authoring.py
+    config: ai-system/configs/skill-authoring-engine.json
+    validator: ../skills/skills/skill-authoring-engine/scripts/validate_skill_package.py
+    integration_validator: scripts/validate_skill_authoring_integration.py
+    status: experimental
   prompts:
     path: ai-system/prompts
     status: active
@@ -37,6 +47,7 @@ routing:
   order:
     - inspect_existing_context
     - select_existing_control_plane
+    - select_skill_authoring_engine_when_skill_authoring
     - select_existing_skill
     - select_existing_prompt
     - use_connected_tool

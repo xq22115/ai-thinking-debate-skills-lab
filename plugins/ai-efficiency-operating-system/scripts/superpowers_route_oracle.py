@@ -88,11 +88,25 @@ def process_signals(prompt):
         "评审意见", "評審意見", "审查意见", "審查意見",
     ])
 
-    skill_noun = _has(text, ["agent skill", " skill", "skill ", "技能包", "技能"])
+    specific_skill = _has(text, [
+        "agent skill", "skill pack", "skill package", "skill.md", "技能包", "技能套件",
+        ".github/skills", ".agents/skills", ".claude/skills",
+    ])
+    generic_skill = _has(text, [" skill", "skill ", "技能"])
+    agent_skill_context = _has(text, [
+        "agent", " ai ", "ai ", "copilot", "claude", "codex", "mcp", "plugin",
+        "runtime", "router", "路由", "代理", "智能體", "智能体",
+    ])
+    skill_noun = specific_skill or (generic_skill and agent_skill_context)
     skill_action = _has(text, [
-        "修改", "編輯", "编辑", "创建", "建立", "新增", "改进", "改進", "improve", "edit", "create", "write",
+        "修改", "編輯", "编辑", "创建", "建立", "新增", "改写", "改寫", "改进", "改進",
+        "improve", "edit", "create", "write", "refactor", "重構", "重构",
     ])
     skill_authoring = skill_noun and skill_action
+    github_mutation = skill_authoring and _has(text, ["github", "repo", "repository"]) and _has(text, [
+        "commit", "push", "pull request", " pr ", "開 pr", "开 pr", "merge", "合併", "合并",
+        "寫入 repo", "写入 repo", "寫入 github", "写入 github", "提交到 github", "提交 github",
+    ])
 
     approved_plan = _has(text, [
         "approved plan", "已批准的计划", "已批准的計畫", "按已确认的计划", "按已確認的計畫",
@@ -110,6 +124,7 @@ def process_signals(prompt):
         "behavior_change": behavior_change,
         "review_feedback": review_feedback,
         "skill_authoring": skill_authoring,
+        "github_mutation": github_mutation,
         "approved_plan": approved_plan,
         "settled_design": settled_design,
     }
@@ -153,6 +168,11 @@ def route(prompt, explicit=None, host_capabilities=None):
     process = upstream_process(prompt)
     if process is None:
         return base_primary
+    if process == "writing-skills" and base_primary == "github-operation-orchestrator":
+        # "GitHub Copilot" is often the target host, not an instruction to perform
+        # a GitHub mutation. The authoring verb + skill artifact owns the semantic
+        # task; an actual GitHub mutation is composed separately in route_bundle.
+        return BRIDGE
     if base_primary in LOCKED_BASE_ROUTES:
         return base_primary
 
@@ -173,10 +193,20 @@ def route_bundle(prompt, explicit=None, host_capabilities=None):
 
     _, signals = base.analyze(prompt)
     locale = ordinary_chat_signals(prompt)
+    process = upstream_process(prompt)
     bundle = []
     if signals.get("goal_ambiguity") or signals.get("complex") or locale["goal_ambiguity"]:
         bundle.append("task-goal-intelligence")
     bundle.append(BRIDGE)
+    if process == "writing-skills":
+        bundle.append("skill-authoring-engine")
+        skill_signals = process_signals(prompt)
+        if skill_signals.get("github_mutation"):
+            # For an explicit repository mutation, authoring owns the artifact and
+            # GitHub orchestration owns the state transition/read-back.
+            if "task-goal-intelligence" in bundle:
+                bundle.remove("task-goal-intelligence")
+            bundle.append("github-operation-orchestrator")
     return bundle[:3]
 
 

@@ -6,4 +6,6 @@ Before material action, apply `docs/GOAL_FIDELITY_AND_TARGET_LOCK_POLICY.md` and
 
 For substantive tasks, when available, use GitHub as executable/source/version/test truth and Notion as durable cross-repository decision/research/context memory. Never claim either connector was used unless there is actual tool/read-back evidence.
 
+For skill or skill-pack creation, editing, refactoring, porting, or validation, load `.github/skills/skill-authoring-engine/SKILL.md` and the canonical `skills/skills/skill-authoring-engine/SKILL.md`; the `Skill Architect` custom agent is the dedicated specialist when delegation adds value. Keep `writing-skills` as the process methodology and the local engine as the capability owner.
+
 Do not optimize for answer speed, token length, or ritual agent count. Optimize for target correctness, capability preservation, evidence-backed completion, and fewer user correction loops.

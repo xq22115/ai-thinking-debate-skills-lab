@@ -25,6 +25,13 @@ REQUIRED_SKILLS = {
     "durable-agent-control-plane",
 }
 
+KNOWN_SUPPLEMENTAL_SKILLS = {
+    "adversarial-deliberation-council",
+    "semantic-argument-microscope",
+    "task-goal-intelligence",
+    "skill-authoring-engine",
+}
+
 REQUIRED_FILES = [
     "README.md",
     "STATUS.md",
@@ -90,9 +97,20 @@ def main() -> int:
 
     skills_dir = ROOT / "skills"
     found = {p.parent.name for p in skills_dir.glob("*/SKILL.md")}
-    record("skills:set", found == REQUIRED_SKILLS, f"found={sorted(found)}")
+    missing_required = REQUIRED_SKILLS - found
+    unknown = found - REQUIRED_SKILLS - KNOWN_SUPPLEMENTAL_SKILLS
+    record(
+        "skills:required_subset",
+        not missing_required,
+        f"missing_required={sorted(missing_required)} found={sorted(found)}",
+    )
+    record(
+        "skills:known_inventory",
+        not unknown,
+        f"unknown={sorted(unknown)} supplemental={sorted(found & KNOWN_SUPPLEMENTAL_SKILLS)}",
+    )
 
-    for name in sorted(REQUIRED_SKILLS):
+    for name in sorted(REQUIRED_SKILLS | (found & KNOWN_SUPPLEMENTAL_SKILLS)):
         p = skills_dir / name / "SKILL.md"
         if not p.is_file():
             record(f"skill:{name}", False, "SKILL.md missing")
