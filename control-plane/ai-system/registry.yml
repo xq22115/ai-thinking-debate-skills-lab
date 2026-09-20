@@ -16,11 +16,11 @@ assets:
     path: ai-system/skills
     status: active
   skill_authoring:
-    canonical: ../../skills/skills/skill-authoring-engine/SKILL.md
-    github_projection: ../../.github/skills/skill-authoring-engine/SKILL.md
-    github_agent: ../../.github/agents/skill-architect.agent.md
+    canonical: ../skills/skills/skill-authoring-engine/SKILL.md
+    github_projection: ../.github/skills/skill-authoring-engine/SKILL.md
+    github_agent: ../.github/agents/skill-architect.agent.md
     config: ai-system/configs/skill-authoring-engine.json
-    validator: ../../skills/skills/skill-authoring-engine/scripts/validate_skill_package.py
+    validator: ../skills/skills/skill-authoring-engine/scripts/validate_skill_package.py
     status: experimental
   prompts:
     path: ai-system/prompts
