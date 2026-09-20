@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "id": "skill-authoring-engine",
+  "status": "experimental",
+  "canonical_skill": "skills/skills/skill-authoring-engine/SKILL.md",
+  "github_projection": ".github/skills/skill-authoring-engine/SKILL.md",
+  "github_custom_agent": ".github/agents/skill-architect.agent.md",
+  "validator": "skills/skills/skill-authoring-engine/scripts/validate_skill_package.py",
+  "routing": {
+    "semantic_owner": "skill_authoring",
+    "upstream_process_method": "writing-skills",
+    "activate_for": [
+      "create_skill",
+      "edit_skill",
+      "refactor_skill_pack",
+      "skill_trigger_design",
+      "skill_host_porting",
+      "skill_registration",
+      "skill_validation"
+    ],
+    "exclude_for": [
+      "ordinary_prompt_edit",
+      "ordinary_documentation",
+      "ordinary_code_change_without_reusable_capability"
+    ]
+  },
+  "multi_agent": {
+    "mode": "adaptive_orchestrator_worker",
+    "fixed_agent_count_forbidden": true,
+    "coordinator_owns_final_artifact": true,
+    "parallelize_only_independent_work": true,
+    "serialize_overlapping_writes": true,
+    "roles": [
+      "capability-architect",
+      "trigger-designer",
+      "implementation-author",
+      "host-compatibility-reviewer",
+      "adversarial-verifier",
+      "registry-integrator",
+      "merge-integrator"
+    ]
+  },
+  "gates": [
+    "existing_capability_checked",
+    "skill_contract_defined",
+    "trigger_cases_defined",
+    "portable_host_boundary_defined",
+    "static_validation",
+    "registry_readback",
+    "fresh_context_routing_when_available",
+    "host_live_behavior_when_claimed"
+  ],
+  "completion_claim_policy": {
+    "repository_presence_is_host_activation": false,
+    "file_write_is_behavioral_verification": false,
+    "green_unrelated_ci_is_completion": false,
+    "not_run_must_remain_not_run": true
+  }
+}
