@@ -65,5 +65,6 @@
     "backup_before_replace": true,
     "readback_hash_verification": true,
     "host_live_after_install": "UNVERIFIED_UNTIL_COPILOT_RUN"
-  }
+  },
+  "integration_validator": "control-plane/scripts/validate_skill_authoring_integration.py"
 }
