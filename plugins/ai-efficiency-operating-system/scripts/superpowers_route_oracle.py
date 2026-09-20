@@ -103,6 +103,10 @@ def process_signals(prompt):
         "improve", "edit", "create", "write", "refactor", "重構", "重构",
     ])
     skill_authoring = skill_noun and skill_action
+    github_mutation = skill_authoring and _has(text, ["github", "repo", "repository"]) and _has(text, [
+        "commit", "push", "pull request", " pr ", "開 pr", "开 pr", "merge", "合併", "合并",
+        "寫入 repo", "写入 repo", "寫入 github", "写入 github", "提交到 github", "提交 github",
+    ])
 
     approved_plan = _has(text, [
         "approved plan", "已批准的计划", "已批准的計畫", "按已确认的计划", "按已確認的計畫",
@@ -120,6 +124,7 @@ def process_signals(prompt):
         "behavior_change": behavior_change,
         "review_feedback": review_feedback,
         "skill_authoring": skill_authoring,
+        "github_mutation": github_mutation,
         "approved_plan": approved_plan,
         "settled_design": settled_design,
     }
@@ -163,6 +168,11 @@ def route(prompt, explicit=None, host_capabilities=None):
     process = upstream_process(prompt)
     if process is None:
         return base_primary
+    if process == "writing-skills" and base_primary == "github-operation-orchestrator":
+        # "GitHub Copilot" is often the target host, not an instruction to perform
+        # a GitHub mutation. The authoring verb + skill artifact owns the semantic
+        # task; an actual GitHub mutation is composed separately in route_bundle.
+        return BRIDGE
     if base_primary in LOCKED_BASE_ROUTES:
         return base_primary
 
@@ -190,6 +200,13 @@ def route_bundle(prompt, explicit=None, host_capabilities=None):
     bundle.append(BRIDGE)
     if process == "writing-skills":
         bundle.append("skill-authoring-engine")
+        skill_signals = process_signals(prompt)
+        if skill_signals.get("github_mutation"):
+            # For an explicit repository mutation, authoring owns the artifact and
+            # GitHub orchestration owns the state transition/read-back.
+            if "task-goal-intelligence" in bundle:
+                bundle.remove("task-goal-intelligence")
+            bundle.append("github-operation-orchestrator")
     return bundle[:3]
 
 
