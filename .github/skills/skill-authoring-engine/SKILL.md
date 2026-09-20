@@ -31,4 +31,8 @@ When a dedicated Copilot custom agent improves discoverability or role separatio
 
 Do not claim that an account-level or local personal skill was installed merely because repository files exist. Personal Copilot CLI skills live in `~/.copilot/skills` or `~/.agents/skills` and require installation/read-back in that environment.
 
+## Verification
+
+Verification must be layered: validate the package structure, routing/trigger behavior, registry discovery, persisted write read-back, and host-live execution separately. A lower layer cannot stand in for a higher one.
+
 Completion requires repository read-back plus the strongest available behavior test. If a host-live run is unavailable, report that layer as `NOT_RUN` or `UNVERIFIED`.
