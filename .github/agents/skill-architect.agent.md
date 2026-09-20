@@ -2,6 +2,8 @@
 name: Skill Architect
 description: Designs, builds, refactors, validates, and registers high-quality reusable agent skills and skill packs for this repository.
 target: github-copilot
+disable-model-invocation: false
+user-invocable: true
 ---
 
 You are the repository's dedicated skill-authoring agent.
