@@ -53,7 +53,7 @@ The runtime package is deliberately split:
 - `BOUNDED` — debugging, behavior/feature changes, review feedback and skill authoring load only the relevant Superpowers process;
 - `ARCHITECTURAL` — only materially architectural work adds goal locking, design/planning and verification.
 
-The bridge maps bugs/failing tests to `systematic-debugging`, new/changed behavior to `brainstorming`, settled implementation to `test-driven-development`, approved plans to `executing-plans`, review feedback to `receiving-code-review`, skill authoring to `writing-skills`, and completion claims to `verification-before-completion` while preserving local `evidence-watchdog` ownership. It stays quiet by default and never invents unavailable worktrees, subagents, background execution, filesystem access or test runs.
+The bridge maps bugs/failing tests to `systematic-debugging`, new/changed behavior to `brainstorming`, settled implementation to `test-driven-development`, approved plans to `executing-plans`, review feedback to `receiving-code-review`, skill authoring to the upstream `writing-skills` method plus the local `skill-authoring-engine` specialist, and completion claims to `verification-before-completion` while preserving local `evidence-watchdog` ownership. It stays quiet by default and never invents unavailable worktrees, subagents, background execution, filesystem access or test runs.
 
 ### Ordinary ChatGPT GitHub operation adapter
 
@@ -104,6 +104,7 @@ Evidence owner routing is host-aware: current library/framework/API facts prefer
 | `capability-forensics` | model-vs-harness-vs-tool-vs-permission/session/entitlement/environment bottleneck diagnosis, including uncertain plugin activation/effective policy/app access |
 | `mcp-surface-engineering` | dynamic tool discovery, schema/version drift, namespace collision, entitlement/context pressure and tool-poisoning controls |
 | `agent-runtime-forensics` | model/tool/process/file/network/artifact/postcondition causal evidence and replay |
+| `skill-authoring-engine` | first-class reusable skill/skill-pack design, trigger semantics, adaptive authoring roles, GitHub/personal Copilot projection, registry integration and layered verification |
 
 These specialists are eligible for implicit invocation only after the routing eligibility layer finds material diagnostic signals. A topic noun such as “GitHub”, “MCP” or “runtime” is insufficient by itself.
 
@@ -126,6 +127,7 @@ These specialists are eligible for implicit invocation only after the routing el
 - repeated route failure → `task-goal-intelligence` + `convergence-controller` + `evidence-watchdog`
 - cross-session context → `task-goal-intelligence` + `memory-policy`
 - complex multi-stage → `task-goal-intelligence` + `chief-of-staff-core` + `evidence-watchdog`
+- skill authoring → `task-goal-intelligence` when needed + `superpowers-conversation-runtime` (`writing-skills`) + `skill-authoring-engine`
 
 Implicit canonical bundles are bounded to three skills per phase. Host adapters are orthogonal process overlays and do not consume a canonical router slot merely by being packaged. Discover many, load few.
 
@@ -143,10 +145,13 @@ The following specialists remain useful as direct references or standalone skill
 - `capability-challenge`
 - `durable-agent-control-plane`
 - canonical full-detail `task-goal-intelligence` under `skills/skills/`
+- `skill-authoring-engine` — reusable skill authoring lifecycle, host projections and verification under `skills/skills/skill-authoring-engine/`
 
 ## Skill authoring rule
 
-Prefer one semantic owner, thin runtime routers, progressive disclosure, executable machine checks, hard-negative/pressure holdouts and current owning evidence. A skill change is not promoted because it reads well; preserve failing behavior, test the repair, run target/protection/holdout/adversarial regressions and keep rollback.
+Canonical authoring owner: `skills/skills/skill-authoring-engine/SKILL.md`. The ordinary-chat process bridge keeps `writing-skills` as the upstream authoring methodology and composes it with this local specialist rather than replacing either layer.
+
+Prefer one semantic owner, thin runtime routers, progressive disclosure, executable machine checks, hard-negative/pressure holdouts and current owning evidence. A skill change is not promoted because it reads well; preserve failing behavior, test the repair, run target/protection/holdout/adversarial regressions and keep rollback. Repository packaging, personal Copilot filesystem installation, Copilot discovery, execution and host-live verification remain separate evidence layers.
 
 ## Completion truth
 
