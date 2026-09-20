@@ -1,0 +1,65 @@
+name: Autonomous Learning Debug Gate
+
+on:
+  push:
+    paths:
+      - 'control-plane/autonomy/**'
+      - 'control_plane_autonomy_import_shim.py'
+      - '.github/agents/**'
+      - '.github/instructions/autonomy.instructions.md'
+      - '.github/workflows/autonomous-learning-debug-gate.yml'
+      - 'docs/AUTONOMOUS_LEARNING_DEBUG_ARCHITECTURE_v1.md'
+  pull_request:
+    paths:
+      - 'control-plane/autonomy/**'
+      - 'control_plane_autonomy_import_shim.py'
+      - '.github/agents/**'
+      - '.github/instructions/autonomy.instructions.md'
+      - '.github/workflows/autonomous-learning-debug-gate.yml'
+      - 'docs/AUTONOMOUS_LEARNING_DEBUG_ARCHITECTURE_v1.md'
+
+permissions:
+  contents: read
+
+jobs:
+  autonomy-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile autonomy engine
+        run: |
+          python -m py_compile control-plane/autonomy/engine.py control_plane_autonomy_import_shim.py
+      - name: Validate machine-readable policy
+        run: |
+          python -m json.tool control-plane/autonomy/config.json >/dev/null
+          python control-plane/autonomy/engine.py validate-config --config control-plane/autonomy/config.json
+      - name: Run autonomy regression suite
+        run: |
+          python -m unittest discover -s control-plane/autonomy/tests -p 'test_*.py' -v
+      - name: Architecture contract checks
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          required = [
+              ".github/agents/autonomy-orchestrator.agent.md",
+              ".github/agents/root-cause-debugger.agent.md",
+              ".github/agents/learning-curator.agent.md",
+              ".github/instructions/autonomy.instructions.md",
+              "docs/AUTONOMOUS_LEARNING_DEBUG_ARCHITECTURE_v1.md",
+          ]
+          missing = [p for p in required if not Path(p).is_file()]
+          assert not missing, f"missing architecture files: {missing}"
+          engine = Path("control-plane/autonomy/engine.py").read_text()
+          for invariant in [
+              "failure_fingerprint",
+              "score_candidate",
+              "query_lessons",
+              "next_strategy",
+              "contradiction_ratio",
+          ]:
+              assert invariant in engine, invariant
+          PY
