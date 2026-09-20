@@ -19,6 +19,8 @@ assets:
     canonical: ../skills/skills/skill-authoring-engine/SKILL.md
     github_projection: ../.github/skills/skill-authoring-engine/SKILL.md
     github_agent: ../.github/agents/skill-architect.agent.md
+    personal_agent_source: ../deploy/copilot-user/skill-architect.agent.md
+    personal_installer: scripts/install_copilot_user_skill_authoring.py
     config: ai-system/configs/skill-authoring-engine.json
     validator: ../skills/skills/skill-authoring-engine/scripts/validate_skill_package.py
     status: experimental
