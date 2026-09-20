@@ -55,5 +55,15 @@
     "file_write_is_behavioral_verification": false,
     "green_unrelated_ci_is_completion": false,
     "not_run_must_remain_not_run": true
+  },
+  "personal_copilot_projection": {
+    "skill_target": "~/.copilot/skills/skill-authoring-engine",
+    "agent_target": "~/.copilot/agents/skill-architect.agent.md",
+    "agent_source": "deploy/copilot-user/skill-architect.agent.md",
+    "installer": "control-plane/scripts/install_copilot_user_skill_authoring.py",
+    "install_is_explicit_foreground": true,
+    "backup_before_replace": true,
+    "readback_hash_verification": true,
+    "host_live_after_install": "UNVERIFIED_UNTIL_COPILOT_RUN"
   }
 }
