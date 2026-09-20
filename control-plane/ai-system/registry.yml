@@ -23,6 +23,7 @@ assets:
     personal_installer: scripts/install_copilot_user_skill_authoring.py
     config: ai-system/configs/skill-authoring-engine.json
     validator: ../skills/skills/skill-authoring-engine/scripts/validate_skill_package.py
+    integration_validator: scripts/validate_skill_authoring_integration.py
     status: experimental
   prompts:
     path: ai-system/prompts
