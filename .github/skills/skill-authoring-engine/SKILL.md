@@ -5,6 +5,10 @@ description: Build or improve reusable agent skills and skill packs in this repo
 
 # Skill Authoring Engine — GitHub Copilot Projection
 
+## Trigger
+
+Use for creating, editing, refactoring, porting, registering, or validating reusable agent skills and skill packs in this repository. Do not use for ordinary documentation or code changes that do not create a reusable skill capability.
+
 Before authoring or changing a skill:
 
 1. Read the repository root `AGENTS.md`.
