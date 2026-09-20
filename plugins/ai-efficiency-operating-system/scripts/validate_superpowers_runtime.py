@@ -14,6 +14,9 @@ EXPECTED_PROCESS_MAP = {
     "skill_authoring": "writing-skills",
     "completion_claim": "verification-before-completion",
 }
+EXPECTED_SPECIALIST_MAP = {
+    "skill_authoring": "skill-authoring-engine",
+}
 REQUIRED_UPSTREAM_PATHS = {
     "skills/using-superpowers/SKILL.md",
     "skills/brainstorming/SKILL.md",
@@ -103,6 +106,8 @@ def main():
         fail(errors, "complexity ratchet missing")
     if policy.get("process_map") != EXPECTED_PROCESS_MAP:
         fail(errors, "Superpowers process map drift")
+    if policy.get("specialist_map") != EXPECTED_SPECIALIST_MAP:
+        fail(errors, "Superpowers specialist map drift")
 
     host = policy.get("host_adaptation", {})
     for key in [
