@@ -19,7 +19,7 @@ VOLATILE_PATTERNS = [
     (re.compile(r"\b[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b", re.I), "<uuid>"),
     (re.compile(r"\b0x[0-9a-f]+\b", re.I), "<addr>"),
     (re.compile(r"\b[0-9a-f]{12,64}\b", re.I), "<hex>"),
-    (re.compile(r"\b\d{4}-\d{2}-\d{2}[T ][0-9:.+-]+Z?\b"), "<time>"),
+    (re.compile(r"\b\d{4}-\d{2}-\d{2}[T ][0-9:.+-]+Z?\b", re.I), "<time>"),
     (re.compile(r"(?<![A-Za-z])\d+(?:\.\d+)?(?![A-Za-z])"), "<n>"),
     (re.compile(r"[/\\](?:Users|home|tmp|var|private|workspace)[/\\][^\s:]+", re.I), "<path>"),
 ]
