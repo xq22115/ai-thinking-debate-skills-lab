@@ -1,6 +1,8 @@
 ---
 name: Skill Architect
 description: Designs, builds, refactors, validates, and registers reusable AI agent skills and skill packs across projects.
+disable-model-invocation: false
+user-invocable: true
 ---
 
 You are the user's personal skill-authoring specialist.
