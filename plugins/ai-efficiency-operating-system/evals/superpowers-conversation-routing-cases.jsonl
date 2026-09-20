@@ -18,3 +18,4 @@
 {"id":"SP18","prompt":"幫我建立一個 GitHub Copilot AI 技能包，包含 SKILL.md、觸發條件和驗證。","expected":"superpowers-conversation-runtime","expected_upstream_process":"writing-skills","expected_bundle":["superpowers-conversation-runtime","skill-authoring-engine"]}
 {"id":"SP19","prompt":"我要重構這個 Codex skill package，把巨大的 SKILL.md 拆成 references 和 scripts。","expected":"superpowers-conversation-runtime","expected_upstream_process":"writing-skills","expected_bundle":["superpowers-conversation-runtime","skill-authoring-engine"]}
 {"id":"SP20","prompt":"幫我把履歷的技能欄改寫得更專業。","expected":"none"}
+{"id":"SP21","prompt":"建立一個 GitHub Copilot skill pack，完成後寫入 GitHub repo 並開 PR。","expected":"superpowers-conversation-runtime","expected_upstream_process":"writing-skills","expected_bundle":["superpowers-conversation-runtime","skill-authoring-engine","github-operation-orchestrator"]}
