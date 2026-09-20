@@ -183,6 +183,18 @@ Before `PASS`, explicitly check for: scope drift, hidden regressions, unverified
 
 After a successful repair or informative failure, keep only durable lessons that should improve future runs: root cause, misleading symptom/assumption, diagnostic that exposed the truth, solution mechanism, verification that proved it, reuse conditions, and invalidation condition. Do not persist private chain-of-thought or dead-end narration as a substitute for reusable knowledge.
 
+## Executable autonomous learning/debug loop
+
+For material failures, repeated retries, and reusable repair knowledge, use `docs/AUTONOMOUS_LEARNING_DEBUG_ARCHITECTURE_v1.md` and `control-plane/autonomy/engine.py` as the executable extension of this contract.
+
+- Fingerprint failures before treating repeated symptoms as new incidents.
+- Query active lessons before repeating a previously disproven route.
+- A lesson candidate is not reusable truth until the machine promotion gate passes with verified, independent evidence and an acceptable contradiction ratio.
+- After two failed attempts using the same mechanism, use the engine's two-strike decision and pivot a major causal/evidence dimension.
+- Preserve reuse conditions and invalidation conditions so lessons can expire instead of becoming permanent folklore.
+- Do not persist chain-of-thought; persist compact causal knowledge and evidence references only.
+
+
 ## Adaptive effort
 
 Use the maximum **useful** reasoning and verification effort, not maximum ceremony. Simple tasks should stay simple. Increase decomposition, research, independent evaluation, testing, and continuity scaffolding only as task uncertainty, impact, novelty, or failure history increases.
