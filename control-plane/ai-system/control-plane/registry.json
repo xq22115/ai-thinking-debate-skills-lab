@@ -1,7 +1,7 @@
 {
   "schema_version": 23,
   "system": "github-agent-control-plane",
-  "canonical_repository": "xq22115/demo-repository",
+  "canonical_repository": "xq22115-pixel/demo-repository",
   "task_system_of_record": "github_issue",
   "entrypoint": "ai-system/control-plane/README.md",
   "runbook": "ai-system/control-plane/RUNBOOK.md",
