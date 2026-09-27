@@ -23,6 +23,25 @@ def validate(repo_root: Path, manifest_path: Path) -> list[str]:
     if manifest.get("schema_version") != 1:
         errors.append("schema_version must be 1")
 
+    expected_repo_id = 1339908956
+    source_repo = "xq22115/ai-thinking-debate-skills-lab"
+    target_repo = "xq22115-pixel/ai-thinking-debate-skills-lab"
+    if manifest.get("canonical_repository") != source_repo:
+        errors.append("canonical repository must remain on the source owner before transfer")
+    if manifest.get("canonical_repository_id") != expected_repo_id:
+        errors.append("canonical_repository_id drift")
+    if manifest.get("canonical_repository_aliases") != [source_repo, target_repo]:
+        errors.append("canonical repository aliases must contain the source and target projections in order")
+    transition = manifest.get("repository_transfer_transition") or {}
+    if transition.get("status") != "PREPARED_NOT_TRANSFERRED":
+        errors.append("repository transfer must remain PREPARED_NOT_TRANSFERRED before provider transfer")
+    if transition.get("source_repository") != source_repo:
+        errors.append("repository transfer source drift")
+    if transition.get("target_repository") != target_repo:
+        errors.append("repository transfer target drift")
+    if transition.get("invariant") != f"repository_id_must_remain_{expected_repo_id}":
+        errors.append("repository transfer numeric identity invariant drift")
+
     kernel = manifest.get("kernel") or {}
     kernel_rel = kernel.get("path")
     if not kernel_rel:

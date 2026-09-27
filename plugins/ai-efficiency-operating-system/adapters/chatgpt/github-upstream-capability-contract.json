@@ -36,7 +36,18 @@
     "current_public_global_plugin_lookup": "plugin_not_found",
     "public_global_lookup_is_not_proof_of_workspace_specific_absence": true,
     "custom_plugin_host_live_status": "UNVERIFIED",
-    "host_live_must_not_be_inferred_from_repo_main_or_ci": true
+    "host_live_must_not_be_inferred_from_repo_main_or_ci": true,
+    "github_repository_id": 1339908956,
+    "accepted_github_repositories": [
+      "xq22115/ai-thinking-debate-skills-lab",
+      "xq22115-pixel/ai-thinking-debate-skills-lab"
+    ],
+    "repository_transfer_transition": {
+      "status": "PREPARED_NOT_TRANSFERRED",
+      "source_repository": "xq22115/ai-thinking-debate-skills-lab",
+      "target_repository": "xq22115-pixel/ai-thinking-debate-skills-lab",
+      "invariant": "repository_id_must_remain_1339908956"
+    }
   },
   "ownership_order": [
     "chatgpt_plugin_activation_and_session_surface",

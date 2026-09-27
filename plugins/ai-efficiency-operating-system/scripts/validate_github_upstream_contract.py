@@ -58,6 +58,25 @@ def main():
         errors.append("ordinary-chat vs Codex MCP boundary missing")
 
     activation_truth = contract.get("local_package_activation_truth") or {}
+    source_repo = "xq22115/ai-thinking-debate-skills-lab"
+    target_repo = "xq22115-pixel/ai-thinking-debate-skills-lab"
+    expected_repo_id = 1339908956
+    if activation_truth.get("github_repository") != source_repo:
+        errors.append("local package repository must remain on source owner before transfer")
+    if activation_truth.get("github_repository_id") != expected_repo_id:
+        errors.append("local package repository numeric identity drift")
+    if activation_truth.get("accepted_github_repositories") != [source_repo, target_repo]:
+        errors.append("local package repository aliases drift")
+    repo_transition = activation_truth.get("repository_transfer_transition") or {}
+    if repo_transition.get("status") != "PREPARED_NOT_TRANSFERRED":
+        errors.append("local package repository transfer status drift")
+    if repo_transition.get("source_repository") != source_repo:
+        errors.append("local package transfer source drift")
+    if repo_transition.get("target_repository") != target_repo:
+        errors.append("local package transfer target drift")
+    if repo_transition.get("invariant") != f"repository_id_must_remain_{expected_repo_id}":
+        errors.append("local package repository ID invariant drift")
+
     for key in (
         "repository_package_or_ci_pass_does_not_install_chatgpt_plugin",
         "repository_marketplace_presence_does_not_prove_chatgpt_import",
