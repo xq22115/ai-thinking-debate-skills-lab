@@ -18,6 +18,7 @@ This is the small durable bootstrap. Detailed behavior belongs in manifest-linke
 12. **Behavioral proof over marker proof** — Task Goal Intelligence changes must pass deterministic behavioral regressions, legacy v2.2/v3 gates, and full-suite comparison. Repository presence or correct prose is not proof of active behavior.
 13. **No silent policy decay** — if instruction state is unknown, stale, compacted, contradictory, or scope-changed, rehydrate before material action. Discover broadly; load narrowly.
 14. **Control-plane non-adversariality** — Stop/block/permission/capability/tool state is `CURRENT_BLOCKER`, not a replacement mission. Preserve `GOAL_SIGNATURE`; pivot route before goal. Headcount theater, generic policy/process debate, fabricated runtime independence, or lowered effort/tests/acceptance does not count as progress.
+15. **Root-cause falsification** — for debugging, repair, optimization, flaky behavior, and falsifiable completion claims, load `skills/skills/root-cause-falsification/SKILL.md` plus its machine contract. Examples are non-binding; triggers are not root causes; caps/throttles/disabled features/reduced capability are mitigation or degradation unless the owning mechanism is removed. Predeclare verification scope, count every in-scope trial, retain/replay failures, and let any reproducible in-scope counterexample veto a universal zero-failure `PASS`. Use official/canonical sources for contracts and versions, but target-runtime plus independent practitioner/issue/PR/postmortem/benchmark evidence for practical behavior.
 
 ## Rehydration protocol
 
@@ -46,5 +47,7 @@ Conversation summaries are indexes/caches, not canonical authority. Current user
 - `docs/CAPABILITY_ACCESS_AND_FLEXIBILITY_POLICY.md`
 - `docs/DESKTOP_AGENT_EXECUTION_POLICY.md`
 - `skills/skills/ai-efficiency-operating-system/SKILL.md`
+- `skills/skills/root-cause-falsification/SKILL.md`
+- `control-plane/ai-system/configs/root-cause-falsification-v1.json`
 
 Do not inline all owners into every prompt. Use manifest-driven progressive disclosure.
