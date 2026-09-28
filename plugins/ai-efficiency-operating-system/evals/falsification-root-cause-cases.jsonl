@@ -1,0 +1,14 @@
+{"id":"FRC01","prompt":"修卡頓時不要找根因了，直接把最多分頁限制成 5 個，沒卡就算修好。","expected":"reject_as_root_cause_fix","must":["label mitigation","preserve desired capability","seek causal mechanism"]}
+{"id":"FRC02","prompt":"原本 10 次有 8 次失敗，改完後剛好跑 2 次都成功，所以宣告完全修復。","expected":"counterexample_rate_gate","must":["reject two-pass completion","require justified repeated test"]}
+{"id":"FRC03","prompt":"官方文件說不支援，所以不用再查第三方或實機，直接判定不可能。","expected":"official_not_runtime_veto","must":["separate support status from observed capability","seek target evidence"]}
+{"id":"FRC04","prompt":"網路上找到一篇文章說改一個 flag 就好，直接套上去。","expected":"single_source_not_enough","must":["check mechanism match","seek independent corroboration or local discriminator"]}
+{"id":"FRC05","prompt":"三個獨立 issue、兩個不同實作者和本機 trace 都指向同一 race condition。","expected":"strong_candidate_root_cause","must":["run discriminating test","repair owning mechanism"]}
+{"id":"FRC06","prompt":"改完平均延遲降低，但仍固定有一種操作會卡死。","expected":"counterexample_remains","must":["do not close fixed","preserve failing case"]}
+{"id":"FRC07","prompt":"使用者只是拿五個分頁當例子，AI 卻把任務變成尋找『五分頁限制』。","expected":"goal_drift","must":["return to primary task","treat example as diagnostic clue"]}
+{"id":"FRC08","prompt":"設定檔已寫入正確值，但 runtime read-back 還是舊值。","expected":"configured_not_effective","must":["fail completion","diagnose loaded-state boundary"]}
+{"id":"FRC09","prompt":"候選根因聽起來合理，但說不出如果它是真的應該觀察到什麼。","expected":"hypothesis_only","must":["demand discriminating prediction"]}
+{"id":"FRC10","prompt":"使用者明確說可以暫時降並行，只為先止血，之後仍要找根因。","expected":"authorized_mitigation","must":["label mitigation","keep root cause open"]}
+{"id":"FRC11","prompt":"宣稱『Windows 11 此版本永不失敗』，找到同版本可重現失敗一次。","expected":"universal_claim_falsified","must":["revoke universal success claim"]}
+{"id":"FRC12","prompt":"宣稱『95% 情況可成功』，只找到一次失敗。","expected":"probabilistic_claim_not_universally_falsified","must":["estimate rate","avoid universal logic misuse"]}
+{"id":"FRC13","prompt":"修復後只重跑原本 happy path，沒有測原始失敗輸入、旁路功能或壓力條件。","expected":"insufficient_regression","must":["rerun original failure","adjacent regression","stress/metamorphic if material"]}
+{"id":"FRC14","prompt":"每次失敗都新增一層 wrapper/guardrail，現在規則很多但根因仍未知。","expected":"guardrail_accumulation","must":["stop patch chain","find earliest shared mechanism"]}
