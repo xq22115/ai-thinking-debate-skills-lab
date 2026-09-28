@@ -43,6 +43,8 @@ def main() -> int:
     root = Path(__file__).resolve().parents[2]
     policy_path = root / "control-plane/ai-system/configs/root-cause-falsification-v1.json"
     cases_path = root / "plugins/ai-efficiency-operating-system/evals/root-cause-falsification-cases.jsonl"
+    evaluator_path = root / "control-plane/scripts/evaluate_root_cause_falsification_receipt.py"
+    runtime_test_path = root / "control-plane/tests/test_root_cause_falsification_runtime.py"
     errors: list[str] = []
 
     try:
@@ -78,6 +80,17 @@ def main() -> int:
                 cases.append(json.loads(line))
     except Exception as exc:
         errors.append(f"cases: {exc}")
+
+    for required_path, marker in (
+        (evaluator_path, "def evaluate_receipt"),
+        (runtime_test_path, "one_reproducible_in_scope_failure_vetoes_universal_pass"),
+    ):
+        if not required_path.is_file():
+            errors.append(f"missing runtime artifact: {required_path.relative_to(root)}")
+        else:
+            text = required_path.read_text(encoding="utf-8")
+            if marker not in text:
+                errors.append(f"runtime artifact missing marker: {required_path.relative_to(root)}:{marker}")
 
     ids = {case.get("id") for case in cases}
     for missing in sorted(REQUIRED_CASES - ids):
