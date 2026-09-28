@@ -109,7 +109,15 @@ After three repair attempts that merely move the symptom or create new guardrail
 
 Prefer deleting obsolete mitigations once the root fix is verified. Net complexity should fall or remain justified.
 
-## 8. Completion states
+## 8. Deterministic receipt gate
+
+When a material repair or completion claim can be represented as structured evidence, adjudicate it with:
+
+`control-plane/scripts/evaluate_root_cause_falsification_receipt.py <receipt.json>`.
+
+The evaluator is deliberately narrower than model reasoning. It does not discover the root cause; it prevents a completed repair from being overstated after the evidence exists. In particular it deterministically blocks universal PASS when a reproducible in-scope counterexample remains, downgrades guardrail/workaround/degradation changes to `MITIGATION_ONLY`, requires predeclared/all-counted verification and original-failure replay, and separates probabilistic SLO claims from universal zero-failure claims.
+
+## 9. Completion states
 
 Use only:
 - `ROOT_CAUSE_PROVEN`

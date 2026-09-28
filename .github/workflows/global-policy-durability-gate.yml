@@ -22,14 +22,19 @@ jobs:
         run: |
           python -m json.tool control-plane/ai-system/configs/global-policy-manifest.json >/dev/null
           python -m py_compile control-plane/scripts/validate_global_policy_durability.py
+          python -m py_compile control-plane/scripts/validate_root_cause_falsification.py
+          python -m py_compile control-plane/scripts/evaluate_root_cause_falsification_receipt.py
           python -m py_compile control-plane/scripts/install_codex_global_quality.py
+          python -m json.tool control-plane/ai-system/configs/root-cause-falsification-v1.json >/dev/null
       - name: Validate global policy durability and rehydration contract
         run: |
           python control-plane/scripts/validate_global_policy_durability.py \
             control-plane/ai-system/configs/global-policy-manifest.json
+          python control-plane/scripts/validate_root_cause_falsification.py
       - name: Verify Codex global installer regressions
         working-directory: control-plane
         run: |
           python -m unittest \
             tests/test_codex_global_quality_installer.py \
-            tests/test_codex_global_quality_registration.py
+            tests/test_codex_global_quality_registration.py \
+            tests/test_root_cause_falsification_runtime.py
