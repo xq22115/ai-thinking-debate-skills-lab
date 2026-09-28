@@ -14,7 +14,7 @@ from pathlib import Path
 DEFAULT_IMPLICIT = {
     "task-goal-intelligence", "chief-of-staff-core", "plan-arbiter",
     "evidence-watchdog", "executive-research", "memory-policy",
-    "convergence-controller",
+    "convergence-controller", "falsification-root-cause-governor",
 }
 CONDITIONAL_IMPLICIT = {
     "github-operation-orchestrator", "capability-forensics",
@@ -33,11 +33,12 @@ FALLBACKS = {
     "executive-research": ["task-goal-intelligence", "evidence-watchdog"],
     "plan-arbiter": ["chief-of-staff-core"],
     "convergence-controller": ["chief-of-staff-core", "evidence-watchdog"],
+    "falsification-root-cause-governor": ["convergence-controller", "executive-research", "evidence-watchdog"],
 }
 
 PRIORITY = [
     "github-operation-orchestrator", "agent-runtime-forensics", "mcp-surface-engineering",
-    "capability-forensics", "evidence-watchdog", "convergence-controller", "plan-arbiter",
+    "capability-forensics", "evidence-watchdog", "falsification-root-cause-governor", "convergence-controller", "plan-arbiter",
     "memory-policy", "executive-research", "chief-of-staff-core", "task-goal-intelligence",
 ]
 
@@ -59,6 +60,15 @@ TERMS = {
         "無限循環", "review 已經", "review again", "keep improving", "再試第三次", "同樣的方法", "重複失敗",
         "一直失敗", "失敗三次", "原路重試", "同樣循環", "換 route", "materially different route",
         "skill 改到變好", "regression", "別停下來", "修到 pass", "fix until pass",
+    ],
+    "falsification": [
+        "反例", "counterexample", "少數成功", "兩次成功", "一次成功", "多次失敗", "失敗率",
+        "治標不治本", "根本原因", "root cause fix", "universal claim", "永不失敗", "always works",
+        "官方說不支援", "官方做不到", "unsupported", "第三方", "多源", "獨立來源", "可重現",
+    ],
+    "fake_fix": [
+        "限制分頁", "限制", "圍欄", "限流", "降功能", "少開", "disable feature", "降低負載",
+        "workaround", "mitigation", "retry until pass", "重試到成功", "加 guardrail", "wrapper",
     ],
     "research": [
         "研究", "查 ", "查找", "最新", "根因", "root cause", "交叉比對", "證據", "evidence", "深入",
@@ -163,7 +173,7 @@ def analyze(prompt):
         or (signals["mcp_surface"] >= 1 and signals["mcp_pressure"] >= 1)
     )
     signals["substantive"] = int(any(signals[name] for name in [
-        "plan", "completion", "memory", "convergence", "research", "complex",
+        "plan", "completion", "memory", "convergence", "falsification", "fake_fix", "research", "complex",
         "goal_ambiguity", "github_surface", "github_chain", "capability_problem",
         "mcp_surface", "runtime_effect",
     ]))
@@ -183,6 +193,9 @@ def score_routes(prompt):
     scores["mcp-surface-engineering"] = 8 * s["tool_surface_pressure"] + 2 * s["mcp_surface"]
     scores["capability-forensics"] = 8 * s["capability_gap"] + s["capability_problem"]
     scores["evidence-watchdog"] = 5 * s["completion"]
+    scores["falsification-root-cause-governor"] = 7 * s["falsification"] + 5 * s["fake_fix"]
+    if s["falsification"] and s["fake_fix"]:
+        scores["falsification-root-cause-governor"] += 5
     scores["convergence-controller"] = 6 * s["convergence"]
     scores["plan-arbiter"] = 5 * s["plan"]
     scores["memory-policy"] = 5 * s["memory"]
@@ -246,7 +259,7 @@ def route_bundle(prompt, explicit=None, host_capabilities=None):
         s["completion"] > 0 or s["runtime_mismatch"]
         or primary in {
             "github-operation-orchestrator", "capability-forensics", "mcp-surface-engineering",
-            "agent-runtime-forensics", "convergence-controller", "chief-of-staff-core",
+            "agent-runtime-forensics", "falsification-root-cause-governor", "convergence-controller", "chief-of-staff-core",
         }
         or (primary == "executive-research" and s["complex"] > 0)
     )
