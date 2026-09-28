@@ -92,6 +92,16 @@
         "root-cause-falsification-cases.jsonl",
         "universal_pass_invalidated_by_any_reproducible_in_scope_counterexample"
       ]
+    },
+    {
+      "path": "control-plane/scripts/evaluate_root_cause_falsification_receipt.py",
+      "role": "root_cause_falsification_receipt_evaluator",
+      "required_markers": [
+        "REPAIR_CLASSES",
+        "CLAIM_SCOPES",
+        "evaluate_receipt",
+        "universal_claim_falsified"
+      ]
     }
   ],
   "canonical_policies": [
