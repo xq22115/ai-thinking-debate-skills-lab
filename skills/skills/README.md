@@ -10,18 +10,19 @@ The skill folder shape follows the current Agent Skills semantic pattern: each p
 2. `semantic-argument-microscope` — literal/pragmatic boundary, implicit warrants, presuppositions, QUD/crux control, defeaters, burden/frame shifts, rhetorical-vs-epistemic separation, plus on-demand argument-scheme / critical-question and causal / abductive analysis before debate. (`0.2.0-rc1`)
 3. `competing-hypotheses` — materially different explanations and discriminating tests.
 4. `root-cause-clustering` — mechanism-level repair instead of symptom patching.
-5. `completion-gate` — prevents false `done` / `verified` / `deployed` claims; exact-revision and infrastructure-state aware. (`0.1.1-rc1`)
-6. `recoverable-state` — durable checkpoint/trajectory state, target revalidation, delayed-feedback tracking, global-constraint auditing, option-value/sunk-cost checks, async dependency control, and first-irrecoverable-error recovery. (`0.2.0-rc1`; consult `TEMPORAL_TRAJECTORY_INTEGRITY.md` for long-horizon work)
-7. `compatibility-audit` — host/OS/version/permission/product-surface checks with source-class separation. (`0.1.1-rc1`)
-8. `multi-agent-deliberation` — dynamic 1–30 role coverage plus anti-sycophancy, minority retention, bias-resistant judge checks, and evidence-graph adjudication; runtime independence remains evidence-gated. (`0.2.0-rc1`)
-9. `capability-challenge` — separates `VISIBLE`, `AUTHORIZED`, and `VERIFIED` before terminal `cannot`. (`0.1.1-rc1`)
-10. `durable-agent-control-plane` — durable Goal Contract + task identity, isolated writers, goal-contract-bound receipts, goal-drift detection, proxy/acceptance integrity, resume/recovery, and task-result vs infrastructure-state separation. (`0.2.0-rc1`; consult `GOAL_OBJECTIVE_AUDIT.md` when objective ambiguity/proxy gaming matters)
+5. `falsification-root-cause-governor` — counterexample-first repair verification; rejects workaround/feature-reduction/cherry-picked-pass completion and separates universal from probabilistic claims. (`0.1.0-rc1`)
+6. `completion-gate` — prevents false `done` / `verified` / `deployed` claims; exact-revision and infrastructure-state aware. (`0.1.1-rc1`)
+7. `recoverable-state` — durable checkpoint/trajectory state, target revalidation, delayed-feedback tracking, global-constraint auditing, option-value/sunk-cost checks, async dependency control, and first-irrecoverable-error recovery. (`0.2.0-rc1`; consult `TEMPORAL_TRAJECTORY_INTEGRITY.md` for long-horizon work)
+8. `compatibility-audit` — host/OS/version/permission/product-surface checks with source-class separation. (`0.1.1-rc1`)
+9. `multi-agent-deliberation` — dynamic 1–30 role coverage plus anti-sycophancy, minority retention, bias-resistant judge checks, and evidence-graph adjudication; runtime independence remains evidence-gated. (`0.2.0-rc1`)
+10. `capability-challenge` — separates `VISIBLE`, `AUTHORIZED`, and `VERIFIED` before terminal `cannot`. (`0.1.1-rc1`)
+11. `durable-agent-control-plane` — durable Goal Contract + task identity, isolated writers, goal-contract-bound receipts, goal-drift detection, proxy/acceptance integrity, resume/recovery, and task-result vs infrastructure-state separation. (`0.2.0-rc1`; consult `GOAL_OBJECTIVE_AUDIT.md` when objective ambiguity/proxy gaming matters)
 
 ## Composition Order
 
 For complex engineering/research/argument tasks:
 
-`Goal Contract / objective audit → capability-challenge → compatibility-audit → evidence-gap-research → semantic-argument-microscope → competing-hypotheses → root-cause-clustering → multi-agent-deliberation only if useful → verifier/metamorphic checks when consequential → robust action → recoverable-state for long-horizon/stateful/delayed work → execution bound to Goal Contract + trajectory state → completion-gate → fresh recoverable-state checkpoint`
+`Goal Contract / objective audit → capability-challenge → compatibility-audit → evidence-gap-research → semantic-argument-microscope → competing-hypotheses → root-cause-clustering → falsification-root-cause-governor when repair/completion is material → multi-agent-deliberation only if useful → verifier/metamorphic checks when consequential → robust action → recoverable-state for long-horizon/stateful/delayed work → execution bound to Goal Contract + trajectory state → completion-gate → fresh recoverable-state checkpoint`
 
 Omit layers whose trigger conditions are absent.
 
@@ -44,6 +45,11 @@ Omit layers whose trigger conditions are absent.
 - `CONFIGURED != VERIFIED_DIRECT`
 - `REPOSITORY_ARTIFACT != PROVIDER_LIVE_EXECUTION`
 - `TOOL_SUCCESS != TASK_COMPLETE`
+- `MITIGATION != ROOT_CAUSE_FIX`
+- `WORKAROUND != REPAIR`
+- `FEW_PASSES != EVIDENCE_AGAINST_REPEATED_FAILURES`
+- `OFFICIAL_UNSUPPORTED != EMPIRICALLY_IMPOSSIBLE`
+- `VALID_IN_SCOPE_COUNTEREXAMPLE != FIXED_UNIVERSAL_CLAIM`
 
 ### Evidence / decision truth
 
@@ -123,10 +129,11 @@ Omit layers whose trigger conditions are absent.
 - C1–C10 — causal/abductive reasoning.
 - J1–J8 — judge bias/anti-sycophancy.
 - V1–V10 — verifier robustness/metamorphic tests.
+- FRC1–FRC14 — falsification/root-cause anti-workaround and counterexample logic.
 
-Total explicit fixtures: `90`.
+Total explicit fixtures: `104`.
 
-Visible same-model receipts cover 80 fixtures: `78 PASS / 2 paired NOT_RUN`; V1–V10 remain `SPECIFIED_NOT_EXECUTED`.
+Visible same-model receipts cover 80 fixtures: `78 PASS / 2 paired NOT_RUN`; V1–V10 and FRC1–FRC14 remain `SPECIFIED_NOT_EXECUTED`.
 
 ### Evaluation infrastructure
 
