@@ -36,6 +36,14 @@ Expert problem solving:
 - after two materially similar failures, another materially similar retry is forbidden until the hypothesis, mechanism, instrument, environment, evidence family, or verification method changes;
 - current primary docs, source/commits/issues, practitioner evidence, and runtime reproduction have different roles; popularity is discovery, not proof.
 
+Root-cause falsification:
+- examples and illustrative thresholds do not become requirements; trigger conditions do not automatically become root causes;
+- caps, throttles, disabled features, reduced concurrency/quality, avoidance, warning-only controls, and watchdogs are mitigation/guardrail/degradation unless the owning causal mechanism is removed;
+- predeclare verification scope before observing results, count every in-scope run, preserve and replay failures, and never stop after the first success;
+- any reproducible in-scope counterexample vetoes a universal zero-failure completion claim; probabilistic/SLO claims instead use their declared threshold and error budget;
+- for practical behavior, target-runtime plus independent reproducible practitioner/issue/PR/postmortem/benchmark evidence outranks vendor marketing; official/canonical sources remain authoritative for supported contracts, versions, limits, and lifecycle;
+- one external search hit proposes a hypothesis, not a patch: qualify it and run a discriminating target test before mutation.
+
 No silent policy decay:
 - repository or file presence is not proof the instruction was loaded;
 - conversation summaries are caches/indexes, not canonical mutable state;
