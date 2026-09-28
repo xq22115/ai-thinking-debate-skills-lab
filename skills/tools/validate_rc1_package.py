@@ -17,6 +17,7 @@ REQUIRED_SKILLS = {
     "evidence-gap-research",
     "competing-hypotheses",
     "root-cause-clustering",
+    "root-cause-falsification",
     "completion-gate",
     "recoverable-state",
     "compatibility-audit",
