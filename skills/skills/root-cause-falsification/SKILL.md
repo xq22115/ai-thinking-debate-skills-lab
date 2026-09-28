@@ -137,9 +137,9 @@ If the pre-fix failure probability is approximately `p0`, trials are reasonably 
 
 This is only a planning aid, not a universal proof formula. If independence/stationarity is implausible, stratify by environment/state/load or redesign the experiment. Always retain and report the pre/post trial counts, failure counts, conditions, and confidence limitations.
 
-Field-practice anchors: `../../plugins/ai-efficiency-operating-system/references/root-cause-falsification-field-practice.md`.
+Field-practice anchors: `../../../plugins/ai-efficiency-operating-system/references/root-cause-falsification-field-practice.md`.
 
-## 8. Deterministic receipt gate
+## 9. Deterministic receipt gate
 
 When a material repair or completion claim can be represented as structured evidence, adjudicate it with:
 
@@ -147,7 +147,7 @@ When a material repair or completion claim can be represented as structured evid
 
 The evaluator is deliberately narrower than model reasoning. It does not discover the root cause; it prevents a completed repair from being overstated after the evidence exists. In particular it deterministically blocks universal PASS when a reproducible in-scope counterexample remains, downgrades guardrail/workaround/degradation changes to `MITIGATION_ONLY`, requires predeclared/all-counted verification and original-failure replay, and separates probabilistic SLO claims from universal zero-failure claims.
 
-## 9. Completion states
+## 10. Completion states
 
 Use only:
 - `ROOT_CAUSE_PROVEN`
