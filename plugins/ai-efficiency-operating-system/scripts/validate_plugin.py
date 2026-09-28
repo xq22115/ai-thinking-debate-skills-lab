@@ -49,6 +49,10 @@ EXTRA_REFS = {
     "skills/executive-research/references/ai-ecosystem-recon.md": [
         "change archaeology", "Harness differential", "Citation-chain audit", "Retrieved-content injection firewall"
     ],
+    "references/root-cause-falsification-field-practice.md": [
+        "HypothesisWorks/hypothesis", "jepsen-io/jepsen",
+        "Counterexample over cherry-picked pass", "Independence and truth boundary"
+    ],
 }
 
 
