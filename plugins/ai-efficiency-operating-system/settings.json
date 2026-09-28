@@ -10,7 +10,8 @@
     "evidence-watchdog",
     "executive-research",
     "memory-policy",
-    "convergence-controller"
+    "convergence-controller",
+    "falsification-root-cause-governor"
   ],
   "conditional_implicit_skills": [
     "github-operation-orchestrator",
@@ -60,7 +61,8 @@
       "evidence_gap",
       "repeated_failure",
       "freshness_and_version",
-      "cost_and_context_pressure"
+      "cost_and_context_pressure",
+      "counterexample_and_failure_rate"
     ],
     "goal_gate_skill": "task-goal-intelligence",
     "phase_before_keyword_similarity": true,
@@ -73,27 +75,89 @@
       "capability-forensics": "capability appears missing, inconsistent across harness/session/account/surface, or blocked at an unknown layer",
       "mcp-surface-engineering": "many/changing/conflicting tools, MCP schema drift, dynamic discovery, namespace, entitlement, context-cost, or tool-trust pressure",
       "agent-runtime-forensics": "a tool/process claims success but the intended file/process/network/artifact/postcondition state is missing or causally unclear"
-    }
+    },
+    "counterexample_governor_enabled": true
   },
   "composition": {
-    "complex_research": ["task-goal-intelligence", "executive-research", "evidence-watchdog"],
-    "github_operation": ["task-goal-intelligence", "github-operation-orchestrator", "evidence-watchdog"],
-    "capability_bottleneck": ["task-goal-intelligence", "capability-forensics", "evidence-watchdog"],
-    "many_tool_or_mcp_surface": ["task-goal-intelligence", "mcp-surface-engineering", "evidence-watchdog"],
-    "runtime_effect_mismatch": ["task-goal-intelligence", "agent-runtime-forensics", "evidence-watchdog"],
-    "architecture_choice": ["task-goal-intelligence", "plan-arbiter"],
-    "repeated_failure": ["task-goal-intelligence", "convergence-controller", "evidence-watchdog"],
-    "cross_session_context": ["task-goal-intelligence", "memory-policy"],
-    "complex_multi_stage": ["task-goal-intelligence", "chief-of-staff-core", "evidence-watchdog"]
+    "complex_research": [
+      "task-goal-intelligence",
+      "executive-research",
+      "evidence-watchdog"
+    ],
+    "github_operation": [
+      "task-goal-intelligence",
+      "github-operation-orchestrator",
+      "evidence-watchdog"
+    ],
+    "capability_bottleneck": [
+      "task-goal-intelligence",
+      "capability-forensics",
+      "evidence-watchdog"
+    ],
+    "many_tool_or_mcp_surface": [
+      "task-goal-intelligence",
+      "mcp-surface-engineering",
+      "evidence-watchdog"
+    ],
+    "runtime_effect_mismatch": [
+      "task-goal-intelligence",
+      "agent-runtime-forensics",
+      "evidence-watchdog"
+    ],
+    "architecture_choice": [
+      "task-goal-intelligence",
+      "plan-arbiter"
+    ],
+    "repeated_failure": [
+      "task-goal-intelligence",
+      "falsification-root-cause-governor",
+      "evidence-watchdog"
+    ],
+    "cross_session_context": [
+      "task-goal-intelligence",
+      "memory-policy"
+    ],
+    "complex_multi_stage": [
+      "task-goal-intelligence",
+      "chief-of-staff-core",
+      "evidence-watchdog"
+    ]
   },
   "fallback_graph": {
-    "github-operation-orchestrator": ["mcp-surface-engineering", "agent-runtime-forensics", "evidence-watchdog"],
-    "capability-forensics": ["executive-research", "evidence-watchdog"],
-    "mcp-surface-engineering": ["capability-forensics", "executive-research", "evidence-watchdog"],
-    "agent-runtime-forensics": ["capability-forensics", "evidence-watchdog"],
-    "executive-research": ["task-goal-intelligence", "evidence-watchdog"],
-    "plan-arbiter": ["chief-of-staff-core"],
-    "convergence-controller": ["chief-of-staff-core", "evidence-watchdog"]
+    "github-operation-orchestrator": [
+      "mcp-surface-engineering",
+      "agent-runtime-forensics",
+      "evidence-watchdog"
+    ],
+    "capability-forensics": [
+      "executive-research",
+      "evidence-watchdog"
+    ],
+    "mcp-surface-engineering": [
+      "capability-forensics",
+      "executive-research",
+      "evidence-watchdog"
+    ],
+    "agent-runtime-forensics": [
+      "capability-forensics",
+      "evidence-watchdog"
+    ],
+    "executive-research": [
+      "task-goal-intelligence",
+      "evidence-watchdog"
+    ],
+    "plan-arbiter": [
+      "chief-of-staff-core"
+    ],
+    "convergence-controller": [
+      "chief-of-staff-core",
+      "evidence-watchdog"
+    ],
+    "falsification-root-cause-governor": [
+      "convergence-controller",
+      "executive-research",
+      "evidence-watchdog"
+    ]
   },
   "fallback_rules": {
     "route_failure_does_not_change_root_goal": true,
@@ -101,7 +165,9 @@
     "after_repeated_failure_choose_materially_different_route": true,
     "unavailable_specialist_must_fall_back_to_goal_advancing_base_skill": true,
     "host_capability_mismatch_must_be_reported_not_fabricated": true,
-    "completion_requires_postcondition_evidence": true
+    "completion_requires_postcondition_evidence": true,
+    "mitigation_must_not_be_promoted_to_fix": true,
+    "feature_reduction_requires_user_authorized_tradeoff": true
   },
   "expert_labs": {
     "activation": "conditional-demand-loaded",
@@ -112,7 +178,9 @@
       "mcp-surface-engineering",
       "agent-runtime-forensics"
     ],
-    "explicit_only": ["authorized-reverse-engineering"],
+    "explicit_only": [
+      "authorized-reverse-engineering"
+    ],
     "load_only_on_material_need": true,
     "no_skill_counterfactual_required_for_promotion": true,
     "host_version_capability_probe_required": true,
@@ -149,9 +217,17 @@
       "same_class_no_delta_pivot_after": 2,
       "load_bearing_claim_min_independent_source_families": 2,
       "high_impact_claim_target_independent_source_families": 3,
-      "search_modes": ["NO_SEARCH", "TARGETED", "BROAD", "FORENSIC"],
+      "search_modes": [
+        "NO_SEARCH",
+        "TARGETED",
+        "BROAD",
+        "FORENSIC"
+      ],
       "preserve_conflicting_evidence": true,
-      "search_snippets_are_discovery_only_when_source_can_be_opened": true
+      "search_snippets_are_discovery_only_when_source_can_be_opened": true,
+      "operational_failure_modes_prefer_reproducible_third_party_evidence": true,
+      "community_corroboration_deduplicate_shared_origin": true,
+      "official_support_status_is_not_runtime_veto": true
     },
     "STRICT_DEEPLOCK": {
       "explicit_only": true,
@@ -163,7 +239,12 @@
       "minimum_independent_domains": 10,
       "minimum_distinct_first_pass_worker_identities": 10,
       "minimum_research_passes": 4,
-      "required_passes": ["broad_scan", "gap_expansion", "adversarial_counterevidence", "cross_validation"],
+      "required_passes": [
+        "broad_scan",
+        "gap_expansion",
+        "adversarial_counterevidence",
+        "cross_validation"
+      ],
       "if_required_telemetry_is_missing": "PROCESS_COMPLETE_MAX",
       "time_padding_forbidden": true,
       "majority_vote_is_not_completion_proof": true
@@ -174,7 +255,13 @@
     "command_success_is_not_state_success": true,
     "executor_self_report_is_not_independent_proof": true,
     "unknown_is_first_class": true,
-    "state_sensitive_evidence_requires_current_epoch": true
+    "state_sensitive_evidence_requires_current_epoch": true,
+    "single_reproducible_counterexample_vetoes_universal_success_claim": true,
+    "few_successes_do_not_override_repeated_failures": true,
+    "root_cause_fix_requires_discriminating_evidence": true,
+    "mitigation_must_remain_distinct_from_root_cause_fix": true,
+    "runtime_readback_required_when_configuration_effect_is_claimed": true,
+    "target_local_evidence_outweighs_source_popularity": true
   },
   "convergence": {
     "default_max_review_rounds": 3,
@@ -185,7 +272,12 @@
     "self_approval_forbidden": true
   },
   "memory": {
-    "durable_classes": ["decision", "preference", "commitment", "verified_durable_fact"],
+    "durable_classes": [
+      "decision",
+      "preference",
+      "commitment",
+      "verified_durable_fact"
+    ],
     "raw_external_evidence_is_durable": false,
     "instruction_like_external_content": "QUARANTINE",
     "transformation_cannot_raise_authority": true
