@@ -13,6 +13,8 @@ Machine-enforced capability routing: `control-plane/ai-system/configs/context-fi
 Desktop execution policy: `docs/DESKTOP_AGENT_EXECUTION_POLICY.md`.
 Machine-enforced desktop execution profile: `control-plane/ai-system/configs/desktop-agent-execution-global.json`.
 Cross-chat hidden-state / orchestration owner: `skills/skills/ai-efficiency-operating-system/SKILL.md`.
+Root-cause / falsification owner: `skills/skills/root-cause-falsification/SKILL.md`.
+Root-cause machine contract: `control-plane/ai-system/configs/root-cause-falsification-v1.json`.
 
 ## Primary objective
 
@@ -52,6 +54,18 @@ For every non-trivial task, reconstruct the real state before editing:
 6. List decision-critical unknowns. A high-impact unknown must be resolved, bounded by evidence, or reported as a concrete blocker before `PASS`.
 
 Do not patch a local symptom before understanding enough of the surrounding system to avoid regressions. Do not edit the first file that mentions the symptom until the relevant trigger → state → execution → observable-effect chain is understood well enough to identify a causal intervention.
+
+## Root-cause and falsification gate
+
+For debugging, repair, optimization, flaky behavior, performance problems, capability claims, or “fixed/verified” conclusions, load the root-cause/falsification owner and machine contract.
+
+- `EXAMPLE != REQUIREMENT` and `TRIGGER != ROOT_CAUSE`: illustrative numbers/tools/scenarios must not hijack the goal, and an exposing condition is not automatically the owning mechanism.
+- `MITIGATION != FIX`: caps, throttles, avoiding the trigger, disabled features, reduced concurrency/quality, warning scripts, and watchdogs are mitigation/guardrail/degradation unless the causal mechanism is removed at its owning layer.
+- Predeclare the verification matrix before reading post-fix results. Count every in-scope run; do not stop on the first success or discard failures after seeing them.
+- One reproducible in-scope counterexample blocks universal zero-failure claims such as “fixed”, “always works”, or “correct for all accepted cases”. Probabilistic/SLO claims use their declared nonzero error budget instead of pretending they are universal.
+- Preserve and replay failing cases as regression tests; minimize them when practical.
+- External research follows `local observation -> competing hypotheses -> independent evidence -> source qualification -> discriminating target test -> model update -> repair -> read-back -> falsification -> regression`. One search hit never directly authorizes a material patch.
+- Official/canonical material owns contract facts such as APIs, versions, limits, lifecycle, and documented support. Practical reliability/quality judgments prioritize actual target behavior plus independent reproducible practitioner, issue/PR/commit, postmortem, benchmark, and maintainer evidence. Collapse copied/correlated lineages; one anecdote is only a lead.
 
 ## Evidence-bound acceptance contract
 
