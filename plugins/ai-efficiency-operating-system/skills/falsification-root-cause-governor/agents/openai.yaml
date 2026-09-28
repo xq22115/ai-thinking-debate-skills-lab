@@ -1,0 +1,5 @@
+interface:
+  display_name: "Falsification Root-Cause Governor"
+  short_description: "Reject fake fixes and verify causal repairs"
+policy:
+  allow_implicit_invocation: true
