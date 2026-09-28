@@ -83,6 +83,15 @@
         "task_goal_state_engine.py",
         "behavioral"
       ]
+    },
+    {
+      "path": "control-plane/scripts/validate_root_cause_falsification.py",
+      "role": "root_cause_falsification_machine_validator",
+      "required_markers": [
+        "root-cause-falsification-v1.json",
+        "root-cause-falsification-cases.jsonl",
+        "universal_pass_invalidated_by_any_reproducible_in_scope_counterexample"
+      ]
     }
   ],
   "canonical_policies": [
@@ -193,6 +202,24 @@
       "path": "plugins/ai-efficiency-operating-system/skills/chief-of-staff-core/SKILL.md",
       "semantic_owner": "cross_chat_hidden_state_and_execution_orchestration",
       "load_mode": "progressive_disclosure_for_complex_or_cross_chat_work"
+    },
+    {
+      "id": "root-cause-falsification-skill",
+      "path": "skills/skills/root-cause-falsification/SKILL.md",
+      "semantic_owner": "root_cause_falsification_and_repair_truth",
+      "load_mode": "debug_repair_optimization_flaky_behavior_or_completion_claim"
+    },
+    {
+      "id": "root-cause-falsification-machine",
+      "path": "control-plane/ai-system/configs/root-cause-falsification-v1.json",
+      "semantic_owner": "root_cause_falsification_machine_contract",
+      "load_mode": "debug_repair_optimization_flaky_behavior_or_completion_claim"
+    },
+    {
+      "id": "root-cause-falsification-plugin-projection",
+      "path": "plugins/ai-efficiency-operating-system/skills/root-cause-falsification/SKILL.md",
+      "semantic_owner": "root_cause_falsification_auto_invoke_projection",
+      "load_mode": "plugin_runtime_auto_invoke_for_debug_repair_or_falsifiable_completion"
     }
   ],
   "rehydration": {
@@ -214,6 +241,7 @@
       "load_only_task_relevant_manifest_entries",
       "load_task_goal_portable_base_v3_extension_and_v31_truth_maintenance_for_substantive_tasks",
       "load_execution_integrity_policy_and_machine_contract_for_github_plugin_skill_or_persisted_tool_tasks",
+      "load_root_cause_falsification_skill_and_machine_contract_for_debug_repair_optimization_flaky_behavior_or_falsifiable_completion",
       "restore_root_goal_underlying_purpose_goal_signature_acceptance_contract_open_gates_failed_routes_and_evidence_index",
       "restore_goal_version_event_log_intent_belief_authority_uncertainty_traceability_progress_and_counterexample_state",
       "restore_applicable_system_invariants_target_identity_exact_revision_and_rollback_target_before_material_write",
