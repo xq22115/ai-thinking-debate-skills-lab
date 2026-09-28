@@ -74,6 +74,9 @@ Evidence owner routing is host-aware: current library/framework/API facts prefer
 ### Core durability rules
 
 - current owning evidence outranks stale historical completion prose;
+- one valid in-scope counterexample vetoes an unqualified universal "fixed" claim;
+- a few successful runs cannot erase repeated/intermittent failure evidence;
+- mitigation, feature reduction, retry-until-pass and added guardrails cannot be promoted into root-cause repair without causal closure;
 - corrections invalidate dependent downstream work while preserving unaffected evidence;
 - wording loopholes, examples, named tools and route-local blockers cannot silently shrink the end state;
 - one blocked slice does not justify abandoning separable work;
@@ -95,6 +98,7 @@ Evidence owner routing is host-aware: current library/framework/API facts prefer
 | `executive-research` | current/deep/root-cause research and evidence archaeology |
 | `memory-policy` | durable memory and rehydration |
 | `convergence-controller` | repeated no-progress/review loops and route change |
+| `falsification-root-cause-governor` | debugging/repair where workaround-vs-fix, counterexamples, intermittent failure rates, or cherry-picked passes can corrupt completion |
 
 ### Conditional implicit specialists — demand-loaded
 
@@ -123,7 +127,7 @@ These specialists are eligible for implicit invocation only after the routing el
 - MCP/tool-surface pressure → `task-goal-intelligence` + `mcp-surface-engineering` + `evidence-watchdog`
 - runtime-effect mismatch → `task-goal-intelligence` + `agent-runtime-forensics` + `evidence-watchdog`
 - architecture choice → `task-goal-intelligence` + `plan-arbiter`
-- repeated route failure → `task-goal-intelligence` + `convergence-controller` + `evidence-watchdog`
+- repeated route failure / suspicious repair completion → `task-goal-intelligence` + `falsification-root-cause-governor` + `evidence-watchdog`; fall back to `convergence-controller` when the issue is loop stagnation rather than causal verification
 - cross-session context → `task-goal-intelligence` + `memory-policy`
 - complex multi-stage → `task-goal-intelligence` + `chief-of-staff-core` + `evidence-watchdog`
 
@@ -136,6 +140,7 @@ The following specialists remain useful as direct references or standalone skill
 - `evidence-gap-research`
 - `competing-hypotheses`
 - `root-cause-clustering`
+- `falsification-root-cause-governor`
 - `completion-gate`
 - `recoverable-state`
 - `compatibility-audit`
