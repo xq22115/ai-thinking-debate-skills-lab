@@ -80,6 +80,8 @@ Total explicit fixtures: `90`.
 
 Visible same-model receipts cover 80 fixtures: `78 PASS / 2 paired NOT_RUN`; V1–V10 remain `SPECIFIED_NOT_EXECUTED`.
 
+Operational repair/falsification pressure coverage is maintained separately in `plugins/ai-efficiency-operating-system/evals/root-cause-falsification-cases.jsonl`. These cases test counterexample veto, success-mining, workaround-vs-root-fix classification, goal drift from examples, source qualification, runtime read-back, and probabilistic-vs-universal claims; they do not inflate the 90 reasoning-fixture total.
+
 ## D. Goal / objective fidelity
 
 Test proxy-vs-outcome, blocker-goal drift, specification-vs-world uncertainty, clarification value, preference-vs-helpfulness, hard constraints, authorized goal updates, revealed-policy mismatch, and acceptance-test gaming.
