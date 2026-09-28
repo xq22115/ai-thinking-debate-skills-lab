@@ -14,6 +14,7 @@ DEFAULT_IMPLICIT = [
     "executive-research",
     "memory-policy",
     "convergence-controller",
+    "root-cause-falsification",
 ]
 CONDITIONAL_IMPLICIT = [
     "github-operation-orchestrator",
