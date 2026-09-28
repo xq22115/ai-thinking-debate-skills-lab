@@ -5,7 +5,7 @@ description: Enforce goal fidelity, mechanism-level repair, counterexample-first
 
 # Root Cause Falsification
 
-Version: `1.0.0`
+Version: `1.1.0`
 
 ## Core invariants
 
@@ -108,6 +108,36 @@ After two materially similar no-delta failures, change a major dimension: causal
 After three repair attempts that merely move the symptom or create new guardrails, question the architecture rather than stacking another patch.
 
 Prefer deleting obsolete mitigations once the root fix is verified. Net complexity should fall or remain justified.
+
+## 8. Advanced discriminating techniques
+
+Use advanced techniques only when they distinguish a live causal hypothesis or verify a protected invariant:
+
+- **property-based testing + shrinking** — generate broad inputs and reduce failures to minimal counterexamples;
+- **stateful invariant testing** — test properties across action sequences, not one happy path;
+- **metamorphic testing** — verify expected relations when a complete oracle is unavailable;
+- **differential testing** — compare versions/accounts/surfaces/implementations under matched inputs;
+- **binary search / delta debugging** — isolate the smallest commit/config/input delta that flips the behavior;
+- **record/replay** — turn nondeterministic failures into inspectable repeatable evidence when supported;
+- **tracing / profiling / flame graphs / eBPF** — locate hidden latency, resource, lock, or execution-path concentration;
+- **fault injection / chaos experiments** — deliberately perturb assumptions when safe to test resilience hypotheses;
+- **negative controls / placebo changes** — detect false causal attribution;
+- **A/B or ABAB rollback confirmation** — verify that the suspected intervention repeatedly moves the outcome while other variables stay controlled;
+- **canary + rollback** — limit blast radius while measuring the real effect of an effectful change.
+
+Do not add these techniques ceremonially. Every technique must have a named hypothesis, predicted observation, falsifier, and acceptance obligation.
+
+### Intermittent-failure planning
+
+A few passing trials never erase a known intermittent baseline.
+
+If the pre-fix failure probability is approximately `p0`, trials are reasonably independent/stationary, and the intended false-negative risk is `alpha`, an all-pass planning length may use:
+
+`N >= ceil(log(alpha) / log(1 - p0))`.
+
+This is only a planning aid, not a universal proof formula. If independence/stationarity is implausible, stratify by environment/state/load or redesign the experiment. Always retain and report the pre/post trial counts, failure counts, conditions, and confidence limitations.
+
+Field-practice anchors: `../../plugins/ai-efficiency-operating-system/references/root-cause-falsification-field-practice.md`.
 
 ## 8. Deterministic receipt gate
 
