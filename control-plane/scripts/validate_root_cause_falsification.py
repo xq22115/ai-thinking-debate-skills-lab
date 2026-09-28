@@ -37,6 +37,10 @@ REQUIRED_CASES = {
     "rcf-008-probabilistic-slo",
     "rcf-009-workaround-stack",
     "rcf-010-root-fix-closure",
+    "rcf-011-config-not-runtime",
+    "rcf-012-hypothesis-needs-prediction",
+    "rcf-013-authorized-mitigation-stays-mitigation",
+    "rcf-014-average-improves-hard-failure-remains",
 }
 
 def main() -> int:
