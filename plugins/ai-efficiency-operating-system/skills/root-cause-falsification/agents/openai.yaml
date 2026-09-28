@@ -1,0 +1,5 @@
+interface:
+  display_name: "Root Cause Falsification"
+  short_description: "Reject fake fixes and verify causal repairs"
+policy:
+  allow_implicit_invocation: true

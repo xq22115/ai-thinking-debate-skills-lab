@@ -37,3 +37,5 @@ Return:
 ## Completion Gate
 
 A repair is not complete until the shared mechanism and the full affected symptom cluster have been re-tested.
+
+When repeated mitigations, capability reductions, cherry-picked passing runs, or a surviving counterexample make completion truth the primary risk, hand off the final repair verdict to `root-cause-falsification`. This skill owns symptom clustering; `root-cause-falsification` owns whether the resulting intervention is actually a root fix.

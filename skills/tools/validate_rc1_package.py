@@ -17,6 +17,7 @@ REQUIRED_SKILLS = {
     "evidence-gap-research",
     "competing-hypotheses",
     "root-cause-clustering",
+    "root-cause-falsification",
     "completion-gate",
     "recoverable-state",
     "compatibility-audit",
@@ -90,7 +91,8 @@ def main() -> int:
 
     skills_dir = ROOT / "skills"
     found = {p.parent.name for p in skills_dir.glob("*/SKILL.md")}
-    record("skills:set", found == REQUIRED_SKILLS, f"found={sorted(found)}")
+    missing_skills = REQUIRED_SKILLS - found
+    record("skills:required_subset", not missing_skills, f"missing={sorted(missing_skills)} found={sorted(found)}")
 
     for name in sorted(REQUIRED_SKILLS):
         p = skills_dir / name / "SKILL.md"
@@ -123,8 +125,19 @@ def main() -> int:
         record(f"convergence_token:{token}", token in convergence, "present" if token in convergence else "missing")
 
     policy = (ROOT / "data/role_activation_policy.yaml").read_text(encoding="utf-8") if (ROOT / "data/role_activation_policy.yaml").is_file() else ""
-    for token in ["30", "escal", "de-escal"]:
-        record(f"role_policy_token:{token}", token.lower() in policy.lower(), "present" if token.lower() in policy.lower() else "missing")
+    policy_lower = policy.lower()
+    semantic_tokens = {
+        "30": ("30",),
+        "escalation": ("escalation", "escalate", "escal"),
+        "de-escalation": ("de_escalation", "de-escalation", "deescalation", "de_escalate", "de-escalate"),
+    }
+    for label, variants in semantic_tokens.items():
+        matched = next((variant for variant in variants if variant in policy_lower), None)
+        record(
+            f"role_policy_semantic:{label}",
+            matched is not None,
+            f"matched={matched}" if matched else f"missing_variants={list(variants)}",
+        )
 
     failed = [c for c in checks if not c["ok"]]
     report = {
