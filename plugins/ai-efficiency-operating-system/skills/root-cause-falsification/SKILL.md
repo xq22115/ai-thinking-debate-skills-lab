@@ -1,6 +1,6 @@
 ---
 name: root-cause-falsification
-description: Auto-invoke the canonical root-cause-falsification policy for debugging, repair, optimization, flaky behavior, performance issues, capability claims, repeated workaround stacks, or completion claims that can be falsified by a real counterexample.
+description: Use when debugging, repair, optimization, flaky behavior, performance issues, capability claims, repeated workaround stacks, or completion claims can be falsely passed by symptom masking, success cherry-picking, or weak evidence.
 ---
 
 # Root Cause Falsification — Plugin Projection
@@ -19,5 +19,7 @@ Critical gates:
 - practical quality uses owning-runtime plus independent practitioner/issue/PR/postmortem/benchmark evidence; official docs remain authoritative for contracts, supported syntax, versions, limits, and lifecycle;
 - search evidence must feed a discriminating target test before it authorizes a material repair;
 - previously failing cases are retained and replayed as regression tests.
+
+Advanced field-practice anchors: `../../references/root-cause-falsification-field-practice.md`.
 
 Do not duplicate or soften the canonical skill.
