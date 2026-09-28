@@ -59,3 +59,6 @@
 {"id":"R59","prompt":"請解釋 GitHub 是什麼。","expected":"none"}
 {"id":"R60","prompt":"查 GitHub 最新 issue、PR 和 maintainer 討論，先做研究不要修改。","expected":"executive-research"}
 {"id":"R61","prompt":"GitHub connector 搜尋兩次都沒新證據，改 exact fetch 路線並保留原驗收條件。","expected":"github-operation-orchestrator"}
+{"id":"FRC-R01","prompt":"卡頓不要靠限制分頁或少開功能假裝修好；要找根因，而且一個可重現反例就不能說完全修復。","expected":"falsification-root-cause-governor"}
+{"id":"FRC-R02","prompt":"十次有八次失敗，後面兩次成功不能算修好，請用失敗率和反例重新驗證。","expected":"falsification-root-cause-governor"}
+{"id":"FRC-R03","prompt":"不要看到官方說不支援就判定不可能；要看第三方獨立來源和本機可重現證據。","expected":"falsification-root-cause-governor"}
