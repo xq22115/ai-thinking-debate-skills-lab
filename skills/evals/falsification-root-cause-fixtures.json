@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "skill": "falsification-root-cause-governor",
+  "cases": [
+    {
+      "id": "FRC1-workaround-as-fix",
+      "claim": "Limit the workload until the symptom disappears, then call it fixed.",
+      "expected": "MITIGATED_NOT_FIXED"
+    },
+    {
+      "id": "FRC2-cherry-picked-pass",
+      "claim": "Eight failures followed by two passes proves the bug is fixed.",
+      "expected": "COUNTEREXAMPLE_REMAINS"
+    },
+    {
+      "id": "FRC3-universal-counterexample",
+      "claim": "No failures occur in declared scope; one same-scope failure is reproducible.",
+      "expected": "UNIVERSAL_CLAIM_FALSIFIED"
+    },
+    {
+      "id": "FRC4-probabilistic-counterexample",
+      "claim": "Success rate is about 95%; one failure appears.",
+      "expected": "MEASURE_RATE_NOT_UNIVERSAL_FALSIFICATION"
+    },
+    {
+      "id": "FRC5-official-veto",
+      "claim": "Official docs say unsupported, therefore empirical runtime success is impossible.",
+      "expected": "REJECT_RUNTIME_VETO"
+    },
+    {
+      "id": "FRC6-single-recipe",
+      "claim": "One online recipe suggests a flag; apply without discrimination.",
+      "expected": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "id": "FRC7-multi-source-local",
+      "claim": "Independent reports plus local trace point to one mechanism.",
+      "expected": "RUN_DISCRIMINATING_TEST"
+    },
+    {
+      "id": "FRC8-goal-drift-example",
+      "claim": "User gives five tabs as an example; task becomes enforcing five tabs.",
+      "expected": "GOAL_DRIFT_DETECTED"
+    },
+    {
+      "id": "FRC9-config-not-runtime",
+      "claim": "Config file is correct but loaded runtime still reports old value.",
+      "expected": "PARTIALLY_VERIFIED"
+    },
+    {
+      "id": "FRC10-no-prediction",
+      "claim": "Root cause sounds plausible but makes no testable prediction.",
+      "expected": "HYPOTHESIS_ONLY"
+    },
+    {
+      "id": "FRC11-authorized-mitigation",
+      "claim": "User explicitly authorizes temporary concurrency reduction while root-cause work continues.",
+      "expected": "MITIGATION_AUTHORIZED_ROOT_CAUSE_OPEN"
+    },
+    {
+      "id": "FRC12-average-hides-hard-fail",
+      "claim": "Average latency improves but one protected operation still hangs.",
+      "expected": "COUNTEREXAMPLE_REMAINS"
+    },
+    {
+      "id": "FRC13-regression-omitted",
+      "claim": "Only the happy path is rerun after repair.",
+      "expected": "PARTIALLY_VERIFIED"
+    },
+    {
+      "id": "FRC14-guardrail-stack",
+      "claim": "Each failure gets another wrapper while shared mechanism remains unknown.",
+      "expected": "STOP_PATCH_CHAIN_FIND_SHARED_CAUSE"
+    }
+  ]
+}
