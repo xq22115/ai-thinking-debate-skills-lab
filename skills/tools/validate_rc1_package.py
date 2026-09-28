@@ -17,6 +17,7 @@ REQUIRED_SKILLS = {
     "evidence-gap-research",
     "competing-hypotheses",
     "root-cause-clustering",
+    "falsification-root-cause-governor",
     "completion-gate",
     "recoverable-state",
     "compatibility-audit",
@@ -45,6 +46,7 @@ REQUIRED_FILES = [
     "16-governance-autonomy-convergence.md",
     "evals/rc1-fixtures.json",
     "evals/control-plane-fixtures.json",
+    "evals/falsification-root-cause-fixtures.json",
     "data/role_activation_policy.yaml",
     "data/claim_obligation_graph.json",
 ]
@@ -107,6 +109,7 @@ def main() -> int:
         "12-upstream-source-lock.json",
         "evals/rc1-fixtures.json",
         "evals/control-plane-fixtures.json",
+        "evals/falsification-root-cause-fixtures.json",
         "data/claim_obligation_graph.json",
     ]:
         p = ROOT / rel
