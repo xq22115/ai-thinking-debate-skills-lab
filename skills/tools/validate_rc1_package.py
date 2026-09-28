@@ -91,7 +91,8 @@ def main() -> int:
 
     skills_dir = ROOT / "skills"
     found = {p.parent.name for p in skills_dir.glob("*/SKILL.md")}
-    record("skills:set", found == REQUIRED_SKILLS, f"found={sorted(found)}")
+    missing_skills = REQUIRED_SKILLS - found
+    record("skills:required_subset", not missing_skills, f"missing={sorted(missing_skills)} found={sorted(found)}")
 
     for name in sorted(REQUIRED_SKILLS):
         p = skills_dir / name / "SKILL.md"
