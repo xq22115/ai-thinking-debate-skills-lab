@@ -101,6 +101,14 @@ class ManageLocalAgentRunTests(unittest.TestCase):
         self.assertEqual(self.workflow["result"], "PASS", self.workflow)
 
     def tearDown(self):
+        # Remove registered actor/integration worktrees through the owning lifecycle
+        # before deleting the temporary repository. Direct rmtree can race with Git
+        # worktree metadata updates after the parallel workflow/integration path.
+        if hasattr(self, "preparation") and self.repo.is_dir():
+            cleanup = manager.cleanup_run(self.preparation, force=True)
+            if cleanup.get("result") != "PASS":
+                self.fail(f"owning worktree cleanup failed: {cleanup}")
+            git(self.repo, "worktree", "prune", "--expire", "now", check=False)
         self.temp.cleanup()
     def test_resume_cli_needs_no_claude_when_all_receipts_revalidate(self):
         prep_json = self.root / "resume-preparation.json"
