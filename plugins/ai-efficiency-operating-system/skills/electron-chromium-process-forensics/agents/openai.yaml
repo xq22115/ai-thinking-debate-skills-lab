@@ -1,0 +1,5 @@
+interface:
+  display_name: "Electron Chromium Process Forensics"
+  short_description: "Classify renderer churn, leaks and crash-loop evidence"
+policy:
+  allow_implicit_invocation: true

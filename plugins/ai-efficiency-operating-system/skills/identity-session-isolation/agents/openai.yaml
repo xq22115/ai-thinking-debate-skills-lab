@@ -1,0 +1,5 @@
+interface:
+  display_name: "Identity and Session Isolation"
+  short_description: "Prevent cross-account and cross-session target contamination"
+policy:
+  allow_implicit_invocation: true

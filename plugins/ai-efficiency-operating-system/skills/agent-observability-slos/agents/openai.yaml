@@ -1,0 +1,5 @@
+interface:
+  display_name: "Agent Observability and SLOs"
+  short_description: "Trace agent trajectories and measure production SLOs"
+policy:
+  allow_implicit_invocation: true

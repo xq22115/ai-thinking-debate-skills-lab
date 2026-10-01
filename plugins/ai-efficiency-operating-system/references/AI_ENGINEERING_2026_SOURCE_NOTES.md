@@ -1,0 +1,234 @@
+# AI Engineering 2026 Source Notes
+
+Status: current-source learning notes, not runtime proof.
+Verified: 2026-09-18 against primary sources.
+
+The pack records reusable mechanisms separately from product-specific claims so skills remain portable when APIs and protocol versions change.
+
+## OpenAI
+
+### Agents API — 2026-09-10
+
+Source: https://openai.com/index/introducing-the-agents-api/
+
+OpenAI describes a managed agent harness for long-running cloud agents that manages context, tool use and subagents, with infrastructure for work that can run for days, manipulate files/code, and preserve intermediate results.
+
+Portable lesson: long-horizon reliability is a harness + state + execution-environment problem, not only a model/prompt problem.
+
+### Agents SDK evolution — 2026-04-15
+
+Source: https://openai.com/index/the-next-evolution-of-the-agents-sdk/
+
+The Agents SDK added a model-native harness, controlled workspaces, native sandbox execution, snapshot/rehydration for durable execution, isolated environments and parallel work across sandboxes/containers.
+
+Portable lessons: separate harness from compute; externalize resumable state; keep credentials out of model-generated-code environments; parallelize only across isolated, compatible work units.
+
+### Agents SDK tracing and guardrails
+
+Sources:
+- https://openai.github.io/openai-agents-python/tracing/
+- https://openai.github.io/openai-agents-python/guardrails/
+- https://openai.github.io/openai-agents-python/tools/
+- https://openai.github.io/openai-agents-python/mcp/
+
+Current SDK tracing records end-to-end workflows through spans for model generations, tool calls, handoffs, guardrails and custom events. Tool guardrails can validate or block custom `FunctionTool` calls and tools converted from local MCP server objects before and after execution; blocking guardrails are materially different from parallel guardrails when side effects or cost must be prevented.
+
+Guardrail coverage is boundary-specific. Agent-level input/output guardrails do not automatically wrap every delegated call. Handoffs use their own path, while hosted tools such as `WebSearchTool`, `FileSearchTool`, `HostedMCPTool`, `CodeInterpreterTool` and `ImageGenerationTool`, plus built-in execution tools such as `ComputerTool`, `ShellTool`, `ApplyPatchTool` and `LocalShellTool`, do not use the same local function-tool guardrail pipeline. A hosted MCP tool therefore cannot be credited with local MCP tool-guardrail coverage merely because both are called “MCP”.
+
+Portable lessons: correlate the full trajectory rather than only final output; map every guardrail/approval to the exact execution boundary it actually controls; use blocking execution when prohibited side effects must not start before validation; never infer full-path protection from the existence of one agent-level guardrail.
+
+## Anthropic
+
+### Effective context engineering for AI agents — 2025-09-29
+
+Source: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
+
+Anthropic frames context as a finite attention budget and recommends curating the smallest high-signal token set across instructions, tools, MCP, external data and history.
+
+Portable lessons: just-in-time retrieval, compact durable notes, bounded tool context and deliberate compaction/rehydration are core long-horizon engineering mechanisms.
+
+### Demystifying evals for AI agents — 2026-01-09
+
+Source: https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents
+
+Agent behavior spans many turns, tool calls and state changes, so one-shot output grading is insufficient.
+
+Portable lesson: evaluate trajectories, state transitions, tool behavior and recovery in addition to final output quality.
+
+### How we contain Claude across products — 2026-05-25
+
+Source: https://www.anthropic.com/engineering/how-we-contain-claude
+
+Anthropic separates failure likelihood from blast radius and describes containment through enforced environment/access boundaries rather than relying only on repeated human approval prompts.
+
+Portable lesson: capability growth should be paired with least privilege, isolation, egress/credential boundaries and rollback/disable mechanisms.
+
+## OWASP Agentic Security
+
+### Memory & Context Poisoning — 2026-05-13
+
+Source: https://genai.owasp.org/2026/05/13/memory-is-a-feature-it-is-also-an-attack-surface/
+
+OWASP highlights that an agent can carry untrusted content forward through persistent memory/context, turning an ordinary retrieved artifact, repository workflow or prior interaction into a cross-session prompt-injection or control-state risk.
+
+Portable lessons: persistent memory is an authority boundary and attack surface, not merely storage. Keep provenance and trust class on durable entries; scope writes; quarantine unverified external instructions; support supersede/invalidate/expiry; and pressure-test whether poisoned or stale memory can become control state after compaction, restart or rehydration.
+
+## Retrieval/tool candidate authorization
+
+Sources:
+- https://arxiv.org/abs/2608.22751
+- https://cheatsheetseries.owasp.org/cheatsheets/RAG_Security_Cheat_Sheet.html
+- https://learn.microsoft.com/en-us/azure/search/agentic-retrieval-how-to-retrieve
+
+2026 tool-retrieval research treats retrieval as a pre-execution boundary rather than a relevance-only ranking problem. OWASP guidance requires tool-level authorization independently of model choice, and Azure AI Search's agentic retrieval documentation supports query-time permission filtering from end-user identity.
+
+Portable lesson: current principal/account/tenant/entitlement scope constrains the candidate set before semantic relevance, utility or risk ranking. Risk-aware reranking can further reduce exposure, but relevance/risk scores do not grant authority. Re-check authorization before sensitive execution when identity, entitlement or target state can drift.
+
+## Model Context Protocol
+
+### MCP specification `2026-07-28`
+
+Sources:
+- https://modelcontextprotocol.io/specification/2026-07-28/basic/index
+- https://modelcontextprotocol.io/specification/2026-07-28/server/discover
+- https://blog.modelcontextprotocol.io/posts/2026-07-28/
+
+The release introduced a stateless protocol core, Multi Round-Trip Requests, header-based routing, cacheable list results, authorization hardening, formal extensions and updated Tier-1 SDKs. The legacy `initialize`/`initialized` exchange and `Mcp-Session-Id` transport session were retired. Each request requires protocol version and client capabilities in `_meta`; `clientInfo` is optional but normally SHOULD be included unless configured otherwise, and is self-reported metadata rather than an authorization identity. Servers implementing `2026-07-28` MUST implement `server/discover`; calling it is optional for clients, which may instead issue another RPC inline and handle version errors. For Streamable HTTP, every request POST must include `MCP-Protocol-Version`, and the header value must match `_meta.io.modelcontextprotocol/protocolVersion`; mismatches are rejected with HTTP 400 plus the MCP `HeaderMismatch` JSON-RPC error. Streamable HTTP also exposes `Mcp-Method` and `Mcp-Name` routing headers so routing/authorization assumptions can be tested explicitly rather than inferred from request bodies or sticky transport state.
+
+### Release-candidate migration context — 2026-05-21
+
+Source: https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate/
+
+The release candidate describes the stateless core, Extensions framework, Tasks, MCP Apps, authorization changes and formal deprecation policy.
+
+Portable lessons: fingerprint the actual protocol/SDK pair; do not assume an older handshake or hidden transport session; distinguish server conformance from optional client discovery, and validate per-request capabilities, HTTP header/body version parity, optional client metadata, cache freshness, auth, extensions/tasks and live schema composition on the actual client/server pair. Keep application-level state and security identity explicit and separate from MCP transport or self-reported client metadata.
+
+## Durable asynchronous terminal evidence
+
+Sources:
+- https://tasks.extensions.modelcontextprotocol.io/specification/draft/tasks
+- https://openai.com/index/introducing-the-agents-api/
+- https://docs.temporal.io/
+
+The MCP `io.modelcontextprotocol/tasks` extension models asynchronous work as a durable state machine with `working`, `input_required`, `completed`, `failed` and `cancelled` states. Clients are expected to keep observing until terminal state and SHOULD persist task IDs so observation can resume after restart. Importantly, protocol-level `completed` can still carry a tool result with `isError: true`, so even a terminal task state does not by itself prove the owning business/application postcondition succeeded.
+
+OpenAI's Agents API separately emphasizes infrastructure for agents that run reliably for days and preserve intermediate results, while Temporal's durable-execution model resumes workflows after crashes or infrastructure failure.
+
+Portable lessons: `ATTESTED != COMPLETED` and `TERMINAL_TASK_STATE != DOMAIN_POSTCONDITION`. Keep request/receipt/task identity, current state, terminal result/error and owning-target read-back distinct. Persist resumable identifiers without secrets; if a receipt/task generation is missing, stale, expired or ambiguous, report `UNKNOWN` and reconcile the owning state before replaying effectful work.
+
+## OpenTelemetry
+
+### GenAI observability — 2026-05-14
+
+Source: https://opentelemetry.io/blog/2026/genai-observability/
+
+OpenTelemetry demonstrates tracing model calls, tool invocations, token usage, latency and errors; detailed prompt/completion/tool content is opt-in and can contain sensitive data.
+
+### Semantic conventions
+
+Sources:
+- https://opentelemetry.io/docs/specs/semconv/
+- https://opentelemetry.io/docs/specs/semconv/registry/attributes/gen-ai/
+
+Semantic conventions standardize operation names and attributes for cross-stack correlation. Current documentation notes that GenAI attributes/conventions are evolving and some definitions have moved to the dedicated GenAI semantic-conventions repository.
+
+Portable lessons: trace identity, model/tool operations, token/cost and error/latency metadata by default; treat raw content as sensitive opt-in telemetry; track semantic-convention version/stability instead of assuming names never change.
+
+## Microsoft Agent Framework
+
+### Workflow observability
+
+Source: https://learn.microsoft.com/en-us/agent-framework/workflows/observability
+
+Agent Framework emits workflow/session/invocation/executor/message spans, logs and metrics and can expose delivery/buffering/error state across workflow edges. Sensitive message/input/output telemetry is explicitly configurable.
+
+Portable lesson: agent observability should cover message/executor/workflow flow, not only individual LLM calls.
+
+## Client/page lifecycle continuity
+
+### Chromium Page Lifecycle and Page Visibility
+
+Sources:
+- https://developer.chrome.com/docs/web-platform/page-lifecycle-api
+- https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API
+
+Chromium can move hidden pages through lifecycle states that include hidden, frozen, terminated and discarded. In the frozen state, freezable task queues stop running until resume; a discarded page cannot execute tasks at all and must later be reloaded. Browser background policies also throttle timers and rendering in hidden/inactive tabs.
+
+### Electron background throttling
+
+Sources:
+- https://www.electronjs.org/docs/latest/api/web-contents
+- https://www.electronjs.org/docs/latest/api/browser-window
+
+Electron exposes `backgroundThrottling`; by default web contents may throttle animations and timers when backgrounded, and that setting also affects the Page Visibility API. Renderer visibility therefore must not be treated as a transparent execution environment.
+
+Portable lessons: keep durable run/task identity and execution ownership separate from the client renderer and output subscription. A paused render, hidden tab or frozen page does not by itself prove the backend run stopped; conversely, a surviving run ID does not prove progress. Persist resumable state before lifecycle loss, instrument execution progress separately from client delivery/render state, and make reattachment idempotent so returning to a chat/tab cannot replay unsafe work.
+
+## Windows desktop automation
+
+### UI Automation screen scaling
+
+Source: https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-screenscaling
+
+Microsoft documents that UI Automation point/bounding-rectangle APIs operate in physical coordinates, while non-DPI-aware clients can receive or supply incompatible logical coordinates. Correct clients must account for DPI awareness and physical cursor coordinates when geometry is unavoidable.
+
+Portable lessons: prefer semantic UIAutomation/Accessibility element identity over screen geometry; when coordinates are required, fingerprint DPI/coordinate space explicitly and never mix logical and physical coordinates silently. Verify the target window/control before and after an input action.
+
+## Remote text/input transport
+
+### Windows synthetic input
+
+Source: https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendinput
+
+Windows `SendInput` synthesizes keyboard/mouse input but is subject to User Interface Privilege Isolation (UIPI). Injection is restricted by integrity level, and the API does not reliably identify UIPI as the cause when injection fails. A successful low-level call also does not prove that the intended application control committed the text.
+
+### Parsec copy/paste and cross-OS key mapping
+
+Sources:
+- https://support.parsec.app/hc/en-us/articles/32381443626516-All-Advanced-Configuration-Options
+- https://support.parsec.app/hc/en-us/articles/32361367389972-Swap-Command-and-Ctrl-for-MacOS
+
+Parsec exposes explicit copy/paste policy between guest and host, and documents that macOS↔Windows modifier mapping is not inherently 1:1. Copy/paste permission, remote transport and shortcut mapping therefore belong to the input-path contract rather than being assumed from a connected session.
+
+Portable lessons: trace text entry as `source text → local clipboard/IME → remote/session transport → host clipboard/input injection → focused target control → committed target value`. Distinguish transport connectivity, clipboard state, key mapping, foreground ownership, integrity/UIPI and target-control behavior. `INPUT_SENT != TARGET_COMMITTED`; verify the final target value/read-back.
+
+## Electron / Chromium desktop runtime
+
+### Electron process model
+
+Source: https://www.electronjs.org/docs/latest/tutorial/process-model
+
+Electron inherits Chromium's multi-process architecture. A single main process manages application lifecycle and windows; each BrowserWindow/web embed can have its own renderer, and applications may also create utility processes.
+
+### Runtime process evidence
+
+Sources:
+- https://www.electronjs.org/docs/latest/api/process
+- https://www.electronjs.org/docs/latest/api/structures/render-process-gone-details
+
+Electron exposes process type, creation time, uptime, CPU and memory information, while renderer termination reasons distinguish clean exit, abnormal exit, killed, crash, OOM, launch failure, integrity failure and memory eviction.
+
+Portable lessons: process count alone is not leak evidence. Diagnose role, parentage/ownership, creation/restart timeline, resource trajectory and explicit crash/exit reasons before classifying renderer churn, orphaning or crash loops.
+
+## Cross-source synthesis
+
+The primary sources converge on a production-agent architecture with these independent engineering concerns:
+
+1. durable harness and externalized resumable state;
+2. finite context/attention budgeting;
+3. trajectory-level evaluation;
+4. end-to-end observability across model/tool/workflow/runtime/UI layers;
+5. explicit concurrency/backpressure and isolation;
+6. live tool/protocol contract testing with boundary-specific guardrail coverage;
+7. containment and blast-radius control;
+8. exact source→artifact→runtime identity and release verification;
+9. semantic-first desktop automation with explicit coordinate-space handling;
+10. lifecycle-aware Electron/Chromium process forensics;
+11. protocol-version-aware MCP bridge recovery with explicit application state;
+12. provenance-aware durable memory that resists stale or poisoned context becoming control authority;
+13. run ownership and durable progress that remain distinct from client visibility, renderer throttling and subscription/reattachment state;
+14. end-to-end text/input transport verification from source text to committed target value across local/remote UI boundaries.
+
+## Invalidation rule
+
+Before relying on a product-specific API, lifecycle, semantic-convention name, SDK feature, guardrail pipeline, tool family or protocol behavior, re-check the current primary source whenever the provider, protocol, SDK, host, model or runtime version materially changes. The portable engineering mechanism may survive while the named interface does not.

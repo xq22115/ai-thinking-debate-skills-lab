@@ -1,8 +1,8 @@
 # AI Efficiency Operating System — 2026 Native Plugin
 
-Status: **v1.4.1 package candidate / ordinary ChatGPT local-plugin HOST_LIVE not preclaimed**.
+Status: **v1.5.0 package candidate / ordinary ChatGPT local-plugin HOST_LIVE not preclaimed**.
 
-Version 1.4.1 keeps the Native Goal Harness, ordinary-ChatGPT Superpowers process bridge, and systematic GitHub operation layer, while correcting the highest-level activation boundary: **repository package state, ChatGPT plugin activation, workspace effective policy, hosted GitHub connector capability, GitHub remote state, and verified behavior are separate layers**. A merge or green CI can prove package state, but cannot by itself prove that ordinary ChatGPT imported/installed/enabled and behaviorally loaded this local plugin revision.
+Version 1.5.0 keeps the Native Goal Harness, ordinary-ChatGPT Superpowers process bridge, and systematic GitHub operation layer; adds the 12 demand-loaded AI Engineering Gap Pack production specialists; and registers the existing `recoverable-state` core owner for interruption-safe resume. It retains the highest-level activation boundary: **repository package state, ChatGPT plugin activation, workspace effective policy, hosted GitHub connector capability, GitHub remote state, and verified behavior are separate layers**. A merge or green CI can prove package state, but cannot by itself prove that ordinary ChatGPT imported/installed/enabled and behaviorally loaded this local plugin revision.
 
 ## Native Goal Harness 4.0
 
@@ -129,6 +129,19 @@ Historical prose, command exit status and agent self-report cannot substitute fo
 | `capability-forensics` | capability differs by model/harness/session/account/surface, including uncertain plugin activation/effective policy, or limiting layer is unclear |
 | `mcp-surface-engineering` | many/changing/conflicting tools, schema drift, discovery/entitlement/context pressure |
 | `agent-runtime-forensics` | tool/process reports success while file/process/network/artifact/postcondition state is missing or causally unclear |
+| `recoverable-state` | interrupted/restarted/compacted work must resume from a revalidated durable checkpoint without unsafe side-effect replay |
+| `agent-observability-slos` | end-to-end trace/SLO/cost/latency/error correlation is needed |
+| `agent-concurrency-backpressure` | hidden serialization, queue growth, retry amplification or unstable concurrency |
+| `agent-evaluation-operations` | fresh-context/holdout/judge/slice promotion evidence is required |
+| `long-horizon-context-engineering` | context growth, compaction, rehydration or stale-summary pressure |
+| `runtime-release-parity` | source/CI/package/installed/live process revisions may differ |
+| `tool-contract-testing` | live schema, pagination, idempotency, retry, authorization or effect semantics matter |
+| `identity-session-isolation` | accounts/profiles/workspaces share bridges/caches/namespaces and wrong-target effects are possible |
+| `agent-containment-and-rollback` | effectful automation needs blast-radius, least-privilege or rollback controls |
+| `model-routing-budget-control` | quality-floor/latency/cost/fallback routing must be measured |
+| `desktop-ui-automation-reliability` | UIAutomation/accessibility/DPI/focus/layout/input ownership is flaky |
+| `electron-chromium-process-forensics` | Electron/Chromium process count/churn/leak/crash-loop claims need lifecycle evidence |
+| `mcp-bridge-reliability` | MCP/native/local/remote bridge lifecycle, auth, affinity or reconnect health is uncertain |
 
 Implicit composition remains bounded to three skills per phase: goal gate, one primary specialist, and `evidence-watchdog` when current state/completion proof is required. A topic noun by itself is not enough to trigger a heavy specialist.
 

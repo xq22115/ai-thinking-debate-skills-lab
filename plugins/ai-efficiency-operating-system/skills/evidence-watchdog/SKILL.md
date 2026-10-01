@@ -56,6 +56,18 @@ Before a material repair, declare the applicable invariants; after the repair, r
 
 Any applicable invariant violation blocks `PASS`, even when the happy path succeeds.
 
+## Terminal evidence and receipt contract
+
+`ATTESTED != COMPLETED`. A receipt, callback, task status, hook, IPC acknowledgement or worker self-report proves only the layer it actually observes.
+
+For asynchronous/effectful work, distinguish when applicable:
+
+`REQUESTED → SENT → DELIVERED → ACKNOWLEDGED → INCORPORATED → VERIFIED`
+
+A material terminal claim should bind the strongest available independent planes: worker/thread health, completion event or terminal state, owning-system postcondition/read-back, and a persisted durable receipt/checkpoint. Not every system exposes every plane, but absent planes remain explicit evidence debt rather than being inferred.
+
+Receipts fail closed. Include schema/version, run/action ID, target identity/revision, timestamp, claimed state and postcondition/evidence pointer; never persist secrets or bearer credentials. Malformed receipts, impossible booleans/enums, stale target generations, unknown schema generations or ambiguous target identity are `UNKNOWN`/invalid — never success.
+
 ## GitHub mutation closure
 
 For repository writes, plugin/skill pulls, dependency updates and GitHub-backed configuration, require this closure when the layers are available:

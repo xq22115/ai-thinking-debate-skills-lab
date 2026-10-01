@@ -1,7 +1,7 @@
 {
   "name": "ai-efficiency-operating-system",
-  "version": "1.4.1",
-  "description": "Native goal-first agent harness with runtime preamble, phase-gated semantic routing, progressive skill disclosure, ordinary-ChatGPT GitHub operation orchestration, explicit host-activation truth, deep research, capability/MCP/runtime forensics, fresh verification, recovery and failure-trace optimization for complex ChatGPT and Codex tasks.",
+  "version": "1.5.0",
+  "description": "Native goal-first agent harness with runtime preamble, phase-gated semantic routing, progressive skill disclosure, ordinary-ChatGPT GitHub operation orchestration, explicit host-activation truth, deep research, capability/MCP/runtime forensics, production observability, concurrency/backpressure control, evaluation operations, long-horizon context engineering, recoverable state, runtime-release parity, tool contract testing, identity isolation, containment/rollback, model routing, fresh verification and recovery for complex ChatGPT and Codex tasks.",
   "author": {
     "name": "xq22115",
     "url": "https://github.com/xq22115"
@@ -29,7 +29,21 @@
     "capability-forensics",
     "mcp",
     "runtime-forensics",
+    "observability",
+    "slo",
+    "concurrency",
+    "backpressure",
+    "agent-evals",
+    "context-engineering",
+    "release-parity",
+    "tool-contracts",
+    "session-isolation",
+    "containment",
+    "rollback",
+    "model-routing",
+    "budget-control",
     "goal-integrity",
+    "recoverable-state",
     "long-horizon",
     "chatgpt-desktop",
     "codex"
@@ -38,13 +52,17 @@
     "displayName": "AI Efficiency Operating System",
     "developerName": "xq22115",
     "category": "Productivity",
-    "shortDescription": "Native goal harness, GitHub operation loop and activation truth",
-    "longDescription": "A goal-first harness with a thin implicit router, deterministic runtime preamble, progressive specialist disclosure, an ordinary-ChatGPT GitHub operation orchestrator with explicit hosted-app binding and host-activation gates, bounded composition, failure-trace optimization and fresh owning-system verification.",
-    "capabilities": ["Interactive", "Read", "Write"],
+    "shortDescription": "Goal harness plus production-grade AI engineering controls",
+    "longDescription": "A goal-first harness with progressive specialist disclosure, GitHub orchestration, explicit activation truth, production observability, concurrency/backpressure control, eval operations, context engineering, runtime parity, tool contracts, identity isolation, containment/rollback, model routing, failure-trace optimization and fresh owning-system verification.",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
     "defaultPrompt": [
       "Recover my actual goal, run the smallest useful native workflow, and verify the result with current owning evidence.",
       "Treat route failures as recovery signals rather than permission to reduce the goal or acceptance criteria.",
-      "For GitHub work, first separate repository package state, ChatGPT plugin activation, hosted connector capability, and GitHub remote state; then use the live GitHub app as an evidence-bound read-analyze-call-write-execute-verify loop."
+      "For production AI work, separate context, concurrency, observability, tool contracts, runtime identity, evaluation evidence, containment and model-routing economics; for GitHub work, also separate repository package state, ChatGPT plugin activation, hosted connector capability, and GitHub remote state before using the live GitHub app as an evidence-bound read-analyze-call-write-execute-verify loop."
     ]
   }
 }
