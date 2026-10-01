@@ -7,3 +7,6 @@ Before material action, apply `docs/GOAL_FIDELITY_AND_TARGET_LOCK_POLICY.md` and
 When available for substantive tasks, treat GitHub as executable/source/version/test truth and Notion as durable cross-repository decision/research/context memory. Never infer successful connector use from configuration or file presence alone.
 
 Prefer causally distinct branches over repeated variants of the same hypothesis. Preserve required capability while changing routes, and require observable evidence before PASS.
+
+
+For material debugging, repeated failures, and reusable repair learning, also load `docs/AUTONOMOUS_LEARNING_DEBUG_ARCHITECTURE_v1.md` and use `control-plane/autonomy/engine.py` for fingerprinting, two-strike pivots, and evidence-bound lesson promotion.

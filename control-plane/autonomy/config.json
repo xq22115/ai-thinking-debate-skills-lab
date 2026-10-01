@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "promotion": {
+    "min_verified_support": 2,
+    "min_independent_groups": 2,
+    "min_confidence": 0.75,
+    "max_contradiction_ratio": 0.2
+  },
+  "debugging": {
+    "same_mechanism_strike_limit": 2,
+    "required_pivot_dimensions": [
+      "hypothesis",
+      "mechanism",
+      "diagnostic_instrument",
+      "environment",
+      "verification_method"
+    ]
+  },
+  "fingerprinting": {
+    "algorithm": "sha256",
+    "normalized_prefix_length": 24
+  },
+  "required_lesson_fields": [
+    "id",
+    "title",
+    "fingerprint",
+    "component",
+    "root_cause",
+    "diagnostic",
+    "repair",
+    "verification",
+    "reuse_conditions",
+    "invalidation_conditions",
+    "evidence"
+  ]
+}

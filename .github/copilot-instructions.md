@@ -7,3 +7,5 @@ Before material action, apply `docs/GOAL_FIDELITY_AND_TARGET_LOCK_POLICY.md` and
 For substantive tasks, when available, use GitHub as executable/source/version/test truth and Notion as durable cross-repository decision/research/context memory. Never claim either connector was used unless there is actual tool/read-back evidence.
 
 Do not optimize for answer speed, token length, or ritual agent count. Optimize for target correctness, capability preservation, evidence-backed completion, and fewer user correction loops.
+
+For failures, repeated repair attempts, CI/runtime debugging, or reusable postmortems, load `docs/AUTONOMOUS_LEARNING_DEBUG_ARCHITECTURE_v1.md`. Use the custom agents under `.github/agents/` and the evidence-bound engine at `control-plane/autonomy/engine.py`; do not promote model prose directly into learned truth.
