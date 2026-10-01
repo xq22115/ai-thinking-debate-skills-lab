@@ -1,0 +1,51 @@
+name: Org to Personal Canonical Identity
+
+on:
+  pull_request:
+    paths:
+      - "control-plane/ai-system/control-plane/registry.json"
+      - "control-plane/ai-system/configs/global-policy-manifest.json"
+      - "plugins/ai-efficiency-operating-system/adapters/chatgpt/github-upstream-capability-contract.json"
+      - "plugins/ai-efficiency-operating-system/.codex-plugin/plugin.json"
+      - ".github/workflows/org-to-personal-canonical-identity.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact PR revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Validate JSON and canonical identities
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          registry = json.loads(Path("control-plane/ai-system/control-plane/registry.json").read_text())
+          policy = json.loads(Path("control-plane/ai-system/configs/global-policy-manifest.json").read_text())
+          contract = json.loads(Path("plugins/ai-efficiency-operating-system/adapters/chatgpt/github-upstream-capability-contract.json").read_text())
+          plugin = json.loads(Path("plugins/ai-efficiency-operating-system/.codex-plugin/plugin.json").read_text())
+
+          assert registry["canonical_repository"] == "xq22115-pixel/demo-repository"
+          assert policy["canonical_repository"] == "xq22115-pixel/ai-thinking-debate-skills-lab"
+          assert contract["local_package_activation_truth"]["github_repository"] == "xq22115-pixel/ai-thinking-debate-skills-lab"
+          assert plugin["repository"] == "https://github.com/xq22115-pixel/ai-thinking-debate-skills-lab"
+
+          print("canonical_repository_identity=PASS")
+          PY
+
+      - name: Ensure active canonical files no longer bind organization owner
+        run: |
+          set -euo pipefail
+          ! grep -F 'xq22115/demo-repository' control-plane/ai-system/control-plane/registry.json
+          ! grep -F 'xq22115/ai-thinking-debate-skills-lab' control-plane/ai-system/configs/global-policy-manifest.json
+          ! grep -F 'xq22115/ai-thinking-debate-skills-lab' plugins/ai-efficiency-operating-system/adapters/chatgpt/github-upstream-capability-contract.json
+          ! grep -F 'https://github.com/xq22115/ai-thinking-debate-skills-lab' plugins/ai-efficiency-operating-system/.codex-plugin/plugin.json

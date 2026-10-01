@@ -6,7 +6,7 @@
     "name": "xq22115",
     "url": "https://github.com/xq22115"
   },
-  "repository": "https://github.com/xq22115/ai-thinking-debate-skills-lab",
+  "repository": "https://github.com/xq22115-pixel/ai-thinking-debate-skills-lab",
   "skills": "./skills/",
   "apps": "./.app.json",
   "license": "MIT",

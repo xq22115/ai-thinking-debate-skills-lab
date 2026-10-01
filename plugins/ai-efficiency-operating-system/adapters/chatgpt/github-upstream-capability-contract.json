@@ -23,7 +23,7 @@
   },
   "local_package_activation_truth": {
     "package_name": "ai-efficiency-operating-system",
-    "github_repository": "xq22115/ai-thinking-debate-skills-lab",
+    "github_repository": "xq22115-pixel/ai-thinking-debate-skills-lab",
     "repository_package_or_ci_pass_does_not_install_chatgpt_plugin": true,
     "repository_marketplace_presence_does_not_prove_chatgpt_import": true,
     "repository_marketplace_policy_values_do_not_set_workspace_effective_policy": true,

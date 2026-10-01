@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "profile_id": "global-policy-durability-v1",
-  "canonical_repository": "xq22115/ai-thinking-debate-skills-lab",
+  "canonical_repository": "xq22115-pixel/ai-thinking-debate-skills-lab",
   "objective": "keep global AI behavior durable, inspectable, rehydratable, and resistant to silent instruction decay without bloating every model context",
   "kernel": {
     "path": "docs/GLOBAL_POLICY_KERNEL.md",
