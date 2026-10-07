@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "scope": "AI writing/drafting tools or materially new product releases published from 2026-06-01 through 2026-08-31, prioritizing legal and high-stakes enterprise writing",
+  "verified_on": "2026-08-28",
+  "verification_rule": "Each accepted item uses a vendor-controlled official URL, a publication/release date inside the requested window, a unique vendor/tool identity, and an explicit writing/drafting or drafting-enabling capability. Availability wording is kept as stated by the vendor; no free-access claim is inferred.",
+  "items": [
+    {
+      "lane_id": "01",
+      "tool_id": "harvey-ii",
+      "vendor": "Harvey",
+      "tool_name": "Harvey II",
+      "release_date": "2026-08-18",
+      "official_url": "https://www.harvey.ai/blog/introducing-harvey-ii",
+      "release_status": "introduced_and_available_in_platform",
+      "specialization": "legal AI agents with matter/project context, institutional templates, memory of user style and legal-specific reasoning",
+      "writing_capabilities": [
+        "drafts can inherit firm or in-house templates, headings, numbering, defined terms and citation style",
+        "agents use prior matter context and user preferences so substantive legal work does not restart from a blank prompt"
+      ],
+      "access": "vendor platform / request demo",
+      "evidence_note": "Official Harvey product announcement dated 2026-08-18 states that Harvey II agents inherit matter context and memory and can work from firm templates so drafts arrive in the team's established shape."
+    },
+    {
+      "lane_id": "02",
+      "tool_id": "cocounsel-next-gen-legal",
+      "vendor": "Thomson Reuters",
+      "tool_name": "Next Generation CoCounsel Legal",
+      "release_date": "2026-06-22",
+      "official_url": "https://www.thomsonreuters.com/en-us/posts/innovation/the-next-generation-of-cocounsel-legal-is-here-and-early-access-starts-now/",
+      "release_status": "customer_ready_early_access",
+      "specialization": "high-stakes legal research, analysis, drafting and redlining grounded in Westlaw, Practical Law and firm precedents",
+      "writing_capabilities": [
+        "creates a legal work plan, retrieves authority and precedents, then drafts with citations",
+        "supports transactional redlining and agentic brief/motion drafting with attorney review"
+      ],
+      "access": "early access for U.S. CoCounsel Legal customers from the week of 2026-06-22; vendor product access",
+      "evidence_note": "Official Thomson Reuters announcement says every U.S. CoCounsel Legal customer receives the next-generation toggle during the launch week and describes drafting with citations and redlining."
+    },
+    {
+      "lane_id": "03",
+      "tool_id": "lexis-protege-in-house",
+      "vendor": "LexisNexis",
+      "tool_name": "Lexis+ with Protégé for In-House Legal and Compliance",
+      "release_date": "2026-07-08",
+      "official_url": "https://www.lexisnexis.com/community/pressroom/b/news/posts/lexis-with-protege-is-now-purpose-built-ai-for-in-house-legal-and-compliance-teams",
+      "supporting_official_urls": [
+        "https://www.lexisnexis.com/en-us/products/lexis-plus-protege/legal-drafting.page"
+      ],
+      "release_status": "announced_available_platform_capability",
+      "specialization": "purpose-built legal and compliance AI for in-house teams, using authoritative LexisNexis content and enterprise context",
+      "writing_capabilities": [
+        "LexisNexis' official drafting page says Protégé drafts, customizes, and refines legal documents including agreements/contracts and client communications",
+        "the 2026-07-08 official release specifically targets day-to-day in-house legal and compliance work rather than general consumer writing"
+      ],
+      "access": "Lexis+ with Protégé product access",
+      "evidence_note": "The official 2026-07-08 PressRoom release proves the new in-house/legal-compliance specialization; the official Legal AI Drafting product page independently proves drafting of legal documents and client communications."
+    },
+    {
+      "lane_id": "04",
+      "tool_id": "legalon-prompt-workflows",
+      "vendor": "LegalOn Technologies",
+      "tool_name": "LegalOn Prompt Workflows",
+      "release_date": "2026-07-28",
+      "official_url": "https://www.legalontech.com/press-releases/legalon-launches-100-attorney-built-prompt-workflows-for-in-house-legal",
+      "release_status": "available_now_to_existing_customers",
+      "specialization": "100+ attorney-built, legally structured multi-step workflows across contracts, compliance, M&A, litigation and other practice areas",
+      "writing_capabilities": [
+        "includes drafting/redlining clause workflows, negotiation-ready counterproposals and legal work product generation",
+        "workflows can incorporate team preferences, matter history, supporting files and internal standards"
+      ],
+      "access": "existing LegalOn customers; prospective customers can request a demo or trial",
+      "evidence_note": "Official LegalOn release dated 2026-07-28 states that Prompt Workflows are available now and that LegalOn Assistant can draft; the release describes attorney-built workflows aimed at finished legal work product."
+    },
+    {
+      "lane_id": "05",
+      "tool_id": "luminance-luna-crescent",
+      "vendor": "Luminance",
+      "tool_name": "Luna Crescent",
+      "release_date": "2026-06-19",
+      "official_url": "https://www.luminance.com/press/luminance-unveils-luna-crescent-the-vertical-ai-model-powering-contract-intelligence-with-market-leading-accuracy-and-speed",
+      "release_status": "embedded_in_luminance_contract_intelligence",
+      "specialization": "proprietary vertical legal model trained for the structure, language and commercial reality of contracts",
+      "writing_capabilities": [
+        "powers Legal-Grade agentic workflows across contract review, negotiation and related drafting actions",
+        "specialist contract-language understanding is used to identify obligations, non-standard clauses and legal/commercial consequences"
+      ],
+      "access": "Luminance platform / request demo",
+      "evidence_note": "Official Luminance announcement dated 2026-06-19 says Luna Crescent is purpose-built for contract work and already embedded across contract intelligence features."
+    },
+    {
+      "lane_id": "06",
+      "tool_id": "gc-ai-easy-edit",
+      "vendor": "GC AI",
+      "tool_name": "Easy Edit",
+      "release_date": "2026-07-30",
+      "official_url": "https://gc.ai/blog/gc-ai-easy-edit",
+      "release_status": "generally_available",
+      "specialization": "in-house legal drafting and redlining directly beside the AI chat in a Word-compatible document workflow",
+      "writing_capabilities": [
+        "revises existing contract language as tracked redlines",
+        "drafts new clauses or schedules and exports native Word tracked changes/comments"
+      ],
+      "access": "generally available to GC AI customers at launch; vendor trial/demo options",
+      "evidence_note": "Official GC AI launch post dated 2026-07-30 states Easy Edit is generally available and can revise clauses, draft new language and preserve tracked changes."
+    },
+    {
+      "lane_id": "07",
+      "tool_id": "wordsmith-payments-agents",
+      "vendor": "Wordsmith AI",
+      "tool_name": "Wordsmith for Payments — Three Legal AI Agents",
+      "release_date": "2026-07-09",
+      "official_url": "https://www.wordsmith.ai/blog/wordsmith-for-payments-three-agents-built-for-the-work",
+      "release_status": "product_release",
+      "specialization": "legal AI agents for payment-industry contracts, sponsor-bank obligations and scheme-rule changes",
+      "writing_capabilities": [
+        "agents read, check and draft payment-sector legal work with human sign-off",
+        "drafts attestations, policy updates, contract wording and merchant notices tied to applicable rules"
+      ],
+      "access": "Wordsmith product access / contact vendor",
+      "evidence_note": "Official Wordsmith PRODUCT post dated 2026-07-09 says the three agents each read, check and draft, including contract wording, notices, attestations and policy updates."
+    },
+    {
+      "lane_id": "08",
+      "tool_id": "goheather-v3",
+      "vendor": "goHeather",
+      "tool_name": "goHeather Version 3",
+      "release_date": "2026-08-25",
+      "official_url": "https://www.goheather.io/post/what-s-new-in-goheather-in-august-2026",
+      "release_status": "version_3_available",
+      "specialization": "chat-native legal AI for contract review, redlining and legal-document generation",
+      "writing_capabilities": [
+        "drafts contracts from scratch through an approval-first outline and document-editor workflow",
+        "can generate contracts, memos, pleadings and other legal documents and revise drafts conversationally"
+      ],
+      "access": "goHeather product",
+      "evidence_note": "Official goHeather August 2026 update dated 2026-08-25 states Version 3 is here, makes the product chat-native and adds contract drafting from scratch."
+    },
+    {
+      "lane_id": "09",
+      "tool_id": "definely-vault",
+      "vendor": "Definely",
+      "tool_name": "Definely Vault",
+      "release_date": "2026-08-13",
+      "official_url": "https://www.definely.com/blogs/definely-launches-vault-ai-powered-knowledge-management-solution-for-legal-professionals",
+      "release_status": "launched",
+      "specialization": "AI-powered legal knowledge retrieval inside Microsoft Word for precedent- and clause-based drafting",
+      "writing_capabilities": [
+        "surfaces firm precedents and clauses with context-aware recommendations",
+        "supports rapid contract creation by inserting gold-standard precedent language directly into the draft"
+      ],
+      "access": "Definely subscription product / contact vendor",
+      "evidence_note": "Official Definely launch post dated August 13, 2026 describes Vault as an AI-powered legal knowledge solution and explicitly lists rapid contract creation from trusted precedents."
+    },
+    {
+      "lane_id": "10",
+      "tool_id": "writer-playbooks-july-2026",
+      "vendor": "WRITER",
+      "tool_name": "Upgraded WRITER Playbooks",
+      "release_date": "2026-07-13",
+      "official_url": "https://writer.com/blog/more-powerful-playbooks/",
+      "release_status": "rolling_out_upgraded_experience",
+      "specialization": "enterprise AI writing/workflow playbooks with reusable drafting, review, voice, testing and bulk execution controls",
+      "writing_capabilities": [
+        "chains research, briefing, drafting, review and publishing steps into reusable workflows",
+        "supports per-step voice/instructions, output testing and bulk runs for consistent enterprise writing"
+      ],
+      "access": "WRITER customer playbooks; upgraded experience rolled out from 2026-07-13 with migration in July/August",
+      "evidence_note": "Official WRITER announcement dated 2026-07-13 describes the upgraded Playbooks rollout, including drafting/review chains, voice profiles, testing and bulk execution."
+    }
+  ],
+  "rejected_or_deferred_examples": [
+    {
+      "name": "Legora + Avvoka first-draft integration",
+      "reason": "Official 2026-08-24 announcement says beta availability is planned for Q4 2026, so it was excluded from the ten immediately usable/available-or-active releases."
+    },
+    {
+      "name": "Litera connected contract drafting and negotiation workflow",
+      "reason": "Official 2026-08-18 announcement describes an ILTACON preview; general availability is not stated in the launch page, so it was excluded from the strict ten."
+    },
+    {
+      "name": "Draftwise Legal Ontology",
+      "reason": "The 2026-08-24 launch is a powerful proprietary-intelligence layer for legal knowledge, but the launch itself is less directly a writing/drafting release than the accepted ten."
+    }
+  ]
+}

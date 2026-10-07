@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "research_window": {
+    "since": "2026-06-01",
+    "until": "2026-08-31"
+  },
+  "lanes": [
+    {
+      "lane_id": "01",
+      "tool_id": "harvey-ii",
+      "vendor": "Harvey",
+      "product": "Harvey II",
+      "official_hosts": ["harvey.ai"],
+      "seed_urls": ["https://www.harvey.ai/blog/introducing-harvey-ii"],
+      "discovery_urls": ["https://www.harvey.ai/blog"],
+      "keywords": ["draft", "legal", "matter", "memory", "agent", "writing", "contract"]
+    },
+    {
+      "lane_id": "02",
+      "tool_id": "cocounsel-next-gen-legal",
+      "vendor": "Thomson Reuters",
+      "product": "Next Generation CoCounsel Legal",
+      "official_hosts": ["thomsonreuters.com"],
+      "seed_urls": ["https://www.thomsonreuters.com/en-us/posts/innovation/the-next-generation-of-cocounsel-legal-is-here-and-early-access-starts-now/"],
+      "discovery_urls": ["https://www.thomsonreuters.com/en-us/posts/innovation-topics/cocounsel/"],
+      "keywords": ["draft", "legal", "cocounsel", "agent", "westlaw", "practical law", "transaction"]
+    },
+    {
+      "lane_id": "03",
+      "tool_id": "lexis-protege-in-house",
+      "vendor": "LexisNexis",
+      "product": "Lexis+ with Protégé for In-House Legal and Compliance",
+      "official_hosts": ["lexisnexis.com"],
+      "seed_urls": ["https://www.lexisnexis.com/community/pressroom/b/news/posts/lexis-with-protege-is-now-purpose-built-ai-for-in-house-legal-and-compliance-teams"],
+      "discovery_urls": ["https://www.lexisnexis.com/community/pressroom/"],
+      "keywords": ["draft", "legal", "protege", "compliance", "in-house", "workflow", "writing"]
+    },
+    {
+      "lane_id": "04",
+      "tool_id": "legalon-prompt-workflows",
+      "vendor": "LegalOn Technologies",
+      "product": "LegalOn Prompt Workflows",
+      "official_hosts": ["legalontech.com"],
+      "seed_urls": ["https://www.legalontech.com/press-releases/legalon-launches-100-attorney-built-prompt-workflows-for-in-house-legal"],
+      "discovery_urls": ["https://us-direct.legalontech.com/new-at-legalon"],
+      "keywords": ["draft", "legal", "workflow", "redline", "clause", "counterproposal", "attorney"]
+    },
+    {
+      "lane_id": "05",
+      "tool_id": "luminance-luna-crescent",
+      "vendor": "Luminance",
+      "product": "Luna Crescent",
+      "official_hosts": ["luminance.com"],
+      "seed_urls": ["https://www.luminance.com/press/luminance-unveils-luna-crescent-the-vertical-ai-model-powering-contract-intelligence-with-market-leading-accuracy-and-speed"],
+      "discovery_urls": ["https://www.luminance.com/about/press-releases/"],
+      "keywords": ["draft", "legal", "contract", "luna", "agent", "negotiate", "vertical ai"]
+    },
+    {
+      "lane_id": "06",
+      "tool_id": "gc-ai-easy-edit",
+      "vendor": "GC AI",
+      "product": "Easy Edit",
+      "official_hosts": ["gc.ai"],
+      "seed_urls": ["https://gc.ai/blog/gc-ai-easy-edit"],
+      "discovery_urls": ["https://gc.ai/blog"],
+      "keywords": ["draft", "legal", "redline", "word", "clause", "contract", "edit"]
+    },
+    {
+      "lane_id": "07",
+      "tool_id": "wordsmith-payments-agents",
+      "vendor": "Wordsmith AI",
+      "product": "Wordsmith for Payments — Three Legal AI Agents",
+      "official_hosts": ["wordsmith.ai"],
+      "seed_urls": ["https://www.wordsmith.ai/blog/wordsmith-for-payments-three-agents-built-for-the-work"],
+      "discovery_urls": ["https://www.wordsmith.ai/blog"],
+      "keywords": ["draft", "legal", "agent", "contract", "notice", "policy", "payments"]
+    },
+    {
+      "lane_id": "08",
+      "tool_id": "goheather-v3",
+      "vendor": "goHeather",
+      "product": "goHeather Version 3",
+      "official_hosts": ["goheather.io"],
+      "seed_urls": ["https://www.goheather.io/post/what-s-new-in-goheather-in-august-2026"],
+      "discovery_urls": ["https://www.goheather.io/"],
+      "keywords": ["draft", "legal", "contract", "version 3", "chat-native", "redline", "memo"]
+    },
+    {
+      "lane_id": "09",
+      "tool_id": "definely-vault",
+      "vendor": "Definely",
+      "product": "Definely Vault",
+      "official_hosts": ["definely.com"],
+      "seed_urls": ["https://www.definely.com/blogs/definely-launches-vault-ai-powered-knowledge-management-solution-for-legal-professionals"],
+      "discovery_urls": ["https://www.definely.com/blogs"],
+      "keywords": ["draft", "legal", "precedent", "clause", "vault", "contract", "word"]
+    },
+    {
+      "lane_id": "10",
+      "tool_id": "writer-playbooks-july-2026",
+      "vendor": "WRITER",
+      "product": "Upgraded WRITER Playbooks",
+      "official_hosts": ["writer.com"],
+      "seed_urls": ["https://writer.com/blog/more-powerful-playbooks/"],
+      "discovery_urls": ["https://writer.com/blog/"],
+      "keywords": ["draft", "writing", "playbook", "voice", "review", "publishing", "enterprise"]
+    }
+  ]
+}
