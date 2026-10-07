@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ordinary Chat Agent Control</title>
+  <style>
+    :root { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color-scheme: light dark; }
+    body { max-width: 1100px; margin: 0 auto; padding: 24px; }
+    h1 { margin-bottom: 4px; }
+    .muted { opacity: .7; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(300px,1fr)); gap: 16px; }
+    .card { border: 1px solid currentColor; border-radius: 12px; padding: 16px; opacity: .92; }
+    label { display: block; margin: 8px 0 4px; }
+    input, button, select { width: 100%; box-sizing: border-box; padding: 9px; font: inherit; }
+    button { margin-top: 10px; cursor: pointer; }
+    pre { overflow: auto; white-space: pre-wrap; word-break: break-word; min-height: 120px; }
+    .actors { display: grid; grid-template-columns: repeat(5,1fr); gap: 6px; }
+    .actors button { margin: 0; }
+  </style>
+</head>
+<body>
+  <h1>Ordinary Chat Agent Control</h1>
+  <p class="muted">Read-only localhost dashboard. It cannot submit or mutate agent runs.</p>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Bridge Preflight</h2>
+      <label for="workspace">Workspace</label>
+      <input id="workspace" placeholder="/absolute/project/path" />
+      <label for="repo">Repository</label>
+      <input id="repo" placeholder="/absolute/repository/path" />
+      <button id="preflight">Check</button>
+      <pre id="preflightOutput">No check yet.</pre>
+    </section>
+
+    <section class="card">
+      <h2>Run Status</h2>
+      <label for="runId">Run ID</label>
+      <input id="runId" pattern="[0-9a-f]{32}" placeholder="32-character run id" />
+      <button id="status">Refresh</button>
+      <pre id="statusOutput">No run selected.</pre>
+    </section>
+  </div>
+
+  <section class="card" style="margin-top:16px">
+    <h2>A01–A10 Receipt Summary</h2>
+    <div class="actors" id="actors"></div>
+    <pre id="receiptOutput">Select an actor after entering a run id.</pre>
+  </section>
+
+<script>
+const byId = (id) => document.getElementById(id);
+const pretty = (value) => JSON.stringify(value, null, 2);
+async function getJson(url) {
+  const response = await fetch(url, { cache: 'no-store' });
+  const data = await response.json();
+  return { status: response.status, data };
+}
+
+byId('preflight').onclick = async () => {
+  const params = new URLSearchParams();
+  if (byId('workspace').value) params.set('workspace', byId('workspace').value);
+  if (byId('repo').value) params.set('repo', byId('repo').value);
+  try { byId('preflightOutput').textContent = pretty((await getJson('/api/preflight?' + params)).data); }
+  catch (error) { byId('preflightOutput').textContent = String(error); }
+};
+
+byId('status').onclick = async () => {
+  const runId = byId('runId').value.trim();
+  if (!/^[0-9a-f]{32}$/.test(runId)) {
+    byId('statusOutput').textContent = 'Invalid run id.';
+    return;
+  }
+  try { byId('statusOutput').textContent = pretty((await getJson('/api/run/' + runId)).data); }
+  catch (error) { byId('statusOutput').textContent = String(error); }
+};
+
+for (let i = 1; i <= 10; i++) {
+  const actor = 'A' + String(i).padStart(2, '0');
+  const button = document.createElement('button');
+  button.textContent = actor;
+  button.onclick = async () => {
+    const runId = byId('runId').value.trim();
+    if (!/^[0-9a-f]{32}$/.test(runId)) {
+      byId('receiptOutput').textContent = 'Enter a valid run id first.';
+      return;
+    }
+    try { byId('receiptOutput').textContent = pretty((await getJson(`/api/receipt/${runId}/${actor}`)).data); }
+    catch (error) { byId('receiptOutput').textContent = String(error); }
+  };
+  byId('actors').appendChild(button);
+}
+</script>
+</body>
+</html>

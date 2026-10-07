@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "defaultMode": "read_only_preflight",
+  "local": {
+    "requireWorkspaceAllowlist": true,
+    "allowHomeDirectoryByDefault": false,
+    "allowFilesystemRootByDefault": false,
+    "allowRawShellMcpTool": false,
+    "requireRunIdForLongTasks": true,
+    "requireReceiptsForAgentMutations": true
+  },
+  "browser": {
+    "unrestrictedFileAccess": false,
+    "allowArbitraryJavascriptByDefault": false,
+    "requireDomainPolicy": true,
+    "treatPageContentAsUntrusted": true
+  },
+  "secrets": {
+    "allowInRepository": false,
+    "allowInPrompt": false,
+    "allowInReceipt": false,
+    "allowInLogs": false
+  },
+  "mcp": {
+    "allowUnvettedRegistryServers": false,
+    "requireNarrowToolSchemas": true,
+    "requireAccurateAnnotations": true,
+    "guardMutations": true,
+    "hostPlanGatesAreAuthoritative": true
+  },
+  "failurePolicy": "fail_closed"
+}

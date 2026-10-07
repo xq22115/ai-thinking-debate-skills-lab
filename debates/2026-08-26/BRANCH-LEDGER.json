@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-08-26",
+  "base": "main",
+  "branches": [
+    {"id": 1, "branch": "debate-01-mcp-core", "commit": "aefbc29b41374682add56503d45d530888f5912e", "topic": "MCP core"},
+    {"id": 2, "branch": "debate-02-local-bridge", "commit": "39c21b82f193e962bbbece719333c0141ae7d067", "topic": "local bridge"},
+    {"id": 3, "branch": "debate-03-agent-runtime", "commit": "616682e81e927fc0e904586770f5a78c33d7c1d7", "topic": "agent runtime"},
+    {"id": 4, "branch": "debate-04-browser-control", "commit": "fc7593b257271100c539612447ac6c1ae9868a8f", "topic": "browser control"},
+    {"id": 5, "branch": "debate-05-mcp-apps-ui", "commit": "ccb9ef8d1f4130900a4a4cd14c2f3b458a9d4085", "topic": "MCP Apps and UI"},
+    {"id": 6, "branch": "debate-06-skill-routing", "commit": "a3288a54d005a99cb4f00dbf1e4486b3cf0b4c9e", "topic": "skill routing"},
+    {"id": 7, "branch": "debate-07-memory-knowledge", "commit": "0e5d79d700eee5431057c7726f5224da3478e692", "topic": "memory and knowledge"},
+    {"id": 8, "branch": "debate-08-evals-reliability", "commit": "5ad8876c67485364bbf69dac3d1ab615aecec56a", "topic": "evals and reliability"},
+    {"id": 9, "branch": "debate-09-security-permissions", "commit": "914c3a9ab4309e320275e64aac688eee36ef26ee", "topic": "security and permissions"},
+    {"id": 10, "branch": "debate-10-deployment-cost", "commit": "cb9d4218ed21c841837a92f8cc2d40a756f642c8", "topic": "deployment and cost"}
+  ]
+}
