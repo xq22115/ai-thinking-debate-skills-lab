@@ -24,5 +24,6 @@
 ## Entry points and truth boundaries
 
 - Engineering repair: `skills/skills/root-cause-falsification/SKILL.md` and its manifest machine contract.
-- Execution/continuity: `docs/GITHUB_EXECUTION_INTEGRITY_POLICY.md`, the existing control-plane issue/claim/workflow receipts and `control-plane/scripts/run_quality_bound_workflow.py` where supported.
+- GitHub execution integrity: `docs/GITHUB_EXECUTION_INTEGRITY_POLICY.md` and `control-plane/ai-system/configs/execution-integrity-global.json`; use the existing control-plane issue/claim/workflow receipts and `control-plane/scripts/run_quality_bound_workflow.py` where supported.
+- Desktop execution: `docs/DESKTOP_AGENT_EXECUTION_POLICY.md` and `control-plane/ai-system/configs/desktop-agent-execution-global.json` when working on an actual authorized machine or desktop-agent route.
 - If runtime proof is unavailable, mark its criterion `NOT RUN`/`BLOCKED` and name the missing evidence; continue independent achievable work without claiming an account-wide change.
