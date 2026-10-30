@@ -69,5 +69,29 @@ class WritePlanScopeTests(unittest.TestCase):
         self.assertEqual(result["result"], "PASS", result)
 
 
+    def test_single_star_cannot_cross_directory_boundary(self):
+        result = scope.verify_scope(
+            plan(["src/api/*"]), ["src/api/internal/secret.py"]
+        )
+        self.assertEqual(result["result"], "VETO", result)
+        self.assertEqual(result["undeclared_paths"], ["src/api/internal/secret.py"])
+
+    def test_double_star_can_cross_directory_boundary(self):
+        result = scope.verify_scope(
+            plan(["src/**/routes.py"]), ["src/routes.py", "src/api/v2/routes.py"]
+        )
+        self.assertEqual(result["result"], "PASS", result)
+
+    def test_invalid_scope_pattern_is_veto_even_with_no_changes(self):
+        result = scope.verify_scope(plan(["src/../private/**"]), [])
+        self.assertEqual(result["result"], "VETO", result)
+        self.assertIn("src/../private/**", result["invalid_declared_patterns"])
+
+    def test_noncanonical_changed_paths_are_veto(self):
+        result = scope.verify_scope(plan(["src/**"]), ["src//file.py", "src/./file.py"])
+        self.assertEqual(result["result"], "VETO", result)
+        self.assertEqual(len(result["invalid_changed_paths"]), 2)
+
+
 if __name__ == "__main__":
     unittest.main()
