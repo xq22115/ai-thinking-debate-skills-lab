@@ -131,7 +131,7 @@ PASS requires all of the following:
 - the approved `plan_head_sha` is an ancestor of the receipt-declared work head;
 - that work head is an ancestor of the final receipt commit;
 - the plan and ownership claim still match their approved SHA-256 snapshots;
-- the receipt is schema v2 and its Issue/run/actor/branch/`claim_id`/executor/execution/`plan_head_sha` all match the immutable snapshot;
+- the receipt is schema v3 and its Issue/run/actor/branch/`claim_id`/executor/execution/`plan_head_sha` all match the immutable snapshot;
 - task paths changed from plan head through work head stay inside the approved `write_set`;
 - paths changed from work head through final head are **exactly** that actor's own receipt path.
 
@@ -149,7 +149,7 @@ python3 scripts/adjudicate_agent_receipts.py \
   --output agent-adjudication.json
 ```
 
-The adjudicator only accepts PASS/VETO receipt schema v2. Runtime PASS requires A01-A10 all PASS, distinct executor/execution/evidence partitions and branches, zero VETO/missing receipts, and no direct failing evidence. Majority vote cannot override VETO.
+The adjudicator only accepts PASS/VETO receipt schema v3. Runtime PASS requires A01-A10 all PASS, distinct executor/execution/evidence partitions and branches, zero VETO/missing receipts, and no direct failing evidence. Majority vote cannot override VETO.
 
 Snapshot-bound verification and adjudication are separate gates: the former proves each receipt belongs to the approved claim/work lineage; the latter proves the ten-agent aggregate contract.
 
@@ -192,9 +192,9 @@ Before treating A01–A10 as independently executed, prepare ten distinct Git wo
 python3 scripts/local_agent_executor.py --claude-path ~/.local/bin/claude --probe-only
 ```
 
-If authentication is unavailable, the only valid result is `BLOCKED` and zero model processes. After authentication, launch with an explicit per-agent budget and output directory. Runtime independence requires ten distinct wrapper-observed process instances, execution IDs, Claude session IDs, workspaces, and branches. Tool permissions are a **positive allowlist**: read-only roles get `Read,Glob,Grep`; A07 gets `Read,Glob,Grep,Edit,Write`; `Bash` is denied by omission for every role unless a future separately reviewed contract explicitly adds a safe shell capability. Any child exit, missing/duplicate session, duplicate workspace/branch, or malformed structured decision fails closed. A runner PASS is executor evidence only; final task PASS still requires claim-bound receipt v2 materialization, snapshot verification, A01–A10 adjudication, and fresh-base verification.
+If authentication is unavailable, the only valid result is `BLOCKED` and zero model processes. After authentication, launch with an explicit per-agent budget and output directory. Runtime independence requires ten distinct wrapper-observed process instances, execution IDs, Claude session IDs, workspaces, and branches. Tool permissions are a **positive allowlist**: read-only roles get `Read,Glob,Grep`; A07 gets `Read,Glob,Grep,Edit,Write`; `Bash` is denied by omission for every role unless a future separately reviewed contract explicitly adds a safe shell capability. Any child exit, missing/duplicate session, duplicate workspace/branch, or malformed structured decision fails closed. A runner PASS is executor evidence only; final task PASS still requires claim-bound receipt v3 materialization, snapshot verification, A01–A10 adjudication, and fresh-base verification.
 
-## Finalize one local execution into receipt v2
+## Finalize one local execution into receipt v3
 
 After a local actor process finishes, do not copy its model JSON directly into Git. Use the trusted finalizer with the collector-produced actor snapshot and wrapper-produced execution row:
 
@@ -202,7 +202,7 @@ After a local actor process finishes, do not copy its model JSON directly into G
 python3 scripts/finalize_local_agent_execution.py --repo <actor-workspace> --actor A07 --snapshot-json <actor-snapshot.json> --execution-json <executor-output/A07.json> --output <finalization.json>
 ```
 
-The execution identity must match the predeclared claim. Read-only agents must have a clean workspace. A07 changes are committed only after write-set scope verification. Existing staged changes are VETO. The finalizer writes receipt schema v2, creates a receipt-only commit, runs snapshot verification, and never pushes the branch. Only then may the receipt enter ten-agent adjudication.
+The execution identity must match the predeclared claim. Read-only agents must have a clean workspace. A07 changes are committed only after write-set scope verification. Existing staged changes are VETO. The finalizer writes receipt schema v3, creates a receipt-only commit, runs snapshot verification, and never pushes the branch. Only then may the receipt enter ten-agent adjudication.
 
 ## Prepare ten local agent workspaces before backend launch
 
@@ -228,7 +228,7 @@ The orchestrator executes A01 first; A02/A03/A04 after A01; then A05, A06, A07, 
 
 ## Durable runtime attestation
 
-Every schema-v2 PASS/VETO receipt carries a **runtime attestation** produced by the trusted wrapper, not by model self-report. It persists the provider, wrapper-observed process-instance ID, OS PID, monotonic spawn timestamp, backend-session SHA-256, and stdout/stderr SHA-256 values. The raw backend session ID is never persisted in Git. Ten PASS receipts must have distinct process-instance IDs and distinct backend-session hashes.
+Every schema-v3 PASS/VETO receipt carries a **runtime attestation** produced by the trusted wrapper, not by model self-report. It persists the provider, wrapper-observed process-instance ID, OS PID, monotonic spawn timestamp, backend-session SHA-256, and stdout/stderr SHA-256 values. The raw backend session ID is never persisted in Git. Ten PASS receipts must have distinct process-instance IDs and distinct backend-session hashes.
 
 ## Run lifecycle manager
 
