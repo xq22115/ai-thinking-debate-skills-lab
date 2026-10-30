@@ -107,7 +107,7 @@
     "distinct_branches_required": true,
     "direct_failure_overrides_votes": true,
     "repository_receipts_do_not_prove_physical_independence": true,
-    "pass_veto_receipt_schema_version": 2,
+    "pass_veto_receipt_schema_version": 3,
     "receipt_claim_binding_required": true,
     "receipt_plan_head_binding_required": true,
     "receipt_work_head_semantics": "pre-receipt-task-head",
