@@ -107,10 +107,12 @@ jobs:
           set -u
           HEAD_LOG=/tmp/head-control-plane-tests.log
           BASE_LOG=/tmp/main-control-plane-tests.log
+          HEAD_EXIT=0
           (
             cd control-plane
             python -m unittest discover -s tests -p 'test_*.py'
-          ) >"$HEAD_LOG" 2>&1 || true
+          ) >"$HEAD_LOG" 2>&1 || HEAD_EXIT=$?
+          export HEAD_EXIT
 
           EVENT_NAME='${{ github.event_name }}'
           REF_NAME='${{ github.ref_name }}'
@@ -127,12 +129,15 @@ jobs:
           fi
           echo "Causal baseline revision: ${BASE_SHA}"
           git worktree add --detach /tmp/main-baseline "$BASE_SHA"
+          BASE_EXIT=0
           (
             cd /tmp/main-baseline/control-plane
             python -m unittest discover -s tests -p 'test_*.py'
-          ) >"$BASE_LOG" 2>&1 || true
+          ) >"$BASE_LOG" 2>&1 || BASE_EXIT=$?
+          export BASE_EXIT
 
           python - <<'PY'
+          import os
           import pathlib
           import re
           import sys
@@ -157,6 +162,10 @@ jobs:
               print("New candidate failures:")
               for item in new_failures:
                   print(f"  - {item}")
+          if int(os.environ["HEAD_EXIT"]) != 0 and not head_failures:
+              print("Candidate test runner failed without parseable test failures; failing closed.")
+              print(head_text)
+              sys.exit(1)
           if head_failures:
               print("Unresolved candidate failures (including inherited failures):")
               for item in sorted(head_failures):
