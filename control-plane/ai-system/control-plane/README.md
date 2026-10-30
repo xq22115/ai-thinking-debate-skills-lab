@@ -12,7 +12,7 @@ This directory is the canonical repository-level control plane for multi-chat, m
 6. **A01 snapshots refs by commit SHA.** The collector resolves each moving branch name once, then reads plan and claim from that immutable SHA and records SHA-256 hashes plus claim/executor/execution identity.
 7. **Declare intent before mutation.** Cross-ref write-set preflight must PASS before task work starts.
 8. **Snapshot-bound execution.** Before fan-in, the verified final head must be the actor branch head, descend from the approved plan SHA, preserve the approved plan/claim hashes, and remain within the write set.
-9. **Receipt identity is claim-bound.** PASS/VETO receipts use schema v2 and must repeat the immutable `claim_id`, `plan_head_sha`, branch, executor/execution identity, and `head_sha` = pre-receipt work head.
+9. **Receipt identity is claim-bound.** PASS/VETO receipts use schema v3 and must repeat the immutable `claim_id`, `plan_head_sha`, branch, executor/execution identity, and `head_sha` = pre-receipt work head.
 11. **Receipt-only evidence commit.** After the work head is frozen, the only allowed path change before final snapshot verification is the actor's own namespaced receipt; a foreign receipt or extra task change is VETO.
 10. **Optimistic concurrency.** Existing-file updates use current blob SHA; stale SHA means re-read/replan, never force.
 12. **Append-only evidence.** Claims, plans, receipts and run evidence are namespaced; no shared `latest.json`.
@@ -35,7 +35,7 @@ This directory is the canonical repository-level control plane for multi-chat, m
 `scripts/check_write_plan_conflicts.py` rejects unsafe paths, mismatched bases, duplicate branches/refs, dependency cycles, and unresolved write-set overlap.
 
 ### 4. Snapshot-bound execution + receipt-binding gate
-`scripts/verify_snapshot_bound_execution.py` checks branch-head identity, plan/work/final ancestry, immutable plan/claim hashes, receipt v2 identity against the claim snapshot, task diff scope through the receipt-declared work head, replay resistance, and that the final evidence commit changes only the exact own-receipt path.
+`scripts/verify_snapshot_bound_execution.py` checks branch-head identity, plan/work/final ancestry, immutable plan/claim hashes, receipt v3 identity against the claim snapshot, task diff scope through the receipt-declared work head, replay resistance, and that the final evidence commit changes only the exact own-receipt path.
 
 ### 5. Ten-independent-代理 adjudication gate
 `scripts/adjudicate_agent_receipts.py` requires all A01-A10 PASS, distinct executor/execution/evidence/branch identities, zero VETO/missing receipts, and no direct failing evidence. Repository receipts alone do not prove physical/model-process independence.
@@ -58,11 +58,11 @@ The design separates the control plane from task data. Mutable work stays isolat
 
 `scripts/local_agent_executor.py` is the local execution backend for turning the ten role contracts into externally observed independent model processes. It probes Claude Code authentication before launch and returns `BLOCKED` with zero model processes when authentication is unavailable.
 
-A local executor PASS requires ten distinct wrapper-observed process instances, wrapper-minted execution IDs, backend session IDs, Git workspaces, and actor branches. Model text claiming independence is never accepted as independence evidence. Tool access uses a **positive allowlist**: A01–A06 and A08–A10 receive only `Read,Glob,Grep`; A07 receives only `Read,Glob,Grep,Edit,Write`. `Bash` is not granted by default to any role, so shell writes cannot bypass the write-set/snapshot gates. Raw executor output stays outside Git until a trusted receipt-materialization step binds it to claim-bound receipt v2 evidence.
+A local executor PASS requires ten distinct wrapper-observed process instances, wrapper-minted execution IDs, backend session IDs, Git workspaces, and actor branches. Model text claiming independence is never accepted as independence evidence. Tool access uses a **positive allowlist**: A01–A06 and A08–A10 receive only `Read,Glob,Grep`; A07 receives only `Read,Glob,Grep,Edit,Write`. `Bash` is not granted by default to any role, so shell writes cannot bypass the write-set/snapshot gates. Raw executor output stays outside Git until a trusted receipt-materialization step binds it to claim-bound receipt v3 evidence.
 
 ## Trusted local execution finalizer
 
-`scripts/finalize_local_agent_execution.py` is the only repository-approved bridge from ephemeral local-executor output to claim-bound receipt v2 evidence. It requires the execution row to match the immutable claim/plan snapshot. Read-only agents must have a clean workspace; any mutation is VETO. A07 may have task changes, but the trusted wrapper verifies those paths against the approved write set before creating the task commit. Pre-existing staged changes are VETO.
+`scripts/finalize_local_agent_execution.py` is the only repository-approved bridge from ephemeral local-executor output to claim-bound receipt v3 evidence. It requires the execution row to match the immutable claim/plan snapshot. Read-only agents must have a clean workspace; any mutation is VETO. A07 may have task changes, but the trusted wrapper verifies those paths against the approved write set before creating the task commit. Pre-existing staged changes are VETO.
 
 The finalizer never pushes a remote branch. It creates at most a trusted A07 task commit followed by the actor's receipt-only commit, then runs the snapshot-bound verifier. Finalized evidence is eligible for A01–A10 adjudication only when snapshot verification passes.
 
@@ -82,11 +82,11 @@ Numeric OS PIDs are recorded for audit, but PID reuse across sequential waves is
 
 The orchestrator runs the role dependency DAG in waves. A downstream actor launches only after every declared dependency finalized PASS; any VETO/FAIL/BLOCKED dependency blocks downstream launch. Read-only roles may mount finalized dependency workspaces with `--add-dir`; A07 is forbidden from mounting external workspaces because it has Edit/Write capability, so A07 receives trusted dependency receipt summaries in its prompt instead.
 
-Every launched actor still gets a distinct wrapper-observed process instance, predeclared claim execution identity, backend session and isolated workspace. After each model result, the trusted finalizer materializes scope-checked receipt v2 evidence. Only when A01–A10 all finalize PASS does the orchestrator collect receipts ephemerally, run deterministic ten-receipt adjudication, and finally check the pinned target base for freshness. A local workflow PASS therefore means `A01-A10 PASS + adjudication PASS + base freshness PASS`; it still does not push or merge GitHub branches.
+Every launched actor still gets a distinct wrapper-observed process instance, predeclared claim execution identity, backend session and isolated workspace. After each model result, the trusted finalizer materializes scope-checked receipt v3 evidence. Only when A01–A10 all finalize PASS does the orchestrator collect receipts ephemerally, run deterministic ten-receipt adjudication, and finally check the pinned target base for freshness. A local workflow PASS therefore means `A01-A10 PASS + adjudication PASS + base freshness PASS`; it still does not push or merge GitHub branches.
 
 ## Durable runtime attestation
 
-Every schema-v2 PASS/VETO receipt carries a **runtime attestation** produced by the trusted wrapper, not by model self-report. It persists the provider, wrapper-observed process-instance ID, OS PID, monotonic spawn timestamp, backend-session SHA-256, and stdout/stderr SHA-256 values. The raw backend session ID is never persisted in Git. Ten PASS receipts must have distinct process-instance IDs and distinct backend-session hashes.
+Every schema-v3 PASS/VETO receipt carries a **runtime attestation** produced by the trusted wrapper, not by model self-report. It persists the provider, wrapper-observed process-instance ID, OS PID, monotonic spawn timestamp, backend-session SHA-256, and stdout/stderr SHA-256 values. The raw backend session ID is never persisted in Git. Ten PASS receipts must have distinct process-instance IDs and distinct backend-session hashes.
 
 ## Run lifecycle manager
 
