@@ -1,0 +1,26 @@
+# Actual GitHub Actions are discovered only in repo-root .github/workflows.
+# This manifest names the active verifier and enumerates mandatory control-plane evidence.
+version: 1
+root_workflow: .github/workflows/deep-reasoning-quality-gate.yml
+working_directory: control-plane
+full_suite: python -m unittest discover -s tests -p 'test_*.py'
+fail_on_inherited_failures: true
+required_paths:
+  - .gitignore
+  - scripts/local_agent_executor.py
+  - tests/test_local_agent_executor.py
+  - tests/test_local_executor_registration.py
+  - scripts/finalize_local_agent_execution.py
+  - tests/test_finalize_local_agent_execution.py
+  - scripts/prepare_local_agent_run.py
+  - tests/test_prepare_local_agent_run.py
+  - scripts/run_local_agent_workflow.py
+  - tests/test_run_local_agent_workflow.py
+  - scripts/manage_local_agent_run.py
+  - tests/test_manage_local_agent_run.py
+  - ai-system/control-plane/claim.schema.json
+  - scripts/verify_snapshot_bound_execution.py
+  - tests/test_snapshot_bound_execution.py
+  - scripts/verify_run_freshness.py
+  - tests/test_run_freshness.py
+  - tests/test_actor_claims.py
