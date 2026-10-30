@@ -157,6 +157,10 @@ jobs:
               print("New candidate failures:")
               for item in new_failures:
                   print(f"  - {item}")
+          if head_failures:
+              print("Unresolved candidate failures (including inherited failures):")
+              for item in sorted(head_failures):
+                  print(f"  - {item}")
               print("\n--- candidate head full-suite log ---")
               print(head_text)
               sys.exit(1)
