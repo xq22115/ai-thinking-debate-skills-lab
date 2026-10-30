@@ -1,0 +1,47 @@
+# Runtime-integrity policy manifest for the relocated control-plane sandbox.
+# This nested file is NOT loaded by GitHub automatically; root workflow runs its tests.
+version: 1
+scope: control-plane/
+governance_owner: xq22115-pixel
+enforcement: parent-workflow-full-suite
+active_workflow: .github/workflows/deep-reasoning-quality-gate.yml
+root_policy: AGENTS.md
+registry: ai-system/control-plane/registry.json
+claim_schema: ai-system/control-plane/claim.schema.json
+snapshot_execution_verifier: scripts/verify_snapshot_bound_execution.py
+run_freshness_verifier: scripts/verify_run_freshness.py
+integration_branch_scope: per-run
+receipt_claim_binding: required
+receipt_work_head_semantics: pre-receipt-task-head
+receipt_commit_directly_follows_work_head: true
+lifecycle_status_receipts_read_from_git_head: true
+lifecycle_status_revalidates_snapshots_without_workflow: true
+lifecycle_resume_provider_required_only_for_missing_actors: true
+lifecycle_recovery_requires_single_claim_path_commit: true
+lifecycle_recovery_requires_single_plan_path_commit: true
+write_scope_requires_commit_history: true
+write_scope_single_star_never_crosses_directory: true
+required_files:
+  - .gitignore
+  - AGENTS.md
+  - scripts/collect_write_plans_from_refs.py
+  - scripts/check_write_plan_conflicts.py
+  - scripts/verify_write_plan_scope.py
+  - scripts/verify_snapshot_bound_execution.py
+  - scripts/verify_run_freshness.py
+  - scripts/validate_agent_control_plane.py
+  - scripts/local_agent_executor.py
+  - tests/test_local_agent_executor.py
+  - scripts/finalize_local_agent_execution.py
+  - tests/test_finalize_local_agent_execution.py
+  - scripts/prepare_local_agent_run.py
+  - tests/test_prepare_local_agent_run.py
+  - scripts/run_local_agent_workflow.py
+  - tests/test_run_local_agent_workflow.py
+  - scripts/manage_local_agent_run.py
+  - tests/test_manage_local_agent_run.py
+  - tests/test_local_executor_registration.py
+  - ai-system/control-plane/claim.schema.json
+  - tests/test_snapshot_bound_execution.py
+  - tests/test_run_freshness.py
+  - tests/test_actor_claims.py

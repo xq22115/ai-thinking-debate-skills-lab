@@ -1,0 +1,17 @@
+# This is a nested, test-checked control-plane ownership contract.
+# GitHub's active CODEOWNERS file is repository-root .github/CODEOWNERS.
+/.gitignore @xq22115-pixel
+/AGENTS.md @xq22115-pixel
+/scripts/validate_agent_control_plane.py @xq22115-pixel
+/scripts/check_write_plan_conflicts.py @xq22115-pixel
+/scripts/verify_write_plan_scope.py @xq22115-pixel
+/scripts/verify_snapshot_bound_execution.py @xq22115-pixel
+/scripts/verify_run_freshness.py @xq22115-pixel
+/scripts/local_agent_executor.py @xq22115-pixel
+/scripts/finalize_local_agent_execution.py @xq22115-pixel
+/scripts/prepare_local_agent_run.py @xq22115-pixel
+/scripts/run_local_agent_workflow.py @xq22115-pixel
+/scripts/manage_local_agent_run.py @xq22115-pixel
+/tests/test_snapshot_bound_execution.py @xq22115-pixel
+/tests/test_run_freshness.py @xq22115-pixel
+/tests/test_actor_claims.py @xq22115-pixel

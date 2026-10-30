@@ -1,0 +1,35 @@
+# Delegation manifest: NOT a GitHub-discovered workflow at this nested location.
+# The active repository-root Deep Reasoning Quality Gate runs full discovery and fails
+# for any unresolved case; do not confuse static ten-role coverage with ten AI executions.
+version: 1
+name: Agent Control Plane 10 Gate - delegated
+active_workflow: .github/workflows/deep-reasoning-quality-gate.yml
+test_command: python -m unittest discover -s tests -p 'test_*.py'
+tests:
+  - tests.test_actor_claims
+  - tests.test_snapshot_bound_execution
+  - tests.test_run_freshness
+  - tests.test_local_agent_executor
+  - tests.test_local_executor_registration
+  - tests.test_finalize_local_agent_execution
+  - tests.test_prepare_local_agent_run
+  - tests.test_run_local_agent_workflow
+  - tests.test_manage_local_agent_run
+supply_chain:
+  - scripts/verify_snapshot_bound_execution.py
+  - tests/test_snapshot_bound_execution.py
+  - scripts/verify_run_freshness.py
+  - tests/test_run_freshness.py
+  - tests/test_actor_claims.py
+  - .gitignore
+  - scripts/local_agent_executor.py
+  - tests/test_local_agent_executor.py
+  - tests/test_local_executor_registration.py
+  - scripts/finalize_local_agent_execution.py
+  - tests/test_finalize_local_agent_execution.py
+  - scripts/prepare_local_agent_run.py
+  - tests/test_prepare_local_agent_run.py
+  - scripts/run_local_agent_workflow.py
+  - tests/test_run_local_agent_workflow.py
+  - scripts/manage_local_agent_run.py
+  - tests/test_manage_local_agent_run.py

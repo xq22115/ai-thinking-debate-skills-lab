@@ -1,0 +1,13 @@
+# Control-plane run products: never publish ephemeral receipts or local Python build outputs.
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.log
+control-contract-receipt.json
+control-plane-receipt-*.json
+workflow-registry-receipt.json
+agent-adjudication.json
+# Execution state is rehydrated from immutable Git receipts, not from local debris.
+_coordination/

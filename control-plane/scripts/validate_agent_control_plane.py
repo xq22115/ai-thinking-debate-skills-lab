@@ -265,7 +265,7 @@ def validate(root: pathlib.Path, lane: str | None = None):
 
     receipt_binding = reg.get("runtime_adjudication") or {}
     receipt_binding_expectations = {
-        "pass_veto_receipt_schema_version": 2,
+        "pass_veto_receipt_schema_version": 3,
         "receipt_claim_binding_required": True,
         "receipt_plan_head_binding_required": True,
         "receipt_work_head_semantics": "pre-receipt-task-head",
@@ -538,8 +538,8 @@ def validate(root: pathlib.Path, lane: str | None = None):
     if receipt_ids != EXPECTED_AGENT_IDS:
         failures.append(f"receipt_agent_ids:{receipt_ids}")
     receipt_props = receipt.get("properties") or {}
-    if (receipt_props.get("schema_version") or {}).get("enum") != [1, 2]:
-        failures.append("receipt_schema_versions_not_1_2")
+    if (receipt_props.get("schema_version") or {}).get("enum") != [1, 2, 3]:
+        failures.append("receipt_schema_versions_not_1_2_3")
     for key in ["claim_id", "plan_head_sha", "runtime_attestation"]:
         if key not in receipt_props:
             failures.append(f"receipt_schema_property:{key}")
@@ -547,14 +547,14 @@ def validate(root: pathlib.Path, lane: str | None = None):
     pass_veto_required = set(pass_veto_then.get("required") or [])
     for key in ["claim_id", "plan_head_sha", "head_sha", "executor_id", "execution_id", "runtime_attestation"]:
         if key not in pass_veto_required:
-            failures.append(f"receipt_v2_required:{key}")
+            failures.append(f"receipt_v3_required:{key}")
     attestation_schema = receipt_props.get("runtime_attestation") or {}
     attestation_required = set(attestation_schema.get("required") or [])
     for key in ["provider", "observer", "process_instance_id", "process_id", "spawn_monotonic_ns", "backend_session_sha256", "stdout_sha256", "stderr_sha256"]:
         if key not in attestation_required:
             failures.append(f"runtime_attestation_schema_required:{key}")
-    if (((pass_veto_then.get("properties") or {}).get("schema_version") or {}).get("const")) != 2:
-        failures.append("receipt_pass_veto_schema_not_v2")
+    if (((pass_veto_then.get("properties") or {}).get("schema_version") or {}).get("const")) != 3:
+        failures.append("receipt_pass_veto_schema_not_v3")
     for key in ["agent_id", "branch", "result", "independent_agent_execution"]:
         if key not in receipt.get("required", []):
             failures.append(f"receipt_schema_required:{key}")

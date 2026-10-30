@@ -54,12 +54,19 @@ def _is_ancestor(repo: pathlib.Path, ancestor: str, descendant: str) -> bool:
 
 
 def _changed_paths(repo: pathlib.Path, start: str, end: str) -> tuple[list[str], str | None]:
+    """Audit paths touched by *any* intervening commit, not only the net tree diff.
+
+    A write followed by a revert must not erase its own scope violation.
+    -m includes each merge-parent diff, so merged-in writes cannot disappear.
+    --ancestry-path limits this to commits in the approved snapshot's lineage.
+    """
     completed = _run_git(
-        repo, "diff", "--name-only", "--no-renames", "-z", start, end
+        repo, "log", "-m", "--ancestry-path", "--format=", "--name-only",
+        "-z", "--no-renames", f"{start}..{end}",
     )
     if completed.returncode != 0:
         detail = completed.stderr.strip().splitlines()
-        return [], detail[-1] if detail else "git_diff_failed"
+        return [], detail[-1] if detail else "git_history_failed"
     return sorted({item for item in completed.stdout.split("\0") if item}), None
 
 

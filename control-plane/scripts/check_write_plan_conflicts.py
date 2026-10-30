@@ -8,19 +8,21 @@ or in GitHub Actions.
 """
 from __future__ import annotations
 
-import fnmatch
 import json
 import pathlib
 from typing import Iterable
+
+try:
+    from scripts.verify_write_plan_scope import _matches as _scope_matches, _valid_path as _scope_valid_path
+except ModuleNotFoundError:  # direct script execution
+    from verify_write_plan_scope import _matches as _scope_matches, _valid_path as _scope_valid_path
 
 GLOB_CHARS = set("*?[")
 
 
 def _invalid_pattern(value: str) -> bool:
-    if not value or value.startswith("/") or "\\" in value:
-        return True
-    parts = pathlib.PurePosixPath(value).parts
-    return ".." in parts or (parts and parts[0] == ".git")
+    # Planning and enforcement must share identical path validity semantics.
+    return not _scope_valid_path(value)
 
 
 def _has_glob(value: str) -> bool:
@@ -44,9 +46,9 @@ def patterns_overlap(left: str, right: str) -> bool:
     if not left_glob and not right_glob:
         return False
     if left_glob and not right_glob:
-        return fnmatch.fnmatchcase(right, left)
+        return _scope_matches(right, left)
     if right_glob and not left_glob:
-        return fnmatch.fnmatchcase(left, right)
+        return _scope_matches(left, right)
     left_prefix = _static_prefix(left)
     right_prefix = _static_prefix(right)
     if not left_prefix or not right_prefix:

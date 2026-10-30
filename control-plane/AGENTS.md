@@ -30,7 +30,7 @@ For work involving multiple chats, multiple agents, or repeated GitHub-backed ta
 - Run `scripts/check_write_plan_conflicts.py` before task mutation. Unresolved write-set overlap is VETO; an explicit dependency serializes overlap.
 - Before fan-in, run **snapshot-bound** execution verification with `scripts/verify_snapshot_bound_execution.py`. The final head must descend from the approved plan SHA, the branch must still point to the verified final head, and plan/claim hashes must not change.
 - Actual task paths must remain inside the approved `write_set`; the only automatic control-plane exception is that actor's exact receipt path.
-- After task work is complete, freeze the exact work head. A PASS/VETO receipt must be schema v2 and bind `claim_id`, `plan_head_sha`, executor/execution identity, branch, and `head_sha` = the pre-receipt work head.
+- After task work is complete, freeze the exact work head. A PASS/VETO receipt must be schema v3 and bind `claim_id`, `plan_head_sha`, executor/execution identity, branch, and `head_sha` = the pre-receipt work head.
 - Commit the receipt as a **receipt-only evidence commit**. Snapshot-bound verification must prove the work head is in the approved lineage and the only path changed after it is that actor's own receipt.
 - Before replacing an existing file, fetch its current blob SHA; a stale-SHA rejection is a conflict signal, never a reason to force the write.
 - Keep plans, claims, receipts, and execution evidence namespaced by Issue/run/actor; never update a shared `latest` file.
@@ -45,7 +45,7 @@ For work involving multiple chats, multiple agents, or repeated GitHub-backed ta
 - When a local Claude Code backend is used, run `scripts/local_agent_executor.py`; authentication must PASS before launch, otherwise the result is `BLOCKED` with zero model processes.
 - Local executor independence is wrapper-observed: ten distinct wrapper-observed process instances, execution IDs, backend session IDs, workspaces, and branches are required. Model self-assertion is not independence evidence.
 - Local executor tool access is a positive allowlist: read-only roles get `Read,Glob,Grep`, A07 gets `Read,Glob,Grep,Edit,Write`, and `Bash` is not granted by default.
-- Convert local executor output to Git evidence only through `scripts/finalize_local_agent_execution.py`; model JSON is not itself a receipt. The finalizer requires claim identity, scope-checks A07 changes, rejects read-only mutations/staged changes, creates receipt v2, and does not push.
+- Convert local executor output to Git evidence only through `scripts/finalize_local_agent_execution.py`; model JSON is not itself a receipt. The finalizer requires claim identity, scope-checks A07 changes, rejects read-only mutations/staged changes, creates receipt v3, and does not push.
 - Prepare local A01–A10 runs with `scripts/prepare_local_agent_run.py` before backend launch. Read-only roles must use `write_set: []`; only A07 may receive task write scope. Preparation is local-only, claim-before-plan, exact-base-bound, and does not push.
 - Use `scripts/run_local_agent_workflow.py` for a complete local A01–A10 runtime. Direct `local_agent_executor.py` output is not completion evidence. Downstream agents run only after dependencies finalize PASS; A07 may not mount external dependency workspaces; full local PASS also requires deterministic receipt adjudication and fresh-base verification.
 

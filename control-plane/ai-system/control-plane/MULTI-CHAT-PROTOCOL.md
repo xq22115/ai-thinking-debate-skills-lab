@@ -12,7 +12,7 @@
 8. Run write-set conflict preflight. Only PASS unlocks task mutation.
 9. Execute on the claimed branch, using current blob SHA for existing-file replacements.
 10. Freeze the exact task work head before writing evidence.
-11. Emit a schema-v2 PASS/VETO receipt as a **receipt-only evidence commit**. It binds `claim_id`, `plan_head_sha`, branch, executor/execution identity, and `head_sha` = the pre-receipt work head.
+11. Emit a schema-v3 PASS/VETO receipt as a **receipt-only evidence commit**. It binds `claim_id`, `plan_head_sha`, branch, executor/execution identity, and `head_sha` = the pre-receipt work head.
 12. Run snapshot-bound execution verification against the final receipt commit. Plan/claim rewrite, receipt identity mismatch, branch drift, invalid work-head lineage, replayed snapshot, undeclared task path, foreign receipt, or extra post-work change is VETO.
 13. Adjudicate A01-A10 fail-closed using authentic independent 代理 receipts.
 14. Immediately before integration, compare the pinned base with the trusted current base. Drift is VETO and requires a new `run_id`.
