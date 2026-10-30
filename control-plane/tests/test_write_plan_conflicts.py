@@ -140,5 +140,24 @@ class WritePlanConflictTests(unittest.TestCase):
         )
 
 
+    def test_single_star_and_nested_literal_are_parallel_safe(self):
+        result = planner.evaluate_plans([
+            plan("chat-a", ["src/api/*"]),
+            plan("chat-b", ["src/api/internal/secret.py"]),
+        ])
+        self.assertEqual(result["result"], "PASS", result)
+        self.assertTrue(result["parallel_safe"], result)
+
+    def test_invalid_noncanonical_write_pattern_is_veto(self):
+        result = planner.evaluate_plans([
+            plan("chat-a", ["src//api/**"]),
+            plan("chat-b", ["docs/**"]),
+        ])
+        self.assertEqual(result["result"], "VETO", result)
+        self.assertTrue(any(
+            item.startswith("invalid_write_pattern:") for item in result["failures"]
+        ))
+
+
 if __name__ == "__main__":
     unittest.main()
