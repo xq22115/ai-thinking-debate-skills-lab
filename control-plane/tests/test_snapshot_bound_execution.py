@@ -275,5 +275,42 @@ class SnapshotBoundExecutionTests(unittest.TestCase):
         self.assertIn("plan_snapshot_changed", result["failures"])
 
 
+    def test_transient_undeclared_write_reverted_before_receipt_is_veto(self):
+        self._work_commit()
+        self._work_commit("outside.txt", "transient\\n")
+        git(self.repo, "rm", "outside.txt")
+        work_head = commit_all(self.repo, "revert unauthorized intermediate write")
+        final_head = self._commit_receipt(work_head)
+        result = self._verify(final_head)
+        self.assertEqual(result["result"], "VETO", result)
+        self.assertIn("outside.txt", result["undeclared_paths"])
+
+    def test_transient_plan_rewrite_reverted_before_receipt_is_veto(self):
+        changed = dict(self.plan)
+        changed["write_set"] = ["**"]
+        write_json(self.repo, self.plan_path, changed)
+        commit_all(self.repo, "temporarily change approved plan")
+        write_json(self.repo, self.plan_path, self.plan)
+        commit_all(self.repo, "restore approved plan")
+        work_head = self._work_commit()
+        final_head = self._commit_receipt(work_head)
+        result = self._verify(final_head)
+        self.assertEqual(result["result"], "VETO", result)
+        self.assertIn(self.plan_path, result["undeclared_paths"])
+
+    def test_transient_claim_rewrite_reverted_before_receipt_is_veto(self):
+        changed = dict(self.claim)
+        changed["executor_id"] = "impostor"
+        write_json(self.repo, self.claim_path, changed)
+        commit_all(self.repo, "temporarily change ownership claim")
+        write_json(self.repo, self.claim_path, self.claim)
+        commit_all(self.repo, "restore ownership claim")
+        work_head = self._work_commit()
+        final_head = self._commit_receipt(work_head)
+        result = self._verify(final_head)
+        self.assertEqual(result["result"], "VETO", result)
+        self.assertIn(self.claim_path, result["undeclared_paths"])
+
+
 if __name__ == "__main__":
     unittest.main()
